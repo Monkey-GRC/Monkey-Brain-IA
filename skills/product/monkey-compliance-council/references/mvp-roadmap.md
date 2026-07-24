@@ -1,0 +1,66 @@
+# MVP y Roadmap de Monkey
+
+## ICP (perfil de cliente ideal)
+
+**Primario (MVP)**: empresas de 15-150 empleados, B2B SaaS o servicios tecnológicos, que reciben por primera vez la exigencia de SOC 2 Tipo I/II de un cliente enterprise, sin compliance officer dedicado ni equipo de seguridad formal — la responsabilidad recae en el CTO, Head of Engineering o el propio fundador.
+
+**Secundario (post-MVP)**: PyMEs reguladas con infraestructura híbrida u on-prem — salud (HIPAA), pagos (PCI DSS), industria/manufactura con ERP on-prem, empresas europeas medianas alcanzadas por NIS2/DORA, y potencialmente contratistas que empiezan a necesitar CMMC 2.0 Nivel 1-2 o negocio en Brasil (LGPD).
+
+**Fuera de ICP explícito**: bancos/aseguradoras grandes con equipos GRC de 20+ personas, contratistas de defensa CMMC Nivel 3, empresas de 1000+ empleados con estructuras legales complejas.
+
+## Fases
+
+| Fase | Horizonte | Foco |
+|---|---|---|
+| **Fase 0 — MVP** | 0-4 meses | Onboarding guiado, SOC 2 + ISO 27001, 12-15 integraciones cloud/SaaS/IdP, evaluación de Wazuh como base del agente on-prem, motor de IA (explicar/detectar/priorizar/recomendar), dashboard de 4 preguntas, modo guiado, arquitectura de datos preparada para on-prem. |
+| **Fase 1 — Expansión de framework y evidencia** | 4-8 meses | PCI DSS y HIPAA activables, redacción asistida de políticas y respuestas a cuestionarios de seguridad, conector Wazuh en producción, primeros conectores on-prem adicionales (Active Directory). |
+| **Fase 2 — Híbrido/On-Prem real** | 8-14 meses | Agente on-prem completo (VMware, Windows Server, Linux, apalancando Wazuh), gestión de riesgo de vendors con IA, NIST CSF y CIS Controls activables. |
+| **Fase 3 — Escala regulatoria internacional** | 14-24 meses | GDPR, NIS2, DORA, LGPD como módulos completos; FedRAMP y CMMC evaluados según demanda real; benchmarking entre pares; modo air-gapped para sectores críticos. |
+
+## Clasificación consolidada
+
+### MUST (MVP)
+- Onboarding conversacional guiado (10 pasos, ver `philosophy.md`)
+- Motor de compliance con controles atómicos multi-framework (SOC 2 + ISO 27001 activos)
+- Motor de IA: explicar, detectar, priorizar, recomendar — con explicabilidad
+- Motor de evidencias con cadena de custodia (origen/fecha/responsable/versión/integridad)
+- Motor de riesgos básico (registro + scoring cualitativo + tratamiento con dueño)
+- 12-15 conectores cloud/SaaS/IdP (AWS o Azure, GitHub, Google Workspace o M365, Okta o Entra ID, Slack)
+- Dashboard de 4 preguntas + modo guiado por hallazgo
+- Vista detallada tipo matriz (para auditor/usuario avanzado)
+- Arquitectura de datos y de agentes preparada para on-prem, incluida la evaluación seria de Wazuh
+- Aislamiento estricto de datos por tenant, en almacenamiento e inferencia de IA
+
+### SHOULD
+- Redacción asistida de políticas con revisión humana obligatoria
+- Conectores Jira, CrowdStrike/SentinelOne, Wazuh (en producción)
+- Registro de vendors con nivel de riesgo declarado
+- PCI DSS y HIPAA como frameworks activables
+- Módulo SCA de Wazuh como fuente de hallazgos de hardening
+
+### LATER
+- Agente on-prem completo (AD, VMware, Windows Server, Linux) sobre base Wazuh
+- IA agéntica con corrección automática supervisada
+- Benchmarking entre pares
+- NIST CSF, CIS Controls, GDPR, NIS2, DORA, LGPD, FedRAMP, CMMC como módulos completos
+- Predicción proactiva de drift
+
+### NO BUILD
+- Certificación de cumplimiento emitida por la plataforma (siempre la emite un auditor externo acreditado)
+- Ejecución autónoma de cambios de infraestructura sin aprobación humana
+- Microservicios prematuros / arquitectura distribuida compleja antes de tener presión de escala real
+- Módulo GRC "enterprise" con matrices de riesgo cuantitativo avanzado (Monte Carlo, FAIR)
+- Soporte simultáneo a 8+ frameworks en el lanzamiento
+- Reconstruir desde cero un motor de correlación de eventos/ruleset de compliance que Wazuh ya resuelve
+
+## Métrica de éxito propuesta
+
+No solo "auditorías completadas": medir el tiempo que el usuario pasa **entendiendo qué hacer** vs. tiempo que pasa **haciendo lo que ya sabía que tenía que hacer**. Es la métrica que mejor captura la tesis de "traducción" central del producto.
+
+## Riesgos del producto a vigilar
+
+- Los cuatro líderes ya integran IA agéntica agresivamente — la ventana de diferenciación por "IA + simplicidad" se cierra rápido. Mitigación: priorizar on-prem/híbrido vía Wazuh y la experiencia guiada como foso, no la IA sola.
+- Simplificar demasiado y perder credibilidad frente a auditores. Mitigación: la vista detallada tipo matriz siempre accesible.
+- Falsa sensación de seguridad si la IA "explica de más". Mitigación: disclaimers claros de que Monkey prepara evidencia, no certifica.
+- Complejidad subestimada de conectores on-prem. Mitigación: apalancar Wazuh en vez de construir un agente propio desde cero.
+- Fuga de datos entre tenants en la capa de IA — el riesgo más severo posible. Mitigación: aislamiento arquitectónico desde el día 1, pruebas automatizadas continuas.
