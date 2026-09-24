@@ -24,3 +24,17 @@ Wazuh incluye una guía dedicada "Using Wazuh for TSC 2017 requirements" y rules
 - [2025 Trust Services Criteria for SOC 2 — Secureframe](https://secureframe.com/hub/soc-2/trust-services-criteria)
 - [Trust Services Criteria for SOC 2 — Drata](https://drata.com/learn/soc-2/trust-services-criteria)
 - [Using Wazuh for TSC compliance — Wazuh documentation](https://documentation.wazuh.com/current/compliance/tsc/index.html)
+
+## Material fuente del proyecto
+
+El comité produjo un desglose real de controles SOC 2 para un cliente
+(`SOC2_TSC_Controles_Detallados_Monkey2.xlsx`, ver `../../../../assets/README.md`).
+De ahí sale la anatomía que el modelo usa: **código TSC + criterio + punto de
+enfoque** por requisito, más el **control del cliente** (código propio y su
+interpretación con herramientas y cargos reales), el **plan de testeo** con
+población y muestreo (10%, mínimo 5, máximo 25 casos), y las tres banderas por
+dimensión (requiere sonda / requiere IA / confirmación de cumplimiento).
+
+Ese archivo es un desglose de ejemplo con dos requisitos (CC6.1 y CC6.3), no el
+catálogo completo: la carga del catálogo de requisitos TSC sigue pendiente. Ver
+`../modelo-datos.md` §3.1 y §3.2.

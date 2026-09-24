@@ -64,3 +64,51 @@ No solo "auditorías completadas": medir el tiempo que el usuario pasa **entendi
 - Falsa sensación de seguridad si la IA "explica de más". Mitigación: disclaimers claros de que Monkey prepara evidencia, no certifica.
 - Complejidad subestimada de conectores on-prem. Mitigación: apalancar Wazuh en vez de construir un agente propio desde cero.
 - Fuga de datos entre tenants en la capa de IA — el riesgo más severo posible. Mitigación: aislamiento arquitectónico desde el día 1, pruebas automatizadas continuas.
+
+## Alcance que viene del material fuente (no del Consejo)
+
+Dos documentos del comité definen alcance que este roadmap no tenía. Ver
+`../../../assets/README.md`.
+
+**Centro de Control Técnico** (`draft-BLUEPRINT FUNCIONAL-ControlTecnico.docx`) —
+pantalla completa con aprovisionamiento de activos, schedule de ejecuciones,
+ejecuciones en tiempo real y logs. Es la cara operativa del Motor de Integraciones
+y hoy no está clasificada en ninguna fase. Su principio funcional: **la unidad de
+seguimiento es el activo, no la sonda**. Sin esta pantalla no hay forma de
+distinguir "el control falla" de "la conexión falla", así que condiciona el
+MUST de "dashboard de 4 preguntas": un hallazgo técnico sin diagnóstico de
+conectividad es un falso negativo.
+
+**Propuesta de proyecto, junio 2026** (`Propuesta Proyecto Monkey-1.xlsx`) —
+alcance comercial con módulos que este roadmap no lista: Vulnerabilidades (219 h),
+Gestión Documental con versionado y firma digital (142 h), Gestión de Políticas
+(202 h) y Notificaciones (120 h). Está **parcialmente superado**: su "consolidado
+de cumplimiento global (%)" queda derogado por la decisión de medir por servicio
+(`modelo-datos.md` §9). Lo que sigue vivo y sin clasificar es Vulnerabilidades
+(pendiente D7) y el versionado documental de la evidencia.
+
+
+## Trabajo que sale de las decisiones del modelo (16 sep 2026)
+
+Al cerrar el modelo relacional (`modelo-datos-decisiones.md`) quedaron dos cosas que no son
+decisiones de modelo sino de roadmap:
+
+**Checks de nube — SHOULD, y urgente.** De los 61 TEST del catálogo, los **11 de nube
+(`T-CLD-*`) no tienen ni un check automático**, pese a que el comité decidió que el
+validador único cubre *"servidores, BD y nube"*. Consecuencia directa: un cliente con
+escenario **"Solo nube (gestionada)"** —que es un perfil de cliente normal, no un caso
+borde— verá su cobertura técnica en 0% y su cumplimiento casi enteramente documental. El
+modelo ya lo reporta con honestidad (cobertura pendiente), pero el hueco es real y
+comercialmente caro.
+
+**Vulnerabilidades como módulo — LATER.** Decisión D7: en el MVP las vulnerabilidades son
+**solo insumo** de los hallazgos de los controles de gestión de vulnerabilidades y parches
+(`CC7.1` / `A.8.8`). El módulo con vida propia que pedía la Propuesta de junio 2026
+—listado, filtro por cuenta cloud, tendencia, ciclo Active/Solved/Mitigated, 219 h
+estimadas— no entra en el MVP.
+
+**Y una deuda que descubrió la revisión del modelo, que no es una feature:** el calculador
+de cumplimiento descarta del denominador todo check cuyo resultado no encuentra, lo que
+produce una exclusión de facto sin justificación ni rastro — justo lo que el material
+fuente llama deshonesto ante un auditor. Hay que corregirlo antes de mostrarle un
+porcentaje a un cliente real.

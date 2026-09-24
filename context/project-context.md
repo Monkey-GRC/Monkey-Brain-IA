@@ -7,34 +7,48 @@ type: context
 
 # Monkey Backend
 
-> **Convención de rutas**: este folder (`monkey-brain-ai`) vive como repo
+> **Convención de rutas**: este folder (`Monkey-Brain-IA`) vive como repo
 > independiente, separado del código de producto. Todas las rutas de código
 > mencionadas aquí y en `skills/backend/`/`skills/frontend/` (`src/...`,
 > `prisma/...`, `i18n/...`, `package.json`, etc.) son relativas a la **raíz
-> del repo correspondiente** (`monkey-360/backend` o `monkey-360/frontend`),
-> no a esta carpeta. Al usar este contexto, clona/coloca `backend` y
-> `frontend` junto a `monkey-brain-ai` (carpetas hermanas dentro de un mismo
-> directorio `monkey/`) o ajusta las rutas según dónde lo hayas descargado.
+> del repo correspondiente**, no a esta carpeta. Los repos del producto son
+> `Monkey-GRC/Backend`, `Monkey-GRC/Frontend` (admin interno),
+> `Monkey-GRC/Frontend-Platform` (plataforma del cliente final) y
+> `monkey-cis-sync` (sincroniza el catálogo de checks desde Wazuh). Al usar
+> este contexto, colócalos como carpetas hermanas de `Monkey-Brain-IA` dentro
+> de un mismo directorio, o ajusta las rutas según dónde los hayas descargado.
 >
 > **Grafos de conocimiento**: no viven aquí. Cada repo tiene su propia
-> carpeta `graphs-knowledge/` (`../backend/graphs-knowledge/` y
-> `../frontend/graphs-knowledge/`) — ver
+> carpeta `graphs-knowledge/` (`../Backend/graphs-knowledge/` y
+> `../Frontend/graphs-knowledge/`) — ver
 > `skills/shared/query-knowledge-graph.md` para cómo consultarlos sin gastar
 > tokens de más.
 
 ## Dominio
 
-API interna de tipo **GRC (Governance, Risk & Compliance)**: gestiona riesgos
-organizacionales, controles asociados, razones/justificaciones, clientes y
-usuarios con autenticación basada en roles.
+Plataforma de **compliance continuo**: mide qué porcentaje de cumplimiento
+tiene un cliente frente a los marcos que contrató (SOC 2, ISO 27001…), sobre
+los servicios que quiere certificar y los activos de su infraestructura
+(servidores, bases de datos, aplicaciones, nube) más su documentación.
+Wazuh es el motor de monitoreo/evidencia técnica.
 
-Entidades principales (ver `prisma/schema/*.prisma`):
-- `Client`
-- `Risk` (con `RiskLevel`)
-- `Control`
-- `Reason`
-- `Template`
-- `User` (con `Role`)
+El modelo de dominio completo (entidades, relaciones, cardinalidades,
+dimensiones, tests, evidencias, exclusiones y cálculo del cumplimiento) está
+en `skills/product/monkey-compliance-council/references/modelo-datos.md`.
+Leerlo antes de tocar el schema.
+
+**Multi-tenant con base de datos por cliente**: dos schemas Prisma separados,
+`prisma/central/schema/` (catálogo maestro de Monkey, registro de clientes) y
+`prisma/tenant/schema/` (el escenario particularizado de cada cliente).
+
+Entidades principales:
+- Central: `Client`, `TenantIdentifierDirectory`, `CisCheckTranslation`
+- Catálogo (en ambos): `Template` (marco), `Risk` (con `RiskLevel`), `Reason`,
+  `Control`, `ControlDimensionRequirement` (las 5 dimensiones), `ControlCheck`
+  (evidencia automática vía Wazuh), `ManualCheckItem` + `ManualCheckEvidence`
+  (evidencia manual), `Asset`, `User` (con `Role`)
+- Solo tenant: `CompanyProfile`, y en `Template` los campos de trazabilidad
+  con el catálogo base (`source_template_id`, `adopted_at`)
 
 ## Stack técnico
 
@@ -45,7 +59,7 @@ Entidades principales (ver `prisma/schema/*.prisma`):
 - **i18n:** `nestjs-i18n`, locales en `/i18n/en` y `/i18n/es`
 - **Tests:** Jest + ts-jest + supertest
 - **Lint/Format:** ESLint 9 (flat config) + Prettier (`singleQuote`, `trailingComma: all`)
-- **CI:** `bitbucket-pipelines.yml` (actualmente placeholder, pasos aún no implementados)
+- **CI/CD:** GitHub Actions — build de imagen Docker y despliegue al VPS de dev
 
 ## Arquitectura
 
@@ -67,13 +81,19 @@ Infrastructure → Domain
 
 ### Estado actual de features
 
-- `auth`: 3 capas (application, infrastructure, presentation) — sin domain propio.
+Features en `src/features/`: `asset`, `auth`, `checklist`, `client`, `control`,
+`dashboard`, `manual-check`, `onboarding`, `reason`, `risk`, `template`,
+`translation`, `user`.
+
 - `risk`: 4 capas completas — **feature de referencia**, úsala como plantilla.
-- `reason`: solo application + presentation (versión simplificada, deuda técnica pendiente).
-- `control`: existe el modelo Prisma (`control.prisma`) pero **no existe aún**
-  `src/features/control` — es el ejemplo usado en el README para documentar
-  cómo crear una feature nueva. Si se pide implementarlo, seguir
-  `skills/backend/add-feature.md`.
+- `auth`: 3 capas (application, infrastructure, presentation) — sin domain propio.
+- `reason`: versión simplificada (application + presentation), deuda técnica pendiente.
+- `checklist`: expone el catálogo de checks CIS; lee de la base que alimenta
+  `monkey-cis-sync`, no de la API de Wazuh directamente.
+- `dashboard`: calcula el cumplimiento (por control, por dimensión, por servidor).
+  Toda la matemática vive en `application/compliance.calculator.ts`.
+- `client` + `onboarding`: aprovisionamiento de tenants (crea la base del cliente,
+  cifra sus credenciales y clona el catálogo maestro hacia su escenario).
 
 ## Convenciones clave
 
@@ -83,9 +103,12 @@ Infrastructure → Domain
   con mensajes traducidos vía i18n (`/i18n/en`, `/i18n/es`).
 - Guard de auth: `@UseGuards(AuthGuard('jwt'))` + `@ApiCookieAuth()` en controladores;
   el id de usuario se lee de `req.user.id`.
-- Prisma usa **schema multi-archivo** (`prisma/schema/*.prisma`, uno por dominio) +
-  `prisma.config.ts` en la raíz (estilo Prisma 7). Editar el archivo del dominio
-  correcto, no un schema monolítico.
+- Prisma usa **dos proyectos separados**, cada uno con schema multi-archivo (uno
+  por dominio) y su propio config en la raíz (estilo Prisma 7):
+  `prisma/central/schema/*.prisma` + `prisma.config.central.ts` (catálogo maestro
+  y registro de clientes) y `prisma/tenant/schema/*.prisma` +
+  `prisma.config.tenant.ts` (base de cada cliente). Un cambio que aplique a ambos
+  planos hay que hacerlo en los dos y migrar por separado.
 - Inversión de dependencias vía tokens abstractos: cada `*.module.ts` registra
   `provide: XRepository, useClass: XPrismaRepository`.
 
@@ -93,20 +116,36 @@ Infrastructure → Domain
 
 - No importar Prisma ni decoradores de Nest dentro de `domain/`.
 - No crear un schema Prisma monolítico; usar el archivo del dominio correspondiente
-  en `prisma/schema/`.
+  en `prisma/central/schema/` o `prisma/tenant/schema/`, según el plano que aplique.
 - No saltarse capas (p. ej. controller llamando directo al repositorio Prisma).
 
 ---
 
 # Monkey Frontend
 
+## Las dos plataformas
+
+Son **dos aplicaciones Angular distintas**, con públicos y propósitos separados.
+Ambas consumen el mismo backend y comparten stack y convenciones, pero nunca se
+mezclan: una función del cliente final no va en el admin, ni al revés.
+
+| | `Frontend` (admin) | `Frontend-Platform` (plataforma) |
+|---|---|---|
+| Para quién | Equipo interno de Monkey | El cliente final |
+| Para qué | Administración de la plataforma: creación y gestión de tenants, usuarios, y el catálogo maestro GRC (marcos, riesgos, causas, controles) | Que el cliente descubra y declare sus servicios y activos, y vea su estado de cumplimiento |
+| Features hoy | `auth`, `clients`, `users`, `common`, `grc-framework` (`risks`, `reasons`, `controls`, `templates`, `template-builder`) | `auth`, `onboarding` (`account-setup`, `characterization`, `company-profile`, `template-selection`), `templates`, `dashboard` |
+
+**El onboarding de `Frontend-Platform` es donde se hace el descubrimiento.** Ahí
+el cliente declara su empresa, sus servicios, su scope y los activos que entran
+en la evaluación (servidores, bases de datos, aplicaciones, nube, documentación),
+y elige los marcos que contrata. Es la puerta de entrada de los datos que alimentan
+todo el modelo — ver `skills/product/monkey-compliance-council/references/modelo-datos.md`.
+
 ## Dominio
 
-Consola web para el mismo dominio GRC del backend: TailAdmin Angular (template
-open-source de admin dashboard) reutilizado como UI de Monkey. Feature
-`grc-framework` con dominio `risk` (formulario, listado, KPIs, matriz,
-controles, razones) — consistente con el backend y con
-`monkey-compliance-council`.
+Consola web sobre el mismo dominio del backend: TailAdmin Angular (template
+open-source de admin dashboard) reutilizado como UI de Monkey — consistente con
+el backend y con `monkey-compliance-council`.
 
 ## Stack técnico
 
@@ -138,12 +177,17 @@ completo):
 
 ### Estado actual de features
 
-- `auth`: login view/form, `auth.service.ts` — completa.
-- `grc-framework` / `risk`: **feature de referencia**, completa (form, list,
-  kpis, matriz).
-- `grc-framework` / `controls`, `grc-framework` / `reasons`: solo stubs
-  (`"controls works!"` / `"reasons works!"`) — pendientes de implementar.
-- `common`: solo `home` (landing).
+Ver la tabla de "Las dos plataformas" arriba para qué feature vive en cuál repo.
+
+- `Frontend` · `grc-framework` / `risks`: **feature de referencia** (form, list,
+  kpis, matriz). Úsala como plantilla para las demás.
+- `Frontend` · `clients`, `users`: gestión de tenants y de usuarios internos.
+- `Frontend-Platform` · `onboarding`: el flujo de descubrimiento, en pasos
+  (`account-setup`, `characterization`, `company-profile`, `template-selection`).
+  Es donde entran los datos que alimentan el modelo — cualquier campo nuevo del
+  scope o de los activos se capta aquí.
+- `Frontend-Platform` · `dashboard`: el estado de cumplimiento que ve el cliente.
+  Aplica `philosophy.md`: readiness cualitativo primero, el % nunca solo.
 
 ## Convenciones clave
 

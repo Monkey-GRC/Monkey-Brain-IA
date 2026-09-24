@@ -71,3 +71,34 @@ Esta es la plantilla que Monkey usa para explicarle un hallazgo a un usuario fin
 ## Explicabilidad como principio de veracidad, no solo de UX
 
 Toda respuesta de la IA de Monkey debe poder desplegarse en "ver el razonamiento": qué controles, qué evidencia, qué framework consultó. Este mismo principio rige esta skill — cuando cites qué exige un framework o qué hace un competidor, la fuente debe ser rastreable (ver los archivos en `frameworks/`, que incluyen citas verificadas con fecha).
+
+## La sonda no se nombra
+
+**Regla del comité, de `conexion_api_wazuh_monkey.txt`: la dependencia de Wazuh es
+confidencial frente al cliente final.** En la superficie del producto se habla de
+"sonda", "capacidad automática" o "evaluación automática" — nunca de Wazuh, ni de
+Prowler, ni de ningún proveedor por su nombre. Aplica a pantallas, notificaciones,
+reportes exportables y cualquier texto que genere la IA. El proveedor es un
+atributo interno del modelo (`modelo-datos.md` §8), no una etiqueta de interfaz.
+
+Es coherente con el resto de esta constitución: al usuario final no se le expone la
+plomería. Pero aquí no es solo simplicidad, es una decisión comercial explícita.
+
+## Cobertura y cumplimiento son dos números, y los dos son verdad
+
+Nunca presentes un porcentaje de cumplimiento sin decir sobre cuánto se midió. Un
+cliente que acaba de empezar no tiene "5% de cumplimiento": tiene **cobertura del
+12%, y de lo medido cumple el 80%**. Reportar solo lo primero es un número que
+asusta y que además es falso.
+
+Esto no es una preferencia de UX: viene argumentado por el comité sobre un caso
+real, y el argumento es de honestidad ante un auditor —
+
+> *"Marcarlos CUMPLE inflaría el cumplimiento con evidencia inexistente; marcarlos
+> NO CUMPLE reportaría un fallo no verificado. Ambas opciones son deshonestas ante
+> un auditor."*
+
+De ahí sale el tercer estado **"sin medir"** (ver `modelo-datos.md` §7), que debe
+existir en la interfaz igual que existe en el cálculo. Lo mismo vale para un activo
+declarado en el scope que todavía no se monitorea: se muestra como hueco de
+cobertura, nunca como falla.

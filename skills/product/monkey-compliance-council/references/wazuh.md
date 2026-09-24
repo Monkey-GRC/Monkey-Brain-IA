@@ -52,3 +52,28 @@ El módulo SCA corre benchmarks tipo CIS contra los endpoints y reporta gaps de 
 - [Regulatory Compliance. Security Standards — Wazuh](https://wazuh.com/resources/use-cases/regulatory-compliance/)
 
 **Nota de veracidad**: estas fuentes incluyen documentación oficial de Wazuh (documentation.wazuh.com, wazuh.com) y también análisis de terceros (Medium, blogs especializados) usados para contexto de mercado — para detalles de configuración exactos al momento de implementar, consulta siempre la documentación oficial vigente, ya que Wazuh cambia de versión con frecuencia.
+
+## Material fuente del proyecto (leer antes de tocar el conector)
+
+Lo de arriba es diseño del Consejo. Lo que sigue son **hechos operativos del
+entorno real de Monkey**, documentados por el equipo funcional. Fuentes en
+`../../../assets/README.md`:
+
+- **`conexion_api_wazuh_monkey.txt`** — endpoints, flujo del conector y las reglas
+  de destino. Contiene credenciales en texto plano: no copiarlo a ningún repo.
+- **`soc2_detalle.py`** — el extractor que invierte la relación `check → marcos` a
+  `requisito → checks`.
+
+Las reglas que hay que respetar y que no son negociables:
+
+| Regla | Por qué |
+|---|---|
+| **Clave compuesta `policy_id + check_id`** | *"Nunca solo check_id: el mismo ID significa cosas distintas entre Windows y Ubuntu"*. Y los `policy_id` **no son homogéneos entre agentes** — hoy un agente corre `cis_ubuntu14-04`, la política antigua. Usar el SO como discriminante no alcanza (ver pendiente D6). |
+| **Cinco estados de resultado, no dos** | `passed`, `failed`, `invalid`, `not applicable` (llega como `result` vacío) y `not run`. `invalid` es real y frecuente (el idioma del sistema tumba reglas en Windows), y **no** puede colapsarse con "no aplica" — ver el tercer estado en `modelo-datos.md` §7. |
+| **El mapeo a SOC 2 lo pone Monkey, no Wazuh** | Las políticas Linux no traen la clave `soc_2`. Del catálogo real: 869 checks, 646 con mapeo nativo, 223 inferidos por Monkey, con procedencia y confianza (`wazuh_native` vs `ai_inferred_final`, `high`/`medium`/`low`). Un mapeo inferido nunca se presenta como dato de la sonda. |
+| **Tres orígenes de check conviven** | `tsc` (benchmark CIS de fábrica), `soc_2` (política propia de Monkey, `monkey_soc2_win11.yml`) y `nelson` (umbrales del auditor, más estrictos que CIS). El origen es un atributo del check. |
+| **Validador único: no hay segunda sonda** | El comité **evaluó** usar otro proveedor (Prowler) para la dimensión Nube y **decidió lo contrario**: *"Wazuh SCA/Cloud Security como validador único"*, barriendo todas las menciones a Prowler del catálogo. Wazuh cubre servidores, BD **y nube**. El modelo mantiene `proveedor` como atributo por extensibilidad, no porque hoy haya dos. |
+| **La nube todavía no tiene checks** | De los 61 TEST del catálogo, los **11 de nube no tienen ni un check asociado** (igual que los 26 documentales). Es decir: la decisión de que Wazuh cubra nube está tomada, pero la cobertura no está construida — ver pendiente D13. |
+| **Seis categorías de conexión, no dos** | El catálogo del comité (AC-01…AC-06) incluye servicios cloud gestionados por API/OAuth, servidores y BD en nube y on-prem, y **endpoints/estaciones de trabajo**. Las plataformas reales de los checks van mucho más allá de Ubuntu y Windows: AlmaLinux, Oracle Linux, macOS, HP-UX, AIX, Solaris, PostgreSQL, MySQL, SQL Server, Oracle, MongoDB, Apache, NGINX, IIS, PHP. |
+| **OpenSearch no sirve para el inventario puntual** | El puerto 9200 solo tiene el flujo de cambios. Para el estado actual completo, la API 55000. Por eso el histórico hay que construirlo nosotros. |
+| **La dependencia de Wazuh es confidencial frente al cliente final** | Ver `philosophy.md`. En el producto: "sonda", nunca el nombre del proveedor. |

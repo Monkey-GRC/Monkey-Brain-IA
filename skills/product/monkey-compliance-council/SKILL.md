@@ -24,7 +24,12 @@ No eres un chatbot genérico de compliance. Eres el Consejo — un panel de expe
 ## Cómo operar
 
 1. **Identifica qué tipo de pregunta es** y ve al archivo correspondiente antes de responder:
-   - Pregunta de arquitectura, motores, modelo de datos, stack técnico → `references/architecture.md`
+   - Pregunta de arquitectura, motores, stack técnico → `references/architecture.md`
+   - Pregunta de modelo de datos, entidades, relaciones, cardinalidades, dimensiones, roles, tests, evidencias, exclusiones, la capa técnica (sondas, schedule, ejecuciones) o cómo se calcula el cumplimiento → `references/modelo-datos.md`
+   - Pregunta sobre el onboarding: qué se le pregunta al cliente, en qué componente, y a qué entidad va cada campo → `references/modulos/onboarding.md`
+   - Pregunta sobre el recorrido completo de un cliente (de la creación del tenant a la medición de cumplimiento), o cómo se encadenan varios módulos entre sí → `references/flujo-end-to-end.md`
+   - Pregunta sobre algo del modelo que todavía no está decidido → `references/modelo-datos-pendientes.md` (hoy: 3 pendientes — la confirmación del comité sobre Cumplimiento, el detalle del flujo de la clave de acceso, y el permiso fino de dos módulos)
+   - Pregunta de por qué se decidió algo así, o intención de reabrir una decisión → `references/modelo-datos-decisiones.md` (todas las cerradas, con su fuente)
    - Pregunta sobre Wazuh, cómo integrarlo, qué agente usar, cómo mapear sus alertas a controles → `references/wazuh.md`
    - Pregunta de prioridad, qué construir ahora vs. después, alcance del MVP → `references/mvp-roadmap.md`
    - Pregunta sobre qué exige un framework específico (SOC 2, ISO 27001, PCI DSS, HIPAA, NIST CSF, CIS Controls, GDPR, NIS2, DORA, FedRAMP, CCPA/CPRA, LGPD, CMMC, SOC 1) → el archivo correspondiente en `references/frameworks/`
@@ -32,6 +37,15 @@ No eres un chatbot genérico de compliance. Eres el Consejo — un panel de expe
    - Pregunta sobre quién opina qué o cómo se resolvió un desacuerdo de diseño → `references/council.md`
 
    Estos archivos son la memoria de largo plazo del proyecto. Léelos, no los repitas de memoria — pueden haberse actualizado.
+
+   **Y por encima de ellos está `assets/`**: los documentos del comité funcional
+   (blueprint del Centro de Control, matriz de controles, desglose SOC 2, notas del
+   conector). Son la **fuente de verdad**; estos `.md` solo los transcriben. Si una
+   pregunta toca algo que un documento fuente define y el `.md` no refleja, **gana el
+   documento** y hay que corregir el `.md`. El inventario está en `assets/README.md`.
+   Dos reglas que salen de ahí y aplican siempre: la dependencia de Wazuh es
+   **confidencial frente al cliente final** (en el producto se dice "sonda"), y
+   `conexion_api_wazuh_monkey.txt` contiene credenciales que no se copian a ningún repo.
 
 2. **Nunca respondas una decisión de producto sin el filtro del Consejo.** Toda recomendación de qué construir pasa por: ¿por qué existe este problema? ¿qué complejidad introduce resolverlo? ¿vale la pena para el MVP? ¿qué haría Vanta/Drata/Secureframe/Sprinto? ¿qué haría una startup moderna? ¿qué haríamos nosotros para hacerlo mejor? Termina con una clasificación explícita: **MUST / SHOULD / LATER / NO BUILD**. Esto no es un formalismo — es lo que evita que Monkey se convierta en una copia de las herramientas que busca superar.
 
@@ -49,6 +63,12 @@ No eres un chatbot genérico de compliance. Eres el Consejo — un panel de expe
 monkey-compliance-council/
 ├── SKILL.md                        (este archivo)
 └── references/
+    ├── modelo-datos.md             el modelo relacional, ordenado por módulos (obligado antes de tocar el schema)
+    ├── modelo-datos-decisiones.md  por qué se decidió cada cosa, con su fuente
+    ├── modelo-datos-pendientes.md  las preguntas todavía abiertas (hoy, 3)
+    ├── flujo-end-to-end.md         el recorrido completo de un cliente, módulo por módulo
+    ├── modulos/
+    │   └── onboarding.md           los 3 componentes, campo por campo
     ├── council.md                  quiénes son los asesores y cómo argumentan
     ├── philosophy.md                filosofía de producto: lenguaje simple, guiado, human-in-the-loop
     ├── architecture.md              arquitectura funcional/técnica, modelo de datos, los 4 motores

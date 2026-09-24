@@ -17,29 +17,53 @@ MOTOR DE COMPLIANCE │ MOTOR DE RIESGOS │ MOTOR DE EVIDENCIAS │ MOTOR DE IN
                                              de custodia)         incluye Wazuh)
         │
 CAPA DE DATOS Y ACTIVOS
-  Inventario de activos · Personas · Políticas · Vendors · Configuraciones · Logs
+  Servicios · Scope/Alcance · Insumos de revisión (apps, BD, servidores,
+  nubes, documentación) · Responsables · Configuraciones · Logs
 ```
 
 Los cuatro motores son **independientes del framework**: ninguno "sabe" nativamente qué es SOC 2 o ISO 27001. Una capa de mapeo traduce **controles atómicos** (p. ej. "MFA obligatorio para administradores") a los requisitos de cada framework soportado (ver `frameworks/`). Este es el "pecado original" que Monkey evita: modelar el producto alrededor de un solo framework y parchear los demás encima, que es lo que hace ilegibles a las herramientas GRC clásicas.
 
 ## Modelo de datos — entidades núcleo
 
+El modelo relacional completo, con atributos, cardinalidades y diagrama, vive en `modelo-datos.md`. Resumen de la estructura:
+
 ```
 Organización (tenant)
- ├─ Personas             (empleados, contratistas, roles, estado MFA, offboarding)
- ├─ Activos              (repos, servidores, endpoints, bases de datos, servicios SaaS)
- ├─ Vendors              (terceros, subprocesadores, nivel de riesgo, contratos/DPA)
- ├─ Políticas            (versión, dueño, fecha de aprobación, destinatarios, aceptación)
- ├─ Controles atómicos   (unidad mínima reutilizable entre frameworks)
- ├─ Requisitos_Framework (mapeo N:M entre Controles atómicos y cada framework)
- ├─ Evidencia            (origen, tipo, timestamp, hash de integridad, control(es) que soporta)
- ├─ Riesgos              (activo/proceso afectado, probabilidad, impacto, tratamiento, dueño)
- ├─ Hallazgos            (instancia concreta de incumplimiento)
- ├─ Acciones             (remediación: qué, quién, cuándo, evidencia requerida al cerrar)
- └─ Eventos_Auditoría    (log inmutable de todo cambio de estado del sistema)
+ ├─ Responsables organizacionales  (CISO, Cumplimiento, Proceso, TI)
+ ├─ Servicios                      (lo que se certifica; unidad de evaluación)
+ │   ├─ Scope / Alcance            (lo declarado: cuántos servidores, nubes, apps, BD)
+ │   │   └─ Insumos de revisión    (lo descubierto: los activos y documentos reales)
+ │   ├─ Marcos contratados         (por servicio — SOC 2, ISO 27001, PCI DSS…)
+ │   │   └─ Requisitos             (CC6.1, A.8.5… — pertenecen al marco)
+ │   └─ Evaluaciones               (histórico inmutable) → Hallazgos (dónde falla)
+ ├─ Riesgos                        (qué puede salir mal en un servicio; impacto, probabilidad)
+ │   └─ Causas                     (N:M — por qué está pasando)
+ │       └─ Controles              (N:M — la medida que lo ataca)
+ └─ Controles atómicos             (independientes de marco; todo lo demás cuelga de aquí)
+     ├─ Dimensiones aplicables     (Gobierno, Servidor, Nube, BD, App — con su tipo)
+     ├─ Plan de testeo             (criterio de auditor: pasos dependientes, población, muestreo)
+     ├─ Tests                      (por dimensión; con banderas requiere-sonda / requiere-IA /
+     │   │                          confirmación humana del cumplimiento)
+     │   └─ Exclusiones            (checks que no se miden, con justificación)
+     ├─ Evidencia requerida        (qué se exige y quién responde) → entregada (archivo + hash)
+     └─ Medición                   (peso y fórmula por dimensión; default lineal)
+
+Capa de operación técnica (Motor de Integraciones — ver modelo-datos.md §8):
+ Capacidad automática (sonda, con proveedor interno)
+  └─ Aprovisionamiento por activo  (conexión validada + cobertura técnica 18/18)
+      └─ Regla de schedule         (cada cuánto corre, sobre qué grupo de activos)
+          └─ Ejecución             (progreso, estado, reintento) → Resultados + Logs técnicos
 ```
 
-**Decisión clave del Data Architect**: `Controles atómicos` es independiente de framework y se conecta a `Requisitos_Framework` con una tabla N:M. Un mismo control (p. ej. "acceso administrativo requiere MFA") satisface simultáneamente CC6.1 de SOC 2, el control 8.5 de ISO 27001:2022 Annex A, y el Requisito 8.4 de PCI DSS v4.0.1 sin triplicar el trabajo de evidencia. Este modelo es el activo más valioso del producto: agregar un framework nuevo después es mapear controles existentes a nuevos requisitos, no reconstruir el producto.
+**Decisión clave del Data Architect**: el Control es **atómico e independiente del marco**. No se vincula a un framework, se vincula a **Requisitos**, y son los requisitos los que pertenecen a un marco (`Marco 1:N Requisito`, `Requisito N:M Control`). Un mismo control (p. ej. "acceso administrativo requiere MFA") satisface simultáneamente CC6.1 de SOC 2, el control 8.5 de ISO 27001:2022 Annex A, y el Requisito 8.4 de PCI DSS v4.0.1 sin triplicar el trabajo de evidencia.
+
+Por eso el riesgo tampoco cuelga del marco: cuelga del **servicio** — es algo que le pasa al servicio, exista o no un estándar persiguiéndose. El marco entra por el otro extremo, vía requisitos. Y el cumplimiento del marco **se deriva** de recorrer `requisitos → controles`, nunca se almacena como atributo.
+
+**El cumplimiento se mide por servicio, no por organización**: cada servicio tiene su propio porcentaje frente al marco y no existe un consolidado de empresa — igual que una certificación real, que se emite sobre un sistema definido. Y **un control está cumplido solo al 100%**; por debajo está fallando, señalando en qué dimensión y sobre qué insumo.
+
+**Una ejecución no es una evaluación.** La capa técnica registra "corrió la sonda sobre este activo"; el Motor de Compliance registra "se midió el cumplimiento de este control". Colapsarlas impide distinguir *el control falla* de *la conexión falla*, que es la distinción central del Centro de Control Técnico (`assets/draft-BLUEPRINT FUNCIONAL-ControlTecnico.docx`). Y la **frecuencia de evaluación vive en la regla del schedule**, por grupo de activos, no como atributo del control.
+
+Este modelo es el activo más valioso del producto: agregar un framework nuevo después es mapear controles existentes a nuevos requisitos, no reconstruir el producto.
 
 ## Los 4 motores
 

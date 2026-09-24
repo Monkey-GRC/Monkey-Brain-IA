@@ -1,14 +1,21 @@
-# monkey-brain-ai
+# Monkey-Brain-IA
 
-Contexto portable de IA para el proyecto Monkey — cubre los repos
-**backend** (`monkey-360/backend`) y **frontend** (`monkey-360/frontend`).
+Contexto portable de IA para el proyecto Monkey — cubre cuatro repos:
 
-Este folder es su **propio repo independiente**, separado de `backend` y de
-`frontend`, justamente para poder moverlo, clonarlo o descargarlo en
-cualquier otro lugar sin arrastrar el código del producto. Cuando se usa, se
-asume colocado como carpeta hermana de esos repos (p. ej. `monkey/backend/`
-y `monkey/frontend/` junto a `monkey/monkey-brain-ai/`) — ver la nota de
-"Convención de rutas" en `context/project-context.md`.
+- **Backend** (`Monkey-GRC/Backend`) — la API.
+- **Frontend** (`Monkey-GRC/Frontend`) — el **admin interno**: creación y gestión
+  de tenants, usuarios y el catálogo maestro GRC.
+- **Frontend-Platform** (`Monkey-GRC/Frontend-Platform`) — la **plataforma del
+  cliente final**: el onboarding donde se descubren y declaran sus servicios y
+  activos, y el estado de cumplimiento que ve.
+- **monkey-cis-sync** — sincroniza el catálogo de checks desde Wazuh.
+
+Este folder es su **propio repo independiente**, separado del código de
+producto, justamente para poder moverlo, clonarlo o descargarlo en cualquier
+otro lugar sin arrastrarlo. Cuando se usa, se asume colocado como carpeta
+hermana de esos repos (p. ej. `Monkey/Backend/` y `Monkey/Frontend/` junto a
+`Monkey/Monkey-Brain-IA/`) — ver la nota de "Convención de rutas" en
+`context/project-context.md`.
 
 **El brain no genera ni almacena grafos.** Los grafos de conocimiento viven
 dentro de cada repo de código (`backend/graphs-knowledge/` y
@@ -60,6 +67,10 @@ monkey-brain-ai/
 ├── manifest.json                  # índice máquina-legible + punteros a graphs-knowledge/ de cada repo
 ├── context/
 │   └── project-context.md         # dominio, stack y convenciones — backend Y frontend
+├── assets/                        # FUENTES FUNCIONALES del comité — fuente de verdad, no material de apoyo
+│   ├── README.md                  # inventario: qué decide cada documento y quién lo consume
+│   ├── draft-BLUEPRINT FUNCIONAL-ControlTecnico.docx
+│   └── vision_controles.pptx
 ├── agents/
 │   ├── product-owner.md           # rol: decide qué/por qué/prioridad
 │   ├── tech-lead.md               # rol: supervisa backend-senior + frontend-senior + qa
@@ -83,7 +94,9 @@ monkey-brain-ai/
     ├── product/                   # skills de producto/estrategia/compliance
     │   └── monkey-compliance-council/  # "el Consejo": cerebro de producto/compliance de Monkey
     │       ├── SKILL.md
-    │       └── references/        # architecture, wazuh, mvp-roadmap, philosophy, council, frameworks/*
+    │       └── references/        # modelo-datos (+decisiones, +pendientes), flujo-end-to-end,
+    │           │                    #   philosophy, architecture, wazuh, mvp-roadmap, council, frameworks/*
+    │           └── modulos/           # onboarding.md
     ├── integrations/               # skills de integraciones externas
     │   └── wazuh/                    # Wazuh completo: producto (API, infra, TODAS las normativas que evalúa) + caso aplicado del SOC de Bryan
     │       ├── SKILL.md
@@ -241,3 +254,25 @@ tokens.
   no aquí) es la salida cruda de la skill graphify (incluye archivos
   internos con prefijo `.graphify_*`) — no se edita a mano, se regenera con
   `graphify ... --update`.
+
+## Las fuentes funcionales están en `assets/`
+
+`assets/` no es una carpeta de adjuntos: son los documentos del **comité funcional**
+(las personas a cargo de la parte funcional de Monkey) y son la **fuente de verdad**
+del modelo. Los `.md` de `skills/product/monkey-compliance-council/references/` solo
+transcriben y sistematizan lo que esos documentos deciden. **Ante una discrepancia,
+gana el documento fuente** y el `.md` se corrige.
+
+Parte de esas fuentes vive fuera de este repo, en la carpeta `Monkey/` que lo
+contiene, porque incluyen datos operativos o credenciales. El inventario completo
+—qué define cada una, quién la consume, y qué documentos citan que todavía no
+tenemos— está en **`assets/README.md`**, y el índice máquina-legible en el bloque
+`sources` de `manifest.json`.
+
+Dos cosas que conviene saber antes de abrirlas:
+
+- `conexion_api_wazuh_monkey.txt` **contiene credenciales en texto plano**. No se
+  copia a ningún repo y esa password debería rotarse.
+- **La dependencia de Wazuh es confidencial frente al cliente final.** En el
+  producto se habla de "sonda" o "capacidad automática", nunca del proveedor por su
+  nombre — ver `philosophy.md`.

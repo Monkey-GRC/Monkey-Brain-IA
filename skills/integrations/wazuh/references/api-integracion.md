@@ -73,3 +73,29 @@ Consideraciones aprendidas:
 - Consultas SCA de ~500 checks tardan segundos → cachear siempre.
 - Credenciales de la API de Wazuh cifradas en PostgreSQL, nunca en código ni repos.
 - Auth de clientes con JWT + roles por tenant.
+
+## Reglas del conector real de Monkey
+
+Fuente: `conexion_api_wazuh_monkey.txt` (en `Monkey/`, fuera de este repo —
+**contiene credenciales en texto plano, no copiarlo aquí**) y el código de
+`monkey-cis-sync`. Ver `../../../../assets/README.md`.
+
+- **Clave compuesta obligatoria `policy_id + check_id`.** Nunca solo `check_id`: el
+  mismo ID significa cosas distintas entre políticas. Y los `policy_id` no son
+  homogéneos entre agentes (hoy uno corre `cis_ubuntu14-04`).
+- **Catálogo y resultado, separados.** `cis_checks` (PK `policy_id + check_id`) vs
+  `cis_check_results` (PK `agent_id + policy_id + check_id`). Antes el resultado
+  vivía en el catálogo y dos agentes con la misma política se pisaban.
+  **Pendiente:** esa tabla hace UPSERT sin timestamp, así que no guarda histórico.
+- **`result` vacío = `not applicable`.** No es un fallo ni un error. Y `invalid` es
+  un estado real y distinto — ver `../../../product/monkey-compliance-council/references/modelo-datos.md` §3.3.
+- **El mapeo a SOC 2 lo pone Monkey.** Las políticas Linux no traen la clave
+  `soc_2`; hay scripts propios que lo rellenan con procedencia y confianza.
+- **Usa el certificado, no `verify=False`.** El documento entrega `root-ca.pem`.
+- **El token JWT vive ~900 s.** Manejar el 401 y re-autenticar.
+
+> **Nota de obsolescencia:** la sección "Arquitectura MONKEY" de más arriba describe
+> un stack FastAPI + Streamlit que **ya no es el del proyecto**. El backend real es
+> NestJS 11 + Prisma 7 y el frontend Angular 20 — ver `context/project-context.md`.
+> Esa sección se conserva solo por las consideraciones operativas (UTC→Colombia,
+> cachear consultas SCA, credenciales cifradas), que siguen vigentes.

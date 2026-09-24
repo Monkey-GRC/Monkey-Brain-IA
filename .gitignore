@@ -36,3 +36,11 @@ npm-debug.log*
 # Si alguna vez aparece un graphs-knowledge/ o graphify-out/ aquí por error, ignorarlo:
 graphs-knowledge/
 graphify-out/
+
+# Fuentes del comité en formato binario. SON la fuente de verdad funcional del
+# proyecto, pero no se versionan: pesan (el TSC maestro son 2,5 MB por sí solo) y
+# git guardaría cada revisión completa. Viven en la carpeta compartida del equipo.
+# Qué define cada uno y quién lo consume está en assets/README.md, que sí se versiona.
+assets/*.xlsx
+assets/*.docx
+assets/*.pptx
