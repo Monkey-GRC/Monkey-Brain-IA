@@ -314,5 +314,43 @@
       "description": "Cómo agregar una feature NestJS que consuma la API de Wazuh, siguiendo Clean Architecture. Consultar wazuh-integration-expert para los hechos de API/infra antes de implementar."
     }
   ],
-  "entrypointNote": "CLAUDE.md fija las reglas obligatorias antes de cualquier decision. README.md describe la estructura del repo."
+  "entrypointNote": "CLAUDE.md fija las reglas obligatorias antes de cualquier decision. README.md describe la estructura del repo.",
+  "contracts": {
+    "note": "Forma exacta de cada endpoint (request, response, errores), acordada antes de construir. Lectura obligatoria antes de tocar un endpoint o un formulario.",
+    "conflictRule": "Opciones de enum: gana el Excel del comite. Nombres de campo: gana modelo-datos.md.",
+    "files": [
+      {
+        "path": "contracts/README.md",
+        "description": "Que es, como se lee, como se versiona, quien manda si hay conflicto."
+      },
+      {
+        "path": "contracts/conventions.md",
+        "description": "Transversal: sobre de respuesta ResponseDto, forma del error de validacion por campo con clave i18n, multi-select como array, fechas ISO 8601 UTC, paginacion, idempotencia."
+      },
+      {
+        "path": "contracts/enums.md",
+        "description": "Tabla valor snake_case a etiqueta es/en de todos los enums del onboarding, con las opciones literales del Excel del comite. Marca donde el Excel gana sobre modelo-datos.md."
+      },
+      {
+        "path": "contracts/modules/monkey-admin.md",
+        "description": "Registro del tenant y clave de acceso: companies, access_keys. La clave se devuelve en claro una sola vez."
+      },
+      {
+        "path": "contracts/modules/auth.md",
+        "description": "Canje de la clave, login, refresh, logout. Auth minima sin MFA (aplazada a MD-94)."
+      },
+      {
+        "path": "contracts/modules/onboarding-organizational-context.md",
+        "description": "Componente 1: los 10 campos del Contexto Organizacional, una vez por empresa."
+      },
+      {
+        "path": "contracts/modules/onboarding-service-context.md",
+        "description": "Componente 2: los 16 campos del Contexto del Servicio, repetible. Dispara el clonado del catalogo."
+      },
+      {
+        "path": "contracts/modules/onboarding-technical-control.md",
+        "description": "Componente 3: escenario de despliegue, scope declarado y flujo conectar-validar-activar-programar sobre ac_01 a ac_06. El proveedor del motor de monitoreo NO aparece."
+      }
+    ]
+  }
 }
