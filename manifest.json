@@ -236,7 +236,7 @@
         {
           "id": "modelo-datos-pendientes",
           "path": "skills/product/monkey-compliance-council/references/modelo-datos-pendientes.md",
-          "description": "Las decisiones del modelo que solo el comité puede cerrar (hoy, 3: P1, P2, P3). Si sigue ahí, no se resuelve por cuenta propia."
+          "description": "Las decisiones del modelo que solo el comité puede cerrar (hoy, 5: P1 a P5). Si sigue ahí, no se resuelve por cuenta propia."
         },
         {
           "id": "onboarding",

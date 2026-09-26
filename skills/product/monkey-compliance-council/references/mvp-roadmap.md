@@ -85,7 +85,7 @@ Gestión Documental con versionado y firma digital (142 h), Gestión de Polític
 (202 h) y Notificaciones (120 h). Está **parcialmente superado**: su "consolidado
 de cumplimiento global (%)" queda derogado por la decisión de medir por servicio
 (`modelo-datos.md` §9). Lo que sigue vivo y sin clasificar es Vulnerabilidades
-(pendiente D7) y el versionado documental de la evidencia.
+(decisión D7, ya cerrada) y el versionado documental de la evidencia.
 
 
 ## Trabajo que sale de las decisiones del modelo (16 sep 2026)

@@ -103,6 +103,9 @@ Lo que aporta este componente al onboarding, específicamente:
 
 ## Cumplimiento no es un 4º componente
 
+> ⚠️ Decisión D23, **pendiente de confirmación final del comité** (P1 en
+> `modelo-datos-pendientes.md`). Si el comité la revierte, aparece un 4º componente.
+
 Riesgos, causas y controles **no se configuran a mano durante el onboarding**. Al elegir
 framework en el Componente 2, el catálogo correspondiente se clona automáticamente al
 escenario del cliente (`modelo-datos.md` §3.5) — el cumplimiento ya empieza a medirse con

@@ -8,7 +8,7 @@ construir. Este archivo existe para responder *"¿por qué se decidió así?"* s
 discutirlo, y para que si alguna decisión resulta equivocada se pueda revisar sabiendo en
 qué se apoyaba.
 
-Lo que sigue abierto está en **`modelo-datos-pendientes.md`** (hoy, 3 preguntas).
+Lo que sigue abierto está en **`modelo-datos-pendientes.md`** (hoy, 5 preguntas).
 
 > Este contenido estuvo hasta el 16 de septiembre de 2026 en una sección "§8" de
 > `modelo-datos.md`. Si un ticket de Jira o un comentario viejo apunta a "§8", se refiere
@@ -247,7 +247,13 @@ sepa desde qué periodo aplica cada versión.
 **D14 (multi-tenancy) · Es híbrido: el cliente elige, no Monkey.**
 
 El comité no escogió entre las dos opciones que planteaba el ticket — dijo que **conviven**,
-y quién decide es el cliente, no una regla técnica interna:
+y lo que lo motiva es la política del cliente, no una regla técnica interna:
+
+> ⚠️ **Superada en parte por D24 y D25.** Lo que sigue vigente es que las dos estrategias
+> conviven y que la del cliente es la razón de fondo. Lo que cambió: el atributo vive en
+> `companies`, no en `organizations`, y **quien lo marca es `admin_monkey` al registrar la
+> empresa en Monkey Admin**, no el cliente durante el onboarding.
+
 
 > *"Hay clientes que por políticas de su empresa siempre quieren que sus datos estén
 > separados y aislados en total (una base de datos solo para ellos), y los que no lo pidan

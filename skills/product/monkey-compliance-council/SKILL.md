@@ -28,7 +28,7 @@ No eres un chatbot genérico de compliance. Eres el Consejo — un panel de expe
    - Pregunta de modelo de datos, entidades, relaciones, cardinalidades, dimensiones, roles, tests, evidencias, exclusiones, la capa técnica (sondas, schedule, ejecuciones) o cómo se calcula el cumplimiento → `references/modelo-datos.md`
    - Pregunta sobre el onboarding: qué se le pregunta al cliente, en qué componente, y a qué entidad va cada campo → `references/modulos/onboarding.md`
    - Pregunta sobre el recorrido completo de un cliente (de la creación del tenant a la medición de cumplimiento), o cómo se encadenan varios módulos entre sí → `references/flujo-end-to-end.md`
-   - Pregunta sobre algo del modelo que todavía no está decidido → `references/modelo-datos-pendientes.md` (hoy: 3 pendientes — la confirmación del comité sobre Cumplimiento, el detalle del flujo de la clave de acceso, y el permiso fino de dos módulos)
+   - Pregunta sobre algo del modelo que todavía no está decidido → `references/modelo-datos-pendientes.md` (hoy: 5 pendientes — la confirmación del comité sobre Cumplimiento, el detalle del flujo de la clave de acceso, el permiso fino de dos módulos, el catálogo de cargos al que apunta `responsible_id`, y dos cifras de Wazuh sin universo definido)
    - Pregunta de por qué se decidió algo así, o intención de reabrir una decisión → `references/modelo-datos-decisiones.md` (todas las cerradas, con su fuente)
    - Pregunta sobre Wazuh, cómo integrarlo, qué agente usar, cómo mapear sus alertas a controles → `references/wazuh.md`
    - Pregunta de prioridad, qué construir ahora vs. después, alcance del MVP → `references/mvp-roadmap.md`
@@ -65,7 +65,7 @@ monkey-compliance-council/
 └── references/
     ├── modelo-datos.md             el modelo relacional, ordenado por módulos (obligado antes de tocar el schema)
     ├── modelo-datos-decisiones.md  por qué se decidió cada cosa, con su fuente
-    ├── modelo-datos-pendientes.md  las preguntas todavía abiertas (hoy, 3)
+    ├── modelo-datos-pendientes.md  las preguntas todavía abiertas (hoy, 5)
     ├── flujo-end-to-end.md         el recorrido completo de un cliente, módulo por módulo
     ├── modulos/
     │   └── onboarding.md           los 3 componentes, campo por campo

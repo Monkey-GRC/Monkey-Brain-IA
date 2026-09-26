@@ -15,7 +15,7 @@ actual del backend es el punto de partida que se está rehaciendo. Dos consecuen
 |---|---|
 | **este** | Qué tablas hay, cómo se relacionan y cómo se calcula el cumplimiento |
 | `modelo-datos-decisiones.md` | Por qué se decidió cada cosa, con su fuente |
-| `modelo-datos-pendientes.md` | Las preguntas que solo el comité puede responder (hoy, 3) |
+| `modelo-datos-pendientes.md` | Las preguntas que solo el comité puede responder (hoy, 5) |
 | `flujo-end-to-end.md` | El recorrido de un cliente, módulo por módulo, en orden |
 | `modulos/onboarding.md` | El detalle campo por campo de los 3 componentes del onboarding |
 
@@ -444,7 +444,7 @@ se inventan equivalencias.
 (mín. 5, máx. 25)"*. El cálculo de la muestra concreta se construye después; los campos se
 guardan ahora.
 
-**Cinco estados de check:** `passed`, `failed`, `invalid`, `not_applicable` (llega como
+**Cinco estados del check de la sonda** (distintos de los 4 del resultado de evaluación): `passed`, `failed`, `invalid`, `not_applicable` (llega como
 `result` vacío) y `not_run`.
 
 > **Cuidado con la palabra "prueba", que son tres cosas distintas:** los **61 TEST** de
@@ -592,13 +592,19 @@ requiere base de datos dedicada, y el correo administrativo de la empresa. Al en
    está marcado, `shared` si no.
 2. Se genera una fila en `access_keys`, de un solo uso, con expiración.
 3. La clave se envía **al `admin_email` capturado en el formulario**.
+   > ⚠️ **En el sprint de onboarding esto todavía no ocurre.** El envío por correo está
+   > aplazado (MD-69), así que `admin_monkey` **copia la clave desde la UI de Monkey Admin**
+   > y la entrega por el canal que sea. Por eso el registro debe **mostrar la clave en claro
+   > una sola vez**: es el único medio de obtenerla. El destino sigue siendo el `admin_email`.
 4. El cliente usa la clave para crear su cuenta `admin_empresa` en Monkey Platform.
 5. Arranca el onboarding (§6). El campo "nombre / razón social" del Componente 1 llega
    **precargado y bloqueado**: ya se fijó aquí.
 
 ### 4.3 Aislamiento de datos (multi-tenancy)
 
-**Es híbrido, y lo elige el cliente, no una regla técnica interna** (decisión D14).
+**Es híbrido: la política del cliente es lo que lo motiva, pero la elección la hace
+`admin_monkey`** al crear la empresa en Monkey Admin (decisiones D24 y D25). No es una regla
+técnica interna que Monkey aplique sola, ni un campo del onboarding que el cliente rellene.
 
 | Estrategia | Para quién | Cómo aísla |
 |---|---|---|
@@ -752,7 +758,9 @@ responsable del control *de su empresa*, no del control del catálogo maestro.
 ### 5.3 Políticas de seguridad de la plataforma
 
 Requisitos, no sugerencias: sesión 30 min / 8 h máximo · contraseña 12+ con complejidad y
-expiración 90 días · **MFA TOTP obligatoria para admin y auditor** · AES-256 en reposo
+expiración 90 días · **MFA TOTP obligatoria para admin y auditor** (requisito vigente; su
+implementación está aplazada a MD-94 y no entra en el sprint de onboarding — es deuda
+conocida, no una decisión revertida) · AES-256 en reposo
 (bcrypt+salt para contraseñas, secreto MFA cifrado) · TLS 1.3 + HSTS · rotación de API keys
 90 días · rate limiting 100/min usuario y 1000/min empresa · **audit trail 7 años, inmutable,
 append-only** · IP whitelist opcional · bloqueo a 5 intentos por 15 min.
@@ -781,7 +789,8 @@ cálculo de cumplimiento. Detalle campo por campo en `modulos/onboarding.md`.
 **Qué resuelve:** sin organización, servicio y scope declarados no hay nada que medir. Es el
 único flujo del producto que es secuencial y obligatorio.
 
-**Cumplimiento no es un 4º componente** (decisión D23): al elegir marco en el Componente 2 el
+**Cumplimiento no es un 4º componente** (decisión D23, ⚠️ **pendiente de confirmación final
+del comité** — ver P1 en `modelo-datos-pendientes.md`): al elegir marco en el Componente 2 el
 catálogo se clona solo, y personalizarlo es un módulo aparte que no bloquea nada (§7).
 
 ### 6.1 Componente 1 — Contexto Organizacional
@@ -1045,7 +1054,8 @@ heredó, sube evidencia, gestiona riesgos y remedia hallazgos.
 **Qué resuelve:** el catálogo clonado es genérico; el cumplimiento real exige decir *"este
 control, en mi empresa, se cumple con estas herramientas concretas"*.
 
-**No bloquea nada** (decisión D23). Un cliente que termina el onboarding ya tiene
+**No bloquea nada** (decisión D23, ⚠️ pendiente de confirmación del comité — P1). Un cliente
+que termina el onboarding ya tiene
 cumplimiento midiéndose con el catálogo por defecto; este módulo es donde lo afina, sin
 límite de tiempo. Lo usa `admin_empresa`.
 

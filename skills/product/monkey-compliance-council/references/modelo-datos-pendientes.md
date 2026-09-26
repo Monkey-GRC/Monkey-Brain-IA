@@ -44,6 +44,35 @@ Ninguna de las dos bloquea el sprint de onboarding, pero sí el desarrollo de su
 - **Cumplimiento:** los permisos dentro del módulo más allá de "es de `admin_empresa`", y
   si necesita su propia pantalla o vive dentro de la vista de cada servicio.
 
+
+## P4 · `responsible_id` apunta a un catálogo de cargos que no existe
+
+**Estado:** hueco estructural del modelo, detectado al auditar el repo el 2026-09-26.
+
+`modelo-datos.md` §7.3 define `evidence_requirements.responsible_id` como FK al **cargo, no
+a la persona**, y §5.4 afirma que *"el cargo vive en el catálogo y es estable"*. Pero la
+única tabla de cargos del modelo es `organization_responsibles` (§5.2), que lleva
+`organization_id` — es decir, vive en el escenario del cliente, no en el catálogo maestro.
+No existe ninguna entidad global a la que `responsible_id` pueda apuntar.
+
+**La pregunta:** ¿se añade una tabla de cargos al catálogo maestro (§3), o `responsible_id`
+apunta a `organization_responsibles` y entonces `evidence_requirements` deja de ser
+clonable tal cual?
+
+**Qué depende:** el clonado de `evidence_requirements` (§3.5) y la asignación de responsable
+de una evidencia (decisión A1).
+
+## P5 · Dos cifras de la documentación de Wazuh sin universo definido
+
+**Estado:** detectadas al medir el Excel contra el repo el 2026-09-26. No se corrigieron a
+ojo porque no se puede saber a qué se refieren.
+
+- `wazuh.md` dice *"869 checks, 646 con mapeo nativo, 223 inferidos por Monkey"*. El catálogo
+  del archivo maestro tiene **11.352 checks**, de los que 6.479 traen `SOC 2` no vacío.
+  869 no corresponde a ningún subconjunto identificable. ¿De qué plataforma o política sale?
+- `manifest.json` dice ruleset Wazuh **v4.14.7**; `infraestructura.md` dice despliegue
+  **4.12**. Puede ser ruleset vs versión instalada, pero nadie lo escribió.
+
 ---
 
 ## Cómo se cierra un pendiente
