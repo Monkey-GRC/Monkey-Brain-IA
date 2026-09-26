@@ -18,7 +18,7 @@
         "id": "tsc-integral-soc2",
         "path": "assets/TSC INTERGRAL SOC 2 DETALLADO VF.xlsx",
         "primary": true,
-        "description": "FUENTE MAESTRA. 17 hojas: modelo RBAC (4 roles, 34 permisos, 12 políticas de seguridad), contexto de empresa y de servicio, activos del scope + catálogo de conexiones AC-01..AC-06, 32 riesgos (metodología 5x5), 92 causas, 118 controles sobre 302 puntos de enfoque (658 relaciones), 61 TEST de 23 campos, y 11.352 checks de 77 políticas SCA (ruleset Wazuh v4.14.7) con 20 referencias de mapeo. Las hojas Resumen y Resumen Whazu traen las cifras verificadas.",
+        "description": "FUENTE MAESTRA. 17 hojas: modelo RBAC (4 roles, 34 permisos, 12 políticas de seguridad), contexto de empresa y de servicio, activos del scope + catálogo de conexiones AC-01..AC-06, 10 riesgos (metodología 5x5), 56 causas con 92 relaciones riesgo-causa, 119 controles de catálogo (118 asignados; CPL-1 es la Descripcion del Sistema) sobre 302 puntos de enfoque (729 relaciones), 61 requisitos TSC, 61 TEST de 23 campos con 228 asignaciones control-TEST, y 11.352 checks de 77 politicas SCA sobre 18 plataformas con 20 referencias de mapeo. IMPORTANTE: estas cifras salen de los datos crudos de las hojas, NO de la hoja Resumen, que quedo desactualizada (declara 658 relaciones).",
         "consumedBy": [
           "skills/product/monkey-compliance-council/references/modelo-datos.md",
           "skills/product/monkey-compliance-council/references/modulos/onboarding.md",

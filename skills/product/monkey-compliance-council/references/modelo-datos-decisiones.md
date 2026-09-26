@@ -129,7 +129,7 @@ un solo control no se justifica.
 
 Lo que sí cambia: `AssetType` gana **Aplicación** y **Documentación** (que sí son
 dimensiones y faltaban), y `ChecklistOs` se reemplaza por un **catálogo de plataforma +
-política** (77 políticas reales, ~20 plataformas).
+política** (77 políticas reales, 18 plataformas).
 
 **D6 · El mapeo de checks es por política.** La clave es plataforma + política +
 `check_id`. Si un activo corre una política sin mapeo, ese control queda **sin medir**
@@ -162,7 +162,7 @@ certificar algo que nadie certifica, y `philosophy.md` lo prohíbe.
 
 **D11 · `csocs` y `cuecs` son entidades propias, marcadas como no medibles por Monkey.**
 Son secciones 7 y 8 obligatorias de la Descripción del Sistema, y el propio catálogo ya
-reconoce el patrón: `CPL-1` es el único de los 119 controles sin asignar, precisamente
+reconoce el patrón: `CPL-1` es el único de los 119 controles del catálogo sin asignar (por eso los asignados son 118), precisamente
 porque *"es la Descripción del Sistema, Sección III del informe"*. Modelarlas permite
 generar esas secciones desde el sistema en vez de redactarlas a mano en cada auditoría.
 

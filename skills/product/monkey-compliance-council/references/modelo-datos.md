@@ -78,7 +78,7 @@ este archivo, **gana el documento**. Inventario completo en `assets/README.md`.
 | Fuente | Qué define |
 |---|---|
 | `MONKEY_Ejemplo_Formula_Cumplimiento.xlsx` | **La fórmula de cumplimiento** (§9): 12 reglas + un servicio resuelto |
-| `TSC INTERGRAL SOC 2 DETALLADO VF.xlsx` | Catálogo maestro: 118 controles, 302 puntos de enfoque (658 relaciones), 61 TEST, 11.352 checks de 77 políticas, RBAC, contexto de empresa y servicio |
+| `TSC INTERGRAL SOC 2 DETALLADO VF.xlsx` | Catálogo maestro: 61 requisitos TSC, 302 puntos de enfoque, 119 controles (118 asignados), 729 relaciones punto de enfoque↔control, 61 TEST, 11.352 checks de 77 políticas sobre 18 plataformas, RBAC, contexto de empresa y servicio. **Cifras tomadas de los datos crudos, no de la hoja `Resumen`** (ver `../../../../assets/README.md`) |
 | `RESUMEN-MODELO-USUARIOS-MONKEY.md` | Modelo RBAC: 4 roles, 34 permisos, 8 tablas, políticas de seguridad (§5) |
 | `draft-BLUEPRINT FUNCIONAL-ControlTecnico.docx` | La capa de operación técnica (§8) |
 | `vision_controles.pptx` | Matriz de evaluación (superada por el ejemplo de fórmula para el cálculo) |
@@ -430,11 +430,11 @@ erDiagram
 ```
 
 **`tests` es `N:M` con `controls`, y es deliberado.** `T-DOC-001` sirve a más de 30
-controles: 118 controles × 61 TEST = **244 asignaciones**. Modelarlo `N:1` duplicaría 61
-tests en cientos de filas.
+controles: los 118 controles asignados y los 61 TEST producen **228 asignaciones**
+control↔TEST. Modelarlo `N:1` duplicaría 61 tests en cientos de filas.
 
 **La clave natural del check es de tres partes** (`platform` + `policy_id` + `check_id`) y el
-catálogo es grande: **77 políticas, 11.352 checks, ~20 plataformas** (Windows 8 políticas de
+catálogo es grande: **77 políticas, 11.352 checks, 18 plataformas** (Windows 8 políticas de
 10 a Server 2025, macOS 12, Ubuntu 6, Debian 7, RHEL 6, más motores: PostgreSQL, MySQL, SQL
 Server, Oracle, MongoDB, Apache, NGINX, IIS). El mapeo es **por política** (decisión D6): si
 un activo corre una política sin mapeo, ese control queda **sin medir** para ese activo — no
@@ -494,8 +494,9 @@ erDiagram
     controls ||--o{ cause_controls : "mitiga"
 ```
 
-**Los tres niveles se reutilizan**, y por eso las tres relaciones son `N:M`: 32 riesgos y 92
-causas en el catálogo, y una causa como `F001` apunta a cuatro controles distintos.
+**Los tres niveles se reutilizan**, y por eso las tres relaciones son `N:M`: 10 riesgos y 56
+causas en el catálogo, unidos por 92 relaciones riesgo↔causa, y una causa como `F001`
+apunta a cuatro controles distintos.
 
 **El riesgo cuelga del servicio, no del marco** (ver §6.2). Un riesgo no es "de SOC 2": es
 del negocio del cliente, y los controles que lo mitigan sirven a los marcos que sea.
