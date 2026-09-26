@@ -8,7 +8,8 @@ Contexto portable de IA para el proyecto Monkey — cubre cuatro repos:
 - **Frontend-Platform** (`Monkey-GRC/Frontend-Platform`) — la **plataforma del
   cliente final**: el onboarding donde se descubren y declaran sus servicios y
   activos, y el estado de cumplimiento que ve.
-- **monkey-cis-sync** — sincroniza el catálogo de checks desde Wazuh.
+- **monkey-cis-sync** — sincroniza el catálogo de checks desde Wazuh. ⚠️ Hoy es una carpeta
+  de scripts Python, **no un repo git**: no tiene historial ni remoto.
 
 Este folder es su **propio repo independiente**, separado del código de
 producto, justamente para poder moverlo, clonarlo o descargarlo en cualquier

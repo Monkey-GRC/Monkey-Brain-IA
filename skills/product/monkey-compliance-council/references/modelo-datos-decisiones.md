@@ -151,9 +151,9 @@ construye después: primero se guardan los campos.
 Ésta era una contradicción aparente: la matriz dice que `admin_monkey` **no** puede crear
 controles, y el modelo de dos planos dice que el catálogo maestro es el activo de Monkey.
 Se resuelve leyendo la matriz en su contexto — describe permisos **sobre los datos de una
-empresa cliente**, donde efectivamente Monkey no debe inventarle controles. En el **plano
-central**, Monkey administra su catálogo, que es lo que el admin interno (`Frontend`, feature
-`grc-framework`) ya hace hoy. No se toca nada de lo construido.
+empresa cliente**, donde efectivamente Monkey no debe inventarle controles. En el catálogo maestro, Monkey
+administra sus propios controles, que es lo que el admin interno (`Frontend`) ya hacía con la
+feature `grc-framework` antes de que se retirara con el modelo viejo (`acbd907`).
 
 **D10 · `regulations` es una entidad propia y no se puntúa.** Nadie contrata la Ley 1581:
 le aplica. Sirve como contexto para el análisis de riesgo inherente y para el reporte,

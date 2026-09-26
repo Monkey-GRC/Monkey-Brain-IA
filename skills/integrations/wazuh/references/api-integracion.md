@@ -82,7 +82,7 @@ Fuente: `conexion_api_wazuh_monkey.txt` (en `Monkey/`, fuera de este repo —
 
 - **Clave compuesta obligatoria `policy_id + check_id`.** Nunca solo `check_id`: el
   mismo ID significa cosas distintas entre políticas. Y los `policy_id` no son
-  homogéneos entre agentes (hoy uno corre `cis_ubuntu14-04`).
+  homogéneos entre agentes (hoy uno corre `cis_ubuntu22-04`).
 - **Catálogo y resultado, separados.** `cis_checks` (PK `policy_id + check_id`) vs
   `cis_check_results` (PK `agent_id + policy_id + check_id`). Antes el resultado
   vivía en el catálogo y dos agentes con la misma política se pisaban.

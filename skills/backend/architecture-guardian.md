@@ -42,7 +42,7 @@ emitir un veredicto.
    es una violación.
 5. **DTOs por feature:** una feature no debe importar DTOs de otra feature.
 6. **Prisma schema:** los modelos se agregan/editan en el archivo de dominio
-   correspondiente bajo `prisma/schema/`, no en un archivo monolítico.
+   correspondiente bajo `prisma/central/schema/` y `prisma/tenant/schema/`, no en un archivo monolítico.
 
 ## Formato de salida esperado
 

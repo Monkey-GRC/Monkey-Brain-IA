@@ -37,13 +37,16 @@ el equivalente exacto de `backend-senior` pero para el repo `frontend`.
 
 ## Reglas de ejecución
 
-- Sigue el patrón de `features/grc-framework/risk` como plantilla (es la
-  feature más completa: `models/` + `services/` + `presentation/{views,components}`).
+- Sigue el patrón de `Frontend/src/app/features/users` como plantilla (es la feature más
+  completa: `models/` + `services/` + `presentation/{views,components}`). `grc-framework` y
+  `clients` fueron eliminadas en `acbd907` con el modelo viejo.
+- En `Frontend-Platform` la estructura de feature es distinta (`domain/` + `presentation/`) y
+  no hay i18n instalada; comprobar antes de aplicar patrones de `Frontend`.
 - Componentes standalone (sin NgModules), path aliases (`@core/*`,
   `@features/*`, `@shared/*`, `@config/*`, `@environments/*`) — no imports
   relativos largos (`../../../`).
 - Nunca importa directo de otra feature (`features/auth` no importa de
-  `features/grc-framework` ni viceversa). Si hace falta compartir algo, va
+  `features/users` ni viceversa). Si hace falta compartir algo, va
   en `shared/`.
 - Llamadas al backend: `HttpClient` + `environment.apiUrl` + tipo
   `ApiResponse<T>` de `shared/models/`. Nunca hardcodea la URL del backend

@@ -61,8 +61,8 @@ completo para una pregunta puntual).
   de `project-context.md`).
 - Cambió el patrón de capas de una feature de referencia (p. ej. `risk` deja
   de ser la plantilla, en cualquiera de los dos repos).
-- Se agregó o modificó un modelo en `backend/prisma/schema/` que no está
-  reflejado en `project-context.md` o en `backend/graphs-knowledge/architecture.json`.
+- Se agregó o modificó un modelo en `Backend/prisma/central/schema/` o
+  `Backend/prisma/tenant/schema/` que no está reflejado en `project-context.md`.
 - Pasó suficiente trabajo acumulado (varias features/fixes en backend o
   frontend) desde la última vez que se corrió `graphify ... --update` en
   ese repo como para que su grafo de conocimiento esté notablemente

@@ -1,16 +1,38 @@
 ---
 id: add-feature
 name: Agregar una feature nueva (frontend)
-description: Pasos para crear una feature completa en src/app/features/<nombre>, siguiendo el patrón de grc-framework/risk (la feature de referencia).
+description: Pasos para crear una feature completa en src/app/features/<nombre>, siguiendo el patrón de la feature users (la referencia viva).
 type: skill
 applies_to: frontend
 ---
 
 # Skill: Agregar una feature nueva (frontend)
 
-Referencia viva: `src/app/features/grc-framework` (dominio `risk` en
-particular) — es la feature más completa del repo, úsala como plantilla en
-vez de confiar solo en esta doc.
+Referencia viva: `Frontend/src/app/features/users` — es la feature más completa del repo,
+úsala como plantilla en vez de confiar solo en esta doc.
+
+> La feature `grc-framework` (`risks`, `reasons`, `controls`, `templates`) **fue eliminada**
+> en el commit `acbd907`, junto con `clients`, por pertenecer al modelo viejo. Si una doc o un
+> agente te manda usarla de plantilla, esa doc está desactualizada.
+
+> ⚠️ **Son dos apps Angular distintas y NO son gemelas.** Esta skill describe `Frontend`
+> (Monkey Admin). `Frontend-Platform` (la plataforma del cliente) diverge en lo siguiente y
+> hay que comprobarlo antes de aplicar cualquier patrón de aquí:
+>
+> | | `Frontend` | `Frontend-Platform` |
+> |---|---|---|
+> | Features hoy | `auth`, `common`, `users` | `assets`, `auth` |
+> | Estructura de feature | `models/` + `services/` + `presentation/` | `domain/` + `presentation/` |
+> | `core/` y `shared/` | `core/{guards,interceptors,services}`, `shared/models` | `core/domain/*`, `shared/domain/*` |
+> | `ApiResponse<T>` | `@shared/models/api-response.model` | `@shared/domain/models/api-response.model` |
+> | i18n | ngx-translate + `public/i18n/{en,es}` | **no tiene i18n instalada** |
+> | Interceptores | `auth.interceptor`, `error-handler.interceptor` | `credentials.interceptor`, `tenant-credentials.interceptor`; **sin manejo global de errores** |
+> | Syncfusion | sí | no |
+>
+> Lo común a las dos: Angular 20 standalone sin `NgModule`, TypeScript estricto, Tailwind v4,
+> sin librería de estado, y los path aliases `@core/*`, `@features/*`, `@shared/*`, `@config/*`,
+> `@environments/*`.
+
 
 ## Pasos
 

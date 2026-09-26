@@ -267,7 +267,7 @@
     {
       "id": "add-feature-frontend",
       "path": "skills/frontend/add-feature.md",
-      "description": "Pasos para crear una feature Angular completa en src/app/features/<nombre>, siguiendo el patrón grc-framework/risk."
+      "description": "Pasos para crear una feature Angular completa en src/app/features/<nombre>, siguiendo el patrón de la feature users."
     },
     {
       "id": "call-backend-api",
