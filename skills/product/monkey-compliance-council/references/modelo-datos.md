@@ -15,7 +15,7 @@ actual del backend es el punto de partida que se está rehaciendo. Dos consecuen
 |---|---|
 | **este** | Qué tablas hay, cómo se relacionan y cómo se calcula el cumplimiento |
 | `modelo-datos-decisiones.md` | Por qué se decidió cada cosa, con su fuente |
-| `modelo-datos-pendientes.md` | Las preguntas que solo el comité puede responder (hoy, 5) |
+| `modelo-datos-pendientes.md` | Las preguntas que solo el comité puede responder (hoy, 4: P2 a P5) |
 | `flujo-end-to-end.md` | El recorrido de un cliente, módulo por módulo, en orden |
 | `modulos/onboarding.md` | El detalle campo por campo de los 3 componentes del onboarding |
 
@@ -789,8 +789,8 @@ cálculo de cumplimiento. Detalle campo por campo en `modulos/onboarding.md`.
 **Qué resuelve:** sin organización, servicio y scope declarados no hay nada que medir. Es el
 único flujo del producto que es secuencial y obligatorio.
 
-**Cumplimiento no es un 4º componente** (decisión D23, ⚠️ **pendiente de confirmación final
-del comité** — ver P1 en `modelo-datos-pendientes.md`): al elegir marco en el Componente 2 el
+**Cumplimiento no es un 4º componente** (decisión D23, confirmada por el comité el
+2026-09-26): al elegir marco en el Componente 2 el
 catálogo se clona solo, y personalizarlo es un módulo aparte que no bloquea nada (§7).
 
 ### 6.1 Componente 1 — Contexto Organizacional
@@ -1054,7 +1054,7 @@ heredó, sube evidencia, gestiona riesgos y remedia hallazgos.
 **Qué resuelve:** el catálogo clonado es genérico; el cumplimiento real exige decir *"este
 control, en mi empresa, se cumple con estas herramientas concretas"*.
 
-**No bloquea nada** (decisión D23, ⚠️ pendiente de confirmación del comité — P1). Un cliente
+**No bloquea nada** (decisión D23, confirmada por el comité el 2026-09-26). Un cliente
 que termina el onboarding ya tiene
 cumplimiento midiéndose con el catálogo por defecto; este módulo es donde lo afina, sin
 límite de tiempo. Lo usa `admin_empresa`.

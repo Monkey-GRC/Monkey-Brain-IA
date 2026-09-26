@@ -8,7 +8,7 @@ construir. Este archivo existe para responder *"¿por qué se decidió así?"* s
 discutirlo, y para que si alguna decisión resulta equivocada se pueda revisar sabiendo en
 qué se apoyaba.
 
-Lo que sigue abierto está en **`modelo-datos-pendientes.md`** (hoy, 5 preguntas).
+Lo que sigue abierto está en **`modelo-datos-pendientes.md`** (hoy, 4 preguntas: P2 a P5).
 
 > Este contenido estuvo hasta el 16 de septiembre de 2026 en una sección "§8" de
 > `modelo-datos.md`. Si un ticket de Jira o un comentario viejo apunta a "§8", se refiere
@@ -284,6 +284,11 @@ Postgres, no con un `WHERE tenant_id = ?` que cada desarrollador tiene que recor
 
 ## D23 (Cumplimiento) · No es un 4º componente del onboarding
 
+> ✅ **Confirmada por el comité el 2026-09-26.** Estuvo abierta como P1 en
+> `modelo-datos-pendientes.md` desde el 2026-09-20 a la espera de ese visto bueno. El comité
+> confirmó que el módulo de Cumplimiento queda fuera del onboarding, así que la decisión que
+> sigue es firme y `modelo-datos.md` la afirma sin reserva.
+
 **Pregunta:** el onboarding tiene 3 componentes (Contexto Organizacional, Contexto del
 Servicio, Control Técnico). ¿Se agrega un 4º componente "Cumplimiento" donde el cliente
 configura riesgos, causas y controles, y se exige antes de poder usar el resto del
@@ -311,7 +316,8 @@ nada. Razones:
 `modelo-datos.md` §3.5 ("Riesgo y Causa: sí, se instancian… según su entendimiento") y el
 alcance de 3 componentes ya documentado en `modulos/onboarding.md`. Se corrigió §3.5 para
 distinguir clonado automático (onboarding) de personalización (módulo Cumplimiento,
-aparte).
+aparte). **Confirmada por el comité el 2026-09-26** (vía Héctor), que era lo único que
+quedaba abierto: el onboarding se queda en 3 componentes.
 
 ---
 ## D24 (aprovisionamiento) · Monkey Admin y Monkey Platform son dos aplicaciones distintas; el registro del tenant define nombre y aislamiento

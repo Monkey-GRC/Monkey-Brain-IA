@@ -76,7 +76,7 @@ Cadena de custodia completa: origen, fecha, responsable, versión, integridad.
 Registro de riesgo y causa, scoring cualitativo, tratamiento con dueño. Módulo aparte,
 **no bloquea** el resto del producto — el cliente puede crear usuarios y conectar
 activos sin haber tocado este módulo.
-**Fuente:** decisión D23. **Pendiente de confirmación del comité** antes de construir
+**Fuente:** decisión D23, **confirmada por el comité el 2026-09-26**. Se puede construir
 (ver nota abajo).
 
 ### 9. Dashboard de 4 preguntas + modo guiado + vista auditor
@@ -101,11 +101,10 @@ registro de hallazgos.
 
 ## Nota sobre el épico 8
 
-El módulo de riesgos/Cumplimiento está redactado según la dirección que Héctor propuso
-el 2026-09-20 (separarlo del onboarding, sin gating) — **todavía en debate con el
-comité** al momento de este documento. Si el comité pide otra cosa, este épico se ajusta
-antes de abrir sus historias; los épicos 1-7 y 9-12 no dependen de esa respuesta y se
-pueden empezar a desglosar ya.
+El módulo de riesgos/Cumplimiento está separado del onboarding y sin gating, según la
+dirección que Héctor propuso el 2026-09-20. **El comité lo confirmó el 2026-09-26**
+(decisión D23), así que el épico ya no está en debate y sus historias se pueden abrir: el
+onboarding se queda en 3 componentes.
 
 ## Siguiente paso
 

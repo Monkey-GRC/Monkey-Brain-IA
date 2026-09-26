@@ -101,7 +101,7 @@ de `admin_empresa`", y si necesita su propia pantalla o vive dentro de la vista 
 servicio.
 
 **Entidades:** `client_controls`, `risks`, `causes` (edición).
-**Fuente:** decisión D23. Confirmación final del comité: pendiente.
+**Fuente:** decisión D23, confirmada por el comité el 2026-09-26.
 
 ## 8. Módulo de Usuarios *(no completo)*
 

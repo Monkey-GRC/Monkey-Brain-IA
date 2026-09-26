@@ -5,19 +5,14 @@ razonamiento, en **`modelo-datos-decisiones.md`**. Lo que queda abierto es lo de
 preguntas de producto que **solo el comité o Nelson pueden responder**. Antes de construir
 algo que dependa de una, consúltala — si sigue aquí, no la resuelvas por tu cuenta.
 
-## P1 · Cumplimiento fuera del onboarding — falta el visto bueno del comité
+**Los números son estables: una pregunta cerrada no se reutiliza ni renumera el resto**, para
+que las referencias desde `contracts/`, Jira o un comentario viejo sigan valiendo.
 
-**Estado:** propuesto y documentado como decisión D23, **pendiente de confirmación.**
+Cerradas hasta hoy:
 
-Se decidió que el módulo de Cumplimiento (configurar riesgos, causas y controles) **no es
-un 4º componente del onboarding** y no bloquea el resto del producto. El razonamiento
-completo está en D23. Héctor lo iba a debatir con el comité el 2026-09-20.
-
-**Qué depende de esto:** el épico 8 de `assets/PROPUESTA-JIRA-MVP-MONKEY.md`. Los épicos
-1-7 y 9-12 no dependen de la respuesta y se pueden desglosar ya.
-
-**Si el comité dice otra cosa:** hay que ajustar D23, `modelo-datos.md` §3.5 y §7, y la
-nota de `modulos/onboarding.md`.
+| | Pregunta | Cerrada |
+|---|---|---|
+| **P1** | Cumplimiento fuera del onboarding | 2026-09-26 — el comité confirmó D23: el onboarding se queda en 3 componentes |
 
 ## P2 · El flujo de la clave de acceso — 5 detalles sin definir
 

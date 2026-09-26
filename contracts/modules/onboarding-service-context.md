@@ -201,4 +201,3 @@ Claves i18n: `service.created`, `service.list`, `service.updated`, `service.dele
 | **Regulación a nivel de servicio** | El modelo solo define `organization_regulations` (§6.1). Falta decidir si se añade `service_regulations` o si la regulación se declara solo a nivel de empresa. Mientras tanto, `regulation_codes` se acepta en el request pero **no tiene dónde persistir** |
 | **Descripción del Sistema: enlace o archivo** | El Excel dice enlace, `onboarding.md` decía adjunto. El contrato soporta ambas con `kind`; hay que cerrar cuál se construye |
 | **`business_model` y `services.type`** | El Excel gana sobre el modelo (11 tipos de servicio, no 5). Hay que corregir el enum en `modelo-datos.md` §6.2 |
-| **P1** (`modelo-datos-pendientes.md`) | Si el comité revierte D23, Cumplimiento pasa a ser un 4º componente y este contrato cambia |
