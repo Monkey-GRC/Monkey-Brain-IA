@@ -8,7 +8,7 @@ construir. Este archivo existe para responder *"¿por qué se decidió así?"* s
 discutirlo, y para que si alguna decisión resulta equivocada se pueda revisar sabiendo en
 qué se apoyaba.
 
-Lo que sigue abierto está en **`modelo-datos-pendientes.md`** (hoy, 3 preguntas).
+Lo que sigue abierto está en **`modelo-datos-pendientes.md`** (hoy, 5 preguntas).
 
 > Este contenido estuvo hasta el 16 de septiembre de 2026 en una sección "§8" de
 > `modelo-datos.md`. Si un ticket de Jira o un comentario viejo apunta a "§8", se refiere
@@ -18,7 +18,13 @@ Lo que sigue abierto está en **`modelo-datos-pendientes.md`** (hoy, 3 preguntas
 
 ## Las decisiones
 
-El comité entregó suficiente material para cerrar **19 de las 22 preguntas abiertas**.
+Aquí viven las decisiones **ya cerradas** del modelo relacional, con su fuente y su
+razonamiento. Las que siguen abiertas **no están aquí**: viven en
+`modelo-datos-pendientes.md` y se numeran P1, P2, P3.
+
+La numeración A/B/C/D es histórica y tiene huecos (no existen B3, B5 ni D15-D22): son
+preguntas que se plantearon y se descartaron o se fusionaron con otras antes de cerrarse.
+Un hueco no es una decisión pendiente.
 Cada una se resolvió con la opción que (a) tiene respaldo en una fuente del comité,
 (b) no obliga a rehacer lo ya construido, y (c) sigue el flujo real de la aplicación.
 Las tres que quedan abiertas están al final: son las que nadie puede decidir por el
@@ -36,7 +42,7 @@ el documento mapea esa tabla a **CC6.1** junto con `users`. Entonces:
 
 | Qué                                                                           | Dónde vive                                          | Para qué                                               |
 | ------------------------------------------------------------------------------ | ---------------------------------------------------- | ------------------------------------------------------- |
-| **Cargo** (COO, TI, Cumplimiento, Proceso, CISO, propietario del activo) | Catálogo base, en`evidence_requirements.responsable` | Que el catálogo sirva para cualquier cliente           |
+| **Cargo** (COO, TI, Cumplimiento, Proceso, CISO, propietario del activo) | Catálogo base, en `evidence_requirements.responsible_id` | Que el catálogo sirva para cualquier cliente           |
 | **Persona** (usuario `funcional`)                                      | Escenario del cliente, en`user_control_assignments`      | Notificar, filtrar "mis controles", seguir el pendiente |
 
 La rotación de personal no toca el catálogo. Y el permiso de asignar es de
@@ -72,7 +78,8 @@ número entregado a un auditor puede cambiar solo. Ya ocurrió una vez (la recla
 de 223 checks).
 
 Implica una entidad `catalog_versions` y un campo de versión en `evaluations` (§7.4).
-**Lo que queda abierto es qué se propaga solo y qué requiere aceptación** — ver §8.1.
+**Qué se propaga solo y qué requiere aceptación** se cerró después: ver la ampliación de A4
+más abajo ("cerrado el 20 de septiembre").
 
 ### Bloque B y C — el cálculo
 
@@ -87,8 +94,8 @@ puntos de enfoque están cubiertos por controles cumplidos; por debajo, está fa
 se muestra el detalle de qué falta. Es lo coherente con "un control está cumplido solo al
 100%", ya decidido. El porcentaje sigue existiendo como **diagnóstico**, no como estado.
 
-> Si el comité responde a §8.1 que su 40/60 era cumplimiento parcial del requisito,
-> esta decisión se revisa. Mientras tanto, binario.
+> Si el comité dijera que su 40/60 era cumplimiento parcial del requisito, esta decisión se
+> revisa. Mientras tanto, binario.
 
 **B6 · La regla del schedule la editan `admin_monkey` y `admin_empresa`**, dentro de
 límites que Monkey define (una frecuencia mínima por tipo de conexión). Es coherente con
@@ -115,7 +122,7 @@ peligrosa cualquier propagación. Es una tabla más y protege el criterio expert
 **El requisito y sus puntos de enfoque no se clonan**: el escenario los referencia desde
 el plano central, porque son texto de un estándar y no se particularizan.
 
-**D4 · Hay un cuarto tipo: `TECHNICAL_MANUAL`.** Dos fuentes distintas lo nombran por la
+**D4 · Hay un cuarto tipo: `technical_manual`.** Dos fuentes distintas lo nombran por la
 misma causa — *"manual dependiente de TI"* y *"pruebas técnicas-manuales (SQL/consola)"*,
 documentado justo donde la sonda no llega. Es aditivo al enum y cambia dos cosas reales:
 a quién se asigna (perfil técnico) y si es "automatizable en el futuro" o "manual por
@@ -129,7 +136,7 @@ un solo control no se justifica.
 
 Lo que sí cambia: `AssetType` gana **Aplicación** y **Documentación** (que sí son
 dimensiones y faltaban), y `ChecklistOs` se reemplaza por un **catálogo de plataforma +
-política** (77 políticas reales, ~20 plataformas).
+política** (77 políticas reales, 18 plataformas).
 
 **D6 · El mapeo de checks es por política.** La clave es plataforma + política +
 `check_id`. Si un activo corre una política sin mapeo, ese control queda **sin medir**
@@ -151,9 +158,9 @@ construye después: primero se guardan los campos.
 Ésta era una contradicción aparente: la matriz dice que `admin_monkey` **no** puede crear
 controles, y el modelo de dos planos dice que el catálogo maestro es el activo de Monkey.
 Se resuelve leyendo la matriz en su contexto — describe permisos **sobre los datos de una
-empresa cliente**, donde efectivamente Monkey no debe inventarle controles. En el **plano
-central**, Monkey administra su catálogo, que es lo que el admin interno (`Frontend`, feature
-`grc-framework`) ya hace hoy. No se toca nada de lo construido.
+empresa cliente**, donde efectivamente Monkey no debe inventarle controles. En el catálogo maestro, Monkey
+administra sus propios controles, que es lo que el admin interno (`Frontend`) ya hacía con la
+feature `grc-framework` antes de que se retirara con el modelo viejo (`acbd907`).
 
 **D10 · `regulations` es una entidad propia y no se puntúa.** Nadie contrata la Ley 1581:
 le aplica. Sirve como contexto para el análisis de riesgo inherente y para el reporte,
@@ -162,11 +169,11 @@ certificar algo que nadie certifica, y `philosophy.md` lo prohíbe.
 
 **D11 · `csocs` y `cuecs` son entidades propias, marcadas como no medibles por Monkey.**
 Son secciones 7 y 8 obligatorias de la Descripción del Sistema, y el propio catálogo ya
-reconoce el patrón: `CPL-1` es el único de los 119 controles sin asignar, precisamente
+reconoce el patrón: `CPL-1` es el único de los 119 controles del catálogo sin asignar (por eso los asignados son 118), precisamente
 porque *"es la Descripción del Sistema, Sección III del informe"*. Modelarlas permite
 generar esas secciones desde el sistema en vez de redactarlas a mano en cada auditoría.
 
-**D12 · Se guarda el mapeo completo, en una tabla `CheckMapeo (check, marco, versión, código)`.** Las 20 referencias con sus versiones (`PCI DSS v4.0` y `v3.2.1` conviven), y
+**D12 · Se guarda el mapeo completo, en una tabla `check_mappings` (`check_id`, `framework_code`, `framework_version`, `requirement_code`).** Las 20 referencias con sus versiones (`PCI DSS v4.0` y `v3.2.1` conviven), y
 **MITRE también** — táctica, técnica y mitigación son lo que permite explicar *por qué*
 importa un hallazgo, que es la traducción que promete el producto. Descartarlo obligaría
 a re-mapear 11.352 checks al activar el segundo marco: sería tirar el activo más valioso
@@ -197,13 +204,15 @@ contando controles cumplidos. Esto **corrige** lo que este documento decía: con
 números del ejemplo, la versión vieja habría reportado 40% donde el comité reporta 92,6%.
 
 **Pendiente no entra al denominador** (R-06, R-08): `cumplen / (cumplen + fallan)`. Es la
-fórmula exacta de la decisión B4.
+fórmula exacta de las reglas R-06 y R-08 de `MONKEY_Ejemplo_Formula_Cumplimiento.xlsx`.
+"Evaluables" en R-08 significa exactamente `cumplen + fallan`: excluye `not_applicable` y
+`pending`.
 
 **Mitigación y riesgo residual son indicadores separados del cumplimiento** (R-11, R-12),
 y no se derivan del porcentaje. Entran al modelo como tales (§7.2).
 
 **El responsable existe por nivel de objeto** — activo, control, cumplimiento, riesgo — y
-**el plan de acción es del control**. Sale de la hoja de trazabilidad (§7.6) y amplía la
+**el plan de acción es del control**. Sale de la hoja de trazabilidad (`modelo-datos.md` §9, "La trazabilidad de una falla") y amplía la
 decisión A1, que solo cubría el responsable de una evidencia.
 
 ---
@@ -238,7 +247,13 @@ sepa desde qué periodo aplica cada versión.
 **D14 (multi-tenancy) · Es híbrido: el cliente elige, no Monkey.**
 
 El comité no escogió entre las dos opciones que planteaba el ticket — dijo que **conviven**,
-y quién decide es el cliente, no una regla técnica interna:
+y lo que lo motiva es la política del cliente, no una regla técnica interna:
+
+> ⚠️ **Superada en parte por D24 y D25.** Lo que sigue vigente es que las dos estrategias
+> conviven y que la del cliente es la razón de fondo. Lo que cambió: el atributo vive en
+> `companies`, no en `organizations`, y **quien lo marca es `admin_monkey` al registrar la
+> empresa en Monkey Admin**, no el cliente durante el onboarding.
+
 
 > *"Hay clientes que por políticas de su empresa siempre quieren que sus datos estén
 > separados y aislados en total (una base de datos solo para ellos), y los que no lo pidan
@@ -284,7 +299,8 @@ nada. Razones:
 - **Lo que sí requiere un módulo propio es la personalización** — reescribir la
   interpretación de un control, ajustar dimensiones, asignar responsables, excluir un
   check — y eso ya es trabajo de `admin_empresa` en cualquier momento, no un requisito de
-  arranque (`modelo-datos.md` §5.1, matriz de permisos).
+  arranque (`modelo-datos.md` §5.1, los 4 roles; la matriz de 34 permisos está en
+  `assets/RESUMEN-MODELO-USUARIOS-MONKEY.md`).
 - **Los 3 componentes que especificó el comité en el TSC INTEGRAL no incluyen
   Cumplimiento.** El documento más detallado y más reciente ya refleja esta separación.
 - Gatear funciones básicas (crear usuarios, conectar activos) detrás de una
@@ -318,8 +334,8 @@ por la misma app que usa el cliente, o por algo distinto?
 **Qué cambia en el modelo:** se corrige `modelo-datos.md` §4.3 — `isolation_strategy` es
 atributo de `companies`, no de `organizations` (la empresa como tenant existe antes de que
 el cliente declare nada de negocio). Se agrega la tabla `access_keys` (§4.1). El campo
-`nombre` de `organizations` en el onboarding no es editable: es de solo lectura, reflejo
-del `nombre` ya capturado en `companies`.
+`name` de `organizations` en el onboarding no es editable: es de solo lectura, reflejo
+del `name` ya capturado en `companies`.
 
 **Por qué importa ahora:** condiciona el día 1-2 del sprint de Onboarding (fundación de
 Auth) — sin esto no hay forma de que el primer `admin_empresa` entre al sistema.

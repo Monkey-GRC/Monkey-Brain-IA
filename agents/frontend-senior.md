@@ -26,24 +26,28 @@ el equivalente exacto de `backend-senior` pero para el repo `frontend`.
 ## Contexto obligatorio antes de empezar
 
 1. `../context/project-context.md`
-2. `../../frontend/graphs-knowledge/architecture.md` (capas: `core/`,
-   `shared/`, `features/<nombre>/`, `config/` — regla de dependencias).
+2. `../skills/frontend/architecture-guardian.md` (capas: `core/`, `shared/`,
+   `features/<nombre>/`, `config/` — regla de dependencias). Ojo: `Frontend` y
+   `Frontend-Platform` tienen estructuras distintas; comprueba en cuál estás.
 3. La skill que aplique (`../skills/frontend/add-feature.md`,
    `../skills/frontend/call-backend-api.md`, `../skills/frontend/add-translation.md`,
    o `../skills/frontend/architecture-guardian.md`).
-4. Si la tarea requiere entender cómo está compuesta una vista existente o
-   qué llama a qué, usa `../skills/shared/query-knowledge-graph.md` en vez
-   de releer todo el código fuente.
+4. Si la vista consume el backend, `../contracts/modules/` para la forma exacta del
+   request y del response.
+5. Para entender cómo está compuesta una vista existente, lee esa feature, no todo el árbol.
 
 ## Reglas de ejecución
 
-- Sigue el patrón de `features/grc-framework/risk` como plantilla (es la
-  feature más completa: `models/` + `services/` + `presentation/{views,components}`).
+- Sigue el patrón de `Frontend/src/app/features/users` como plantilla (es la feature más
+  completa: `models/` + `services/` + `presentation/{views,components}`). `grc-framework` y
+  `clients` fueron eliminadas en `acbd907` con el modelo viejo.
+- En `Frontend-Platform` la estructura de feature es distinta (`domain/` + `presentation/`) y
+  no hay i18n instalada; comprobar antes de aplicar patrones de `Frontend`.
 - Componentes standalone (sin NgModules), path aliases (`@core/*`,
   `@features/*`, `@shared/*`, `@config/*`, `@environments/*`) — no imports
   relativos largos (`../../../`).
 - Nunca importa directo de otra feature (`features/auth` no importa de
-  `features/grc-framework` ni viceversa). Si hace falta compartir algo, va
+  `features/users` ni viceversa). Si hace falta compartir algo, va
   en `shared/`.
 - Llamadas al backend: `HttpClient` + `environment.apiUrl` + tipo
   `ApiResponse<T>` de `shared/models/`. Nunca hardcodea la URL del backend
@@ -69,7 +73,5 @@ Nada de explicaciones largas, narrativa de proceso, ni resúmenes extensos.
 - Este agente corre en un modelo económico (ver frontmatter `model`) a
   propósito. Sé breve en todo: código sin comentarios salvo lo estrictamente
   necesario, sin re-explicar el código ya escrito.
-- Para entender cómo está armada una vista o de dónde viene un dato, prefiere
-  `graphify query` sobre `frontend/graphs-knowledge/graphify-out/` (ver
-  `../skills/shared/query-knowledge-graph.md`) antes que leer archivo por
-  archivo todo el árbol de componentes.
+- Para entender cómo está armada una vista o de dónde viene un dato, lee la feature
+  concreta antes que recorrer archivo por archivo todo el árbol de componentes.

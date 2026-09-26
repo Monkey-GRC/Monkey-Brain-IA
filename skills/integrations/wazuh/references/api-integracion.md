@@ -80,11 +80,14 @@ Fuente: `conexion_api_wazuh_monkey.txt` (en `Monkey/`, fuera de este repo —
 **contiene credenciales en texto plano, no copiarlo aquí**) y el código de
 `monkey-cis-sync`. Ver `../../../../assets/README.md`.
 
-- **Clave compuesta obligatoria `policy_id + check_id`.** Nunca solo `check_id`: el
-  mismo ID significa cosas distintas entre políticas. Y los `policy_id` no son
-  homogéneos entre agentes (hoy uno corre `cis_ubuntu14-04`).
-- **Catálogo y resultado, separados.** `cis_checks` (PK `policy_id + check_id`) vs
-  `cis_check_results` (PK `agent_id + policy_id + check_id`). Antes el resultado
+- **Clave compuesta obligatoria de tres partes: `platform` + `policy_id` + `check_id`**
+  (decisión D6, ver `modelo-datos.md` §3.3). Nunca solo `check_id`: el mismo ID significa
+  cosas distintas entre políticas. Y los `policy_id` no son homogéneos entre agentes
+  (hoy uno corre `cis_ubuntu22-04`).
+- **Catálogo y resultado, separados.** En la base externa `prueba_wazuh` las PK son de dos
+  partes — `cis_checks` (PK `policy_id + check_id`) vs
+  `cis_check_results` (PK `agent_id + policy_id + check_id`) —; el modelo de Monkey añade
+  `platform` como tercera parte (`checks` y `check_results`, §3.3 y §7.4). Antes el resultado
   vivía en el catálogo y dos agentes con la misma política se pisaban.
   **Pendiente:** esa tabla hace UPSERT sin timestamp, así que no guarda histórico.
 - **`result` vacío = `not applicable`.** No es un fallo ni un error. Y `invalid` es

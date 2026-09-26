@@ -15,23 +15,26 @@ opciones — este archivo resume el mapeo a entidades, no repite el detalle camp
 Va a `organizations` (`modelo-datos.md` §6.1). Diez preguntas, todas obligatorias salvo
 "años en operación":
 
+Los nombres de columna son los reales del modelo, en inglés (`modelo-datos.md` §6.1). La
+forma exacta del request y del response está en `contracts/modules/onboarding-organizational-context.md`.
+
 | Campo | Tipo | Atributo en `organizations` |
 |---|---|---|
-| Nombre / razón social | Texto — **precargado y bloqueado**, ya se fijó al registrar el tenant en Monkey Admin | `nombre` |
-| Descripción breve del negocio | Texto | `descripción` |
-| Tamaño (número de empleados) | Selección | `tamaño` |
-| Sector / industria | Selección | `industria` |
-| Modelo de negocio | Selección (40+ opciones) | `modelo_negocio` |
-| Años en operación | Selección — opcional | `años` |
-| País(es) de constitución | Multi-select | `países_constitución` |
-| País(es) donde tiene clientes | Multi-select | `países_clientes` |
-| Madurez de compliance | Selección | `madurez_compliance` |
-| Regulaciones aplicables a la empresa | Multi-select | `N:M` → `regulations` |
+| Nombre / razón social | Texto — **precargado y bloqueado**, ya se fijó al registrar el tenant en Monkey Admin | `name` |
+| Descripción breve del negocio | Texto | `description` |
+| Tamaño (número de empleados) | Selección | `size` |
+| Sector / industria | Selección | `industry` |
+| Modelo de negocio | Selección | `business_model` |
+| Años en operación | Selección — opcional | `years_in_operation` |
+| País(es) de constitución | Multi-select | `incorporation_countries` (json) |
+| País(es) donde tiene clientes | Multi-select | `client_countries` (json) |
+| Madurez de compliance | Selección | `compliance_maturity` |
+| Regulaciones aplicables a la empresa | Multi-select | `N:M` → `regulations`, vía `organization_regulations` |
 
 > **Una pregunta se vetó a propósito: "framework que desea gestionar" a nivel de
 > empresa.** El formulario original de este componente la incluía; el comité la retiró
 > porque **los marcos se contratan por servicio, no por organización** — es la misma
-> regla ya cerrada en el modelo (`service_frameworks`, `trust_criteria`), y este veto es la
+> regla ya cerrada en el modelo (`service_frameworks`, `service_trust_criteria`), y este veto es la
 > confirmación funcional de esa regla, no una decisión nueva. La selección de framework
 > vive en el Componente 2.
 
@@ -40,36 +43,49 @@ Va a `organizations` (`modelo-datos.md` §6.1). Diez preguntas, todas obligatori
 Va a `services` y a las entidades que cuelgan de él. Dieciséis preguntas, una columna por
 servicio (un cliente puede declarar varios):
 
+Nombres reales del modelo, en inglés (`modelo-datos.md` §6.2). La forma exacta del request y
+del response está en `contracts/modules/onboarding-service-context.md`; las listas de opciones
+literales, en `contracts/enums.md`.
+
 | Campo | Tipo | Entidad / atributo |
 |---|---|---|
-| Nombre del servicio | Texto | `services.nombre` |
-| Descripción breve | Texto | `Servicio.descripción` |
-| Declaración de alcance del servicio | Texto | `Servicio.declaración_de_alcance` |
-| Tipo de servicio | Selección | `services.tipo` |
-| Industrias / sectores que atiende | Multi-select | `services.industrias_que_atiende` |
-| Cantidad de clientes activos | Selección — opcional | `services.clientes_activos` |
-| Países/regiones donde están los clientes | Multi-select | `Servicio.países` |
-| Tipos de datos que maneja de sus clientes | Multi-select (PII, pago, PHI…) | `services.tipos_de_datos` |
-| Criterios de confianza SOC aplicables | Multi-select — Seguridad siempre incluida | `N:1` → `trust_criteria` |
-| Organizaciones de subservicios (nube/infra) | Multi-select (AWS, Azure, GCP, on-premise, híbrida) | `N:1` → `subservice_organizations` |
-| Detalle de subservicios (proveedor, servicio, responsabilidad) | Texto — opcional | `subservice_organizations.responsabilidad` |
-| Framework que desea gestionar | Multi-select (solo lo contratado) | `N:1` → `service_frameworks` |
-| Regulaciones que debe cumplir el servicio | Multi-select | `N:M` → `regulations` |
-| ¿Ya tiene alguna certificación? | Selección — opcional | Contexto, no persiste en una entidad propia |
-| Disponibilidad esperada | Selección (24/7, horario de negocio, por demanda) | `services.disponibilidad_esperada` |
-| Descripción del Sistema (archivo) | Adjunto | `1:1` → `system_descriptions` |
+| Nombre del servicio | Texto | `services.name` |
+| Descripción breve | Texto | `services.description` |
+| Declaración de alcance del servicio | Texto | `services.scope_statement` |
+| Tipo de servicio | Selección | `services.type` |
+| Industrias / sectores que atiende | Multi-select | `services.industries_served` (json) |
+| Cantidad de clientes activos | Selección — opcional | `services.active_client_count` |
+| Países/regiones donde están los clientes | Multi-select | `services.countries` (json) |
+| Tipos de datos que maneja de sus clientes | Multi-select | `services.data_types` (json) |
+| Criterios de confianza SOC aplicables | Multi-select — Seguridad siempre incluida | `N:M` → `trust_criteria`, vía `service_trust_criteria` |
+| Organizaciones de subservicios (nube/infra) | Multi-select | `1:N` → `subservice_organizations` |
+| Detalle de subservicios (proveedor, servicio, responsabilidad) | Texto — opcional | `subservice_organizations.responsibility` |
+| Framework que desea gestionar | Multi-select (solo lo contratado) | `N:M` → `frameworks`, vía `service_frameworks` |
+| Regulaciones que debe cumplir el servicio | Multi-select | ⚠️ **sin tabla puente en el modelo** — ver nota |
+| ¿Ya tiene alguna certificación? | Selección — opcional | `services.previous_certification` |
+| Disponibilidad esperada | Selección | `services.expected_availability` |
+| Descripción del Sistema | Enlace o archivo | `1:1` → `system_descriptions.file_path` |
+
+> ⚠️ **Dos huecos de este componente, pendientes de cerrar antes de construirlo:**
+> 1. La regulación **a nivel de servicio** no tiene tabla puente: el modelo solo define
+>    `organization_regulations` (§6.1). Falta decidir si se añade `service_regulations` o si
+>    la regulación se declara solo a nivel de empresa.
+> 2. La Descripción del Sistema: el XLSX del comité pide "enlace o ruta" y
+>    `system_descriptions.file_path` es un `string`, pero este documento decía "adjunto".
+>    Define si el endpoint es `multipart/form-data` o JSON con URL.
 
 **La Descripción del Sistema es un entregable, no un campo de texto.** El cliente sube un
 documento con las 10 secciones de los *Description Criteria* de AICPA (tipos de servicio,
 componentes del sistema, límites del alcance, compromisos, criterios de confianza
 aplicables, controles relevantes, subservicios y CSOCs, CUECs, cambios significativos,
 incidentes del periodo). Es la misma entidad `system_descriptions` de `modelo-datos.md`
-§5.1, y sus secciones 7 y 8 son de donde salen `csocs` y `cuecs`.
+§6.2, y sus secciones 7 y 8 son de donde salen `csocs` y `cuecs`.
 
 ## Componente 3 — Control Técnico
 
 Aquí el cliente conecta sus activos. Es la capa técnica completa de `modelo-datos.md`
-§5.5 (`automated_capabilities`, `asset_provisionings`, el catálogo de conexiones AC-01…AC-06) y
+§6.3 y §8 (`automated_capabilities`, `asset_provisionings`, el catálogo de conexiones
+AC-01…AC-06) y
 la regla de confidencialidad de `wazuh.md`: **el cliente solo interactúa con Monkey y
 nunca sabe que el motor de monitoreo es Wazuh.** No se repite el detalle aquí — ver esos
 dos archivos para el catálogo de conexiones, los escenarios de despliegue y la matriz de
@@ -87,9 +103,12 @@ Lo que aporta este componente al onboarding, específicamente:
 
 ## Cumplimiento no es un 4º componente
 
+> ⚠️ Decisión D23, **pendiente de confirmación final del comité** (P1 en
+> `modelo-datos-pendientes.md`). Si el comité la revierte, aparece un 4º componente.
+
 Riesgos, causas y controles **no se configuran a mano durante el onboarding**. Al elegir
 framework en el Componente 2, el catálogo correspondiente se clona automáticamente al
-escenario del cliente (`modelo-datos.md` §4) — el cumplimiento ya empieza a medirse con
+escenario del cliente (`modelo-datos.md` §3.5) — el cumplimiento ya empieza a medirse con
 ese set por defecto. Editar esa interpretación, excluir un check o reasignar
 responsables es un módulo aparte ("Cumplimiento"), disponible sin límite de tiempo y sin
 bloquear el resto del producto (crear usuarios, conectar activos, etc.). Ver decisión

@@ -1,11 +1,15 @@
 ---
 id: project-context
-name: Monkey - Contexto de Proyecto (backend + frontend)
-description: Resumen de dominio, stack técnico, arquitectura y convenciones de los repos backend y frontend de Monkey.
+name: Monkey - Contexto de Proyecto (Backend, Frontend y Frontend-Platform)
+description: Resumen de dominio, stack tecnico, arquitectura y convenciones de los repos de codigo de Monkey. Describe el estado ACTUAL del codigo, no el modelo objetivo.
 type: context
 ---
 
 # Monkey Backend
+
+> ⚠️ **Este archivo describe el código tal como está hoy, no el diseño objetivo.** El plan
+> vigente es `skills/product/monkey-compliance-council/references/modelo-datos.md`: el schema
+> actual se está rehaciendo y varias entidades de aquí quedan derogadas por él (ver `CLAUDE.md`).
 
 > **Convención de rutas**: este folder (`Monkey-Brain-IA`) vive como repo
 > independiente, separado del código de producto. Todas las rutas de código
@@ -14,15 +18,10 @@ type: context
 > del repo correspondiente**, no a esta carpeta. Los repos del producto son
 > `Monkey-GRC/Backend`, `Monkey-GRC/Frontend` (admin interno),
 > `Monkey-GRC/Frontend-Platform` (plataforma del cliente final) y
-> `monkey-cis-sync` (sincroniza el catálogo de checks desde Wazuh). Al usar
+> `monkey-cis-sync` (scripts Python que sincronizan el catálogo de checks desde Wazuh; hoy
+> no está versionado como repo git). Al usar
 > este contexto, colócalos como carpetas hermanas de `Monkey-Brain-IA` dentro
 > de un mismo directorio, o ajusta las rutas según dónde los hayas descargado.
->
-> **Grafos de conocimiento**: no viven aquí. Cada repo tiene su propia
-> carpeta `graphs-knowledge/` (`../Backend/graphs-knowledge/` y
-> `../Frontend/graphs-knowledge/`) — ver
-> `skills/shared/query-knowledge-graph.md` para cómo consultarlos sin gastar
-> tokens de más.
 
 ## Dominio
 
@@ -37,18 +36,26 @@ dimensiones, tests, evidencias, exclusiones y cálculo del cumplimiento) está
 en `skills/product/monkey-compliance-council/references/modelo-datos.md`.
 Leerlo antes de tocar el schema.
 
-**Multi-tenant con base de datos por cliente**: dos schemas Prisma separados,
-`prisma/central/schema/` (catálogo maestro de Monkey, registro de clientes) y
-`prisma/tenant/schema/` (el escenario particularizado de cada cliente).
+**Multi-tenant.** Hoy el código implementa **una base de datos física por cliente**, con dos
+proyectos Prisma separados: `prisma/central/schema/` (catálogo maestro, registro de clientes) y
+`prisma/tenant/schema/` (el escenario de cada cliente).
 
-Entidades principales:
+> ⚠️ **La decisión D25 deroga ese diseño para el MVP**: una sola base con el catálogo y los
+> datos de todos los tenants, aislados por Row-Level Security sobre `tenant_id`, y la base
+> dedicada como excepción que elige `admin_monkey` al crear la empresa. Lo de arriba es el
+> punto de partida que se está rehaciendo, no la meta. Ver `modelo-datos-decisiones.md` D25 y
+> `modelo-datos.md` §4.3.
+
+Entidades que existen hoy en el schema (⚠️ varias las deroga `modelo-datos.md`):
 - Central: `Client`, `TenantIdentifierDirectory`, `CisCheckTranslation`
-- Catálogo (en ambos): `Template` (marco), `Risk` (con `RiskLevel`), `Reason`,
-  `Control`, `ControlDimensionRequirement` (las 5 dimensiones), `ControlCheck`
-  (evidencia automática vía Wazuh), `ManualCheckItem` + `ManualCheckEvidence`
-  (evidencia manual), `Asset`, `User` (con `Role`)
-- Solo tenant: `CompanyProfile`, y en `Template` los campos de trazabilidad
-  con el catálogo base (`source_template_id`, `adopted_at`)
+- En ambos: `Risk` (con `RiskLevel`), `Reason`, `RiskReason`, `ReasonControl`, `Control`,
+  `ControlDimensionRequirement` (las 5 dimensiones), `ControlCheck`, `ManualCheckItem` +
+  `ManualCheckEvidence`, `Asset`, `User` (con `Role`)
+- Solo tenant: `CompanyProfile`
+
+`template.prisma` y `model Template` **ya no existen**: se eliminaron en `f7ed77f` con el
+modelo viejo. El encadenamiento `Template → Risk → Reason → Control` desaparece del modelo
+nuevo (`modelo-datos.md` §3.2): el control es atómico y se vincula a puntos de enfoque.
 
 ## Stack técnico
 
@@ -82,18 +89,24 @@ Infrastructure → Domain
 ### Estado actual de features
 
 Features en `src/features/`: `asset`, `auth`, `checklist`, `client`, `control`,
-`dashboard`, `manual-check`, `onboarding`, `reason`, `risk`, `template`,
-`translation`, `user`.
+`manual-check`, `reason`, `risk`, `translation`, `user`.
+
+`dashboard`, `onboarding` y `template` **fueron eliminadas** en `f7ed77f` junto con el modelo
+viejo, con su `compliance.calculator.ts`. El onboarding se reconstruye desde cero (épicos
+MD-57 a MD-61).
 
 - `risk`: 4 capas completas — **feature de referencia**, úsala como plantilla.
 - `auth`: 3 capas (application, infrastructure, presentation) — sin domain propio.
-- `reason`: versión simplificada (application + presentation), deuda técnica pendiente.
+- `reason`: tiene las 4 capas, pero conserva un `application/reason.service.ts` heredado y su
+  carpeta es `application/use-case/` (singular) en vez de `use-cases/`. Deuda menor.
 - `checklist`: expone el catálogo de checks CIS; lee de la base que alimenta
   `monkey-cis-sync`, no de la API de Wazuh directamente.
-- `dashboard`: calcula el cumplimiento (por control, por dimensión, por servidor).
-  Toda la matemática vive en `application/compliance.calculator.ts`.
-- `client` + `onboarding`: aprovisionamiento de tenants (crea la base del cliente,
-  cifra sus credenciales y clona el catálogo maestro hacia su escenario).
+- `client`: registro de tenants. El aprovisionamiento en sí **no es una feature**: vive en
+  `src/infrastructure/tenancy/` (`tenant-provisioning.service.ts`,
+  `tenant-connection-manager.service.ts`, `tenant-prisma-client.factory.ts`), y usa
+  `POSTGRES_ADMIN_URL` para `CREATE ROLE`/`CREATE DATABASE`.
+- Evidencias: `src/infrastructure/storage/` (S3/MinIO, `@aws-sdk/client-s3`), que consume
+  `manual-check`.
 
 ## Convenciones clave
 
@@ -107,8 +120,15 @@ Features en `src/features/`: `asset`, `auth`, `checklist`, `client`, `control`,
   por dominio) y su propio config en la raíz (estilo Prisma 7):
   `prisma/central/schema/*.prisma` + `prisma.config.central.ts` (catálogo maestro
   y registro de clientes) y `prisma/tenant/schema/*.prisma` +
-  `prisma.config.tenant.ts` (base de cada cliente). Un cambio que aplique a ambos
-  planos hay que hacerlo en los dos y migrar por separado.
+  `prisma.config.tenant.ts` (base de cada cliente). Un cambio que aplique a los dos hay que
+  hacerlo en ambos y migrar por separado, con `npm run prisma:migrate:central` /
+  `prisma:migrate:tenant` — `npx prisma migrate dev` a secas no resuelve ningún schema.
+- Acceso a datos: `CentralPrismaService` (`src/infrastructure/database/central-prisma.service.ts`)
+  para la base central; `TenantConnectionManagerService` para la de cada cliente. **No existe
+  una clase `PrismaService`.** Excepción: `checklist` usa `pg` directo contra `prueba_wazuh`.
+- Guards y decoradores adicionales en `src/common/`: `roles.guard.ts`,
+  `client-credentials.guard.ts`, `roles.decorator.ts`, `user-context.interceptor.ts`.
+- **No hay tests**: no existe ni un `*.spec.ts` en `src/`, ni `test/jest-e2e.json`.
 - Inversión de dependencias vía tokens abstractos: cada `*.module.ts` registra
   `provide: XRepository, useClass: XPrismaRepository`.
 
@@ -116,7 +136,7 @@ Features en `src/features/`: `asset`, `auth`, `checklist`, `client`, `control`,
 
 - No importar Prisma ni decoradores de Nest dentro de `domain/`.
 - No crear un schema Prisma monolítico; usar el archivo del dominio correspondiente
-  en `prisma/central/schema/` o `prisma/tenant/schema/`, según el plano que aplique.
+  en `prisma/central/schema/` o `prisma/tenant/schema/`, según a cuál aplique.
 - No saltarse capas (p. ej. controller llamando directo al repositorio Prisma).
 
 ---
@@ -126,20 +146,33 @@ Features en `src/features/`: `asset`, `auth`, `checklist`, `client`, `control`,
 ## Las dos plataformas
 
 Son **dos aplicaciones Angular distintas**, con públicos y propósitos separados.
-Ambas consumen el mismo backend y comparten stack y convenciones, pero nunca se
-mezclan: una función del cliente final no va en el admin, ni al revés.
+Ambas consumen el mismo backend y comparten la base del stack, pero **no son gemelas**: su
+estructura interna diverge (ver la tabla). Una función del cliente final no va en el admin, ni
+al revés.
 
 | | `Frontend` (admin) | `Frontend-Platform` (plataforma) |
 |---|---|---|
 | Para quién | Equipo interno de Monkey | El cliente final |
 | Para qué | Administración de la plataforma: creación y gestión de tenants, usuarios, y el catálogo maestro GRC (marcos, riesgos, causas, controles) | Que el cliente descubra y declare sus servicios y activos, y vea su estado de cumplimiento |
-| Features hoy | `auth`, `clients`, `users`, `common`, `grc-framework` (`risks`, `reasons`, `controls`, `templates`, `template-builder`) | `auth`, `onboarding` (`account-setup`, `characterization`, `company-profile`, `template-selection`), `templates`, `dashboard` |
+| Features hoy | `auth`, `common`, `users` | `assets`, `auth` |
+| Estructura de feature | `models/` + `services/` + `presentation/` | `domain/` + `presentation/` |
+| `core/` y `shared/` | `core/{guards,interceptors,services}`, `shared/models` | `core/domain/*`, `shared/domain/*` |
+| `ApiResponse<T>` | `@shared/models/api-response.model` | `@shared/domain/models/api-response.model` |
+| i18n | ngx-translate + `public/i18n/{en,es}` | **no instalada** |
+| Interceptores | `auth`, `error-handler` | `credentials`, `tenant-credentials`; sin manejo global de errores |
+| Syncfusion | sí | no |
 
-**El onboarding de `Frontend-Platform` es donde se hace el descubrimiento.** Ahí
-el cliente declara su empresa, sus servicios, su scope y los activos que entran
-en la evaluación (servidores, bases de datos, aplicaciones, nube, documentación),
-y elige los marcos que contrata. Es la puerta de entrada de los datos que alimentan
-todo el modelo — ver `skills/product/monkey-compliance-council/references/modelo-datos.md`.
+`grc-framework` y `clients` se eliminaron del admin en `acbd907`; `onboarding`, `templates` y
+`dashboard` se eliminaron de la plataforma en `f70a556`/`b6bb7ca`. Todas pertenecían al modelo
+viejo.
+
+**El onboarding de `Frontend-Platform` es donde se hace el descubrimiento**: el cliente declara
+su empresa, sus servicios, su scope y los activos que entran en la evaluación, y elige los
+marcos que contrata por servicio. Es la puerta de entrada de los datos que alimentan todo el
+modelo — ver `references/modulos/onboarding.md` y `contracts/modules/`.
+
+⚠️ **Esa feature no existe hoy**: se eliminó con el modelo viejo y se reconstruye en los
+épicos MD-59 a MD-61.
 
 ## Dominio
 
@@ -151,12 +184,12 @@ el backend y con `monkey-compliance-council`.
 
 - **Framework:** Angular 20+, TypeScript 5.8 estricto, **standalone
   components** (sin NgModules).
-- **UI:** TailAdmin (Tailwind CSS v4 vía `@tailwindcss/postcss`) +
-  Syncfusion Angular (`@syncfusion/ej2-angular-*`: grids, calendarios,
-  dropdowns, inputs, listas, notificaciones, popups) + `material-symbols`.
-- **i18n:** `@ngx-translate/core` + `ngx-translate-multi-http-loader`, JSON
-  en `public/i18n/{en,es}/*.json` cargado vía `HttpBackend` (sin pasar por
-  interceptors).
+- **UI:** TailAdmin (Tailwind CSS v4 vía `@tailwindcss/postcss`) + `material-symbols` en las
+  dos. **Syncfusion (`@syncfusion/ej2-angular-*`) solo en `Frontend`**, no en la plataforma.
+- **i18n:** solo en `Frontend`: `@ngx-translate/core` + `ngx-translate-multi-http-loader`, JSON
+  en `public/i18n/{en,es}/*.json` cargado vía `HttpBackend` (sin pasar por interceptors).
+  **`Frontend-Platform` no tiene i18n instalada**, así que las reglas de traducción obligatoria
+  no aplican ahí hasta que se instale.
 - **Estado:** sin librería (no NgRx/Akita/signals store) — servicios
   `providedIn: 'root'` con estado local.
 - **Auth:** cookie httpOnly (`withCredentials: true`), sin manejo manual de
@@ -164,16 +197,16 @@ el backend y con `monkey-compliance-council`.
 
 ## Arquitectura
 
-`core/` + `shared/` + `features/<nombre>/` + `config/` (ver
-`../frontend/graphs-knowledge/architecture.md` para el grafo normativo
-completo):
+`core/` + `shared/` + `features/<nombre>/` + `config/`. La tabla describe `Frontend`;
+`Frontend-Platform` intercala un nivel `domain/`/`presentation/` (ver la tabla comparativa
+arriba):
 
 | Carpeta | Responsabilidad |
 |---------|-----------------|
 | `core/` | Guards, interceptors, servicios de shell (modal, sidebar, theme), layout/shell components. Nunca depende de `features/`. |
 | `shared/` | Modelos y componentes reutilizables entre features (`ApiResponse<T>`, dialog, loader). Nunca depende de `features/`. |
 | `features/<nombre>/` | `models/` + `services/` + `presentation/{views,components}`. No se importa una feature desde otra directamente. |
-| `config/` | `environments/environment.ts` (`apiUrl`), `navigation.config.ts`, `syncfusion-locale.config.ts`. |
+| `config/` | `environments/environment.ts` (`apiUrl`, hoy `http://localhost:3000/v1`), `navigation.config.ts`, y `syncfusion-locale.config.ts` solo en `Frontend`. |
 
 ### Estado actual de features
 

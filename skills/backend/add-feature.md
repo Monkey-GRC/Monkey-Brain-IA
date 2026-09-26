@@ -8,9 +8,12 @@ applies_to: backend
 
 # Skill: Agregar una feature nueva
 
-Referencia: sección "Cómo crear una nueva feature" de `README.md` del repo
-(usa `control` como ejemplo ahí; ese feature aún no existe en `src/features`
-pero sí su modelo Prisma en `prisma/schema/control.prisma`).
+Referencia viva: `src/features/risk/` es la feature más completa del repo y la que mejor
+sigue las 4 capas. Features existentes hoy: `asset`, `auth`, `checklist`, `client`, `control`,
+`manual-check`, `reason`, `risk`, `translation`, `user`.
+
+> ⚠️ El `README.md` del `Backend` está desactualizado (pide `DATABASE_URL` y `npm run db:seed`,
+> que no existen). No lo uses como referencia sin contrastarlo con el código.
 
 ## Pasos
 
@@ -30,7 +33,10 @@ pero sí su modelo Prisma en `prisma/schema/control.prisma`).
    depende de la interfaz abstracta del repositorio, no de Prisma.
 
 5. **Repositorio Prisma** — `src/features/<nombre>/infrastructure/repositories/<nombre>.prisma.repository.ts`.
-   Implementa la interfaz del paso 2 usando `PrismaService`.
+   Implementa la interfaz del paso 2 usando `CentralPrismaService`
+   (`src/infrastructure/database/central-prisma.service.ts`), o la conexión del tenant vía
+   `TenantConnectionManagerService` si la entidad vive en la base del cliente.
+   **No existe una clase `PrismaService`.**
 
 6. **Controller** — `src/features/<nombre>/presentation/<nombre>.controller.ts`.
    Mapea rutas HTTP a use-cases. Usa `@UseGuards(AuthGuard('jwt'))` +
@@ -50,13 +56,15 @@ pero sí su modelo Prisma en `prisma/schema/control.prisma`).
 
 ## Antes de empezar, verificar
 
-- Si el modelo de datos no existe en `prisma/schema/`, agregarlo primero
-  (ver `add-prisma-model.md`) y correr la migración.
-- Revisar si el modelo ya existe (como es el caso de `control.prisma`) para no
-  duplicar el schema.
+- Si el modelo de datos no existe, agregarlo primero en `prisma/central/schema/` y/o
+  `prisma/tenant/schema/` (ver `add-prisma-model.md`) y correr la migración con su `--config`.
+- Revisar si el modelo ya existe para no duplicar el schema.
+- Contrastar la entidad con `modelo-datos.md`: el schema actual se está rehaciendo y el modelo
+  es el plan vigente (ver `CLAUDE.md`).
 
 ## Después de terminar
 
-- Correr `npm run lint` y `npm run test`.
+- Correr `npm run lint` y `npm run test`. Ojo: hoy **no hay ni un `*.spec.ts`** en el repo,
+  así que `npm run test` no ejercita nada todavía.
 - Confirmar en Swagger (`@nestjs/swagger`) que los endpoints nuevos aparecen
   documentados.

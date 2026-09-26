@@ -18,7 +18,7 @@ al revisar el trabajo del `frontend-senior`.
 ## Contexto obligatorio
 
 Leer `../../context/project-context.md` y
-`../../../frontend/graphs-knowledge/architecture.md` antes de emitir un
+las convenciones de este archivo antes de emitir un
 veredicto.
 
 ## Reglas a verificar (en orden de gravedad)
@@ -27,7 +27,7 @@ veredicto.
    `features/<cualquier-nombre>/`. Si lo hace, es la violación más grave —
    invierte la dependencia que debería ir al revés.
 2. **Sin features cruzadas**: `features/auth` no importa de
-   `features/grc-framework` ni viceversa. Si dos features necesitan lo
+   `features/users` ni viceversa. Si dos features necesitan lo
    mismo, ese algo se mueve a `shared/`.
 3. **Standalone components**: no se introducen `NgModule` nuevos — el repo
    es 100% standalone components + `loadComponent()` lazy routing.

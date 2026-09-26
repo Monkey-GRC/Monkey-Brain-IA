@@ -13,7 +13,7 @@ applies_to: backend
 Checklist de revisión de arquitectura: verificar que un diff o un módulo
 nuevo respete la separación de capas del proyecto, no revisar estilo ni
 lógica de negocio en detalle. La usa típicamente el agente `tech-lead` (ver
-`../agents/tech-lead.md`) al revisar el trabajo del `backend-senior`.
+`../../agents/tech-lead.md`) al revisar el trabajo del `backend-senior`.
 
 ## Cuándo usar esta skill
 
@@ -24,7 +24,7 @@ lógica de negocio en detalle. La usa típicamente el agente `tech-lead` (ver
 
 ## Contexto obligatorio
 
-Lee `../../context/project-context.md` y `../../../backend/graphs-knowledge/architecture.md` antes de
+Lee `../../context/project-context.md` antes de
 emitir un veredicto.
 
 ## Reglas a verificar (en orden de gravedad)
@@ -42,7 +42,7 @@ emitir un veredicto.
    es una violación.
 5. **DTOs por feature:** una feature no debe importar DTOs de otra feature.
 6. **Prisma schema:** los modelos se agregan/editan en el archivo de dominio
-   correspondiente bajo `prisma/schema/`, no en un archivo monolítico.
+   correspondiente bajo `prisma/central/schema/` y `prisma/tenant/schema/`, no en un archivo monolítico.
 
 ## Formato de salida esperado
 

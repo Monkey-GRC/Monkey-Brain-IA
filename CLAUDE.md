@@ -43,7 +43,7 @@ enrutar la pregunta al archivo correcto** (ver `SKILL.md` de esa skill, sección
   con fuente y fecha verificada. No inventar citas ni cifras de un framework.
 - `council.md` — cómo se resuelven desacuerdos de diseño entre los roles del panel.
 - `modelo-datos-pendientes.md` — las preguntas que **todavía no están cerradas** y que
-  solo el comité puede responder (hoy son 3). Antes de construir algo que dependa de una,
+  solo el comité puede responder (hoy son 5). Antes de construir algo que dependa de una,
   consúltala: si sigue ahí, no la resuelvas por tu cuenta — pregunta.
 - `modelo-datos-decisiones.md` — el **por qué** de cada decisión ya cerrada, con su
   fuente. Se consulta si alguien quiere reabrir algo, no para construir.
@@ -89,6 +89,22 @@ Dos reglas más que salen de los assets y aplican siempre:
   reporte o texto generado por IA.
 - `conexion_api_wazuh_monkey.txt` **contiene credenciales en texto plano**. No se
   copia a este ni a ningún otro repo.
+
+## Y antes de tocar un endpoint o un formulario: `contracts/`
+
+`contracts/` tiene la forma exacta de cada endpoint — request, response y errores — acordada
+entre backend y frontend. **Se lee antes de construir, no después.** Si lo que vas a construir
+no está ahí, el contrato se acuerda primero.
+
+- `contracts/conventions.md` — el sobre de respuesta, la forma del error de validación, i18n,
+  multi-select, fechas y paginación. Aplica a todos los endpoints.
+- `contracts/enums.md` — la tabla `valor` ↔ etiqueta. Por el cable viaja el valor en
+  `snake_case`; la etiqueta la resuelve i18n. **El frontend nunca hardcodea listas de opciones.**
+- `contracts/modules/*.md` — un archivo por módulo: `monkey-admin`, `auth`, y los 3 componentes
+  del onboarding.
+
+Si el Excel del comité y `modelo-datos.md` discrepan en las **opciones** de un enum, gana el
+Excel y se corrige el modelo. Si discrepan en el **nombre** de un campo, gana el modelo.
 
 Para trabajo específico de cada repo, también existen:
 

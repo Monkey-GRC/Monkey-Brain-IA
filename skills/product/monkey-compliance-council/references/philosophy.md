@@ -98,7 +98,9 @@ real, y el argumento es de honestidad ante un auditor —
 > NO CUMPLE reportaría un fallo no verificado. Ambas opciones son deshonestas ante
 > un auditor."*
 
-De ahí sale el tercer estado **"sin medir"** (ver `modelo-datos.md` §7), que debe
+De ahí sale el estado **"sin medir"** (`result = pending` en `evaluations`, `modelo-datos.md`
+§7.4 — no confundirlo con `invalid` ni con `not_run`, que son estados del check de la sonda,
+§3.3), que debe
 existir en la interfaz igual que existe en el cálculo. Lo mismo vale para un activo
 declarado en el scope que todavía no se monitorea: se muestra como hueco de
 cobertura, nunca como falla.

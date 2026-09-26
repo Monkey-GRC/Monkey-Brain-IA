@@ -28,25 +28,31 @@ Los cuatro motores son **independientes del framework**: ninguno "sabe" nativame
 El modelo relacional completo, con atributos, cardinalidades y diagrama, vive en `modelo-datos.md`. Resumen de la estructura:
 
 ```
-Organización (tenant)
- ├─ Responsables organizacionales  (CISO, Cumplimiento, Proceso, TI)
- ├─ Servicios                      (lo que se certifica; unidad de evaluación)
- │   ├─ Scope / Alcance            (lo declarado: cuántos servidores, nubes, apps, BD)
- │   │   └─ Insumos de revisión    (lo descubierto: los activos y documentos reales)
- │   ├─ Marcos contratados         (por servicio — SOC 2, ISO 27001, PCI DSS…)
- │   │   └─ Requisitos             (CC6.1, A.8.5… — pertenecen al marco)
- │   └─ Evaluaciones               (histórico inmutable) → Hallazgos (dónde falla)
- ├─ Riesgos                        (qué puede salir mal en un servicio; impacto, probabilidad)
- │   └─ Causas                     (N:M — por qué está pasando)
- │       └─ Controles              (N:M — la medida que lo ataca)
- └─ Controles atómicos             (independientes de marco; todo lo demás cuelga de aquí)
-     ├─ Dimensiones aplicables     (Gobierno, Servidor, Nube, BD, App — con su tipo)
-     ├─ Plan de testeo             (criterio de auditor: pasos dependientes, población, muestreo)
-     ├─ Tests                      (por dimensión; con banderas requiere-sonda / requiere-IA /
-     │   │                          confirmación humana del cumplimiento)
-     │   └─ Exclusiones            (checks que no se miden, con justificación)
-     ├─ Evidencia requerida        (qué se exige y quién responde) → entregada (archivo + hash)
-     └─ Medición                   (peso y fórmula por dimensión; default lineal)
+Empresa / tenant (`companies`)          — existe desde Monkey Admin; lleva el aislamiento
+ └─ Organización (`organizations`)      — el negocio que declara el cliente dentro del tenant
+     ├─ Responsables organizacionales   (COO, TI, Cumplimiento, Proceso, CISO, propietario del activo)
+     ├─ Insumos de revisión             (los activos reales; cuelgan de la ORGANIZACIÓN, no
+     │                                   del servicio — se vinculan vía `service_assets`)
+     ├─ Riesgos del cliente             (qué puede salir mal; impacto, probabilidad)
+     │   └─ Causas                      (N:M — por qué está pasando)
+     │       └─ Controles del cliente   (N:M — la medida que lo ataca)
+     └─ Servicios                       (lo que se certifica; unidad de evaluación)
+         ├─ Scope / Alcance             (lo declarado: cuántos servidores, nubes, apps, BD)
+         ├─ Marcos contratados          (por servicio — SOC 2, ISO 27001, PCI DSS…)
+         └─ Evaluaciones                (histórico inmutable) → Hallazgos (dónde falla)
+
+Catálogo maestro (global, sin tenant)   — lo cura Monkey; existe antes de cualquier cliente
+ ├─ Marcos
+ │   └─ Requisitos                      (CC6.1, A.8.5… — pertenecen al marco)
+ │       └─ Puntos de enfoque           (el punto de anclaje: el control se vincula AQUÍ)
+ └─ Controles atómicos                  (independientes del marco; se vinculan a puntos de enfoque)
+     ├─ Dimensiones aplicables          (Política/Documental, Servidor, Base de datos, App, Nube)
+     ├─ Plan de testeo                  (criterio de auditor: pasos dependientes, población, muestreo)
+     ├─ Tests                           (por dimensión; con banderas requiere-sonda / requiere-IA /
+     │   │                               confirmación humana del cumplimiento)
+     │   └─ Exclusiones                 (checks que no se miden, con justificación)
+     ├─ Evidencia requerida             (qué se exige y quién responde) → entregada (archivo + hash)
+     └─ Medición                        (peso y fórmula por dimensión; default lineal)
 
 Capa de operación técnica (Motor de Integraciones — ver modelo-datos.md §8):
  Capacidad automática (sonda, con proveedor interno)
@@ -54,6 +60,10 @@ Capa de operación técnica (Motor de Integraciones — ver modelo-datos.md §8)
       └─ Regla de schedule         (cada cuánto corre, sobre qué grupo de activos)
           └─ Ejecución             (progreso, estado, reintento) → Resultados + Logs técnicos
 ```
+
+El cumplimiento de un marco **se deriva** recorriendo requisitos → puntos de enfoque →
+controles. Nunca se almacena como atributo del marco. Y el activo cuelga de la
+**organización**, no del scope de un solo servicio (decisión A2).
 
 **Decisión clave del Data Architect**: el Control es **atómico e independiente del marco**. No se vincula a un framework, se vincula a **Requisitos**, y son los requisitos los que pertenecen a un marco (`Marco 1:N Requisito`, `Requisito N:M Control`). Un mismo control (p. ej. "acceso administrativo requiere MFA") satisface simultáneamente CC6.1 de SOC 2, el control 8.5 de ISO 27001:2022 Annex A, y el Requisito 8.4 de PCI DSS v4.0.1 sin triplicar el trabajo de evidencia.
 
@@ -83,7 +93,7 @@ Dos patrones: (a) conectores API-first para SaaS/cloud (OAuth, rotación de cred
 
 | Capa | Elección | Por qué |
 |---|---|---|
-| Backend core | Monolito modular (no microservicios prematuros), runtime tipado (TypeScript/Node o Go) | Más barato de operar para un equipo de 10-20 ingenieros; extraer servicios solo cuando la escala lo exija — decisión del Principal Software Architect |
+| Backend core | Monolito modular, no microservicios prematuros. **Ya elegido y en uso: NestJS 11 + TypeScript 5.7 + Prisma 7** (ver `context/project-context.md`) | Más barato de operar para un equipo de 10-20 ingenieros; extraer servicios solo cuando la escala lo exija — decisión del Principal Software Architect |
 | Base de datos transaccional | PostgreSQL con row-level security multi-tenant | Estándar de la industria, JSONB para evidencia heterogénea sin sacrificar integridad relacional |
 | Grafo de conocimiento contextual | Base de grafos o modelado de grafo sobre Postgres | El modelo contextual (activos↔personas↔riesgos↔controles↔evidencia) es intrínsecamente un grafo |
 | Búsqueda de evidencia | Índice vectorial + full-text | RAG para que la IA ancle respuestas a datos reales del tenant |

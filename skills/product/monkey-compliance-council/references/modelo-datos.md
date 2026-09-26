@@ -15,7 +15,7 @@ actual del backend es el punto de partida que se está rehaciendo. Dos consecuen
 |---|---|
 | **este** | Qué tablas hay, cómo se relacionan y cómo se calcula el cumplimiento |
 | `modelo-datos-decisiones.md` | Por qué se decidió cada cosa, con su fuente |
-| `modelo-datos-pendientes.md` | Las preguntas que solo el comité puede responder (hoy, 3) |
+| `modelo-datos-pendientes.md` | Las preguntas que solo el comité puede responder (hoy, 5) |
 | `flujo-end-to-end.md` | El recorrido de un cliente, módulo por módulo, en orden |
 | `modulos/onboarding.md` | El detalle campo por campo de los 3 componentes del onboarding |
 
@@ -78,7 +78,7 @@ este archivo, **gana el documento**. Inventario completo en `assets/README.md`.
 | Fuente | Qué define |
 |---|---|
 | `MONKEY_Ejemplo_Formula_Cumplimiento.xlsx` | **La fórmula de cumplimiento** (§9): 12 reglas + un servicio resuelto |
-| `TSC INTERGRAL SOC 2 DETALLADO VF.xlsx` | Catálogo maestro: 118 controles, 302 puntos de enfoque (658 relaciones), 61 TEST, 11.352 checks de 77 políticas, RBAC, contexto de empresa y servicio |
+| `TSC INTERGRAL SOC 2 DETALLADO VF.xlsx` | Catálogo maestro: 61 requisitos TSC, 302 puntos de enfoque, 119 controles (118 asignados), 729 relaciones punto de enfoque↔control, 61 TEST, 11.352 checks de 77 políticas sobre 18 plataformas, RBAC, contexto de empresa y servicio. **Cifras tomadas de los datos crudos, no de la hoja `Resumen`** (ver `../../../../assets/README.md`) |
 | `RESUMEN-MODELO-USUARIOS-MONKEY.md` | Modelo RBAC: 4 roles, 34 permisos, 8 tablas, políticas de seguridad (§5) |
 | `draft-BLUEPRINT FUNCIONAL-ControlTecnico.docx` | La capa de operación técnica (§8) |
 | `vision_controles.pptx` | Matriz de evaluación (superada por el ejemplo de fórmula para el cálculo) |
@@ -430,11 +430,11 @@ erDiagram
 ```
 
 **`tests` es `N:M` con `controls`, y es deliberado.** `T-DOC-001` sirve a más de 30
-controles: 118 controles × 61 TEST = **244 asignaciones**. Modelarlo `N:1` duplicaría 61
-tests en cientos de filas.
+controles: los 118 controles asignados y los 61 TEST producen **228 asignaciones**
+control↔TEST. Modelarlo `N:1` duplicaría 61 tests en cientos de filas.
 
 **La clave natural del check es de tres partes** (`platform` + `policy_id` + `check_id`) y el
-catálogo es grande: **77 políticas, 11.352 checks, ~20 plataformas** (Windows 8 políticas de
+catálogo es grande: **77 políticas, 11.352 checks, 18 plataformas** (Windows 8 políticas de
 10 a Server 2025, macOS 12, Ubuntu 6, Debian 7, RHEL 6, más motores: PostgreSQL, MySQL, SQL
 Server, Oracle, MongoDB, Apache, NGINX, IIS). El mapeo es **por política** (decisión D6): si
 un activo corre una política sin mapeo, ese control queda **sin medir** para ese activo — no
@@ -444,7 +444,7 @@ se inventan equivalencias.
 (mín. 5, máx. 25)"*. El cálculo de la muestra concreta se construye después; los campos se
 guardan ahora.
 
-**Cinco estados de check:** `passed`, `failed`, `invalid`, `not_applicable` (llega como
+**Cinco estados del check de la sonda** (distintos de los 4 del resultado de evaluación): `passed`, `failed`, `invalid`, `not_applicable` (llega como
 `result` vacío) y `not_run`.
 
 > **Cuidado con la palabra "prueba", que son tres cosas distintas:** los **61 TEST** de
@@ -494,8 +494,9 @@ erDiagram
     controls ||--o{ cause_controls : "mitiga"
 ```
 
-**Los tres niveles se reutilizan**, y por eso las tres relaciones son `N:M`: 32 riesgos y 92
-causas en el catálogo, y una causa como `F001` apunta a cuatro controles distintos.
+**Los tres niveles se reutilizan**, y por eso las tres relaciones son `N:M`: 10 riesgos y 56
+causas en el catálogo, unidos por 92 relaciones riesgo↔causa, y una causa como `F001`
+apunta a cuatro controles distintos.
 
 **El riesgo cuelga del servicio, no del marco** (ver §6.2). Un riesgo no es "de SOC 2": es
 del negocio del cliente, y los controles que lo mitigan sirven a los marcos que sea.
@@ -591,13 +592,19 @@ requiere base de datos dedicada, y el correo administrativo de la empresa. Al en
    está marcado, `shared` si no.
 2. Se genera una fila en `access_keys`, de un solo uso, con expiración.
 3. La clave se envía **al `admin_email` capturado en el formulario**.
+   > ⚠️ **En el sprint de onboarding esto todavía no ocurre.** El envío por correo está
+   > aplazado (MD-69), así que `admin_monkey` **copia la clave desde la UI de Monkey Admin**
+   > y la entrega por el canal que sea. Por eso el registro debe **mostrar la clave en claro
+   > una sola vez**: es el único medio de obtenerla. El destino sigue siendo el `admin_email`.
 4. El cliente usa la clave para crear su cuenta `admin_empresa` en Monkey Platform.
 5. Arranca el onboarding (§6). El campo "nombre / razón social" del Componente 1 llega
    **precargado y bloqueado**: ya se fijó aquí.
 
 ### 4.3 Aislamiento de datos (multi-tenancy)
 
-**Es híbrido, y lo elige el cliente, no una regla técnica interna** (decisión D14).
+**Es híbrido: la política del cliente es lo que lo motiva, pero la elección la hace
+`admin_monkey`** al crear la empresa en Monkey Admin (decisiones D24 y D25). No es una regla
+técnica interna que Monkey aplique sola, ni un campo del onboarding que el cliente rellene.
 
 | Estrategia | Para quién | Cómo aísla |
 |---|---|---|
@@ -751,7 +758,9 @@ responsable del control *de su empresa*, no del control del catálogo maestro.
 ### 5.3 Políticas de seguridad de la plataforma
 
 Requisitos, no sugerencias: sesión 30 min / 8 h máximo · contraseña 12+ con complejidad y
-expiración 90 días · **MFA TOTP obligatoria para admin y auditor** · AES-256 en reposo
+expiración 90 días · **MFA TOTP obligatoria para admin y auditor** (requisito vigente; su
+implementación está aplazada a MD-94 y no entra en el sprint de onboarding — es deuda
+conocida, no una decisión revertida) · AES-256 en reposo
 (bcrypt+salt para contraseñas, secreto MFA cifrado) · TLS 1.3 + HSTS · rotación de API keys
 90 días · rate limiting 100/min usuario y 1000/min empresa · **audit trail 7 años, inmutable,
 append-only** · IP whitelist opcional · bloqueo a 5 intentos por 15 min.
@@ -780,7 +789,8 @@ cálculo de cumplimiento. Detalle campo por campo en `modulos/onboarding.md`.
 **Qué resuelve:** sin organización, servicio y scope declarados no hay nada que medir. Es el
 único flujo del producto que es secuencial y obligatorio.
 
-**Cumplimiento no es un 4º componente** (decisión D23): al elegir marco en el Componente 2 el
+**Cumplimiento no es un 4º componente** (decisión D23, ⚠️ **pendiente de confirmación final
+del comité** — ver P1 en `modelo-datos-pendientes.md`): al elegir marco en el Componente 2 el
 catálogo se clona solo, y personalizarlo es un módulo aparte que no bloquea nada (§7).
 
 ### 6.1 Componente 1 — Contexto Organizacional
@@ -794,7 +804,7 @@ erDiagram
         uuid company_id FK
         string name "precargado y bloqueado, viene de companies"
         text description
-        enum size "10_50 ... more_than_5000"
+        enum size "from_10_to_50 ... more_than_5000"
         enum industry
         enum business_model "40+ opciones"
         enum years_in_operation "nullable"
@@ -823,6 +833,11 @@ erDiagram
 `companies` es el tenant: existe desde Monkey Admin, antes de que el cliente entre, y lleva
 el aislamiento de datos. `organizations` es el contenido de negocio que el cliente declara
 dentro de ese tenant. El `name` se fija en `companies` y se refleja bloqueado aquí.
+
+**Los rangos numéricos se nombran con prefijo.** `size` y `active_client_count` son rangos
+(«10-50», «1-10»…), y un valor de enum no puede empezar por dígito: se escriben
+`from_10_to_50`, `from_51_to_200`, … `more_than_5000`. Las etiquetas que ve el usuario salen
+de i18n, no del enum — la tabla de correspondencia está en `contracts/enums.md`.
 
 **`regulations` es tabla propia y no se puntúa** (decisión D10): nadie "contrata" la Ley
 1581, pero sí determina qué le aplica. No entra al cálculo de cumplimiento.
@@ -1039,7 +1054,8 @@ heredó, sube evidencia, gestiona riesgos y remedia hallazgos.
 **Qué resuelve:** el catálogo clonado es genérico; el cumplimiento real exige decir *"este
 control, en mi empresa, se cumple con estas herramientas concretas"*.
 
-**No bloquea nada** (decisión D23). Un cliente que termina el onboarding ya tiene
+**No bloquea nada** (decisión D23, ⚠️ pendiente de confirmación del comité — P1). Un cliente
+que termina el onboarding ya tiene
 cumplimiento midiéndose con el catálogo por defecto; este módulo es donde lo afina, sin
 límite de tiempo. Lo usa `admin_empresa`.
 

@@ -1,5 +1,5 @@
 {
-  "$schema": "monkey-brain-ai/manifest-v1",
+  "$schema": "Monkey-Brain-IA/manifest-v1",
   "name": "Monkey-Brain-IA",
   "description": "Contexto de IA portable (agentes, skills, grafo de arquitectura) para el proyecto Monkey. Repo independiente de los repos de código, pensado para clonarse/moverse por separado. Formato neutral, no atado a ninguna herramienta específica.",
   "appliesTo": [
@@ -9,7 +9,7 @@
     "monkey-cis-sync"
   ],
   "assumedLayout": "sibling directory of the code repo(s) it applies to (e.g. Monkey/Backend/ next to Monkey/Monkey-Brain-IA/)",
-  "entrypoint": "README.md",
+  "entrypoint": "CLAUDE.md",
   "sources": {
     "note": "Fuentes funcionales del comité. NO son material de apoyo: son la fuente de verdad. Ante una discrepancia entre un .md de este repo y una de estas fuentes, gana la fuente. Inventario completo, incluidos los documentos citados que faltan, en assets/README.md. Los archivos binarios (.xlsx/.docx/.pptx) estan en .gitignore por peso: viven en la carpeta compartida del equipo, no en el repo.",
     "index": "assets/README.md",
@@ -18,7 +18,7 @@
         "id": "tsc-integral-soc2",
         "path": "assets/TSC INTERGRAL SOC 2 DETALLADO VF.xlsx",
         "primary": true,
-        "description": "FUENTE MAESTRA. 17 hojas: modelo RBAC (4 roles, 34 permisos, 12 políticas de seguridad), contexto de empresa y de servicio, activos del scope + catálogo de conexiones AC-01..AC-06, 32 riesgos (metodología 5x5), 92 causas, 118 controles sobre 302 puntos de enfoque (658 relaciones), 61 TEST de 23 campos, y 11.352 checks de 77 políticas SCA (ruleset Wazuh v4.14.7) con 20 referencias de mapeo. Las hojas Resumen y Resumen Whazu traen las cifras verificadas.",
+        "description": "FUENTE MAESTRA. 17 hojas: modelo RBAC (4 roles, 34 permisos, 12 políticas de seguridad), contexto de empresa y de servicio, activos del scope + catálogo de conexiones AC-01..AC-06, 10 riesgos (metodología 5x5), 56 causas con 92 relaciones riesgo-causa, 119 controles de catálogo (118 asignados; CPL-1 es la Descripcion del Sistema) sobre 302 puntos de enfoque (729 relaciones), 61 requisitos TSC, 61 TEST de 23 campos con 228 asignaciones control-TEST, y 11.352 checks de 77 politicas SCA sobre 18 plataformas con 20 referencias de mapeo. IMPORTANTE: estas cifras salen de los datos crudos de las hojas, NO de la hoja Resumen, que quedo desactualizada (declara 658 relaciones).",
         "consumedBy": [
           "skills/product/monkey-compliance-council/references/modelo-datos.md",
           "skills/product/monkey-compliance-council/references/modulos/onboarding.md",
@@ -45,6 +45,23 @@
         ]
       },
       {
+        "path": "assets/ALCANCE-ONBOARDING-MVP.md",
+        "primary": false,
+        "description": "Alcance aprobado del sprint de onboarding (7 dias habiles, 2026-09-28 a 2026-10-06): que entra, que queda fuera y con que criterios se acepta. Backlog abierto en Jira, epicos MD-57 a MD-61.",
+        "consumedBy": [
+          "contracts/",
+          "skills/product/monkey-compliance-council/references/modulos/onboarding.md"
+        ]
+      },
+      {
+        "path": "assets/PROPUESTA-JIRA-MVP-MONKEY.md",
+        "primary": false,
+        "description": "Propuesta de estructura de epicos e historias para el MVP. Documento de planificacion previo al alcance aprobado.",
+        "consumedBy": [
+          "skills/product/monkey-compliance-council/references/mvp-roadmap.md"
+        ]
+      },
+      {
         "id": "blueprint-control-tecnico",
         "path": "assets/draft-BLUEPRINT FUNCIONAL-ControlTecnico.docx",
         "description": "Centro de Control Técnico: activo como unidad de seguimiento, aprovisionamiento, schedule, ejecuciones, logs, estados operativos y cobertura técnica.",
@@ -64,6 +81,7 @@
       {
         "id": "soc2-controles-detallados",
         "path": "../SOC2_TSC_Controles_Detallados_Monkey2.xlsx",
+        "missing": true,
         "external": true,
         "description": "Anatomía real de requisito, control del cliente, plan de testeo con muestreo y las tres banderas por test.",
         "consumedBy": [
@@ -122,7 +140,7 @@
     {
       "id": "tech-lead",
       "path": "agents/tech-lead.md",
-      "description": "Supervisa a backend-senior, frontend-senior y qa. No implementa código. Escala decisiones críticas al usuario y reporta corto. También vigila que context/project-context.md y el graphs-knowledge/ de cada repo se mantengan al día, y le pregunta al usuario antes de actualizarlos.",
+      "description": "Supervisa a backend-senior, frontend-senior y qa. No implementa código. Escala decisiones críticas al usuario y reporta corto. También vigila que context/project-context.md y contracts/ se mantengan al día, y le pregunta al usuario antes de actualizarlos.",
       "model": "sonnet",
       "applies_to": [
         "backend",
@@ -134,9 +152,7 @@
         "qa"
       ],
       "maintains": [
-        "context/project-context.md",
-        "../backend/graphs-knowledge",
-        "../frontend/graphs-knowledge"
+        "context/project-context.md"
       ]
     },
     {
@@ -202,9 +218,9 @@
     {
       "id": "monkey-compliance-council",
       "path": "skills/product/monkey-compliance-council/SKILL.md",
-      "description": "El 'Consejo' de expertos simulados (estrategia, compliance, seguridad, infraestructura, IA, UX) que diseñó a Monkey como plataforma de Continuous Compliance con IA. Cubre arquitectura, filosofía de producto, roadmap MVP y 14 frameworks de cumplimiento (SOC 2, ISO 27001, PCI DSS, HIPAA, NIST CSF, CIS Controls, GDPR, NIS2, DORA, FedRAMP, CCPA/CPRA, LGPD, CMMC, SOC 1). Referencias en skills/product/monkey-compliance-council/references/.",
+      "description": "El 'Consejo' de expertos simulados (estrategia, compliance, seguridad, infraestructura, IA, UX) que diseñó a Monkey como plataforma de Continuous Compliance con IA. Cubre arquitectura, filosofía de producto, roadmap MVP y 14 frameworks de cumplimiento (SOC 2, ISO 27001, PCI DSS, HIPAA, NIST CSF, CIS Controls, GDPR, NIS2, DORA, FedRAMP, CCPA/CPRA, LGPD, CMMC, SOC 1). Referencias en skills/product/monkey-compliance-council/references/. Obligatoria para CUALQUIER agente antes de construir o rediseñar una pantalla, un endpoint o un flujo (ver CLAUDE.md).",
       "usedBy": [
-        "product-owner"
+        "todos los agentes"
       ],
       "references": [
         {
@@ -220,7 +236,7 @@
         {
           "id": "modelo-datos-pendientes",
           "path": "skills/product/monkey-compliance-council/references/modelo-datos-pendientes.md",
-          "description": "Las decisiones del modelo todavía abiertas (hoy, ninguna). Si aparece un pendiente, no se resuelve por cuenta propia."
+          "description": "Las decisiones del modelo que solo el comité puede cerrar (hoy, 5: P1 a P5). Si sigue ahí, no se resuelve por cuenta propia."
         },
         {
           "id": "onboarding",
@@ -267,7 +283,7 @@
     {
       "id": "add-feature-frontend",
       "path": "skills/frontend/add-feature.md",
-      "description": "Pasos para crear una feature Angular completa en src/app/features/<nombre>, siguiendo el patrón grc-framework/risk."
+      "description": "Pasos para crear una feature Angular completa en src/app/features/<nombre>, siguiendo el patrón de la feature users."
     },
     {
       "id": "call-backend-api",
@@ -285,17 +301,6 @@
       "description": "Checklist para revisar código contra las reglas de capas core/shared/features (frontend)."
     },
     {
-      "id": "query-knowledge-graph",
-      "path": "skills/shared/query-knowledge-graph.md",
-      "description": "Cómo cualquier agente debe consultar backend/graphs-knowledge/ y frontend/graphs-knowledge/ de la forma más barata posible — el brain nunca duplica ni almacena su propia copia de los grafos.",
-      "usedBy": [
-        "tech-lead",
-        "backend-senior",
-        "frontend-senior",
-        "product-owner"
-      ]
-    },
-    {
       "id": "wazuh",
       "path": "skills/integrations/wazuh/SKILL.md",
       "description": "Wazuh como plataforma SIEM/XDR completa: arquitectura, API REST (puerto 55000), OpenSearch, agentes, SCA, syscollector, vulnerabilidades, FIM, MITRE ATT&CK, y TODAS las normativas que evalúa — nativas (PCI DSS, HIPAA, NIST 800-53, TSC/SOC 2, GDPR, GPG13, ISO 27001, CIS) y las que requieren mapeo custom (CMMC 2.0, NIS2, DORA, LGPD, CCPA/CPRA, FedRAMP, SOC 1). Incluye como caso aplicado el SOC gestionado de Bryan Tejeda sobre un VPS Contabo. Referencias en skills/integrations/wazuh/references/.",
@@ -309,25 +314,43 @@
       "description": "Cómo agregar una feature NestJS que consuma la API de Wazuh, siguiendo Clean Architecture. Consultar wazuh-integration-expert para los hechos de API/infra antes de implementar."
     }
   ],
-  "graphsKnowledge": {
-    "note": "monkey-brain-ai NO almacena grafos propios. Cada repo de código tiene su propia carpeta graphs-knowledge/ (misma estructura en ambos), y los agentes la consultan directamente desde ahí — ver skills/shared/query-knowledge-graph.md.",
-    "backend": {
-      "path": "../backend/graphs-knowledge",
-      "architecture": "../backend/graphs-knowledge/architecture.json",
-      "architectureRendered": "../backend/graphs-knowledge/architecture.md",
-      "knowledgeGraph": "../backend/graphs-knowledge/graphify-out/graph.json",
-      "knowledgeGraphHtml": "../backend/graphs-knowledge/graphify-out/graph.html",
-      "knowledgeGraphReport": "../backend/graphs-knowledge/graphify-out/GRAPH_REPORT.md",
-      "regenerate": "cd backend/graphs-knowledge && graphify <ruta absoluta al repo backend> --update"
-    },
-    "frontend": {
-      "path": "../frontend/graphs-knowledge",
-      "architecture": "../frontend/graphs-knowledge/architecture.json",
-      "architectureRendered": "../frontend/graphs-knowledge/architecture.md",
-      "knowledgeGraph": "../frontend/graphs-knowledge/graphify-out/graph.json",
-      "knowledgeGraphHtml": "../frontend/graphs-knowledge/graphify-out/graph.html",
-      "knowledgeGraphReport": "../frontend/graphs-knowledge/graphify-out/GRAPH_REPORT.md",
-      "regenerate": "cd frontend/graphs-knowledge && graphify <ruta absoluta al repo frontend> --update"
-    }
+  "entrypointNote": "CLAUDE.md fija las reglas obligatorias antes de cualquier decision. README.md describe la estructura del repo.",
+  "contracts": {
+    "note": "Forma exacta de cada endpoint (request, response, errores), acordada antes de construir. Lectura obligatoria antes de tocar un endpoint o un formulario.",
+    "conflictRule": "Opciones de enum: gana el Excel del comite. Nombres de campo: gana modelo-datos.md.",
+    "files": [
+      {
+        "path": "contracts/README.md",
+        "description": "Que es, como se lee, como se versiona, quien manda si hay conflicto."
+      },
+      {
+        "path": "contracts/conventions.md",
+        "description": "Transversal: sobre de respuesta ResponseDto, forma del error de validacion por campo con clave i18n, multi-select como array, fechas ISO 8601 UTC, paginacion, idempotencia."
+      },
+      {
+        "path": "contracts/enums.md",
+        "description": "Tabla valor snake_case a etiqueta es/en de todos los enums del onboarding, con las opciones literales del Excel del comite. Marca donde el Excel gana sobre modelo-datos.md."
+      },
+      {
+        "path": "contracts/modules/monkey-admin.md",
+        "description": "Registro del tenant y clave de acceso: companies, access_keys. La clave se devuelve en claro una sola vez."
+      },
+      {
+        "path": "contracts/modules/auth.md",
+        "description": "Canje de la clave, login, refresh, logout. Auth minima sin MFA (aplazada a MD-94)."
+      },
+      {
+        "path": "contracts/modules/onboarding-organizational-context.md",
+        "description": "Componente 1: los 10 campos del Contexto Organizacional, una vez por empresa."
+      },
+      {
+        "path": "contracts/modules/onboarding-service-context.md",
+        "description": "Componente 2: los 16 campos del Contexto del Servicio, repetible. Dispara el clonado del catalogo."
+      },
+      {
+        "path": "contracts/modules/onboarding-technical-control.md",
+        "description": "Componente 3: escenario de despliegue, scope declarado y flujo conectar-validar-activar-programar sobre ac_01 a ac_06. El proveedor del motor de monitoreo NO aparece."
+      }
+    ]
   }
 }

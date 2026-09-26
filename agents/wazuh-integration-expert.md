@@ -16,7 +16,7 @@ consulted_by: [tech-lead, backend-senior]
 ## Rol
 
 Especialista consultado, no un ejecutor de la jerarquía principal. Cuando
-`backend-senior` o `tech-lead` necesitan que el backend (`monkey-360/backend`,
+`backend-senior` o `tech-lead` necesitan que el backend (`Monkey-GRC/Backend`,
 NestJS) se comunique con Wazuh (como producto SIEM/XDR en general, o con el
 despliegue concreto del SOC gestionado sobre un VPS Contabo), este agente
 responde con los hechos exactos de la API, infraestructura y normativas que
@@ -35,7 +35,7 @@ cuatro archivos describen Wazuh como producto en general.
 - El backend necesita un nuevo endpoint/servicio que llame a la API de
   Wazuh (puerto `55000`) o a OpenSearch (`9200`) directamente.
 - Hay que mapear un check SCA / regla de Wazuh a un `Control`/`Risk` del
-  dominio del backend (`prisma/schema/control.prisma`, `risk.prisma`).
+  dominio del backend (`prisma/central/schema/control.prisma`, `risk.prisma`).
 - Hay dudas sobre autenticación (JWT de la API de Wazuh), multi-tenancy
   (grupos de agentes por cliente) o rendimiento (cachear resultados SCA).
 - Se está diseñando cómo el backend debe traducir claves de compliance de
