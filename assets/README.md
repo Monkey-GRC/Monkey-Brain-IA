@@ -29,7 +29,7 @@ No están aquí a propósito: dos contienen datos operativos y uno credenciales.
 
 | Archivo | Qué define | Quién lo consume |
 |---|---|---|
-| `../../SOC2_TSC_Controles_Detallados_Monkey2.xlsx` | La anatomía real de un requisito (código + criterio + punto de enfoque), el control del cliente, el plan de testeo con muestreo, y las tres banderas por test (requiere sonda / requiere IA / confirmación de cumplimiento) | `references/modelo-datos.md` §3.1-§3.3 · `references/frameworks/soc2.md` |
+| `SOC2_TSC_Controles_Detallados_Monkey2.xlsx` ⚠️ **no se encuentra en disco** | La anatomía real de un requisito (código + criterio + punto de enfoque), el control del cliente, el plan de testeo con muestreo, y las tres banderas por test (requiere sonda / requiere IA / confirmación de cumplimiento) | `references/modelo-datos.md` §3.1-§3.3 · `references/frameworks/soc2.md` |
 | `../../soc2_detalle.py` | La lógica `bool_and`, el tercer veredicto `REVISAR`, la frescura de escaneos, y los tres tags de compliance (`tsc` / `soc_2` / `nelson`) | `references/modelo-datos.md` §9 · `references/wazuh.md` |
 | `../../conexion_api_wazuh_monkey.txt` | Endpoints, flujo del conector, la clave compuesta `policy_id + check_id`, los estados de resultado, y la regla de confidencialidad de la sonda. **Contiene credenciales en texto plano: no copiar a ningún repo; rotar esa password** | `../skills/integrations/wazuh/references/api-integracion.md` |
 | `../../Propuesta Proyecto Monkey-1.xlsx` | Alcance comercial de junio 2026: módulos de vulnerabilidades, gestión documental, políticas y notificaciones. **Parcialmente superado** — su "consolidado global de cumplimiento" queda derogado por la decisión de medir por servicio | `references/mvp-roadmap.md` · pendiente D7 |

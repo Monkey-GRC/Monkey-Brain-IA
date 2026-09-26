@@ -18,7 +18,13 @@ Lo que sigue abierto está en **`modelo-datos-pendientes.md`** (hoy, 3 preguntas
 
 ## Las decisiones
 
-El comité entregó suficiente material para cerrar **19 de las 22 preguntas abiertas**.
+Aquí viven las decisiones **ya cerradas** del modelo relacional, con su fuente y su
+razonamiento. Las que siguen abiertas **no están aquí**: viven en
+`modelo-datos-pendientes.md` y se numeran P1, P2, P3.
+
+La numeración A/B/C/D es histórica y tiene huecos (no existen B3, B5 ni D15-D22): son
+preguntas que se plantearon y se descartaron o se fusionaron con otras antes de cerrarse.
+Un hueco no es una decisión pendiente.
 Cada una se resolvió con la opción que (a) tiene respaldo en una fuente del comité,
 (b) no obliga a rehacer lo ya construido, y (c) sigue el flujo real de la aplicación.
 Las tres que quedan abiertas están al final: son las que nadie puede decidir por el
@@ -72,7 +78,8 @@ número entregado a un auditor puede cambiar solo. Ya ocurrió una vez (la recla
 de 223 checks).
 
 Implica una entidad `catalog_versions` y un campo de versión en `evaluations` (§7.4).
-**Lo que queda abierto es qué se propaga solo y qué requiere aceptación** — ver §8.1.
+**Qué se propaga solo y qué requiere aceptación** se cerró después: ver la ampliación de A4
+más abajo ("cerrado el 20 de septiembre").
 
 ### Bloque B y C — el cálculo
 
@@ -87,8 +94,8 @@ puntos de enfoque están cubiertos por controles cumplidos; por debajo, está fa
 se muestra el detalle de qué falta. Es lo coherente con "un control está cumplido solo al
 100%", ya decidido. El porcentaje sigue existiendo como **diagnóstico**, no como estado.
 
-> Si el comité responde a §8.1 que su 40/60 era cumplimiento parcial del requisito,
-> esta decisión se revisa. Mientras tanto, binario.
+> Si el comité dijera que su 40/60 era cumplimiento parcial del requisito, esta decisión se
+> revisa. Mientras tanto, binario.
 
 **B6 · La regla del schedule la editan `admin_monkey` y `admin_empresa`**, dentro de
 límites que Monkey define (una frecuencia mínima por tipo de conexión). Es coherente con
@@ -197,13 +204,15 @@ contando controles cumplidos. Esto **corrige** lo que este documento decía: con
 números del ejemplo, la versión vieja habría reportado 40% donde el comité reporta 92,6%.
 
 **Pendiente no entra al denominador** (R-06, R-08): `cumplen / (cumplen + fallan)`. Es la
-fórmula exacta de la decisión B4.
+fórmula exacta de las reglas R-06 y R-08 de `MONKEY_Ejemplo_Formula_Cumplimiento.xlsx`.
+"Evaluables" en R-08 significa exactamente `cumplen + fallan`: excluye `not_applicable` y
+`pending`.
 
 **Mitigación y riesgo residual son indicadores separados del cumplimiento** (R-11, R-12),
 y no se derivan del porcentaje. Entran al modelo como tales (§7.2).
 
 **El responsable existe por nivel de objeto** — activo, control, cumplimiento, riesgo — y
-**el plan de acción es del control**. Sale de la hoja de trazabilidad (§7.6) y amplía la
+**el plan de acción es del control**. Sale de la hoja de trazabilidad (`modelo-datos.md` §9, "La trazabilidad de una falla") y amplía la
 decisión A1, que solo cubría el responsable de una evidencia.
 
 ---
@@ -284,7 +293,8 @@ nada. Razones:
 - **Lo que sí requiere un módulo propio es la personalización** — reescribir la
   interpretación de un control, ajustar dimensiones, asignar responsables, excluir un
   check — y eso ya es trabajo de `admin_empresa` en cualquier momento, no un requisito de
-  arranque (`modelo-datos.md` §5.1, matriz de permisos).
+  arranque (`modelo-datos.md` §5.1, los 4 roles; la matriz de 34 permisos está en
+  `assets/RESUMEN-MODELO-USUARIOS-MONKEY.md`).
 - **Los 3 componentes que especificó el comité en el TSC INTEGRAL no incluyen
   Cumplimiento.** El documento más detallado y más reciente ya refleja esta separación.
 - Gatear funciones básicas (crear usuarios, conectar activos) detrás de una

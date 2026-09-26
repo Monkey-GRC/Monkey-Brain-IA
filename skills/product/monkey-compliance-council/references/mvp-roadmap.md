@@ -68,7 +68,7 @@ No solo "auditorías completadas": medir el tiempo que el usuario pasa **entendi
 ## Alcance que viene del material fuente (no del Consejo)
 
 Dos documentos del comité definen alcance que este roadmap no tenía. Ver
-`../../../assets/README.md`.
+`../../../../assets/README.md`.
 
 **Centro de Control Técnico** (`draft-BLUEPRINT FUNCIONAL-ControlTecnico.docx`) —
 pantalla completa con aprovisionamiento de activos, schedule de ejecuciones,

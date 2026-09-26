@@ -42,7 +42,8 @@ Platform** y crea su cuenta `admin_empresa`. La `access_keys` pasa a `used`. A p
 aquí el cliente ya está autenticado (JWT 15 min, refresh 7 días) dentro de su tenant.
 
 **Entidades:** `users`, `sessions`.
-**Fuente:** `modelo-datos.md` §5.1-§5.3, `Auth.md` (bóveda).
+**Fuente:** `modelo-datos.md` §5.1-§5.3. (`Auth.md` de la bóveda se cita como fuente
+original pero **no está en este repo** — ver `assets/README.md`.)
 
 ## 3. Onboarding — Componente 1: Contexto Organizacional
 
@@ -115,7 +116,8 @@ ejemplo ya documentado ("Revisor de evidencia").
 
 **Entidades:** `users`, `custom_roles`, `user_control_assignments`,
 `auditor_assignments`.
-**Fuente:** `Usuarios.md` (bóveda), `modelo-datos.md` §5.
+**Fuente:** `modelo-datos.md` §5. (`Usuarios.md` de la bóveda **no está en este repo**;
+lo que sí está es `assets/RESUMEN-MODELO-USUARIOS-MONKEY.md`.)
 
 ## 9. Medición de cumplimiento
 

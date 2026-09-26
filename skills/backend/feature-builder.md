@@ -13,7 +13,7 @@ applies_to: backend
 Checklist de referencia para agregar una feature de negocio completa al
 backend de Monkey, siguiendo exactamente el patrón ya establecido en
 `src/features/risk` (la feature de referencia). La usa típicamente el agente
-`backend-senior` (ver `../agents/backend-senior.md`) cuando el tech-lead le
+`backend-senior` (ver `../../agents/backend-senior.md`) cuando el tech-lead le
 asigna la tarea.
 
 ## Cuándo usar esta skill
@@ -24,8 +24,8 @@ asigna la tarea.
 ## Contexto obligatorio antes de empezar
 
 Lee, en este orden:
-1. `../context/project-context.md`
-2. `../skills/backend/add-feature.md` (los 8 pasos exactos a seguir)
+1. `../../context/project-context.md`
+2. `add-feature.md` (los 8 pasos exactos a seguir)
 3. El código real de `src/features/risk/**` como plantilla viva (no confíes solo
    en la documentación; el código es la fuente de verdad).
 
@@ -40,7 +40,7 @@ Lee, en este orden:
 - [ ] `*.module.ts` registrando el `provide/useClass` del repositorio.
 - [ ] Módulo importado en `src/app.module.ts`.
 - [ ] Si el modelo no existe en Prisma, agregarlo primero siguiendo
-      `../skills/backend/add-prisma-model.md`.
+      `add-prisma-model.md`.
 - [ ] Respuestas envueltas en `ResponseDto`.
 - [ ] Guard `@UseGuards(AuthGuard('jwt'))` + `@ApiCookieAuth()` si el recurso
       requiere autenticación (todos los recursos de negocio la requieren salvo

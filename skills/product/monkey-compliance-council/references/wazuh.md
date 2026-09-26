@@ -57,7 +57,7 @@ El módulo SCA corre benchmarks tipo CIS contra los endpoints y reporta gaps de 
 
 Lo de arriba es diseño del Consejo. Lo que sigue son **hechos operativos del
 entorno real de Monkey**, documentados por el equipo funcional. Fuentes en
-`../../../assets/README.md`:
+`../../../../assets/README.md`:
 
 - **`conexion_api_wazuh_monkey.txt`** — endpoints, flujo del conector y las reglas
   de destino. Contiene credenciales en texto plano: no copiarlo a ningún repo.

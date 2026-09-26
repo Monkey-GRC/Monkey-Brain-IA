@@ -13,7 +13,7 @@ applies_to: backend
 Checklist de revisión de arquitectura: verificar que un diff o un módulo
 nuevo respete la separación de capas del proyecto, no revisar estilo ni
 lógica de negocio en detalle. La usa típicamente el agente `tech-lead` (ver
-`../agents/tech-lead.md`) al revisar el trabajo del `backend-senior`.
+`../../agents/tech-lead.md`) al revisar el trabajo del `backend-senior`.
 
 ## Cuándo usar esta skill
 

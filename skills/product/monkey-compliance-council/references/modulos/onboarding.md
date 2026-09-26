@@ -64,12 +64,13 @@ documento con las 10 secciones de los *Description Criteria* de AICPA (tipos de 
 componentes del sistema, límites del alcance, compromisos, criterios de confianza
 aplicables, controles relevantes, subservicios y CSOCs, CUECs, cambios significativos,
 incidentes del periodo). Es la misma entidad `system_descriptions` de `modelo-datos.md`
-§5.1, y sus secciones 7 y 8 son de donde salen `csocs` y `cuecs`.
+§6.2, y sus secciones 7 y 8 son de donde salen `csocs` y `cuecs`.
 
 ## Componente 3 — Control Técnico
 
 Aquí el cliente conecta sus activos. Es la capa técnica completa de `modelo-datos.md`
-§5.5 (`automated_capabilities`, `asset_provisionings`, el catálogo de conexiones AC-01…AC-06) y
+§6.3 y §8 (`automated_capabilities`, `asset_provisionings`, el catálogo de conexiones
+AC-01…AC-06) y
 la regla de confidencialidad de `wazuh.md`: **el cliente solo interactúa con Monkey y
 nunca sabe que el motor de monitoreo es Wazuh.** No se repite el detalle aquí — ver esos
 dos archivos para el catálogo de conexiones, los escenarios de despliegue y la matriz de
@@ -89,7 +90,7 @@ Lo que aporta este componente al onboarding, específicamente:
 
 Riesgos, causas y controles **no se configuran a mano durante el onboarding**. Al elegir
 framework en el Componente 2, el catálogo correspondiente se clona automáticamente al
-escenario del cliente (`modelo-datos.md` §4) — el cumplimiento ya empieza a medirse con
+escenario del cliente (`modelo-datos.md` §3.5) — el cumplimiento ya empieza a medirse con
 ese set por defecto. Editar esa interpretación, excluir un check o reasignar
 responsables es un módulo aparte ("Cumplimiento"), disponible sin límite de tiempo y sin
 bloquear el resto del producto (crear usuarios, conectar activos, etc.). Ver decisión

@@ -31,7 +31,8 @@ Listados en orden de dependencia: cada uno necesita el anterior construido prime
 `companies`, `users`, roles (`admin_monkey`, `admin_empresa`, `funcional`, `auditor` +
 roles personalizados), sesiones, MFA obligatoria para roles no-`funcional`, aislamiento
 por tenant (dedicado o RLS, elegido por el cliente).
-**Fuente:** `Usuarios.md` y `Auth.md` (bóveda), `modelo-datos.md` §5.
+**Fuente:** `modelo-datos.md` §5 y `RESUMEN-MODELO-USUARIOS-MONKEY.md`. (`Usuarios.md` y
+`Auth.md` de la bóveda no están en este repo.)
 
 ### 2. Onboarding — Contexto Organizacional
 Componente 1 del onboarding: 10 campos que capturan identidad, perfil y jurisdicción de
@@ -94,7 +95,7 @@ AWS o Azure, GitHub, Google Workspace o M365, Okta o Entra ID, Slack.
 ### 12. Auditoría
 Rol `auditor`, `auditor_assignments` (qué empresas puede auditar cada auditor externo),
 registro de hallazgos.
-**Fuente:** `Usuarios.md`.
+**Fuente:** `RESUMEN-MODELO-USUARIOS-MONKEY.md` (`Usuarios.md` de la bóveda no está en este repo).
 
 ## Nota sobre el épico 8
 

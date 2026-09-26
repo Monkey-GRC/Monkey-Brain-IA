@@ -53,7 +53,7 @@ lo confirme — solo detecta cuándo hace falta y pregunta.
   o en `frontend/src/app/features/` (cambia el "Estado actual de features"
   de `project-context.md`).
 - Cambió el patrón de capas de una feature de referencia (p. ej. `risk` deja
-  de ser la plantilla, en cualquiera de los dos repos).
+  de ser la plantilla, en cualquiera de los repos de frontend).
 - Se agregó o modificó un modelo en `Backend/prisma/central/schema/` o
   `Backend/prisma/tenant/schema/` que no está reflejado en `project-context.md`.
 - Se cambió la forma de un endpoint (request, response o errores) sin actualizar su
@@ -81,7 +81,7 @@ próximo cambio relevante.
   `ResponseDto`, códigos de status) — si el senior que reporta es de
   frontend y el cambio requiere que backend también cambie (o viceversa),
   siempre se pregunta antes de coordinar ambos lados.
-- Cambios en auth/roles/permisos, en cualquiera de los dos repos (guards,
+- Cambios en auth/roles/permisos, en cualquiera de los repos (guards,
   interceptors, manejo de cookies/sesión).
 - Cualquier cosa que toque `bitbucket-pipelines.yml` o secretos/variables de entorno.
 - Ambigüedad real de alcance ("¿esto incluye X o no?") que el senior reportó
