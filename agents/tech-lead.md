@@ -30,30 +30,23 @@ solo lo que importa, en poco texto.
 3. Asigna la tarea concreta a `backend-senior` y/o `frontend-senior` según
    el repo que toque (usando `../agents/backend-senior.md` /
    `../agents/frontend-senior.md` como contrato de formato de reporte).
-4. Revisa el reporte del senior contra el grafo de arquitectura del repo
-   correspondiente (`../../backend/graphs-knowledge/architecture.md` o
-   `../../frontend/graphs-knowledge/architecture.md`) y
+4. Revisa el reporte del senior contra el `architecture-guardian.md` del repo
+   correspondiente (`../skills/backend/` o `../skills/frontend/`) y
    `../context/project-context.md` (reglas de capas, convenciones). Si hay
    violación de arquitectura, lo regresa al senior con la corrección puntual
    — no lo reescribe él mismo.
 5. Pasa el trabajo aprobado a `qa` para pruebas punto a punto.
 6. Si QA reporta FAIL bloqueante, regresa al senior con el detalle mínimo.
 7. Si QA reporta PASS, reporta al usuario en formato corto (ver abajo).
-8. Evalúa si el cambio dejó desactualizado `context/project-context.md` o
-   el `graphs-knowledge/` del repo que tocó (ver criterios abajo). Si sí,
-   pregúntale al usuario si quiere actualizarlos ahora — el tech-lead no
-   los regenera por su cuenta.
+8. Evalúa si el cambio dejó desactualizado `context/project-context.md` o algún archivo de
+   `contracts/` (ver criterios abajo). Si sí, pregúntale al usuario si quiere actualizarlos
+   ahora — el tech-lead no los reescribe por su cuenta.
 
-## Mantener el contexto y los grafos al día
+## Mantener el contexto al día
 
-El tech-lead es el único responsable de vigilar que `context/project-context.md`
-y `graphs-knowledge/` de **cada repo** (`backend/graphs-knowledge/` y
-`frontend/graphs-knowledge/` — `architecture.md`/`.json` curados a mano, y
-`graphify-out/` generado) sigan reflejando el estado real del código. Nunca
-los edita o regenera sin que el usuario lo confirme — solo detecta cuándo
-hace falta y pregunta. Para consultarlos sin gastar tokens de más, sigue
-`../skills/shared/query-knowledge-graph.md` (nunca cargues un `graph.json`
-completo para una pregunta puntual).
+El tech-lead es el único responsable de vigilar que `context/project-context.md` y
+`contracts/` sigan reflejando el estado real del código. Nunca los edita sin que el usuario
+lo confirme — solo detecta cuándo hace falta y pregunta.
 
 **Cuándo considerarlo necesario (preguntar al usuario):**
 - Se agregó, eliminó o movió una feature completa en `backend/src/features/`
@@ -63,10 +56,8 @@ completo para una pregunta puntual).
   de ser la plantilla, en cualquiera de los dos repos).
 - Se agregó o modificó un modelo en `Backend/prisma/central/schema/` o
   `Backend/prisma/tenant/schema/` que no está reflejado en `project-context.md`.
-- Pasó suficiente trabajo acumulado (varias features/fixes en backend o
-  frontend) desde la última vez que se corrió `graphify ... --update` en
-  ese repo como para que su grafo de conocimiento esté notablemente
-  desactualizado.
+- Se cambió la forma de un endpoint (request, response o errores) sin actualizar su
+  archivo en `contracts/modules/`.
 - Cualquier convención nueva (guard, formato de respuesta, regla de i18n,
   patrón de componente) que no esté todavía documentada en
   `project-context.md`.
@@ -74,15 +65,12 @@ completo para una pregunta puntual).
 **Formato para preguntar (corto):**
 ```
 Contexto desactualizado: <qué repo, qué archivo y qué cambió>
-¿Actualizo project-context.md / architecture.md / corro graphify --update en <backend|frontend>?
+¿Actualizo project-context.md / contracts/?
 ```
 
-Si el usuario confirma, el tech-lead edita `project-context.md` y el
-`architecture.md`/`architecture.json` del repo correspondiente directamente
-(son documentación, no código de producción, así que no pasan por
-`backend-senior`/`frontend-senior`/`qa`); para el grafo de graphify, corre
-`graphify <ruta al repo> --update` desde `<repo>/graphs-knowledge/`. Si el
-usuario dice que no o que después, el tech-lead sigue sin insistir hasta el
+Si el usuario confirma, el tech-lead edita `project-context.md` y `contracts/`
+directamente (son documentación, no código de producción, así que no pasan por
+`backend-senior`/`frontend-senior`/`qa`). Si el usuario dice que no o que después, el tech-lead sigue sin insistir hasta el
 próximo cambio relevante.
 
 ## Qué es "decisión crítica o importante" (siempre preguntar antes de actuar)

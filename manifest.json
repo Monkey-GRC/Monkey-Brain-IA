@@ -122,7 +122,7 @@
     {
       "id": "tech-lead",
       "path": "agents/tech-lead.md",
-      "description": "Supervisa a backend-senior, frontend-senior y qa. No implementa código. Escala decisiones críticas al usuario y reporta corto. También vigila que context/project-context.md y el graphs-knowledge/ de cada repo se mantengan al día, y le pregunta al usuario antes de actualizarlos.",
+      "description": "Supervisa a backend-senior, frontend-senior y qa. No implementa código. Escala decisiones críticas al usuario y reporta corto. También vigila que context/project-context.md y contracts/ se mantengan al día, y le pregunta al usuario antes de actualizarlos.",
       "model": "sonnet",
       "applies_to": [
         "backend",
@@ -134,9 +134,7 @@
         "qa"
       ],
       "maintains": [
-        "context/project-context.md",
-        "../backend/graphs-knowledge",
-        "../frontend/graphs-knowledge"
+        "context/project-context.md"
       ]
     },
     {
@@ -285,17 +283,6 @@
       "description": "Checklist para revisar código contra las reglas de capas core/shared/features (frontend)."
     },
     {
-      "id": "query-knowledge-graph",
-      "path": "skills/shared/query-knowledge-graph.md",
-      "description": "Cómo cualquier agente debe consultar backend/graphs-knowledge/ y frontend/graphs-knowledge/ de la forma más barata posible — el brain nunca duplica ni almacena su propia copia de los grafos.",
-      "usedBy": [
-        "tech-lead",
-        "backend-senior",
-        "frontend-senior",
-        "product-owner"
-      ]
-    },
-    {
       "id": "wazuh",
       "path": "skills/integrations/wazuh/SKILL.md",
       "description": "Wazuh como plataforma SIEM/XDR completa: arquitectura, API REST (puerto 55000), OpenSearch, agentes, SCA, syscollector, vulnerabilidades, FIM, MITRE ATT&CK, y TODAS las normativas que evalúa — nativas (PCI DSS, HIPAA, NIST 800-53, TSC/SOC 2, GDPR, GPG13, ISO 27001, CIS) y las que requieren mapeo custom (CMMC 2.0, NIS2, DORA, LGPD, CCPA/CPRA, FedRAMP, SOC 1). Incluye como caso aplicado el SOC gestionado de Bryan Tejeda sobre un VPS Contabo. Referencias en skills/integrations/wazuh/references/.",
@@ -308,26 +295,5 @@
       "path": "skills/backend/add-wazuh-integration.md",
       "description": "Cómo agregar una feature NestJS que consuma la API de Wazuh, siguiendo Clean Architecture. Consultar wazuh-integration-expert para los hechos de API/infra antes de implementar."
     }
-  ],
-  "graphsKnowledge": {
-    "note": "monkey-brain-ai NO almacena grafos propios. Cada repo de código tiene su propia carpeta graphs-knowledge/ (misma estructura en ambos), y los agentes la consultan directamente desde ahí — ver skills/shared/query-knowledge-graph.md.",
-    "backend": {
-      "path": "../backend/graphs-knowledge",
-      "architecture": "../backend/graphs-knowledge/architecture.json",
-      "architectureRendered": "../backend/graphs-knowledge/architecture.md",
-      "knowledgeGraph": "../backend/graphs-knowledge/graphify-out/graph.json",
-      "knowledgeGraphHtml": "../backend/graphs-knowledge/graphify-out/graph.html",
-      "knowledgeGraphReport": "../backend/graphs-knowledge/graphify-out/GRAPH_REPORT.md",
-      "regenerate": "cd backend/graphs-knowledge && graphify <ruta absoluta al repo backend> --update"
-    },
-    "frontend": {
-      "path": "../frontend/graphs-knowledge",
-      "architecture": "../frontend/graphs-knowledge/architecture.json",
-      "architectureRendered": "../frontend/graphs-knowledge/architecture.md",
-      "knowledgeGraph": "../frontend/graphs-knowledge/graphify-out/graph.json",
-      "knowledgeGraphHtml": "../frontend/graphs-knowledge/graphify-out/graph.html",
-      "knowledgeGraphReport": "../frontend/graphs-knowledge/graphify-out/GRAPH_REPORT.md",
-      "regenerate": "cd frontend/graphs-knowledge && graphify <ruta absoluta al repo frontend> --update"
-    }
-  }
+  ]
 }

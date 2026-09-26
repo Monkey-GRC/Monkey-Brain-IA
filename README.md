@@ -18,44 +18,32 @@ hermana de esos repos (p. ej. `Monkey/Backend/` y `Monkey/Frontend/` junto a
 `Monkey/Monkey-Brain-IA/`) — ver la nota de "Convención de rutas" en
 `context/project-context.md`.
 
-**El brain no genera ni almacena grafos.** Los grafos de conocimiento viven
-dentro de cada repo de código (`backend/graphs-knowledge/` y
-`frontend/graphs-knowledge/`, generados con la skill graphify). Este folder
-solo los **consulta** para responder con más precisión y gastando menos
-tokens — nunca duplica su contenido. Ver "Los grafos viven en cada repo" más
-abajo.
-
 Esta carpeta no depende de ninguna herramienta en particular (Claude Code, Cursor,
 Copilot, Windsurf, un agente custom, etc.). Es un conjunto de archivos en Markdown
 con front-matter YAML y un índice en JSON, pensado para que cualquier asistente de
 IA pueda:
 
-1. Entender rápido el dominio, el stack y las convenciones de ambos repos (`context/`).
+1. Entender rápido el dominio, el stack y las convenciones de los repos (`context/`).
 2. Saber qué "agentes" (roles/personas especializadas) existen y cuándo usarlos (`agents/`).
 3. Ejecutar tareas repetibles paso a paso ("skills") sin reinventar el proceso cada vez (`skills/`).
-4. Consultar los grafos de arquitectura y de conocimiento de cada repo **sin
-   copiarlos aquí** — solo leerlos desde su ubicación real, de la forma más
-   barata posible (`skills/shared/query-knowledge-graph.md`).
+4. Conocer qué exige cada framework y qué está decidido del modelo de datos
+   (`skills/product/monkey-compliance-council/`).
+5. Saber la forma exacta de cada endpoint antes de construirlo (`contracts/`).
 
 ## Cómo debe usarla un agente de IA
 
-1. Leer `manifest.json` para saber qué recursos existen y sus rutas (incluye
-   punteros a los `graphs-knowledge/` de cada repo, bajo `graphsKnowledge`).
+1. Leer `manifest.json` para saber qué recursos existen y sus rutas.
 2. Leer `context/project-context.md` **siempre** antes de tocar código en
-   cualquiera de los dos repos.
+   cualquiera de los repos.
 3. Si la tarea calza con un agente definido en `agents/`, adoptar ese rol/checklist.
 4. Si la tarea calza con una skill definida en `skills/` (técnica de backend
    en `skills/backend/`, técnica de frontend en `skills/frontend/`, de
    producto/compliance en `skills/product/`, transversal en `skills/shared/`),
    seguir sus pasos en orden.
-5. Antes de crear o mover módulos, revisar el `architecture.md`/`.json` del
-   repo que corresponda (`backend/graphs-knowledge/` o
-   `frontend/graphs-knowledge/`) para no violar la regla de capas.
-6. Para preguntas más amplias sobre cómo se conecta el código de un repo,
-   seguir **siempre** `skills/shared/query-knowledge-graph.md`: preferir
-   `graphify query "<pregunta>"` o una sección puntual del
-   `GRAPH_REPORT.md` correspondiente, en vez de cargar el `graph.json`
-   completo — así se evita consumo de tokens excesivo.
+5. Antes de crear o mover módulos, revisar el `architecture-guardian.md` del repo que
+   corresponda (`skills/backend/` o `skills/frontend/`) para no violar la regla de capas.
+6. Antes de construir un endpoint o un formulario, leer el módulo correspondiente de
+   `contracts/modules/`.
 7. **Todo lo que deba escalarse (decisión crítica, pregunta, aprobación) va
    siempre hacia el usuario que está usando la herramienta en ese momento** —
    nunca a un nombre fijo ni a una persona específica del dominio de negocio.
@@ -63,15 +51,26 @@ IA pueda:
 ## Estructura
 
 ```
-monkey-brain-ai/
+Monkey-Brain-IA/
 ├── README.md                      # este archivo
-├── manifest.json                  # índice máquina-legible + punteros a graphs-knowledge/ de cada repo
+├── CLAUDE.md                      # instrucciones obligatorias antes de tomar cualquier decisión
+├── manifest.json                  # índice máquina-legible de todos los recursos
 ├── context/
-│   └── project-context.md         # dominio, stack y convenciones — backend Y frontend
+│   └── project-context.md         # estado ACTUAL del código de los tres repos
+├── contracts/                     # forma exacta de cada endpoint: request, response y errores
+│   ├── README.md
+│   ├── conventions.md             # sobre de respuesta, errores, i18n, multi-select, paginación
+│   ├── enums.md                   # valor snake_case ↔ etiqueta es/en, para todos los enums
+│   └── modules/                   # un archivo por módulo (monkey-admin, auth, los 3 componentes)
 ├── assets/                        # FUENTES FUNCIONALES del comité — fuente de verdad, no material de apoyo
 │   ├── README.md                  # inventario: qué decide cada documento y quién lo consume
-│   ├── draft-BLUEPRINT FUNCIONAL-ControlTecnico.docx
-│   └── vision_controles.pptx
+│   ├── ALCANCE-ONBOARDING-MVP.md
+│   ├── PROPUESTA-JIRA-MVP-MONKEY.md
+│   ├── RESUMEN-MODELO-USUARIOS-MONKEY.md
+│   ├── TSC INTERGRAL SOC 2 DETALLADO VF.xlsx      # (gitignored)
+│   ├── MONKEY_Ejemplo_Formula_Cumplimiento.xlsx   # (gitignored)
+│   ├── draft-BLUEPRINT FUNCIONAL-ControlTecnico.docx  # (gitignored)
+│   └── vision_controles.pptx                      # (gitignored)
 ├── agents/
 │   ├── product-owner.md           # rol: decide qué/por qué/prioridad
 │   ├── tech-lead.md               # rol: supervisa backend-senior + frontend-senior + qa
@@ -98,58 +97,11 @@ monkey-brain-ai/
     │       └── references/        # modelo-datos (+decisiones, +pendientes), flujo-end-to-end,
     │           │                    #   philosophy, architecture, wazuh, mvp-roadmap, council, frameworks/*
     │           └── modulos/           # onboarding.md
-    ├── integrations/               # skills de integraciones externas
-    │   └── wazuh/                    # Wazuh completo: producto (API, infra, TODAS las normativas que evalúa) + caso aplicado del SOC de Bryan
-    │       ├── SKILL.md
-    │       └── references/        # infraestructura, agentes, compliance (normativas nativas vs. custom), api-integracion, soc-gestionado
-    └── shared/                    # skills transversales (no específicas de un repo)
-        └── query-knowledge-graph.md  # cómo consultar los grafos sin gastar tokens de más
+    └── integrations/               # skills de integraciones externas
+        └── wazuh/                    # Wazuh completo: producto (API, infra, TODAS las normativas que evalúa) + caso aplicado del SOC de Bryan
+            ├── SKILL.md
+            └── references/        # infraestructura, agentes, compliance (normativas nativas vs. custom), api-integracion, soc-gestionado
 ```
-
-## Los grafos viven en cada repo, no aquí
-
-Cada repo de código tiene su propia carpeta, con **la misma estructura** en
-ambos:
-
-```
-<repo>/graphs-knowledge/
-├── architecture.json          # grafo curado a mano: capas/módulos, normativo
-├── architecture.md            # mismo grafo en Mermaid + explicación
-└── graphify-out/               # grafo de conocimiento completo, generado con graphify
-    ├── graph.html               # visualización interactiva — abrir en el navegador
-    ├── graph.json                # datos crudos (GraphRAG/consumo programático)
-    ├── GRAPH_REPORT.md           # reporte en lenguaje llano (god nodes, conexiones
-    │                             # sorprendientes, hyperedges, preguntas sugeridas)
-    ├── manifest.json             # manifest interno de graphify (para --update incremental)
-    ├── cost.json                 # tracker de tokens gastados en cada corrida de graphify
-    └── .graphify_*                # archivos internos de graphify (no editar a mano)
-```
-
-- **`backend/graphs-knowledge/`** — 444 nodos, 589 aristas, 54 comunidades
-  (código `src/`, `prisma/schema/`, y el propio `monkey-brain-ai`).
-- **`frontend/graphs-knowledge/`** — 441 nodos, 623 edges, 45 comunidades
-  (código `src/app/`, templates HTML; las 18 imágenes decorativas del
-  template TailAdmin se excluyeron a propósito de la extracción semántica
-  para no gastar tokens en assets sin valor de producto — ver la nota en su
-  `GRAPH_REPORT.md`).
-
-**Por qué no viven en `monkey-brain-ai`**: el brain existe para optimizar
-cómo se usan — no para poseerlos. Mantener una sola copia (la del repo real)
-evita que el brain quede desincronizado del código y evita cargar contenido
-duplicado en contexto. Ver `skills/shared/query-knowledge-graph.md` para el
-protocolo exacto de consulta (siempre desde ahí, nunca copiado aquí, y
-siempre empezando por la forma más barata: `graphify query` > sección de
-`GRAPH_REPORT.md` > `architecture.md` > `graph.json` completo como último
-recurso).
-
-Regenerar tras cambios:
-```
-cd backend/graphs-knowledge && graphify <ruta absoluta al repo backend> --update
-cd frontend/graphs-knowledge && graphify <ruta absoluta al repo frontend> --update
-```
-(el `tech-lead` es quien decide cuándo hace falta y se lo pregunta al
-usuario — ver `agents/tech-lead.md`, sección "Mantener el contexto y los
-grafos al día").
 
 ## Equipo de agentes (jerarquía fija)
 
@@ -176,14 +128,12 @@ grafos al día").
   resolución clara). Entrega alcance ya clasificado (MUST/SHOULD/LATER/NO
   BUILD) al tech-lead.
 - **tech-lead**: no implementa ni prueba. Supervisa a **ambos** seniors,
-  revisa contra el `architecture.md` del repo que corresponda, y es el
+  revisa contra el `architecture-guardian.md` del repo que corresponda, y es el
   único que habla con el usuario para temas de ingeniería. Antes de
   cualquier decisión crítica (ver `agents/tech-lead.md`), pregunta al
   usuario; para el resto, reporta corto al final. También vigila que
-  `context/project-context.md` y el `graphs-knowledge/` de **cada repo** no
-  queden desactualizados tras un cambio — cuando lo considera necesario, le
-  pregunta al usuario si quiere actualizarlos (nunca los regenera por su
-  cuenta sin confirmación).
+  `context/project-context.md` no quede desactualizado tras un cambio — cuando lo
+  considera necesario, le pregunta al usuario si quiere actualizarlo.
 - **backend-senior**: ejecuta la tarea que le asigna el tech-lead en el
   backend siguiendo las skills (`skills/backend/add-feature.md`, etc.). No
   decide alcance.
@@ -215,18 +165,15 @@ Modelos asignados (pensado para bajo consumo de tokens): `product-owner`,
 `tech-lead` y `wazuh-integration-expert` = sonnet (requieren juicio, no
 solo ejecución mecánica), `backend-senior`, `frontend-senior` y `qa` =
 haiku. Todos con reportes cortos y formato fijo (ver cada archivo de
-agente), y todos usan `skills/shared/query-knowledge-graph.md` en vez de
-releer código fuente completo o cargar grafos enteros — para minimizar
-tokens.
+agente), y todos leen la parte del código que necesitan en vez de repos completos, para
+minimizar tokens.
 
 ## Convenciones de formato
 
 - Cada archivo de `agents/` y `skills/` tiene front-matter YAML (`id`, `name`,
   `description`, `type`) seguido de contenido en Markdown plano.
 - `manifest.json` es la fuente de verdad para descubrimiento automático; los
-  campos `path` son relativos a esta carpeta (`monkey-brain-ai/`), salvo
-  `graphsKnowledge`, que apunta a las carpetas hermanas `../backend/` y
-  `../frontend/`.
+  campos `path` son relativos a esta carpeta (`Monkey-Brain-IA/`).
 - `skills/` está organizada en categorías claras a nivel de carpeta:
   `backend/` (implementación NestJS), `frontend/` (implementación Angular),
   `product/` (producto/estrategia/compliance), `integrations/` (conocimiento
@@ -251,10 +198,6 @@ tokens.
   lo use debe tratarlo como información operativa real, no como ejemplo
   genérico, y nunca debe filtrarse hacia documentos o superficies públicas
   del producto Monkey.
-- **Excepción explícita**: `graphs-knowledge/graphify-out/` (en cada repo,
-  no aquí) es la salida cruda de la skill graphify (incluye archivos
-  internos con prefijo `.graphify_*`) — no se edita a mano, se regenera con
-  `graphify ... --update`.
 
 ## Las fuentes funcionales están en `assets/`
 

@@ -24,7 +24,7 @@ lógica de negocio en detalle. La usa típicamente el agente `tech-lead` (ver
 
 ## Contexto obligatorio
 
-Lee `../../context/project-context.md` y `../../../backend/graphs-knowledge/architecture.md` antes de
+Lee `../../context/project-context.md` antes de
 emitir un veredicto.
 
 ## Reglas a verificar (en orden de gravedad)

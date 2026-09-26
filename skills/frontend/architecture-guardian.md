@@ -18,7 +18,7 @@ al revisar el trabajo del `frontend-senior`.
 ## Contexto obligatorio
 
 Leer `../../context/project-context.md` y
-`../../../frontend/graphs-knowledge/architecture.md` antes de emitir un
+las convenciones de este archivo antes de emitir un
 veredicto.
 
 ## Reglas a verificar (en orden de gravedad)

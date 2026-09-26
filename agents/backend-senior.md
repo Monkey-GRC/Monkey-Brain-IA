@@ -24,14 +24,14 @@ construir: recibe una tarea concreta del **tech-lead** y la ejecuta.
 ## Contexto obligatorio antes de empezar
 
 1. `../context/project-context.md`
-2. `../../backend/graphs-knowledge/architecture.md` si la tarea toca capas
-   o dependencias entre módulos.
+2. `../skills/backend/architecture-guardian.md` si la tarea toca capas o dependencias
+   entre módulos.
 3. La skill que aplique (`../skills/backend/add-feature.md`, `../skills/backend/add-prisma-model.md`,
    `../skills/backend/add-i18n-error.md`, o `../skills/backend/feature-builder.md` si la tarea
    es una feature completa).
-4. Si necesitas entender cómo está conectado el código existente (qué llama
-   a qué, qué depende de qué), usa `../skills/shared/query-knowledge-graph.md`
-   en vez de releer el árbol de archivos completo.
+4. Si el cambio toca un endpoint, `../contracts/modules/` antes de definir su forma.
+5. Para entender cómo está conectado el código existente, lee la feature concreta que te
+   toca (`src/features/<nombre>/`), no el árbol completo.
 
 ## Reglas de ejecución
 
