@@ -795,7 +795,7 @@ erDiagram
         uuid company_id FK
         string name "precargado y bloqueado, viene de companies"
         text description
-        enum size "10_50 ... more_than_5000"
+        enum size "from_10_to_50 ... more_than_5000"
         enum industry
         enum business_model "40+ opciones"
         enum years_in_operation "nullable"
@@ -824,6 +824,11 @@ erDiagram
 `companies` es el tenant: existe desde Monkey Admin, antes de que el cliente entre, y lleva
 el aislamiento de datos. `organizations` es el contenido de negocio que el cliente declara
 dentro de ese tenant. El `name` se fija en `companies` y se refleja bloqueado aquí.
+
+**Los rangos numéricos se nombran con prefijo.** `size` y `active_client_count` son rangos
+(«10-50», «1-10»…), y un valor de enum no puede empezar por dígito: se escriben
+`from_10_to_50`, `from_51_to_200`, … `more_than_5000`. Las etiquetas que ve el usuario salen
+de i18n, no del enum — la tabla de correspondencia está en `contracts/enums.md`.
 
 **`regulations` es tabla propia y no se puntúa** (decisión D10): nadie "contrata" la Ley
 1581, pero sí determina qué le aplica. No entra al cálculo de cumplimiento.

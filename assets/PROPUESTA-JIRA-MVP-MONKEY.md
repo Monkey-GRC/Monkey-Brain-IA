@@ -42,7 +42,7 @@ la empresa → entidad `organizations`.
 ### 3. Onboarding — Contexto del Servicio
 Componente 2: 16 campos por servicio (un cliente puede declarar varios), incluida la
 Descripción del Sistema (documento AICPA de 10 secciones) → entidad `services` y las
-que cuelgan de ella (`trust_criteria`, `subservice_organizations`, `service_frameworks`,
+que cuelgan de ella (`service_trust_criteria`, `subservice_organizations`, `service_frameworks`,
 `system_descriptions`).
 **Fuente:** `modulos/onboarding.md`, Componente 2.
 
@@ -55,7 +55,9 @@ activar → programar). El cliente nunca ve el nombre del motor de monitoreo det
 ### 5. Catálogo maestro y clonado a escenario del cliente
 Marcos, Requisitos, Puntos de Enfoque y Control atómico (independiente del marco, se
 vincula a Requisitos vía Puntos de Enfoque). Al elegir marco en el Componente 2, el
-catálogo correspondiente se clona automáticamente al escenario del cliente — sin pasos
+catálogo correspondiente queda disponible automáticamente en el escenario del cliente
+(controles clonados a `client_controls`; requisitos y puntos de enfoque referenciados con
+FK, decisión D3) — sin pasos
 manuales.
 **Fuente:** `modelo-datos.md` §3; decisión D23 (`modelo-datos-decisiones.md`).
 

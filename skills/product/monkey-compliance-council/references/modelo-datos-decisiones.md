@@ -42,7 +42,7 @@ el documento mapea esa tabla a **CC6.1** junto con `users`. Entonces:
 
 | Qué                                                                           | Dónde vive                                          | Para qué                                               |
 | ------------------------------------------------------------------------------ | ---------------------------------------------------- | ------------------------------------------------------- |
-| **Cargo** (COO, TI, Cumplimiento, Proceso, CISO, propietario del activo) | Catálogo base, en`evidence_requirements.responsable` | Que el catálogo sirva para cualquier cliente           |
+| **Cargo** (COO, TI, Cumplimiento, Proceso, CISO, propietario del activo) | Catálogo base, en `evidence_requirements.responsible_id` | Que el catálogo sirva para cualquier cliente           |
 | **Persona** (usuario `funcional`)                                      | Escenario del cliente, en`user_control_assignments`      | Notificar, filtrar "mis controles", seguir el pendiente |
 
 La rotación de personal no toca el catálogo. Y el permiso de asignar es de
@@ -122,7 +122,7 @@ peligrosa cualquier propagación. Es una tabla más y protege el criterio expert
 **El requisito y sus puntos de enfoque no se clonan**: el escenario los referencia desde
 el plano central, porque son texto de un estándar y no se particularizan.
 
-**D4 · Hay un cuarto tipo: `TECHNICAL_MANUAL`.** Dos fuentes distintas lo nombran por la
+**D4 · Hay un cuarto tipo: `technical_manual`.** Dos fuentes distintas lo nombran por la
 misma causa — *"manual dependiente de TI"* y *"pruebas técnicas-manuales (SQL/consola)"*,
 documentado justo donde la sonda no llega. Es aditivo al enum y cambia dos cosas reales:
 a quién se asigna (perfil técnico) y si es "automatizable en el futuro" o "manual por
@@ -173,7 +173,7 @@ reconoce el patrón: `CPL-1` es el único de los 119 controles del catálogo sin
 porque *"es la Descripción del Sistema, Sección III del informe"*. Modelarlas permite
 generar esas secciones desde el sistema en vez de redactarlas a mano en cada auditoría.
 
-**D12 · Se guarda el mapeo completo, en una tabla `CheckMapeo (check, marco, versión, código)`.** Las 20 referencias con sus versiones (`PCI DSS v4.0` y `v3.2.1` conviven), y
+**D12 · Se guarda el mapeo completo, en una tabla `check_mappings` (`check_id`, `framework_code`, `framework_version`, `requirement_code`).** Las 20 referencias con sus versiones (`PCI DSS v4.0` y `v3.2.1` conviven), y
 **MITRE también** — táctica, técnica y mitigación son lo que permite explicar *por qué*
 importa un hallazgo, que es la traducción que promete el producto. Descartarlo obligaría
 a re-mapear 11.352 checks al activar el segundo marco: sería tirar el activo más valioso
@@ -328,8 +328,8 @@ por la misma app que usa el cliente, o por algo distinto?
 **Qué cambia en el modelo:** se corrige `modelo-datos.md` §4.3 — `isolation_strategy` es
 atributo de `companies`, no de `organizations` (la empresa como tenant existe antes de que
 el cliente declare nada de negocio). Se agrega la tabla `access_keys` (§4.1). El campo
-`nombre` de `organizations` en el onboarding no es editable: es de solo lectura, reflejo
-del `nombre` ya capturado en `companies`.
+`name` de `organizations` en el onboarding no es editable: es de solo lectura, reflejo
+del `name` ya capturado en `companies`.
 
 **Por qué importa ahora:** condiciona el día 1-2 del sprint de Onboarding (fundación de
 Auth) — sin esto no hay forma de que el primer `admin_empresa` entre al sistema.

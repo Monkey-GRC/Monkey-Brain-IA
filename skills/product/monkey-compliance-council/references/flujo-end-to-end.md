@@ -23,7 +23,7 @@ mapa de cómo se encadenan.
 
 Al enviar el formulario:
 
-- Queda creado el tenant (`companies`), con `nombre` y `isolation_strategy`
+- Queda creado el tenant (`companies`), con `name` e `isolation_strategy`
   (`dedicated` si el check está marcado, `shared` si no). Para el MVP, `shared` es una
   sola base de datos con el catálogo y todos los tenants, aislados por RLS sobre
   `tenant_id` (§4.3, D25). `dedicated` es una réplica completa del esquema, solo para
@@ -32,7 +32,7 @@ Al enviar el formulario:
 - La clave se envía **al correo administrativo** que se acaba de capturar — ese correo
   es el destino, no un canal aparte.
 
-**Entidades:** `companies` (con `nombre`, `isolation_strategy`), `access_keys`.
+**Entidades:** `companies` (con `name`, `isolation_strategy`), `access_keys`.
 **Fuente:** `modelo-datos.md` §4, decisiones D24 y D25.
 
 ## 2. Primer acceso del cliente
@@ -63,7 +63,7 @@ Una vez por servicio (repetible). Dieciséis campos, incluida la Descripción de
 **Al elegir marco aquí, se dispara el paso 5 automáticamente** — no es una acción
 manual separada.
 
-**Entidades:** `services`, `trust_criteria`, `subservice_organizations`,
+**Entidades:** `services`, `service_trust_criteria`, `subservice_organizations`,
 `service_frameworks`, `system_descriptions`.
 **Fuente:** `modulos/onboarding.md`, Componente 2.
 
@@ -132,21 +132,21 @@ empresa completa.
 
 ```
 Monkey Admin (admin_monkey) — dominio propio
-        │  form: nombre, ¿dedicada?, correo administrativo
-        │  crea company + AccessKey → clave enviada al correo
+        │  form: name, ¿dedicada?, admin_email
+        │  crea companies + access_keys → la clave se muestra en la UI
         ▼
 Monkey Platform — primer acceso (admin_empresa)
         │
         ▼
-Onboarding Componente 1 ──► Organización
+Onboarding Componente 1 ──► organizations
         │
         ▼
-Onboarding Componente 2 ──► Servicio + MarcoServicio
+Onboarding Componente 2 ──► services + service_frameworks
         │                         │
         │                         ▼
-        │                 Clonado de catálogo (Riesgo, Causa, ControlCliente)
+        │                 Clonado de catálogo (risks, causes, client_controls)
         ▼
-Onboarding Componente 3 ──► Scope, InsumoRevisión, CapacidadAutomática
+Onboarding Componente 3 ──► scopes, assets, automated_capabilities
         │
         ▼
    (a partir de aquí, sin orden obligado, y sin bloquear nada)
