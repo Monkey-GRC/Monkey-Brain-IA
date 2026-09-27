@@ -672,6 +672,22 @@ cliente le contrata SOC 2 a un servicio, `service_frameworks` referencia directo
 `frameworks` con una foreign key — no una copia ni una llamada entre bases. Son más tablas en
 una sola base, pero es más simple de razonar y de consultar al tamaño del MVP.
 
+**La base se llama `monkey`** (más `monkey_shadow` para la shadow de Prisma), y dentro lleva
+**cuatro schemas de Postgres**, no por aislamiento —eso lo da RLS— sino para saber dónde vive
+cada cosa sin adivinar:
+
+| Schema | Qué contiene | RLS |
+|---|---|---|
+| `catalog` | El catálogo maestro (§3). Global, ninguna tabla lleva `tenant_id` | no |
+| `platform` | Monkey Admin y usuarios (§4, §5) | sí, salvo `companies` |
+| `tenant` | Onboarding, Cumplimiento y Control Técnico (§6 a §9) | sí, todo |
+| `audit` | `audit_logs` y `compliance_events`, con `REVOKE UPDATE, DELETE` que refuerza el append-only | sí |
+
+Las FK **cruzan schemas con normalidad**: `service_frameworks` en `tenant` referencia
+`frameworks` en `catalog` con una foreign key real. Un schema es un namespace, no un perímetro.
+La variable de conexión es `DATABASE_URL`; las `CENTRAL_DATABASE_URL` y
+`TENANT_MIGRATION_DATABASE_URL` del código actual desaparecen con los dos planos.
+
 La estrategia **se decide en el aprovisionamiento, no en el onboarding**, y queda como
 columna de `companies` — no de `organizations`, que la crea el cliente después. No se
 revierte sin migrar los datos. En el caso compartido, **el aislamiento lo garantiza la
