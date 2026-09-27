@@ -57,11 +57,12 @@ el nombre en inglés.
 
 | § | Módulo | Qué contiene |
 |---|---|---|
+| 0 | Fuentes | Qué documento del comité define qué, y dónde quedó transcrito cada uno |
 | 1 | Glosario | Todos los conceptos del dominio, con su tabla |
 | 2 | Las 5 dimensiones | El eje transversal que atraviesa todo el modelo |
 | 3 | Catálogo maestro | Lo que Monkey administra antes de que exista un cliente |
 | 4 | Monkey Admin | Registro del tenant y aislamiento de datos |
-| 5 | Usuarios | Roles, permisos, sesiones, responsables |
+| 5 | Usuarios | Los 4 roles, las tablas, las políticas de seguridad, los responsables organizacionales, la matriz de permisos y cómo el modelo de acceso sostiene SOC 2 |
 | 6 | Onboarding | Los 3 componentes que capturan el contexto del cliente |
 | 7 | Cumplimiento | Controles del cliente, riesgos, evidencias, evaluaciones |
 | 8 | Control Técnico | La operación continua de la sonda |
@@ -72,26 +73,80 @@ el nombre en inglés.
 
 ## 0. Fuentes
 
-Las produce el **comité funcional** y son la fuente de verdad: ante una discrepancia con
-este archivo, **gana el documento**. Inventario completo en `assets/README.md`.
+Las produce el **comité funcional** y son la fuente de verdad: ante una discrepancia con este
+archivo, **gana el documento**.
+
+### La que queda en el repo
 
 | Fuente | Qué define |
 |---|---|
-| `MONKEY_Ejemplo_Formula_Cumplimiento.xlsx` | **La fórmula de cumplimiento** (§9): 12 reglas + un servicio resuelto |
-| `TSC INTERGRAL SOC 2 DETALLADO VF.xlsx` | Catálogo maestro: 61 requisitos TSC, 302 puntos de enfoque, 119 controles (118 asignados), 729 relaciones punto de enfoque↔control, 61 TEST, 11.352 checks de 77 políticas sobre 18 plataformas, RBAC, contexto de empresa y servicio. **Cifras tomadas de los datos crudos, no de la hoja `Resumen`** (ver `../../../../assets/README.md`) |
-| `RESUMEN-MODELO-USUARIOS-MONKEY.md` | Modelo RBAC: 4 roles, 34 permisos, 8 tablas, políticas de seguridad (§5) |
-| `draft-BLUEPRINT FUNCIONAL-ControlTecnico.docx` | La capa de operación técnica (§8) |
-| `vision_controles.pptx` | Matriz de evaluación (superada por el ejemplo de fórmula para el cálculo) |
-| `SOC2_TSC_Controles_Detallados_Monkey2.xlsx` | Anatomía de requisito, control del cliente y plan de testeo |
-| `soc2_detalle.py` · `conexion_api_wazuh_monkey.txt` | Lógica de la sonda, estados de check, clave `policy_id + check_id` |
+| `assets/TSC INTERGRAL SOC 2 DETALLADO VF.xlsx` | **La fuente maestra**, 17 hojas: catálogo maestro (61 requisitos TSC, 302 puntos de enfoque, 119 controles de los que 118 están asignados, 729 relaciones punto de enfoque↔control), 61 TEST de 23 campos con 228 asignaciones control↔TEST, 11.352 checks de 77 políticas SCA sobre 18 plataformas con 20 referencias de mapeo, 10 riesgos, 56 causas con 92 relaciones riesgo↔causa, el modelo RBAC, y los formularios de contexto de empresa y de servicio con sus opciones literales |
 
-**Dos reglas que salen de ahí y aplican siempre:**
+⚠️ **Las cifras salen de los datos crudos de las hojas, no de la hoja `Resumen`**, que quedó
+desactualizada: declara 658 relaciones donde los datos tienen 729, y su desglose por categoría
+(A 34 / C 6 / CC 434 / PI 31 / P 153) no coincide con el real (A 39 / C 9 / CC 477 / PI 40 /
+P 164). La hoja `Claude Log` del propio archivo confirma "las 729 filas". No corregir hacia 658.
 
-1. **La dependencia de Wazuh es confidencial frente al cliente final.** En el producto se
-   dice "sonda" o "capacidad automática", nunca el proveedor. Es atributo interno.
-2. ⚠️ **El stack que menciona `RESUMEN-MODELO-USUARIOS-MONKEY.md` es falso**: dice
-   Node.js + Express + React. El real es **NestJS 11 + Prisma 7 + Angular 20**. Su
-   *modelo* es fuente de verdad; su *implementación* no.
+### Fuentes ya transcritas, cuyo archivo no está en el repo
+
+El comité entregó estos documentos y su contenido **ya vive en este archivo**. Se retiraron de
+`assets/` el 2026-09-26 para que no hubiera dos versiones de la misma verdad. Dónde quedó cada
+uno:
+
+| Fuente original | Dónde está su contenido ahora |
+|---|---|
+| `MONKEY_Ejemplo_Formula_Cumplimiento.xlsx` | §9: las 12 reglas R-01…R-12 y el ejemplo resuelto. Cerró la decisión D1 |
+| `RESUMEN-MODELO-USUARIOS-MONKEY.md` | §5: los 4 roles (§5.1), las tablas (§5.2), las políticas de seguridad con su justificación normativa (§5.3), la matriz de permisos (§5.5) y el mapeo a TSC del modelo de acceso (§5.6) |
+| `draft-BLUEPRINT FUNCIONAL-ControlTecnico.docx` | §8: `schedule_rules`, `executions`, `check_results`, `execution_logs`, `monitoring_domains` y las tres reglas de la operación técnica |
+| `vision_controles.pptx` | Nada propio: su matriz de evaluación quedó superada por el ejemplo de fórmula |
+| `ALCANCE-ONBOARDING-MVP.md` | `sprint-onboarding.md`: alcance, cronograma, prioridades y criterios de aceptación del sprint |
+| `PROPUESTA-JIRA-MVP-MONKEY.md` | `mvp-roadmap.md`: los 12 épicos del MVP en orden de dependencia |
+
+> ⚠️ **Un aviso que conviene no perder:** `RESUMEN-MODELO-USUARIOS-MONKEY.md` describía el
+> backend como Node.js + Express y el frontend como React, con código de ejemplo en esa forma.
+> **Era falso para este proyecto.** Su *modelo* (roles, permisos, tablas, audit trail) es el que
+> está transcrito en §5 y es válido; su *implementación* no se copió. El stack real es
+> **NestJS 11 + Prisma 7 + Angular 20 standalone** — ver `context/project-context.md`.
+
+### Fuera del repo, en `Monkey/` (carpeta hermana)
+
+No están aquí a propósito: dos tienen datos operativos y uno credenciales.
+
+| Archivo | Qué define |
+|---|---|
+| `soc2_detalle.py` | La lógica `bool_and`, el tercer veredicto `REVISAR`, la frescura de escaneos y los tres tags de compliance (`tsc` / `soc_2` / `nelson`) — §9 y `wazuh.md` |
+| `conexion_api_wazuh_monkey.txt` | Endpoints, flujo del conector, la clave del check, los estados de resultado y la regla de confidencialidad. **Contiene credenciales en texto plano: no copiar a ningún repo; rotar esa password** |
+| `Propuesta Proyecto Monkey-1.xlsx` | Alcance comercial de junio 2026 (vulnerabilidades, gestión documental, políticas, notificaciones). **Parcialmente superado**: su "consolidado global de cumplimiento" queda derogado por medir por servicio |
+| `SOC2_TSC_Controles_Detallados_Monkey2.xlsx` | Anatomía de requisito, control del cliente y plan de testeo. ⚠️ **No se encuentra en disco** |
+
+### Documentos que estas fuentes citan y no tenemos
+
+Hay que conseguirlos o dejar de citarlos:
+
+| Documento | Quién lo cita | Qué se pierde |
+|---|---|---|
+| `prompt-user-management-model-monkey.md` | El resumen del modelo de usuarios, como el técnico de 2.500+ líneas | Ahí estaban respondidas: qué pasa si un `admin_empresa` se va, qué pasa con los datos si el cliente cancela, si los auditores externos necesitan MFA, cómo se revoca acceso de inmediato, y la matriz exhaustiva de permisos (la de §5.5 es el resumen) |
+| `docs/plan-mapeo-cis-soc2.md` | El código de `monkey-cis-sync` | El plan del mapeo CIS↔SOC 2 |
+| `Diseño Funcional APP` | La hoja de roles del archivo maestro | El detalle del modelo de accesos inicial |
+| `Guia_Integracion_Wazuh_SCA_MONKEY.docx` | `conexion_api_wazuh_monkey.txt` | Documentación técnica del conector |
+| `monkey_soc2_win11.yml` | `soc2_detalle.py` | La política SCA propia de Monkey. Vive en el servidor |
+
+### Procedencia del catálogo de controles
+
+La hoja *Tabla controles SOC 2* del archivo maestro declara su origen: **extraído de Vanta**
+(119 registros, `app.vanta.com/c/nextayccom`, 25 de agosto de 2026). El catálogo de Monkey nació
+de esa taxonomía y se amplió con los 61 TEST propios y el mapeo a los 11.352 checks. Conviene
+tenerlo presente al explicar por qué la estructura (controles ↔ pruebas ↔ documentos ↔
+políticas) se parece a la de ese producto.
+
+### Dos reglas que salen de las fuentes y aplican siempre
+
+1. **La dependencia del proveedor del motor de monitoreo es confidencial frente al cliente
+   final.** En el producto se dice "sonda", "capacidad automática" o "evaluación automática",
+   nunca el proveedor por su nombre. Aplica a UI, notificaciones, reportes y texto generado por
+   IA. Ver `philosophy.md`.
+2. **El cumplimiento se mide por par servicio × marco**, nunca como un porcentaje de la empresa
+   completa.
 
 ---
 
@@ -633,7 +688,8 @@ empresa.
 **Qué resuelve:** que el auditor no vea todos los tenants, que el control owner solo toque lo
 suyo, y que la revocación de un acceso sea demostrable ante un auditor.
 
-Definido y cerrado por el comité (`RESUMEN-MODELO-USUARIOS-MONKEY.md`).
+Definido y cerrado por el comité en su modelo de gestión de usuarios, transcrito en esta §5
+(ver §0).
 
 ### 5.1 Los 4 roles
 
@@ -664,6 +720,8 @@ erDiagram
         uuid company_id FK
         uuid custom_role_id FK "nullable"
         string email "unico por empresa"
+        string name
+        string last_name
         string password_hash "bcrypt+salt"
         enum role "admin_monkey|admin_empresa|funcional|auditor"
         enum status "active|inactive|suspended"
@@ -755,15 +813,34 @@ usuario a `inactive` y cerrando su sesión. Es un control auditable, no una pref
 **`user_control_assignments` apunta a `client_controls`, no a `controls`.** Un usuario es
 responsable del control *de su empresa*, no del control del catálogo maestro.
 
+> **Corregido el 2026-09-26 al auditar los contratos:** `users` no tenía ningún campo de
+> nombre de persona, pero el modelo de usuarios del comité lo exige (*"Email,
+> nombre, rol, empresa, controles asignados"*). Gana el documento del comité: se añaden `name`
+> y `last_name`.
+
 ### 5.3 Políticas de seguridad de la plataforma
 
-Requisitos, no sugerencias: sesión 30 min / 8 h máximo · contraseña 12+ con complejidad y
-expiración 90 días · **MFA TOTP obligatoria para admin y auditor** (requisito vigente; su
-implementación está aplazada a MD-94 y no entra en el sprint de onboarding — es deuda
-conocida, no una decisión revertida) · AES-256 en reposo
-(bcrypt+salt para contraseñas, secreto MFA cifrado) · TLS 1.3 + HSTS · rotación de API keys
-90 días · rate limiting 100/min usuario y 1000/min empresa · **audit trail 7 años, inmutable,
-append-only** · IP whitelist opcional · bloqueo a 5 intentos por 15 min.
+**Requisitos, no sugerencias.** Cada uno responde a una norma concreta, que es lo que lo hace
+no negociable:
+
+| Política | Valor | Por qué ese valor |
+|---|---|---|
+| Sesión | 30 min de inactividad, 8 h máximo | Reduce la ventana de una sesión robada |
+| Contraseña — longitud | 12+ caracteres | NIST SP 800-63 |
+| Contraseña — complejidad | mayúscula + minúscula + número + símbolo | Encarece la fuerza bruta |
+| Contraseña — expiración | 90 días | Requisito SOC 2 |
+| MFA | TOTP obligatoria para `admin_monkey`, `admin_empresa` y `auditor` | Protege el acceso crítico |
+| Cifrado en reposo | AES-256 (bcrypt+salt para contraseñas, secreto MFA cifrado) | Requisito NIST |
+| Cifrado en tránsito | TLS 1.3 + HSTS | Requisito PCI DSS |
+| Rotación de API keys | 90 días | Acota el daño de una key comprometida |
+| Rate limiting | 100/min por usuario, 1000/min por empresa | Previene abuso y DoS |
+| Retención del audit trail | 7 años, inmutable, append-only | SOC 2 Type II |
+| IP whitelist | opcional, configurable | Control adicional de acceso |
+| Bloqueo de cuenta | 5 intentos fallidos, 15 min | Previene fuerza bruta |
+
+> **MFA es requisito vigente, pero su implementación está aplazada a MD-94** y no entra en el
+> sprint de onboarding: MD-64 entrega login con JWT y refresh, sin segundo factor. Es deuda
+> conocida, no una decisión revertida.
 
 La autorización se verifica **en cada request** (*"no confiar en el frontend"*), con caché de
 5 min.
@@ -778,6 +855,59 @@ accesos), **`it`** (ejecuta lo técnico), **`compliance`**, **`process`**, **`ci
 El cargo vive en el catálogo y es estable; **la persona que lo ocupa vive en el escenario del
 cliente** y puede cambiar sin que el catálogo se entere (decisión A1). Hay responsable **por
 nivel de objeto** — activo, control, cumplimiento y riesgo (§9).
+
+---
+
+### 5.5 Matriz de permisos
+
+Lo que puede hacer cada rol. Transcrita del modelo de usuarios del comité; es el resumen, no la
+matriz exhaustiva (esa vivía en `prompt-user-management-model-monkey.md`, que no tenemos).
+
+| Acción | `admin_monkey` | `admin_empresa` | `funcional` | `auditor` |
+|---|---|---|---|---|
+| Crear empresa | ✓ | | | |
+| Crear usuario | ✓ | ✓ | | |
+| Crear control | | ✓ | | |
+| Editar control | | ✓ | ✓ solo el suyo | |
+| Crear riesgo | | ✓ | | |
+| Ver riesgo | | ✓ | ✓ solo el suyo | ✓ |
+| Subir evidencia | | ✓ | ✓ | |
+| Aprobar evidencia | | ✓ | | |
+| Ver evidencia | | ✓ | ✓ solo la suya | ✓ |
+| Ejecutar test | | ✓ | ✓ solo el suyo | ✓ solo lectura |
+| Ver audit trail | ✓ | ✓ | limitado | ✓ |
+| Crear API key | | ✓ | | |
+| Módulo de auditoría | | | | ✓ |
+
+Dos cosas que se leen mal si no se dicen: **`admin_monkey` no crea controles ni riesgos de un
+cliente** — administra la plataforma y el catálogo maestro, no el escenario de nadie; y
+**`funcional` está siempre acotado a lo que tiene asignado** vía `user_control_assignments`.
+
+> ⚠️ El material del comité habla de **"34 permisos"**, pero la matriz que entregó tiene 13
+> acciones. El número de 34 sale del documento técnico completo, que **no está en el repo**. No
+> repetir "34 permisos" como si estuviera documentado aquí.
+
+El detalle fino de qué permisos concretos puede llevar un `custom_role` sigue abierto — ver P3
+en `modelo-datos-pendientes.md`.
+
+### 5.6 Cómo el modelo de usuarios sostiene SOC 2
+
+El propio modelo de acceso es evidencia para el marco. Mapeo del comité:
+
+| TSC | Qué exige | Con qué se cumple |
+|---|---|---|
+| CC6.1 | Aprovisionamiento de accesos | `users` + `user_control_assignments` |
+| CC6.2 | Derechos de acceso | La matriz de §5.5 |
+| CC6.3 | Desaprovisionamiento | `users.status` a `inactive` + cierre de sesión |
+| CC7.1 | Monitoreo del sistema | `audit_logs` inmutable |
+| CC7.2 | Detección de actividad no autorizada | Registro de intentos de acceso denegados |
+| CC7.3 | Detección de excepciones | Alerta ante 403 y cambios anómalos |
+| CC9.1 | Autenticación | MFA TOTP + política de contraseña (§5.3) |
+| CC9.2 | Gestión de cambios | `audit_logs` con estado antes y después |
+| C1.2 | Confidencialidad | Aislamiento por tenant (§4.3) + AES-256 |
+
+Es la razón por la que las políticas de §5.3 son requisitos y no preferencias: cada una responde
+a un criterio que el auditor va a pedir.
 
 ---
 
@@ -811,6 +941,8 @@ erDiagram
         json incorporation_countries
         json client_countries
         enum compliance_maturity
+        datetime created_at
+        datetime updated_at
     }
     regulations {
         uuid id PK
@@ -838,6 +970,10 @@ dentro de ese tenant. El `name` se fija en `companies` y se refleja bloqueado aq
 («10-50», «1-10»…), y un valor de enum no puede empezar por dígito: se escriben
 `from_10_to_50`, `from_51_to_200`, … `more_than_5000`. Las etiquetas que ve el usuario salen
 de i18n, no del enum — la tabla de correspondencia está en `contracts/enums.md`.
+
+> **Corregido el 2026-09-26:** `organizations` y `services` no llevaban `created_at`/`updated_at`
+> mientras `companies` sí, sin razón. Se añaden por consistencia con la convención de fechas
+> (`_at`). No es una decisión de producto, es la misma columna de auditoría del resto.
 
 **`regulations` es tabla propia y no se puntúa** (decisión D10): nadie "contrata" la Ley
 1581, pero sí determina qué le aplica. No entra al cálculo de cumplimiento.
@@ -867,6 +1003,8 @@ erDiagram
         enum expected_availability
         enum deployment_scenario
         enum previous_certification "nullable"
+        datetime created_at
+        datetime updated_at
     }
     service_trust_criteria {
         uuid id PK
@@ -1369,7 +1507,7 @@ cumplimiento por marco.
 
 ## 9. Cómo se calcula el cumplimiento
 
-Especificado por el comité en `MONKEY_Ejemplo_Formula_Cumplimiento.xlsx`. **Ante una duda de
+Especificado por el comité en su ejemplo de fórmula de cumplimiento, transcrito aquí (ver §0). **Ante una duda de
 cálculo, ese archivo manda.**
 
 ### Las capas

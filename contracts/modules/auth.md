@@ -11,6 +11,9 @@ Es la **auth mínima** del sprint: login con JWT y refresh, sin segundo factor. 
 `conventions.md` para el sobre y los errores.
 
 **Entidades:** `access_keys`, `users` (`modelo-datos.md` §4.2, §5.2, §5.3).
+
+`users.name` y `users.last_name` se añadieron al modelo el 2026-09-26: no estaban, pero
+el modelo de usuarios del comité los exige (`modelo-datos.md` §5.2).
 **App:** Monkey Platform (`Frontend-Platform`) y Monkey Admin (`Frontend`) comparten estos
 endpoints.
 
@@ -50,7 +53,9 @@ la que asume el sprint (la clave se copia de la UI de Monkey Admin, no llega por
       "last_name": "Pérez",
       "role": "admin_empresa",
       "status": "active",
-      "is_mfa_enabled": false
+      "is_mfa_enabled": false,
+      "last_login_at": null,
+      "created_at": "2026-10-01T09:12:44Z"
     },
     "company": {
       "id": "8f14e45f-ceea-467a-9b3c-2a1d7f0e4b12",

@@ -44,7 +44,7 @@ El cliente conecta su infraestructura real. Ver `conventions.md` y `enums.md`.
   "data": {
     "deployment_scenario": "cloud_with_servers",
     "applicable_capabilities": [
-      { "catalog_code": "ac_01", "category": "Servicios en nube (gestionados, sin servidor)", "method": "Autorización API / rol de solo lectura u OAuth", "required_permissions": ["Rol de solo lectura", "Consentimiento OAuth"], "base_frequency": "cada 6-24 h", "supported_platforms": ["AWS", "Azure", "GCP", "Microsoft 365", "Google Workspace"] },
+      { "catalog_code": "ac_01", "category": "Servicios en nube (gestionados, sin servidor)", "method": "Autorización API / rol de solo lectura u OAuth", "required_permissions": ["Rol de solo lectura", "Consentimiento OAuth"], "base_frequency": "cada 6-24 h", "supported_platforms": ["AWS", "Azure", "GCP", "Microsoft 365", "Google Workspace"], "generated_evidence": "Postura de configuración y registros de actividad de la nube" },
       { "catalog_code": "ac_02", "category": "Servidores en nube / VPS", "method": "Instalar agente ligero de Monkey (o agentless SSH/WinRM)", "required_permissions": ["sudo o administrador para la instalación"], "base_frequency": "continuo", "supported_platforms": ["Linux", "Windows", "HP-UX", "AIX", "Solaris"] },
       { "catalog_code": "ac_03", "category": "Bases de datos en nube", "method": "Agente en host + usuario de solo lectura", "required_permissions": ["Usuario de solo lectura de auditoría"], "base_frequency": "continuo", "supported_platforms": ["PostgreSQL", "MySQL", "SQL Server", "Oracle", "MongoDB"] }
     ]
@@ -52,8 +52,10 @@ El cliente conecta su infraestructura real. Ver `conventions.md` y `enums.md`.
 }
 ```
 
-`GET /v1/catalogs/automated-capabilities` devuelve las 6 sin filtrar. **`provider` no aparece en
-ninguna de las dos respuestas.**
+`GET /v1/catalogs/automated-capabilities` devuelve las 6 sin filtrar, con los mismos campos
+(`catalog_code`, `category`, `supported_platforms`, `method`, `required_permissions`,
+`base_frequency`, `generated_evidence`). **`provider` no aparece en ninguna de las dos
+respuestas**: es la única columna de `automated_capabilities` que nunca sale.
 
 ## Paso 2 — Scope declarado
 

@@ -10,6 +10,9 @@ type: contract
 Se llena **una vez por servicio**; un cliente puede declarar varios. Ver `conventions.md` y
 `enums.md`.
 
+`services.deployment_scenario` también es columna de `services`, pero se captura en el
+Componente 3 — ver `onboarding-technical-control.md`.
+
 **Entidades:** `services`, `service_trust_criteria`, `service_frameworks`,
 `subservice_organizations`, `csocs`, `cuecs`, `system_descriptions`
 (`modelo-datos.md` §6.2).
@@ -106,7 +109,7 @@ valor**: el request lleva los cinco explícitos.
       { "id": "a7f3...", "type": "azure", "provider": "Microsoft Azure", "service_provided": "Hosting de la plataforma", "responsibility": "Disponibilidad de infraestructura" },
       { "id": "b2e9...", "type": "on_premise", "provider": null, "service_provided": "Centro de datos propio", "responsibility": null }
     ],
-    "system_description": { "id": "d4c1...", "kind": "link", "url": "https://docs.ejemplo.com/system-description-v2.pdf", "sections_detected": 0 },
+    "system_description": { "id": "d4c1...", "kind": "link", "url": "https://docs.ejemplo.com/system-description-v2.pdf", "sections": [] },
     "catalog": {
       "status": "ready",
       "applicable_requirements": 33,
@@ -115,7 +118,8 @@ valor**: el request lleva los cinco explícitos.
     },
     "completion": { "required_total": 13, "required_filled": 13, "optional_total": 3, "optional_filled": 3 },
     "is_complete": true,
-    "created_at": "2026-10-05T10:22:41Z"
+    "created_at": "2026-10-05T10:22:41Z",
+    "updated_at": "2026-10-05T10:22:41Z"
   }
 }
 ```
@@ -161,9 +165,23 @@ con `kind`:
 Para archivo, `multipart/form-data` con `kind=file` y el binario en `file`. Máximo 25 MB,
 `application/pdf` o `.docx`.
 
-La Descripción del Sistema tiene **10 secciones AICPA** y hay **una por servicio**. Las
-secciones 7 y 8 son de donde salen `csocs` y `cuecs`, que son tablas propias **marcadas como no
-medibles por Monkey** (decisión D11): existen porque el auditor los pide.
+`system_descriptions.sections` es un json con las **10 secciones AICPA**; hay **una Descripción
+del Sistema por servicio**. El response devuelve `sections` como array de las detectadas (vacío
+si aún no se procesó el documento).
+
+Las secciones 7 y 8 alimentan `csocs` y `cuecs`, tablas propias **marcadas como no medibles por
+Monkey** (decisión D11): existen porque el auditor las pide.
+
+### `PUT /v1/services/{id}/csocs` · `PUT /v1/services/{id}/cuecs`
+
+Cada una recibe un array de `expected_control` (texto). `csocs` cuelga de un
+`subservice_organization`, así que lleva su id; `cuecs` cuelga del servicio.
+
+```json
+{ "items": [ { "subservice_organization_id": "a7f3...", "expected_control": "El proveedor cifra los datos en reposo con AES-256." } ] }
+```
+
+No se puntúan ni entran al cálculo: se transcriben para el informe.
 
 ## Errores
 
