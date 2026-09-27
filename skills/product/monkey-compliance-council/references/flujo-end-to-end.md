@@ -43,7 +43,7 @@ aquí el cliente ya está autenticado (JWT 15 min, refresh 7 días) dentro de su
 
 **Entidades:** `users`, `sessions`.
 **Fuente:** `modelo-datos.md` §5.1-§5.3. (`Auth.md` de la bóveda se cita como fuente
-original pero **no está en este repo** — ver `assets/README.md`.)
+original pero **no está en este repo** — ver `modelo-datos.md` §0.)
 
 ## 3. Onboarding — Componente 1: Contexto Organizacional
 
@@ -117,7 +117,7 @@ ejemplo ya documentado ("Revisor de evidencia").
 **Entidades:** `users`, `custom_roles`, `user_control_assignments`,
 `auditor_assignments`.
 **Fuente:** `modelo-datos.md` §5. (`Usuarios.md` de la bóveda **no está en este repo**;
-lo que sí está es `assets/RESUMEN-MODELO-USUARIOS-MONKEY.md`.)
+lo que el comité entregó sobre usuarios está transcrito en `modelo-datos.md` §5.)
 
 ## 9. Medición de cumplimiento
 

@@ -62,7 +62,7 @@ Control Técnico, matriz de controles, desglose SOC 2, notas del conector). **No
 material de apoyo: son la fuente de verdad.** Los `.md` de `references/` solo los
 transcriben. Si un `.md` y un documento fuente se contradicen, **gana el documento**
 y el `.md` se corrige. Inventario completo, incluidas las fuentes que viven fuera de
-este repo, en `assets/README.md`.
+este repo, en `skills/product/monkey-compliance-council/references/modelo-datos.md` §0.
 
 ### El comité manda sobre lo implementado
 

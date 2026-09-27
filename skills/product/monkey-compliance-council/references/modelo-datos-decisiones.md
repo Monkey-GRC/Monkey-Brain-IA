@@ -189,7 +189,7 @@ nube para los 11 TEST `T-CLD-*` es trabajo de roadmap, no una decisión de model
 
 **D1 · El 40/60 de la matriz ya no bloquea nada: el comité especificó la fórmula completa.**
 La pregunta era si ese número era proporción de automatizabilidad o cumplimiento parcial
-del requisito. `MONKEY_Ejemplo_Formula_Cumplimiento.xlsx` la vuelve irrelevante para el
+del requisito. El ejemplo de fórmula del comité (`modelo-datos.md` §9) la vuelve irrelevante para el
 cálculo: **la fórmula no pasa por el requisito**. Va evaluación → control → dimensión
 temática → servicio, con las 12 reglas R-01…R-12 de §9.
 
@@ -204,7 +204,7 @@ contando controles cumplidos. Esto **corrige** lo que este documento decía: con
 números del ejemplo, la versión vieja habría reportado 40% donde el comité reporta 92,6%.
 
 **Pendiente no entra al denominador** (R-06, R-08): `cumplen / (cumplen + fallan)`. Es la
-fórmula exacta de las reglas R-06 y R-08 de `MONKEY_Ejemplo_Formula_Cumplimiento.xlsx`.
+fórmula exacta de las reglas R-06 y R-08 del ejemplo de fórmula (`modelo-datos.md` §9).
 "Evaluables" en R-08 significa exactamente `cumplen + fallan`: excluye `not_applicable` y
 `pending`.
 
@@ -304,8 +304,7 @@ nada. Razones:
 - **Lo que sí requiere un módulo propio es la personalización** — reescribir la
   interpretación de un control, ajustar dimensiones, asignar responsables, excluir un
   check — y eso ya es trabajo de `admin_empresa` en cualquier momento, no un requisito de
-  arranque (`modelo-datos.md` §5.1, los 4 roles; la matriz de 34 permisos está en
-  `assets/RESUMEN-MODELO-USUARIOS-MONKEY.md`).
+  arranque (`modelo-datos.md` §5.1, los 4 roles; la matriz de permisos, en §5.5).
 - **Los 3 componentes que especificó el comité en el TSC INTEGRAL no incluyen
   Cumplimiento.** El documento más detallado y más reciente ya refleja esta separación.
 - Gatear funciones básicas (crear usuarios, conectar activos) detrás de una

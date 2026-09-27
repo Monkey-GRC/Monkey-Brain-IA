@@ -37,6 +37,12 @@ npm-debug.log*
 graphs-knowledge/
 graphify-out/
 
+# Archivos de bloqueo de LibreOffice/Office al abrir una fuente del comité.
+.~lock.*#
+~$*.xlsx
+~$*.docx
+~$*.pptx
+
 # Fuentes del comité en formato binario. SON la fuente de verdad funcional del
 # proyecto, pero no se versionan: pesan (el TSC maestro son 2,5 MB por sí solo) y
 # git guardaría cada revisión completa. Viven en la carpeta compartida del equipo.
