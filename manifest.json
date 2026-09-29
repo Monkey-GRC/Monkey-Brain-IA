@@ -11,71 +11,19 @@
   "assumedLayout": "sibling directory of the code repo(s) it applies to (e.g. Monkey/Backend/ next to Monkey/Monkey-Brain-IA/)",
   "entrypoint": "CLAUDE.md",
   "sources": {
-    "note": "Fuentes funcionales del comité. NO son material de apoyo: son la fuente de verdad. Ante una discrepancia entre un .md de este repo y una de estas fuentes, gana la fuente. Inventario completo, incluidos los documentos citados que faltan, en assets/README.md. Los archivos binarios (.xlsx/.docx/.pptx) estan en .gitignore por peso: viven en la carpeta compartida del equipo, no en el repo.",
-    "index": "assets/README.md",
+    "note": "Fuente maestra del comite. NO es material de apoyo: es la fuente de verdad funcional. Las demas fuentes que el comite entrego ya estan transcritas en references/ y sus archivos se retiraron el 2026-09-26 para no tener dos versiones de la misma verdad: donde quedo cada una esta en modelo-datos.md seccion 0.",
+    "index": "skills/product/monkey-compliance-council/references/modelo-datos.md#0-fuentes",
     "files": [
       {
         "id": "tsc-integral-soc2",
         "path": "assets/TSC INTERGRAL SOC 2 DETALLADO VF.xlsx",
         "primary": true,
-        "description": "FUENTE MAESTRA. 17 hojas: modelo RBAC (4 roles, 34 permisos, 12 políticas de seguridad), contexto de empresa y de servicio, activos del scope + catálogo de conexiones AC-01..AC-06, 10 riesgos (metodología 5x5), 56 causas con 92 relaciones riesgo-causa, 119 controles de catálogo (118 asignados; CPL-1 es la Descripcion del Sistema) sobre 302 puntos de enfoque (729 relaciones), 61 requisitos TSC, 61 TEST de 23 campos con 228 asignaciones control-TEST, y 11.352 checks de 77 politicas SCA sobre 18 plataformas con 20 referencias de mapeo. IMPORTANTE: estas cifras salen de los datos crudos de las hojas, NO de la hoja Resumen, que quedo desactualizada (declara 658 relaciones).",
+        "description": "FUENTE MAESTRA. 17 hojas: modelo RBAC (4 roles, matriz de permisos, 12 politicas de seguridad), contexto de empresa y de servicio, activos del scope + catálogo de conexiones AC-01..AC-06, 10 riesgos (metodología 5x5), 56 causas con 92 relaciones riesgo-causa, 119 controles de catálogo (118 asignados; CPL-1 es la Descripcion del Sistema) sobre 302 puntos de enfoque (729 relaciones), 61 requisitos TSC, 61 TEST de 23 campos con 228 asignaciones control-TEST, y 11.352 checks de 77 politicas SCA sobre 18 plataformas con 20 referencias de mapeo. IMPORTANTE: estas cifras salen de los datos crudos de las hojas, NO de la hoja Resumen, que quedo desactualizada (declara 658 relaciones).",
         "consumedBy": [
           "skills/product/monkey-compliance-council/references/modelo-datos.md",
           "skills/product/monkey-compliance-council/references/modulos/onboarding.md",
           "skills/product/monkey-compliance-council/references/philosophy.md",
           "skills/product/monkey-compliance-council/references/frameworks/soc2.md"
-        ]
-      },
-      {
-        "id": "formula-cumplimiento",
-        "path": "assets/MONKEY_Ejemplo_Formula_Cumplimiento.xlsx",
-        "primary": true,
-        "description": "ESPECIFICACIÓN DE LA FÓRMULA DE CUMPLIMIENTO. 12 hojas: servicio resuelto paso a paso (10 activos, 5 controles, 45 evaluaciones), cálculo por control (cumplidas/evaluables) / dimensión (promedio de controles) / servicio (promedio de dimensiones), trazabilidad de una falla con responsable y tratamiento por nivel, y 12 reglas funcionales R-01..R-12. Ante cualquier duda de cálculo, este archivo manda.",
-        "consumedBy": [
-          "skills/product/monkey-compliance-council/references/modelo-datos.md"
-        ]
-      },
-      {
-        "id": "modelo-usuarios",
-        "path": "assets/RESUMEN-MODELO-USUARIOS-MONKEY.md",
-        "description": "Modelo RBAC completo: 8 tablas (companies, users, user_control_assignments, custom_roles, sessions, audit_logs, api_keys, auditor_assignments), matriz de 34 permisos, políticas de seguridad, audit trail inmutable de 7 años y mapeo a TSC. Cierra el pendiente A1.",
-        "warning": "El stack que menciona (Node.js + Express + React) es FALSO para este proyecto: el real es NestJS 11 + Prisma 7 y Angular 20. Su modelo es fuente de verdad; su implementación no.",
-        "consumedBy": [
-          "skills/product/monkey-compliance-council/references/modelo-datos.md"
-        ]
-      },
-      {
-        "path": "assets/ALCANCE-ONBOARDING-MVP.md",
-        "primary": false,
-        "description": "Alcance aprobado del sprint de onboarding (7 dias habiles, 2026-09-28 a 2026-10-06): que entra, que queda fuera y con que criterios se acepta. Backlog abierto en Jira, epicos MD-57 a MD-61.",
-        "consumedBy": [
-          "contracts/",
-          "skills/product/monkey-compliance-council/references/modulos/onboarding.md"
-        ]
-      },
-      {
-        "path": "assets/PROPUESTA-JIRA-MVP-MONKEY.md",
-        "primary": false,
-        "description": "Propuesta de estructura de epicos e historias para el MVP. Documento de planificacion previo al alcance aprobado.",
-        "consumedBy": [
-          "skills/product/monkey-compliance-council/references/mvp-roadmap.md"
-        ]
-      },
-      {
-        "id": "blueprint-control-tecnico",
-        "path": "assets/draft-BLUEPRINT FUNCIONAL-ControlTecnico.docx",
-        "description": "Centro de Control Técnico: activo como unidad de seguimiento, aprovisionamiento, schedule, ejecuciones, logs, estados operativos y cobertura técnica.",
-        "consumedBy": [
-          "skills/product/monkey-compliance-council/references/modelo-datos.md",
-          "skills/product/monkey-compliance-council/references/mvp-roadmap.md"
-        ]
-      },
-      {
-        "id": "vision-controles",
-        "path": "assets/vision_controles.pptx",
-        "description": "Matriz de evaluación (requisito x control cliente x dimensión) y método de cálculo con pesos lineales.",
-        "consumedBy": [
-          "skills/product/monkey-compliance-council/references/modelo-datos.md"
         ]
       },
       {
@@ -236,7 +184,7 @@
         {
           "id": "modelo-datos-pendientes",
           "path": "skills/product/monkey-compliance-council/references/modelo-datos-pendientes.md",
-          "description": "Las decisiones del modelo que solo el comité puede cerrar (hoy, 5: P1 a P5). Si sigue ahí, no se resuelve por cuenta propia."
+          "description": "Las decisiones del modelo que solo el comité puede cerrar (hoy, 4: P2 a P5; P1 la cerró el comite el 2026-09-26). Si sigue ahí, no se resuelve por cuenta propia."
         },
         {
           "id": "onboarding",
@@ -262,6 +210,11 @@
           "id": "mvp-roadmap",
           "path": "skills/product/monkey-compliance-council/references/mvp-roadmap.md",
           "description": "MUST/SHOULD/LATER/NO BUILD y fases."
+        },
+        {
+          "id": "sprint-onboarding",
+          "path": "skills/product/monkey-compliance-council/references/sprint-onboarding.md",
+          "description": "Alcance aprobado del sprint de onboarding (7 dias habiles, 2026-09-28 a 2026-10-06): que entra, que queda fuera, cronograma, prioridad de lo que se cae, dependencias y criterios de aceptacion."
         },
         {
           "id": "wazuh",

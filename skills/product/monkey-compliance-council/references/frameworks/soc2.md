@@ -28,7 +28,8 @@ Wazuh incluye una guía dedicada "Using Wazuh for TSC 2017 requirements" y rules
 ## Material fuente del proyecto
 
 El comité produjo un desglose real de controles SOC 2 para un cliente
-(`SOC2_TSC_Controles_Detallados_Monkey2.xlsx`, ver `../../../../../assets/README.md`).
+(`SOC2_TSC_Controles_Detallados_Monkey2.xlsx`, que no se encuentra en disco — ver
+`../modelo-datos.md` §0).
 De ahí sale la anatomía que el modelo usa: **código TSC + criterio + punto de
 enfoque** por requisito, más el **control del cliente** (código propio y su
 interpretación con herramientas y cargos reales), el **plan de testeo** con

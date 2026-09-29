@@ -62,15 +62,8 @@ Monkey-Brain-IA/
 │   ├── conventions.md             # sobre de respuesta, errores, i18n, multi-select, paginación
 │   ├── enums.md                   # valor snake_case ↔ etiqueta es/en, para todos los enums
 │   └── modules/                   # un archivo por módulo (monkey-admin, auth, los 3 componentes)
-├── assets/                        # FUENTES FUNCIONALES del comité — fuente de verdad, no material de apoyo
-│   ├── README.md                  # inventario: qué decide cada documento y quién lo consume
-│   ├── ALCANCE-ONBOARDING-MVP.md
-│   ├── PROPUESTA-JIRA-MVP-MONKEY.md
-│   ├── RESUMEN-MODELO-USUARIOS-MONKEY.md
-│   ├── TSC INTERGRAL SOC 2 DETALLADO VF.xlsx      # (gitignored)
-│   ├── MONKEY_Ejemplo_Formula_Cumplimiento.xlsx   # (gitignored)
-│   ├── draft-BLUEPRINT FUNCIONAL-ControlTecnico.docx  # (gitignored)
-│   └── vision_controles.pptx                      # (gitignored)
+├── assets/                        # la FUENTE MAESTRA del comité, sin transcribir
+│   └── TSC INTERGRAL SOC 2 DETALLADO VF.xlsx      # (gitignored: 2,5 MB binarios)
 ├── agents/
 │   ├── product-owner.md           # rol: decide qué/por qué/prioridad
 │   ├── tech-lead.md               # rol: supervisa backend-senior + frontend-senior + qa
@@ -210,7 +203,7 @@ gana el documento fuente** y el `.md` se corrige.
 Parte de esas fuentes vive fuera de este repo, en la carpeta `Monkey/` que lo
 contiene, porque incluyen datos operativos o credenciales. El inventario completo
 —qué define cada una, quién la consume, y qué documentos citan que todavía no
-tenemos— está en **`assets/README.md`**, y el índice máquina-legible en el bloque
+tenemos— está en **`modelo-datos.md` §0**, y el índice máquina-legible en el bloque
 `sources` de `manifest.json`.
 
 Dos cosas que conviene saber antes de abrirlas:

@@ -46,9 +46,15 @@ sudo sqlite3 /var/ossec/queue/db/003.db "SELECT * FROM sys_osinfo;"
 
 `vulnerability.cve`, `vulnerability.severity` (Critical/High/Medium/Low), `vulnerability.package.name`, `vulnerability.package.version`, `vulnerability.status` (Active/Solved/Mitigated), `vulnerability.cvss.cvss3.base_score`.
 
-## Arquitectura MONKEY (Compliance Engine)
+## Arquitectura MONKEY (Compliance Engine) — ⚠️ OBSOLETA
 
-Stack: **FastAPI + Python** backend, **PostgreSQL** (cache de checks y credenciales cifradas), frontend **Streamlit** (MVP) → React + Recharts (producción), hosting en el mismo VPS Contabo.
+> **No es el stack de este proyecto y no se copia.** El real es **NestJS 11 + Prisma 7** en el
+> backend y **dos apps Angular 20 standalone** (`Frontend` admin y `Frontend-Platform`) — ver
+> `context/project-context.md`. Lo que sigue se conserva solo por los **patrones aprendidos**
+> (cachear SCA, cifrar credenciales, convertir UTC a hora local, JWT con roles por tenant), no
+> como plantilla de arquitectura.
+
+Stack de aquella referencia: **FastAPI + Python** backend, **PostgreSQL** (cache de checks y credenciales cifradas), frontend **Streamlit** (MVP) → React + Recharts (producción), hosting en el mismo VPS Contabo.
 
 Flujo de datos:
 
@@ -78,7 +84,8 @@ Consideraciones aprendidas:
 
 Fuente: `conexion_api_wazuh_monkey.txt` (en `Monkey/`, fuera de este repo —
 **contiene credenciales en texto plano, no copiarlo aquí**) y el código de
-`monkey-cis-sync`. Ver `../../../../assets/README.md`.
+`monkey-cis-sync`. Inventario de fuentes en
+`../../../product/monkey-compliance-council/references/modelo-datos.md` §0.
 
 - **Clave compuesta obligatoria de tres partes: `platform` + `policy_id` + `check_id`**
   (decisión D6, ver `modelo-datos.md` §3.3). Nunca solo `check_id`: el mismo ID significa
@@ -97,8 +104,7 @@ Fuente: `conexion_api_wazuh_monkey.txt` (en `Monkey/`, fuera de este repo —
 - **Usa el certificado, no `verify=False`.** El documento entrega `root-ca.pem`.
 - **El token JWT vive ~900 s.** Manejar el 401 y re-autenticar.
 
-> **Nota de obsolescencia:** la sección "Arquitectura MONKEY" de más arriba describe
-> un stack FastAPI + Streamlit que **ya no es el del proyecto**. El backend real es
-> NestJS 11 + Prisma 7 y el frontend Angular 20 — ver `context/project-context.md`.
+> **Nota de obsolescencia:** ver el aviso en la sección "Arquitectura MONKEY" — ese stack no es
+> el del proyecto.
 > Esa sección se conserva solo por las consideraciones operativas (UTC→Colombia,
 > cachear consultas SCA, credenciales cifradas), que siguen vigentes.

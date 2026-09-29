@@ -8,7 +8,7 @@ construir. Este archivo existe para responder *"¿por qué se decidió así?"* s
 discutirlo, y para que si alguna decisión resulta equivocada se pueda revisar sabiendo en
 qué se apoyaba.
 
-Lo que sigue abierto está en **`modelo-datos-pendientes.md`** (hoy, 5 preguntas).
+Lo que sigue abierto está en **`modelo-datos-pendientes.md`** (hoy, 5 preguntas: P2, P3, P5, P6 y P7).
 
 > Este contenido estuvo hasta el 16 de septiembre de 2026 en una sección "§8" de
 > `modelo-datos.md`. Si un ticket de Jira o un comentario viejo apunta a "§8", se refiere
@@ -189,7 +189,7 @@ nube para los 11 TEST `T-CLD-*` es trabajo de roadmap, no una decisión de model
 
 **D1 · El 40/60 de la matriz ya no bloquea nada: el comité especificó la fórmula completa.**
 La pregunta era si ese número era proporción de automatizabilidad o cumplimiento parcial
-del requisito. `MONKEY_Ejemplo_Formula_Cumplimiento.xlsx` la vuelve irrelevante para el
+del requisito. El ejemplo de fórmula del comité (`modelo-datos.md` §9) la vuelve irrelevante para el
 cálculo: **la fórmula no pasa por el requisito**. Va evaluación → control → dimensión
 temática → servicio, con las 12 reglas R-01…R-12 de §9.
 
@@ -204,7 +204,7 @@ contando controles cumplidos. Esto **corrige** lo que este documento decía: con
 números del ejemplo, la versión vieja habría reportado 40% donde el comité reporta 92,6%.
 
 **Pendiente no entra al denominador** (R-06, R-08): `cumplen / (cumplen + fallan)`. Es la
-fórmula exacta de las reglas R-06 y R-08 de `MONKEY_Ejemplo_Formula_Cumplimiento.xlsx`.
+fórmula exacta de las reglas R-06 y R-08 del ejemplo de fórmula (`modelo-datos.md` §9).
 "Evaluables" en R-08 significa exactamente `cumplen + fallan`: excluye `not_applicable` y
 `pending`.
 
@@ -284,6 +284,11 @@ Postgres, no con un `WHERE tenant_id = ?` que cada desarrollador tiene que recor
 
 ## D23 (Cumplimiento) · No es un 4º componente del onboarding
 
+> ✅ **Confirmada por el comité el 2026-09-26.** Estuvo abierta como P1 en
+> `modelo-datos-pendientes.md` desde el 2026-09-20 a la espera de ese visto bueno. El comité
+> confirmó que el módulo de Cumplimiento queda fuera del onboarding, así que la decisión que
+> sigue es firme y `modelo-datos.md` la afirma sin reserva.
+
 **Pregunta:** el onboarding tiene 3 componentes (Contexto Organizacional, Contexto del
 Servicio, Control Técnico). ¿Se agrega un 4º componente "Cumplimiento" donde el cliente
 configura riesgos, causas y controles, y se exige antes de poder usar el resto del
@@ -299,8 +304,7 @@ nada. Razones:
 - **Lo que sí requiere un módulo propio es la personalización** — reescribir la
   interpretación de un control, ajustar dimensiones, asignar responsables, excluir un
   check — y eso ya es trabajo de `admin_empresa` en cualquier momento, no un requisito de
-  arranque (`modelo-datos.md` §5.1, los 4 roles; la matriz de 34 permisos está en
-  `assets/RESUMEN-MODELO-USUARIOS-MONKEY.md`).
+  arranque (`modelo-datos.md` §5.1, los 4 roles; la matriz de permisos, en §5.5).
 - **Los 3 componentes que especificó el comité en el TSC INTEGRAL no incluyen
   Cumplimiento.** El documento más detallado y más reciente ya refleja esta separación.
 - Gatear funciones básicas (crear usuarios, conectar activos) detrás de una
@@ -311,7 +315,8 @@ nada. Razones:
 `modelo-datos.md` §3.5 ("Riesgo y Causa: sí, se instancian… según su entendimiento") y el
 alcance de 3 componentes ya documentado en `modulos/onboarding.md`. Se corrigió §3.5 para
 distinguir clonado automático (onboarding) de personalización (módulo Cumplimiento,
-aparte).
+aparte). **Confirmada por el comité el 2026-09-26** (vía Héctor), que era lo único que
+quedaba abierto: el onboarding se queda en 3 componentes.
 
 ---
 ## D24 (aprovisionamiento) · Monkey Admin y Monkey Platform son dos aplicaciones distintas; el registro del tenant define nombre y aislamiento
@@ -367,5 +372,130 @@ completa del esquema (catálogo + datos propios) en su propia base, sin cruzar c
 dentro del mismo esquema para el caso compartido.
 
 **Fuente:** decisión de Héctor, 2026-09-21, como simplificación deliberada para el MVP.
+
+---
+
+## Revisión de migraciones contra el modelo (2026-09-29) · D26 a D32
+
+Al auditar las 17 migraciones del Backend contra este modelo salieron huecos que no dependían
+del comité. **Son decisiones de desarrollo** (Héctor, 2026-09-29): corrigen el schema para que
+respete lo que el modelo ya decía, o cierran un punto donde el modelo se contradecía a sí mismo.
+Si el comité no está de acuerdo con alguna, se revisa con él; ninguna toca cómo se calcula el
+cumplimiento.
+
+## D26 · Tipos enum en `snake_case`
+
+**Decisión:** los 41 tipos enum de Postgres se renombran de `"UserRole"` a `user_role`
+(`@@map` en Prisma + `ALTER TYPE … RENAME`). Sin comillas dobles en SQL a mano. El cliente
+generado no cambia. Cierra lo que estaba abierto en la bitácora de la reconstrucción (§9).
+
+**Por qué:** la convención de identificadores del modelo es `snake_case` sin excepción, y las tablas
+estaban vacías: es el momento más barato, antes de que haya seeds y funciones escritas a mano.
+
+## D27 · Qué dice una evaluación, y por qué es inmutable de verdad
+
+**Decisión:** `evaluations` gana `test_id` (obligatorio) y `check_id` (opcional, cuando la midió
+la sonda), y `evaluated_at` pasa de fecha a **instante**. La inmutabilidad se impone en la base:
+el rol de la app no puede `DELETE`, y solo puede `UPDATE` `confirmed_by` y
+`closure_observation_reason` (el cierre humano de §7.5).
+
+**Por qué:** sin `test_id`/`check_id` una evaluación no dice qué se evaluó, y §9 exige señalar
+"el activo y el check exactos"; las exclusiones (§7.3) son por test + check. Con fecha, dos
+corridas de la sonda el mismo día (cada 6 h) no se pueden ordenar.
+
+## D28 · Riesgos y causas: plantilla en el catálogo, copia por cliente
+
+**Decisión:** el catálogo (`risks`, `causes`) es solo plantilla. Al contratar un marco se copian a
+`client_risks` y `client_causes` del servicio, junto con sus relaciones (`client_risk_causes`,
+`client_cause_controls`). `mitigations`, `residual_risks` y `risk_treatments` apuntan a la copia
+del cliente. `service_risks` desaparece (`client_risks` ya lleva el servicio).
+
+**Por qué:** §3.5 y §7.2 dicen que el cliente crea, edita y elimina sus riesgos y causas, pero las
+tablas apuntaban directo al catálogo global: editar habría cambiado el riesgo de todos los
+clientes. Lo que un cliente cambia solo lo ve él.
+
+## D29 · Búsquedas previas al tenant: funciones `SECURITY DEFINER`, email único global
+
+**Decisión:** el login, el canje de la clave de acceso, el refresh y la autenticación por API key
+buscan antes de conocer el tenant. Cada una tiene su función angosta (`find_login_candidates`,
+`find_access_key`, `find_session_by_token`, `find_api_key`). El `email` de `users` es **único
+global** y en minúsculas.
+
+**Por qué:** RLS falla cerrado y esas cuatro búsquedas no tienen contexto. El login recibe solo el
+email (contrato de auth) y un auditor es un único usuario que audita varias empresas, así que un
+email único por empresa dejaba el login ambiguo.
+
+## D30 · Cargos, clonado de evidencia y de tests (cierra P4)
+
+**Decisión:** el cargo vive en `organization_responsibles` (escenario del cliente), no en un
+catálogo global: `evidence_requirements.responsible_id` apunta ahí y el requisito se clona con el
+responsable vacío. `evidence_requirements` gana `source_ref`. `tests` y `control_measurements`
+**no se clonan** en el MVP: se referencian con FK.
+
+**Por qué:** P4 preguntaba si se añadía un catálogo de cargos; el Backend ya había implementado la
+segunda opción y funciona. Los tests y los pesos no los reescribe el cliente en el MVP (R-09), y
+clonarlos solo duplicaba 61 tests por tenant. **Pendiente de ratificar con el comité**, aunque no
+bloquea nada.
+
+## D31 · RLS también en `catalog` (escritura), `companies`, `access_keys` y `audit_logs`
+
+**Decisión:** en `catalog` todos leen pero solo `admin_monkey` escribe (`app.user_role`). `companies`
+y `access_keys` las ve su tenant o `admin_monkey`. `audit_logs` la lee su tenant o `admin_monkey`
+(así las acciones de plataforma sin tenant no quedan ilegibles) y se escribe sin `RETURNING`.
+
+**Por qué:** el rol de la app tenía `INSERT/UPDATE/DELETE` sobre todo el catálogo y `SELECT` sobre
+todas las empresas: un fallo en un endpoint de cliente alcanzaba a todos los demás.
+
+## D32 · Las `N:M` de dominios de monitoreo, explícitas
+
+**Decisión:** `monitoring_domains ↔ requirements` y `monitoring_domains ↔ automated_capabilities`
+son tablas puente propias (`monitoring_domain_requirements`, `monitoring_domain_capabilities`).
+`automated_capabilities` pierde su `monitoring_domain_id`.
+
+**Por qué:** el modelo dibuja las dos como `N:M`; la migración había hecho la segunda `1:N` y la
+primera con una tabla implícita de Prisma (`_MonitoringDomainToRequirement`, columnas `A`/`B`, sin
+`id`) que rompe la convención de tablas puente.
+
+---
+## D33 · Riesgos: categoría de 11 valores y evaluación 5×5 que hace el cliente
+
+**Decisión:** en `catalog.risks` y `tenant.client_risks`, `trust_criterion` es un enum propio
+(`risk_criterion`, 11 valores) y no el de los TSC; `likelihood`, `impact`, `inherent_risk_value` e
+`inherent_risk_level` son **opcionales** (`inherent_risk_level`: `low|moderate|high|critical`).
+`failure_category` pasa de 2 a 6 valores.
+
+**Por qué:** se contrastó el modelo con el Excel maestro (que gana, según CLAUDE.md). La hoja
+*Riesgos* usa categorías que no son TSC (Cumplimiento, Continuidad, Fraude, Terceros, Reputación,
+Operación) y trae probabilidad, impacto y nivel **vacíos** en los 10 riesgos: son un dato del
+cliente, no del catálogo. Con las columnas obligatorias el catálogo no se podía ni cargar. La hoja
+*Causas* trae las 6 categorías de falla, con lo que se cierra ese TODO. Corrige un error de esta
+misma revisión, que había convertido `trust_criterion` en el enum de los TSC.
+
+**Fuente:** `assets/TSC INTERGRAL SOC 2 DETALLADO VF.xlsx`, hojas *Riesgos* y *Causas*.
+
+---
+## D34 · Los enums que estaban como texto, cerrados
+
+**Decisión:** los 16 campos que el schema tenía como `String` con un `TODO` pasan a enum, con los
+valores de `contracts/enums.md` («Catálogo, cumplimiento y control técnico»): `frameworks.type`,
+`policies.approval_status`, `checks.mapping_confidence`, `service_frameworks.status`,
+`assets.type/criticality/origin/status`, `asset_provisionings.connection_status`,
+`action_plans.status`, `residual_risks.residual_level`, `evidence_submissions.validation_status`,
+`evaluations.origin`, `findings.severity`, `vulnerabilities.severity` y `executions.status`.
+Los estados nacen con su valor inicial por defecto (`pending`, `active`).
+
+**Excepción:** `tests.type` se queda como texto libre, porque en la hoja *Pruebas* del comité mezcla
+`Manual`, `Mixta`, `Técnica` y 17 descripciones largas distintas; no hay un enum honesto que
+extraer sin inventar.
+
+**Por qué:** ni el Excel ni el modelo daban las opciones. Se tomaron de donde había fuente
+(`origin: declared|discovered` y `connection_status: pending→validated` del contrato de activos;
+`confirmed|high|medium|low` de `monkey-cis-sync`; los niveles 5×5 del Excel; CVSS para la severidad)
+y, donde no, del flujo de negocio del propio modelo (conectar → validar → activar → programar;
+solo `admin_empresa` aprueba evidencia). Un enum cerrado impide que un estado mal escrito rompa un
+filtro o el cálculo. Si el comité entrega otros valores, gana el comité y se cambian con una
+migración sin pérdida de datos.
+
+**Fuente:** decisión de Héctor, 2026-09-29.
 
 ---

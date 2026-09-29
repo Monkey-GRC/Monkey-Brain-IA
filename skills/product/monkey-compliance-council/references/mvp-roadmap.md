@@ -57,6 +57,34 @@
 
 No solo "auditorías completadas": medir el tiempo que el usuario pasa **entendiendo qué hacer** vs. tiempo que pasa **haciendo lo que ya sabía que tenía que hacer**. Es la métrica que mejor captura la tesis de "traducción" central del producto.
 
+## Los 12 épicos del MVP (Fase 0, horizonte 0-4 meses)
+
+En orden de dependencia: cada uno necesita el anterior construido. Es el ordenamiento del
+trabajo, no una fuente nueva de decisiones — si algo choca con `modelo-datos.md`,
+`modulos/onboarding.md`, `philosophy.md` o `wazuh.md`, ganan ellos.
+
+El **sprint 1** cubre los épicos 1 a 5 y está detallado aparte en `sprint-onboarding.md`
+(épicos MD-57 a MD-61 en Jira).
+
+| # | Épico | Qué entra | Fuente |
+|---|---|---|---|
+| 1 | **Fundación RBAC y Auth** | `companies`, `users`, los 4 roles + roles personalizados, sesiones, aislamiento por tenant (dedicado o RLS). MFA obligatoria para roles no-`funcional`, **aplazada a MD-94** | `modelo-datos.md` §4 y §5 |
+| 2 | **Onboarding — Contexto Organizacional** | Componente 1: 10 campos de identidad, perfil y jurisdicción → `organizations` | `modulos/onboarding.md` |
+| 3 | **Onboarding — Contexto del Servicio** | Componente 2: 16 campos por servicio, incluida la Descripción del Sistema (10 secciones AICPA) → `services` y lo que cuelga de ella | `modulos/onboarding.md` |
+| 4 | **Onboarding — Control Técnico** | Componente 3: escenario de despliegue, catálogo `ac_01`…`ac_06`, flujo conectar → validar → activar → programar. **El cliente nunca ve el proveedor del motor** | `modulos/onboarding.md`, `wazuh.md` |
+| 5 | **Catálogo maestro y clonado** | Marcos, requisitos, puntos de enfoque y el control atómico. Al elegir marco, el catálogo queda disponible sin pasos manuales: controles clonados, requisitos y puntos de enfoque referenciados con FK (D3) | `modelo-datos.md` §3 |
+| 6 | **Motor de cumplimiento (cálculo)** | Cumplimiento derivado por par servicio × marco, nunca un % de empresa completa; recorrido requisitos → puntos de enfoque → controles, nunca almacenado como atributo del marco | `modelo-datos.md` §9, las 12 reglas |
+| 7 | **Motor de evidencias** | Cadena de custodia completa: origen, fecha, responsable, versión, integridad | `modelo-datos.md` §7.3 |
+| 8 | **Motor de riesgos ("Cumplimiento")** | Registro de riesgo y causa, scoring cualitativo, tratamiento con dueño. **Módulo aparte que no bloquea nada** | D23, confirmada por el comité el 2026-09-26 |
+| 9 | **Dashboard, modo guiado y vista auditor** | Vista por defecto cualitativa, sin jerga ni % desnudo como métrica principal. La vista matriz existe pero es secundaria | `philosophy.md` |
+| 10 | **Integración de la sonda** | La base del agente on-prem/híbrido. Confidencialidad total: nunca se nombra al proveedor, en ninguna pantalla, notificación ni texto generado por IA | `wazuh.md` |
+| 11 | **Conectores cloud/SaaS/IdP** | 12-15 conectores: AWS o Azure, GitHub, Google Workspace o M365, Okta o Entra ID, Slack | columna MUST de este archivo |
+| 12 | **Auditoría** | Rol `auditor`, `auditor_assignments` (qué empresas puede auditar cada auditor externo), registro de hallazgos | `modelo-datos.md` §5.2 |
+
+Antes de esto, el proyecto `MD` cerró 56 tareas (MD-1 a MD-56) que fueron de **decisión, no de
+construcción**: fijaron qué entidades hay y cómo se relacionan. Queda de ahí un pendiente
+técnico: reescribir el cálculo de cumplimiento (MD-56).
+
 ## Riesgos del producto a vigilar
 
 - Los cuatro líderes ya integran IA agéntica agresivamente — la ventana de diferenciación por "IA + simplicidad" se cierra rápido. Mitigación: priorizar on-prem/híbrido vía Wazuh y la experiencia guiada como foso, no la IA sola.
@@ -67,10 +95,11 @@ No solo "auditorías completadas": medir el tiempo que el usuario pasa **entendi
 
 ## Alcance que viene del material fuente (no del Consejo)
 
-Dos documentos del comité definen alcance que este roadmap no tenía. Ver
-`../../../../assets/README.md`.
+Dos documentos del comité definen alcance que este roadmap no tenía. Inventario y procedencia
+de las fuentes en `modelo-datos.md` §0.
 
-**Centro de Control Técnico** (`draft-BLUEPRINT FUNCIONAL-ControlTecnico.docx`) —
+**Centro de Control Técnico** (del Blueprint funcional del comité, hoy transcrito en
+`modelo-datos.md` §8) —
 pantalla completa con aprovisionamiento de activos, schedule de ejecuciones,
 ejecuciones en tiempo real y logs. Es la cara operativa del Motor de Integraciones
 y hoy no está clasificada en ninguna fase. Su principio funcional: **la unidad de

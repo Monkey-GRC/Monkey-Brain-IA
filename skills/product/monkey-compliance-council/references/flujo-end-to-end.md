@@ -43,7 +43,7 @@ aquí el cliente ya está autenticado (JWT 15 min, refresh 7 días) dentro de su
 
 **Entidades:** `users`, `sessions`.
 **Fuente:** `modelo-datos.md` §5.1-§5.3. (`Auth.md` de la bóveda se cita como fuente
-original pero **no está en este repo** — ver `assets/README.md`.)
+original pero **no está en este repo** — ver `modelo-datos.md` §0.)
 
 ## 3. Onboarding — Componente 1: Contexto Organizacional
 
@@ -69,13 +69,14 @@ manual separada.
 
 ## 5. Clonado del catálogo
 
-Al fijarse `service_frameworks` (paso 4), el set de Riesgos y Causas de ese marco se clona al
-escenario del cliente. Los Controles se clonan como `client_controls` (entidad propia,
+Al fijarse `service_frameworks` (paso 4), el set de Riesgos y Causas de ese marco se **copia** a
+`client_risks` y `client_causes` del servicio (D28): el catálogo queda como plantilla y lo que el
+cliente edite solo lo ve él. Los Controles se clonan como `client_controls` (entidad propia,
 el cliente puede reescribir su interpretación después). `requirements` y `points_of_focus`
 **no se clonan** — se referencian con FK real desde `client_controls`/`service_frameworks`,
 porque son texto de un estándar y viven en la misma base (§3.5, D25).
 
-**Entidades:** `client_controls`, `risks`, `causes` (clonados) · `requirements`,
+**Entidades:** `client_controls`, `client_risks`, `client_causes` (copias del cliente; plantillas: `risks`, `causes`) · `requirements`,
 `points_of_focus` (referenciados, no clonados).
 **Fuente:** `modelo-datos.md` §3.5, decisión D23.
 
@@ -101,7 +102,7 @@ de `admin_empresa`", y si necesita su propia pantalla o vive dentro de la vista 
 servicio.
 
 **Entidades:** `client_controls`, `risks`, `causes` (edición).
-**Fuente:** decisión D23. Confirmación final del comité: pendiente.
+**Fuente:** decisión D23, confirmada por el comité el 2026-09-26.
 
 ## 8. Módulo de Usuarios *(no completo)*
 
@@ -117,7 +118,7 @@ ejemplo ya documentado ("Revisor de evidencia").
 **Entidades:** `users`, `custom_roles`, `user_control_assignments`,
 `auditor_assignments`.
 **Fuente:** `modelo-datos.md` §5. (`Usuarios.md` de la bóveda **no está en este repo**;
-lo que sí está es `assets/RESUMEN-MODELO-USUARIOS-MONKEY.md`.)
+lo que el comité entregó sobre usuarios está transcrito en `modelo-datos.md` §5.)
 
 ## 9. Medición de cumplimiento
 

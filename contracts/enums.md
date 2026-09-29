@@ -271,3 +271,86 @@ nuevo manda estos cuatro en minúscula; la API expone los del modelo.
 
 ### `user_status` — `users.status`
 `active` Activo · `inactive` Inactivo · `suspended` Suspendido
+
+## Catálogo, cumplimiento y control técnico
+
+Estos enums **no salen del Excel** (no trae opciones para ellos): son decisión de desarrollo del
+2026-09-29, D34 en `modelo-datos-decisiones.md`. Donde había una fuente (los contratos, el conector
+de CIS) se respetó. Si el comité entrega otros valores, gana el comité.
+
+### `framework_type` — `frameworks.type`
+`attestation` Informe de auditor (SOC 1, SOC 2) · `certification` Certificación (ISO 27001) ·
+`standard` Estándar (PCI DSS, NIST CSF, CIS) · `regulation` Regulación (HIPAA y afines)
+
+### `policy_approval_status` — `policies.approval_status`
+`draft` Borrador · `pending_approval` Pendiente de aprobación · `approved` Aprobada
+
+### `mapping_confidence` — `checks.mapping_confidence`
+`confirmed` Confirmado · `high` Alta · `medium` Media · `low` Baja (queda para revisión).
+Valores tomados de `monkey-cis-sync`.
+
+### `risk_criterion` — `risks.trust_criterion` y `client_risks.trust_criterion` · 11 valores
+Sí del Excel (hoja *Riesgos*). **No son los 5 TSC.**
+
+`confidentiality` Confidencialidad · `integrity` Integridad · `availability` Disponibilidad ·
+`privacy` Privacidad · `compliance` Cumplimiento · `security` Seguridad · `continuity`
+Continuidad · `third_parties` Terceros · `fraud` Fraude · `reputation` Reputación ·
+`operations` Operación
+
+### `risk_level` — `client_risks.inherent_risk_level` y `residual_risks.residual_level`
+Sí del Excel (matriz 5×5): `low` Bajo (1-4) · `moderate` Moderado (5-9) · `high` Alto (10-16) ·
+`critical` Crítico (17-25)
+
+### `failure_category` — `causes.failure_category` · 6 valores
+Sí del Excel (hoja *Causas*): `human_resource` Recurso humano · `processes` Procesos ·
+`information_technology` Tecnología de información · `infrastructure` Infraestructura ·
+`external` Externos · `governance` Gobierno
+
+### `service_framework_status` — `service_frameworks.status`
+`active` Activo · `paused` En pausa · `finished` Finalizado
+
+### `asset_type` — `assets.type`
+`server` Servidor · `database` Base de datos · `cloud_service` Servicio en nube · `application`
+Aplicación · `endpoint` Endpoint · `network_device` Dispositivo de red · `documentation`
+Documentación
+
+`endpoint` y `network_device` se monitorean pero no son dimensiones (D5).
+
+### `asset_criticality` — `assets.criticality`
+`low` Baja · `medium` Media · `high` Alta · `critical` Crítica
+
+### `asset_origin` — `assets.origin`
+`declared` Declarado por el cliente · `discovered` Descubierto al conectar
+
+### `asset_status` — `assets.status`
+`active` Activo · `inactive` Inactivo
+
+### `provisioning_status` — `asset_provisionings.connection_status`
+`pending` Pendiente · `validated` Validada · `active` Activa · `scheduled` Programada ·
+`failed` Falló la validación
+
+Flujo: conectar → validar → activar → programar. Una conexión que falla no es un incumplimiento.
+
+### `execution_status` — `executions.status`
+`queued` En cola · `running` En curso · `completed` Completada · `failed` Falló · `cancelled`
+Cancelada
+
+### `evaluation_origin` — `evaluations.origin`
+`automated` Automática (sonda) · `manual` Manual (consultor con evidencia) · `ai_assisted`
+Asistida por IA (revisión documental)
+
+### `severity` — `findings.severity` y `vulnerabilities.severity`
+`low` Baja · `medium` Media · `high` Alta · `critical` Crítica
+
+### `evidence_validation_status` — `evidence_submissions.validation_status`
+`pending` Pendiente · `approved` Aprobada · `rejected` Rechazada. Solo `admin_empresa` cambia el
+estado; la IA sugiere (`ai_verdict`) pero no decide.
+
+### `action_plan_status` — `action_plans.status`
+`open` Abierto · `in_progress` En curso · `done` Hecho · `cancelled` Cancelado. "Vencido" no es un
+estado: se deriva de `due_date`.
+
+### `risk_treatment_decision` · `evaluation_result` · `finding_status` · `finding_origin` · `check_result_status`
+Ya definidos en `modelo-datos.md` (§7 y §8): `mitigate|accept|transfer|avoid`,
+`compliant|non_compliant|pending|not_applicable`, `open|remediated|excluded`, `system|auditor`,
+`passed|failed|invalid|not_applicable|not_run`.

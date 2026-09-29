@@ -64,8 +64,9 @@ Leer, según el tipo de pregunta:
 
 `references/api-integracion.md` describe una arquitectura de referencia
 ("MONKEY Compliance Engine": FastAPI + PostgreSQL + Streamlit/React) que
-**no es** el backend real de este proyecto — el backend real es NestJS +
-Prisma + PostgreSQL (ver `../context/project-context.md`). Esa sección se
+**no es** el stack real de este proyecto — el backend real es NestJS 11 +
+Prisma 7 + PostgreSQL, y el frontend son **dos apps Angular 20** (`Frontend`
+admin y `Frontend-Platform`); ver `../context/project-context.md`. Esa sección se
 usa solo como referencia de **patrones aprendidos** (cachear SCA, cifrar
 credenciales, convertir UTC→hora local, JWT + roles por tenant), no como
 plantilla de stack a copiar. Cualquier integración real se construye como

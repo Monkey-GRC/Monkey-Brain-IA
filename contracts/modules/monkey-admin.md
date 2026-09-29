@@ -50,8 +50,8 @@ hash.
     "admin_email": "contacto@ejemplo.com",
     "isolation_strategy": "shared",
     "status": "active",
-    "provisioning_status": "ready",
     "created_at": "2026-09-28T15:04:02Z",
+    "updated_at": "2026-09-28T15:04:02Z",
     "access_key": {
       "id": "b1d9c3a2-5e77-4f10-8a61-c9d2e3f40a55",
       "code": "MNK-7F3A-92KD-5QXB",
@@ -62,9 +62,11 @@ hash.
 }
 ```
 
-Con `requires_dedicated_database: true` el aprovisionamiento puede no ser inmediato: la
-respuesta es **`202 Accepted`** con `provisioning_status: "provisioning"` y sin `access_key`,
-que llega cuando la base esté lista. ⚠️ Ver pregunta abierta (d).
+⚠️ **Con `requires_dedicated_database: true`, la forma de la respuesta depende de P2(d)**, que
+sigue abierta. Si aprovisionar la base dedicada toma tiempo, el registro devolvería `202
+Accepted` y la clave llegaría después — y eso **exigiría una columna de estado de
+aprovisionamiento en `companies`, que hoy el modelo no tiene**. No se inventa aquí: hasta que
+P2(d) se cierre, el contrato define solo el caso `shared`, síncrono, con `201`.
 
 > **La clave se entrega copiándola de esta pantalla.** El envío automático por correo está
 > aplazado (MD-69), así que este response es el único medio de obtenerla. El destino previsto
@@ -99,8 +101,13 @@ GET /v1/companies?page=1&page_size=25&sort=-created_at&status=active
 }
 ```
 
-`access_key_status` es el estado de la clave **vigente**; nunca se devuelve `code` ni
-`code_hash` en un listado.
+**Campos derivados del listado**, que no son columnas de ninguna tabla y los calcula el
+backend: `access_key_status` y `access_key_expires_at` (de la fila vigente de `access_keys`) y
+`onboarding_completed` (¿existe ya `organizations` para esta empresa?). Nunca se devuelve `code`
+ni `code_hash` en un listado.
+
+`access_keys.used_at` y `companies.updated_at` existen en el modelo y se exponen en el detalle
+(`GET /v1/companies/{id}`), no en el listado.
 
 ## `GET /v1/companies/{id}` — detalle
 
