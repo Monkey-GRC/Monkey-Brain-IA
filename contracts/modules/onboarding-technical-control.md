@@ -231,8 +231,8 @@ Claves i18n: `deployment_scenario.saved`, `scope.saved`, `asset.created`, `asset
 - **Los cinco contadores de `scopes` vs las cinco dimensiones**: no coinciden (`endpoint` no es
   dimensión, `policy` no se cuenta). Hay que decidir si `scopes` cambia o si son dos ejes
   distintos y se documenta como tal.
-- **`assets.responsible_id`** apunta al cargo, y el catálogo de cargos al que debería apuntar no
-  existe en el modelo: es la pregunta P4 de `modelo-datos-pendientes.md`. Mientras no se cierre,
-  el campo se acepta como opcional.
-- **Valores de `assets.type` y `assets.criticality`**: `modelo-datos.md` §6.3 los declara como
-  enum sin enumerar sus valores. Faltan en `enums.md`.
+- **`assets.responsible_id`** apunta a `organization_responsibles` (el cargo dentro de la
+  organización del cliente; no hay catálogo global de cargos — D30, que cerró P4 pendiente de
+  ratificar con el comité). El campo es opcional.
+- **Valores de `assets.type`, `criticality`, `origin` y `status`**: cerrados en `enums.md` (D34, decisión de
+  desarrollo; si el comité entrega otros, gana el comité).

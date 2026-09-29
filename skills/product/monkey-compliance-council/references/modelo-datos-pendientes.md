@@ -13,6 +13,7 @@ Cerradas hasta hoy:
 | | Pregunta | Cerrada |
 |---|---|---|
 | **P1** | Cumplimiento fuera del onboarding | 2026-09-26 — el comité confirmó D23: el onboarding se queda en 3 componentes |
+| **P4** | `responsible_id` sin catálogo de cargos | 2026-09-29 — cerrada por desarrollo en D30: el cargo es `organization_responsibles`. **Falta ratificarla con el comité**; no bloquea nada |
 
 ## P2 · El flujo de la clave de acceso — 5 detalles sin definir
 
@@ -40,22 +41,20 @@ Ninguna de las dos bloquea el sprint de onboarding, pero sí el desarrollo de su
   si necesita su propia pantalla o vive dentro de la vista de cada servicio.
 
 
-## P4 · `responsible_id` apunta a un catálogo de cargos que no existe
+## P6 · La lista completa de `business_model`
 
-**Estado:** hueco estructural del modelo, detectado al auditar el repo el 2026-09-26.
+`modelo-datos.md` dice "40+ opciones" y **el propio Excel del comité también lo dice**, pero su hoja
+*Contexto Empresa* lista solo 19. ¿Cuáles son las que faltan? Mientras tanto valen las 19 y `other`
+(`contracts/enums.md`). No bloquea nada.
 
-`modelo-datos.md` §7.3 define `evidence_requirements.responsible_id` como FK al **cargo, no
-a la persona**, y §5.4 afirma que *"el cargo vive en el catálogo y es estable"*. Pero la
-única tabla de cargos del modelo es `organization_responsibles` (§5.2), que lleva
-`organization_id` — es decir, vive en el escenario del cliente, no en el catálogo maestro.
-No existe ninguna entidad global a la que `responsible_id` pueda apuntar.
+## P7 · Dónde se aloja el Postgres de producción
 
-**La pregunta:** ¿se añade una tabla de cargos al catálogo maestro (§3), o `responsible_id`
-apunta a `organization_responsibles` y entonces `evidence_requirements` deja de ser
-clonable tal cual?
-
-**Qué depende:** el clonado de `evidence_requirements` (§3.5) y la asignación de responsable
-de una evidencia (decisión A1).
+Decisión de infraestructura que se dejó para cuando se hable de lanzamiento con el comité. La
+recomendación planteada (no decidida) es **no alojarlo en el mismo servidor que corre la app** —ni
+la VPS actual ni una nueva compartida—: superficie de ataque compartida con n8n y minio, contención
+de recursos y, sobre todo, backups y recuperación (un servicio administrado tipo RDS los trae; auto-
+alojado hay que operarlos). Alternativa: un servidor separado, dedicado solo a la base. No afecta al
+modelo (RLS, 4 schemas, roles).
 
 ## P5 · Dos cifras de la documentación de Wazuh sin universo definido
 

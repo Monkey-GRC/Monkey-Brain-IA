@@ -15,7 +15,7 @@ actual del backend es el punto de partida que se está rehaciendo. Dos consecuen
 |---|---|
 | **este** | Qué tablas hay, cómo se relacionan y cómo se calcula el cumplimiento |
 | `modelo-datos-decisiones.md` | Por qué se decidió cada cosa, con su fuente |
-| `modelo-datos-pendientes.md` | Las preguntas que solo el comité puede responder (hoy, 4: P2 a P5) |
+| `modelo-datos-pendientes.md` | Las preguntas que solo el comité puede responder (hoy, 5: P2, P3, P5, P6 y P7) |
 | `flujo-end-to-end.md` | El recorrido de un cliente, módulo por módulo, en orden |
 | `modulos/onboarding.md` | El detalle campo por campo de los 3 componentes del onboarding |
 
@@ -454,6 +454,7 @@ erDiagram
         enum origin "cis_native|monkey_policy|auditor_criterion"
         string mapping_provenance
         enum mapping_confidence
+        uuid sca_policy_id FK "nullable, la política SCA que lo contiene"
     }
     test_checks {
         uuid id PK
@@ -517,19 +518,19 @@ erDiagram
         string code "R001"
         string name
         text description
-        enum trust_criterion
+        enum trust_criterion "categoria del riesgo, 11 valores: NO son los 5 TSC"
         json potential_impact "lista tipificada"
-        int likelihood "escala 5x5"
-        int impact "escala 5x5"
-        int inherent_risk_value
-        enum inherent_risk_level
+        int likelihood "nullable: el catalogo no lo trae"
+        int impact "nullable"
+        int inherent_risk_value "nullable"
+        enum inherent_risk_level "nullable: low|moderate|high|critical"
         boolean is_active
     }
     causes {
         uuid id PK
         string code "F001"
         string name
-        enum failure_category "human_resource|infrastructure|..."
+        enum failure_category "human_resource|processes|information_technology|infrastructure|external|governance"
         text description
     }
     risk_causes {
@@ -553,8 +554,23 @@ erDiagram
 causas en el catálogo, unidos por 92 relaciones riesgo↔causa, y una causa como `F001`
 apunta a cuatro controles distintos.
 
-**El riesgo cuelga del servicio, no del marco** (ver §6.2). Un riesgo no es "de SOC 2": es
+**El riesgo cuelga del servicio, no del marco** (ver §7.2). Un riesgo no es "de SOC 2": es
 del negocio del cliente, y los controles que lo mitigan sirven a los marcos que sea.
+
+**El catálogo trae los riesgos sin evaluar.** La hoja *Riesgos* del comité define 10 riesgos con
+su categoría e impactos potenciales, pero deja **probabilidad, impacto y nivel vacíos**: los
+evalúa cada cliente sobre la matriz 5×5 (probabilidad × impacto: Bajo 1-4, Moderado 5-9, Alto
+10-16, Crítico 17-25). Por eso esos cuatro campos son opcionales, y la categoría del riesgo
+(`trust_criterion`) tiene **11 valores** — Confidencialidad, Integridad, Disponibilidad,
+Privacidad, Cumplimiento, Seguridad, Continuidad, Terceros, Fraude, Reputación y Operación—,
+que **no son los 5 TSC** de §3.1 pese al nombre de la columna (D33). Las causas se agrupan en 6
+categorías de falla: recurso humano, procesos, tecnología de información, infraestructura,
+externos y gobierno.
+
+**Este catálogo es solo la plantilla.** Ningún cliente trabaja sobre `risks` ni `causes`: al
+elegir marco se **copian** a `client_risks` y `client_causes` (§7.2) y ahí el cliente los
+edita, agrega o elimina. Lo que un cliente cambie **solo lo ve él**; el catálogo y los demás
+clientes no se enteran (decisión D28).
 
 > "Riesgo residual" es **jerga prohibida** en la superficie del producto (`philosophy.md`).
 > Existe como cálculo interno y en modo auditor.
@@ -583,9 +599,10 @@ puede cambiar solo — ya pasó una vez con la reclasificación de 223 checks.
 | Elemento | ¿Se clona? |
 |---|---|
 | `controls` → `client_controls` | **Sí**, tabla propia: el cliente reescribe su interpretación (decisión D3) |
-| `risks` y `causes` | **Sí, en dos momentos distintos.** El set base se clona **automáticamente** al elegir marco en el Componente 2 (§6.2); la **personalización** pasa después, en el módulo de Cumplimiento (§7), sin bloquear nada |
+| `risks` y `causes` → `client_risks` y `client_causes` | **Sí, en dos momentos distintos**, y con tablas propias del cliente (D28). El set base se clona **automáticamente** al elegir marco en el Componente 2 (§6.2), junto con sus relaciones (`client_risk_causes`, `client_cause_controls`); la **personalización** pasa después, en el módulo de Cumplimiento (§7.2), sin bloquear nada. Editar una copia jamás toca el catálogo ni a otro cliente |
 | **`requirements` y `points_of_focus`** | **No se clonan — se referencian con FK real.** Viven en la misma base; `client_controls` y `service_frameworks` apuntan directo a ellos. Es texto de un estándar, no hace falta copiarlo |
-| `tests`, `evidence_requirements`, `control_measurements` | Sí, con `source_ref` al original |
+| `evidence_requirements` | Sí, con `source_ref` al original (columna real desde D30) |
+| `tests`, `control_measurements` | **No en el MVP: se referencian con FK real** (`evaluations.test_id`, `exclusions.test_id`). El MVP no permite que el cliente reescriba un test ni el peso de un control (R-09: peso igual). Si eso cambia, se clonan entonces con `source_ref` (D30) |
 
 **Qué se propaga solo y qué requiere aceptación del consultor:**
 
@@ -678,10 +695,10 @@ cada cosa sin adivinar:
 
 | Schema | Qué contiene | RLS |
 |---|---|---|
-| `catalog` | El catálogo maestro (§3). Global, ninguna tabla lleva `tenant_id` | no |
-| `platform` | Monkey Admin y usuarios (§4, §5) | sí, salvo `companies` |
+| `catalog` | El catálogo maestro (§3). Global, ninguna tabla lleva `tenant_id` | **solo de escritura**: cualquiera lo lee, únicamente `admin_monkey` lo modifica (D31) |
+| `platform` | Monkey Admin y usuarios (§4, §5) | sí, todas: `companies` y `access_keys` por `admin_monkey` o por su propio tenant (D31) |
 | `tenant` | Onboarding, Cumplimiento y Control Técnico (§6 a §9) | sí, todo |
-| `audit` | `audit_logs` y `compliance_events`, con `REVOKE UPDATE, DELETE` que refuerza el append-only | sí |
+| `audit` | `audit_logs` y `compliance_events`, con `REVOKE UPDATE, DELETE` que refuerza el append-only | sí (`audit_logs`: lo lee su tenant o `admin_monkey`) |
 
 Las FK **cruzan schemas con normalidad**: `service_frameworks` en `tenant` referencia
 `frameworks` en `catalog` con una foreign key real. Un schema es un namespace, no un perímetro.
@@ -693,6 +710,68 @@ columna de `companies` — no de `organizations`, que la crea el cliente despué
 revierte sin migrar los datos. En el caso compartido, **el aislamiento lo garantiza la
 política RLS de Postgres**, nunca un `WHERE tenant_id = ?` que dependa de que cada consulta
 lo incluya.
+
+### 4.4 Variables de sesión y reglas de integridad transversales
+
+**Las tres variables que la app fija por transacción** (`set_config(..., true)`, nunca a nivel
+de conexión, para que no se filtren a otra petición del pool):
+
+| Variable | Qué es | Quién la lee |
+|---|---|---|
+| `app.tenant_id` | La empresa activa | Toda política de tenant |
+| `app.user_id` | El usuario que actúa | `auditor_assignments` (ve las suyas sin importar el tenant) |
+| `app.user_role` | Su rol (`admin_monkey`, …) | Escritura de `catalog`, lectura de `companies`/`access_keys`/`audit_logs` |
+
+**Las búsquedas que ocurren antes de conocer el tenant** no pueden pasar por RLS (falla
+cerrado). Cada una tiene una función `SECURITY DEFINER` angosta, que devuelve solo las
+columnas que necesita y se ejecuta con `search_path` fijo (D29): `find_login_candidates`
+(email → usuario), `find_access_key` (hash → clave), `find_session_by_token` (hash del refresh →
+sesión) y `find_api_key` (hash → API key). Con el `company_id` que devuelven, la app fija
+`app.tenant_id` y sigue con RLS normal. **Por eso `code_hash`, `refresh_token_hash` y `key_hash`
+son únicos.**
+
+**Reglas que RLS no puede imponer y que la aplicación cumple siempre:**
+
+- Una FK no valida que el padre sea del mismo tenant (las comprobaciones de FK ignoran RLS).
+  Antes de escribir una fila con FK a otra tabla de tenant, **se lee el padre con el cliente
+  ya sujeto a RLS**: si no lo ve, no es suyo.
+- `audit_logs` se escribe **sin `RETURNING`** (`createMany` o SQL directo). Un `INSERT … RETURNING`
+  exige que la fila nueva también pase la política de lectura, y una acción de plataforma sin
+  tenant no la pasa.
+- El `email` de `users` se guarda **en minúsculas** (hay un `CHECK`).
+
+**Claves únicas que el modelo exige** (todas con índice; sin ellas el catálogo se duplica al
+cargarlo y una regla de negocio depende de que nadie se equivoque):
+
+| Tabla | Único sobre |
+|---|---|
+| `frameworks` | `code` + `version` |
+| `requirements` | `framework_id` + `code` |
+| `points_of_focus` | `requirement_id` + `number` |
+| `requirement_relations` | `source_requirement_id` + `related_requirement_id` |
+| `trust_criteria` | `criterion` |
+| `controls` | `code` |
+| `users` | `email` (global) |
+| `access_keys` · `api_keys` · `sessions` | `code_hash` · `key_hash` · `refresh_token_hash` |
+| `user_control_assignments` | `user_id` + `client_control_id` |
+| `auditor_assignments` | `auditor_user_id` + `company_id` (renovar es cambiar `expires_at`) |
+| `service_frameworks` | `service_id` + `framework_id` (un servicio contrata un marco una vez) |
+| `assets` | `organization_id` + `code` |
+| `vulnerabilities` | `asset_id` + `cve` + `package_name` |
+| `client_risks` · `client_causes` | `service_id` + `code`, y `service_id` + la plantilla de origen |
+
+Además, toda tabla con RLS lleva un índice sobre `tenant_id` (o `company_id`): la política se
+evalúa en cada consulta. **Toda FK lleva su índice** (Postgres no los crea solo), salvo las columnas
+de "quién lo hizo" (`created_by`, `approved_by`, `assigned_by`…), que no se consultan por sí solas.
+No hay ningún `ON DELETE CASCADE`: el histórico (`evaluations`, `findings`, `compliance_events`,
+`audit_logs`) no se borra nunca, y un servicio con evaluaciones no se puede eliminar. Tampoco hay
+`SET NULL` sobre quién actuó (`user_id`, `confirmed_by`, `approved_by`, `reported_by`): tocar un usuario
+no puede borrar la atribución de un registro inmutable, así que esas FK son `RESTRICT`.
+
+**Datos de arranque:** `access_keys.created_by` y `catalog_versions.published_by` son FK
+obligatorias a `users`, y `users.company_id` también. Antes de crear la primera empresa hace
+falta una `companies` interna de Monkey y un primer `admin_monkey` (seed). Sin eso el sistema no
+puede registrar a nadie.
 
 ---
 
@@ -735,7 +814,7 @@ erDiagram
         uuid id PK
         uuid company_id FK
         uuid custom_role_id FK "nullable"
-        string email "unico por empresa"
+        string email "unico global, en minusculas"
         string name
         string last_name
         string password_hash "bcrypt+salt"
@@ -743,6 +822,10 @@ erDiagram
         enum status "active|inactive|suspended"
         boolean is_mfa_enabled
         datetime last_login_at "nullable"
+        int failed_login_attempts "bloqueo: 5 intentos"
+        datetime locked_until "nullable, 15 min"
+        datetime password_changed_at "expira a los 90 dias"
+        text mfa_secret_encrypted "nullable, AES-256"
         datetime created_at
     }
     custom_roles {
@@ -787,12 +870,15 @@ erDiagram
     }
     audit_logs {
         uuid id PK
-        uuid user_id FK
+        uuid tenant_id FK "nullable, acciones de plataforma"
+        uuid user_id FK "nullable, login con email inexistente"
+        string attempted_email "nullable"
         string action
         string resource
         json before_state "nullable"
         json after_state "nullable"
         string ip_address
+        string user_agent
         enum result "success|error"
         datetime created_at
     }
@@ -868,8 +954,9 @@ tocar en el sistema. Los cargos (`organization_responsibles.type`): **`coo`** (a
 accesos), **`it`** (ejecuta lo técnico), **`compliance`**, **`process`**, **`ciso`**,
 **`asset_owner`**.
 
-El cargo vive en el catálogo y es estable; **la persona que lo ocupa vive en el escenario del
-cliente** y puede cambiar sin que el catálogo se entere (decisión A1). Hay responsable **por
+**El cargo y la persona viven ambos en el escenario del cliente**, en `organization_responsibles`
+(`type` es el cargo, `person_name` quien lo ocupa hoy), y la persona puede cambiar sin tocar
+quien apunta al cargo (decisión A1, precisada por D30: no existe un catálogo global de cargos). Hay responsable **por
 nivel de objeto** — activo, control, cumplimiento y riesgo (§9).
 
 ---
@@ -1060,11 +1147,6 @@ erDiagram
         string file_path
         json sections "10 secciones AICPA"
     }
-    service_risks {
-        uuid id PK
-        uuid service_id FK
-        uuid risk_id FK
-    }
     organizations ||--o{ services : "presta"
     services ||--o{ service_trust_criteria : "contrata"
     trust_criteria ||--o{ service_trust_criteria : "contratado por"
@@ -1074,8 +1156,7 @@ erDiagram
     subservice_organizations ||--o{ csocs : "debe aportar"
     services ||--o{ cuecs : "espera del cliente usuario"
     services ||--|| system_descriptions : "documentado en"
-    services ||--o{ service_risks : "expuesto a"
-    risks ||--o{ service_risks : "afecta a"
+    services ||--o{ client_risks : "expuesto a (§7.2)"
 ```
 
 **El servicio es la unidad de evaluación.** Todo el cumplimiento se mide por par
@@ -1176,6 +1257,10 @@ es un hueco visible, no un dato ausente. Esa diferencia es lo que permite decir 
 soporte a varios servicios y **no se duplica**: por eso existe el puente `service_assets`. Se
 evalúa una vez y el resultado se lee desde cada servicio.
 
+**Un aprovisionamiento nace inactivo** (`is_active = false`) y solo se activa al validar la
+conexión: el flujo es conectar → validar → activar → programar. `encrypted_credentials` es
+opcional porque las conexiones agentless no guardan credenciales.
+
 **`operational_status` es un enum, no un booleano:** 🟢 `operational` · 🟡 `warning` ·
 🔴 `error` · ⚪ **`not_monitored`**. Regla del comité: **"Automatizado ≠ Operativo"**.
 
@@ -1251,16 +1336,58 @@ evalúa sobre insumos distintos. Por eso `client_controls` cuelga del servicio.
 
 ```mermaid
 erDiagram
+    client_risks {
+        uuid id PK
+        uuid tenant_id FK
+        uuid service_id FK
+        uuid risk_id FK "nullable: null si lo creo el cliente"
+        string code "R001"
+        string name
+        text description
+        enum trust_criterion
+        json potential_impact
+        int likelihood "5x5, lo llena el cliente"
+        int impact "5x5, lo llena el cliente"
+        int inherent_risk_value "probabilidad x impacto"
+        enum inherent_risk_level "low|moderate|high|critical"
+        boolean is_active
+        datetime created_at
+        datetime updated_at
+    }
+    client_causes {
+        uuid id PK
+        uuid tenant_id FK
+        uuid service_id FK
+        uuid cause_id FK "nullable: null si la creo el cliente"
+        string code "F001"
+        string name
+        enum failure_category
+        text description
+        datetime created_at
+        datetime updated_at
+    }
+    client_risk_causes {
+        uuid id PK
+        uuid tenant_id FK
+        uuid client_risk_id FK
+        uuid client_cause_id FK
+    }
+    client_cause_controls {
+        uuid id PK
+        uuid tenant_id FK
+        uuid client_cause_id FK
+        uuid client_control_id FK
+    }
     mitigations {
         uuid id PK
-        uuid cause_id FK "nullable"
-        uuid risk_id FK "nullable"
+        uuid client_cause_id FK "nullable"
+        uuid client_risk_id FK "nullable"
         decimal response_percentage
         date calculated_at
     }
     residual_risks {
         uuid id PK
-        uuid risk_id FK
+        uuid client_risk_id FK
         uuid accepted_by FK
         enum residual_level
         text justification
@@ -1268,23 +1395,40 @@ erDiagram
     }
     risk_treatments {
         uuid id PK
-        uuid risk_id FK
+        uuid client_risk_id FK
         uuid responsible_id FK
         enum decision "mitigate|accept|transfer|avoid"
         date due_date
     }
-    risks ||--o{ mitigations : "responde con"
-    risks ||--o{ residual_risks : "deja"
-    risks ||--o{ risk_treatments : "se trata con"
-    causes ||--o{ mitigations : "responde con"
+    services ||--o{ client_risks : "expuesto a"
+    services ||--o{ client_causes : "tiene"
+    risks ||--o{ client_risks : "plantilla de"
+    causes ||--o{ client_causes : "plantilla de"
+    client_risks ||--o{ client_risk_causes : "originado por"
+    client_causes ||--o{ client_risk_causes : "origina"
+    client_causes ||--o{ client_cause_controls : "mitigada por"
+    client_controls ||--o{ client_cause_controls : "mitiga"
+    client_risks ||--o{ mitigations : "responde con"
+    client_causes ||--o{ mitigations : "responde con"
+    client_risks ||--o{ residual_risks : "deja"
+    client_risks ||--o{ risk_treatments : "se trata con"
 ```
+
+**Cada cliente trabaja sobre su propia copia** (decisión D28). Al crearse `service_frameworks`
+se copian los riesgos y causas base a `client_risks` y `client_causes` **de ese servicio**, con
+sus relaciones (`client_risk_causes` replica `risk_causes`; `client_cause_controls` replica
+`cause_controls` pero apuntando al control **del cliente**, `client_controls`, que es el que él
+particulariza). `risk_id` / `cause_id` guardan la plantilla de origen —para que una actualización
+del catálogo sepa a quién afecta (§3.5)— y son `null` en lo que el cliente creó desde cero.
+
+Por eso **editar o eliminar un riesgo o una causa no afecta al catálogo ni a ningún otro
+cliente**: cada uno ve lo que tiene. Es lo que permite lo que dice el comité, que en este
+módulo el cliente "crea, edita y elimina riesgos y causas según su propio entendimiento".
 
 **Los tres indicadores no se mezclan** (reglas R-11 y R-12): cumplimiento (controles frente
 al marco), mitigación (respuesta frente a una causa o riesgo) y riesgo residual son
 **cálculos separados**. Un 93% de cumplimiento no dice que el riesgo residual sea del 7%.
-
-En este módulo el cliente también **crea, edita y elimina** riesgos y causas según su propio
-entendimiento, partiendo del set que se clonó.
+`mitigations` apunta a **exactamente una** de las dos, causa o riesgo (hay un `CHECK`).
 
 ### 7.3 Evidencias
 
@@ -1299,6 +1443,7 @@ erDiagram
         text description
         enum dimension
         string validity_within_period
+        string source_ref "nullable, requisito del catalogo del que se clono"
     }
     evidence_submissions {
         uuid id PK
@@ -1329,8 +1474,10 @@ erDiagram
 ```
 
 **El responsable de la evidencia es cargo *y* persona, en planos distintos** (decisión A1):
-`evidence_requirements.responsible_id` apunta al **cargo** (estable, del catálogo); quién lo
-ocupa hoy vive en el escenario del cliente.
+`evidence_requirements.responsible_id` apunta a `organization_responsibles`, es decir, al
+**cargo** dentro de la organización del cliente (§5.4); quién lo ocupa hoy es su `person_name`.
+Se cerró así en D30 (P4): no hay catálogo global de cargos, y `evidence_requirements` se
+clona con el `responsible_id` vacío hasta que el cliente designa a sus responsables.
 
 **La evidencia es válida si cae dentro del periodo de evaluación** del marco (decisión C1), no
 por una fecha de caducidad fija.
@@ -1350,10 +1497,12 @@ erDiagram
         uuid id PK
         uuid service_id FK
         uuid control_id FK
+        uuid test_id FK "que test se evaluo"
+        uuid check_id FK "nullable, el check exacto si lo midio la sonda"
         uuid asset_id FK
         uuid catalog_version_id FK
-        uuid confirmed_by FK
-        date evaluated_at
+        uuid confirmed_by FK "nullable"
+        datetime evaluated_at
         enum dimension
         enum result "compliant|non_compliant|pending|not_applicable"
         enum raw_probe_result "ok|fail"
@@ -1400,16 +1549,26 @@ erDiagram
     }
     services ||--o{ evaluations : "evaluado en"
     controls ||--o{ evaluations : "registra"
+    tests ||--o{ evaluations : "aplicado en"
+    checks ||--o{ evaluations : "aplicado en"
     assets ||--o{ evaluations : "sobre"
     catalog_versions ||--o{ evaluations : "medida contra"
     evaluations ||--o{ findings : "detecta"
     assets ||--o{ vulnerabilities : "expone"
 ```
 
+**Una evaluación dice qué se evaluó** (D27): `test_id` siempre —el test es lo que define la
+dimensión y a qué exclusiones responde— y `check_id` cuando la midió la sonda. Sin esos dos campos
+no se puede "señalar el activo y el check exactos" de una falla (§9). `evaluated_at` es un
+**instante**, no un día: la sonda corre cada 6 horas y "la última evaluación" tiene que ser
+inequívoca.
+
 **Cuatro reglas que no se negocian:**
 
 - **La evaluación es inmutable.** Una nueva se agrega, no pisa la anterior. Es lo que permite
-  demostrar cumplimiento **durante un periodo**, requisito de SOC 2 Tipo II.
+  demostrar cumplimiento **durante un periodo**, requisito de SOC 2 Tipo II. La base lo impone:
+  el rol de la app **no puede `DELETE`** y solo puede hacer `UPDATE` de `confirmed_by` y
+  `closure_observation_reason` — el cierre humano de §7.5, que no cambia lo medido (D27).
 - **El estado no puede vivir en la definición.** Hoy `ManualCheckItem` lleva `status` y
   `evaluated_at` en la misma fila que la definición: evaluar pisa la evaluación anterior. Eso
   se corrige separando definición de evaluación.
@@ -1496,9 +1655,15 @@ erDiagram
     executions ||--o{ check_results : "produce"
     executions ||--o{ execution_logs : "registra"
     checks ||--o{ check_results : "evaluado como"
-    monitoring_domains }o--o{ requirements : "cubre"
-    monitoring_domains }o--o{ automated_capabilities : "se apoya en"
+    monitoring_domains ||--o{ monitoring_domain_requirements : "cubre"
+    requirements ||--o{ monitoring_domain_requirements : "cubierto por"
+    monitoring_domains ||--o{ monitoring_domain_capabilities : "se apoya en"
+    automated_capabilities ||--o{ monitoring_domain_capabilities : "sustenta"
 ```
+
+`monitoring_domain_requirements` y `monitoring_domain_capabilities` son las dos tablas puente de
+las `N:M` (`id`, las dos FK y un único sobre el par), nombradas según la convención. Un dominio se
+apoya en varias capacidades y una capacidad puede servir a varios dominios (D32).
 
 **Tres reglas:**
 
@@ -1652,12 +1817,17 @@ erDiagram
     trust_criteria ||--o{ requirements : "clasifica"
     points_of_focus }o--o{ controls : "satisfecho por"
 
-    services }o--o{ risks : "expuesto a"
     risks }o--o{ causes : "originado por"
     causes }o--o{ controls : "mitigada por"
-    risks ||--o{ residual_risks : "deja"
-    risks ||--o{ risk_treatments : "se trata con"
-    causes ||--o{ mitigations : "responde con"
+    risks ||--o{ client_risks : "plantilla de"
+    causes ||--o{ client_causes : "plantilla de"
+    services ||--o{ client_risks : "expuesto a"
+    services ||--o{ client_causes : "tiene"
+    client_risks }o--o{ client_causes : "originado por"
+    client_causes }o--o{ client_controls : "mitigada por"
+    client_risks ||--o{ residual_risks : "deja"
+    client_risks ||--o{ risk_treatments : "se trata con"
+    client_causes ||--o{ mitigations : "responde con"
 
     controls ||--o{ client_controls : "particularizado en"
     client_controls ||--o{ user_control_assignments : "asignado a"
@@ -1671,6 +1841,10 @@ erDiagram
 
     tests }o--o{ checks : "ejecuta"
     tests ||--o{ exclusions : "excluye"
+    tests ||--o{ evaluations : "aplicado en"
+    checks ||--o{ evaluations : "aplicado en"
+    monitoring_domains }o--o{ requirements : "cubre"
+    monitoring_domains }o--o{ automated_capabilities : "se apoya en"
     checks ||--o{ check_mappings : "mapea a"
     sca_policies ||--o{ checks : "contiene"
     evidence_requirements ||--o{ evidence_submissions : "se cumple con"

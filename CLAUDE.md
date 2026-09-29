@@ -43,8 +43,10 @@ enrutar la pregunta al archivo correcto** (ver `SKILL.md` de esa skill, sección
   con fuente y fecha verificada. No inventar citas ni cifras de un framework.
 - `council.md` — cómo se resuelven desacuerdos de diseño entre los roles del panel.
 - `modelo-datos-pendientes.md` — las preguntas que **todavía no están cerradas** y que
-  solo el comité puede responder (hoy son 4: P2 a P5). Antes de construir algo que dependa de una,
+  solo el comité puede responder (hoy son 5: P2, P3, P5, P6 y P7). Antes de construir algo que dependa de una,
   consúltala: si sigue ahí, no la resuelvas por tu cuenta — pregunta.
+- `schema-implementacion.md` — el **cómo** en el Backend: Prisma 7, RLS, roles, variables de
+  entorno, migraciones y despliegue. Léelo antes de tocar el schema, una migración o el `.env`.
 - `modelo-datos-decisiones.md` — el **por qué** de cada decisión ya cerrada, con su
   fuente. Se consulta si alguien quiere reabrir algo, no para construir.
 - `modulos/onboarding.md` — los 3 componentes que capturan el contexto del cliente

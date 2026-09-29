@@ -108,7 +108,7 @@ Lo que aporta este componente al onboarding, específicamente:
 
 Riesgos, causas y controles **no se configuran a mano durante el onboarding**. Al elegir
 framework en el Componente 2, el catálogo correspondiente se clona automáticamente al
-escenario del cliente (`modelo-datos.md` §3.5) — el cumplimiento ya empieza a medirse con
+escenario del cliente (`modelo-datos.md` §3.5; los riesgos y causas se copian a `client_risks` y `client_causes`) — el cumplimiento ya empieza a medirse con
 ese set por defecto. Editar esa interpretación, excluir un check o reasignar
 responsables es un módulo aparte ("Cumplimiento"), disponible sin límite de tiempo y sin
 bloquear el resto del producto (crear usuarios, conectar activos, etc.). Ver decisión

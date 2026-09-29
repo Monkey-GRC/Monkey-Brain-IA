@@ -4,7 +4,6 @@ name: Contrato — Auth
 description: Canje de la clave de acceso, login, refresh y logout. Auth mínima del sprint de onboarding.
 type: contract
 ---
-
 # Auth — canje de la clave, login y sesión
 
 Es la **auth mínima** del sprint: login con JWT y refresh, sin segundo factor. Ver
@@ -103,18 +102,18 @@ llama al arrancar para saber si hay sesión y dónde continuar.
 
 ## Errores
 
-| HTTP | `error.code` | Cuándo |
-|---|---|---|
-| 401 | `INVALID_CREDENTIALS` | Email o contraseña incorrectos. **Nunca distingue cuál de los dos** |
-| 401 | `SESSION_EXPIRED` | Refresh pasado el máximo de 8 h |
-| 403 | `ACCOUNT_LOCKED` | 5 intentos fallidos; incluye `retry_after_seconds` |
-| 403 | `ACCOUNT_INACTIVE` | El usuario está `inactive` o `suspended` |
-| 404 | `ACCESS_KEY_INVALID` | La clave no existe. **Misma respuesta que si expiró**, para no revelar si existe |
-| 409 | `ACCESS_KEY_ALREADY_USED` | La clave ya se canjeó |
-| 409 | `ACCESS_KEY_EXPIRED` | Pasó `expires_at` |
-| 409 | `EMAIL_TAKEN` | Ese email ya existe en esa empresa (`users.email` es único por empresa) |
-| 422 | `VALIDATION_FAILED` | Contraseña que no cumple la política, email inválido |
-| 429 | `RATE_LIMITED` | Límite por IP en los endpoints de auth |
+| HTTP | `error.code`              | Cuándo                                                                                |
+| ---- | --------------------------- | -------------------------------------------------------------------------------------- |
+| 401  | `INVALID_CREDENTIALS`     | Email o contraseña incorrectos.**Nunca distingue cuál de los dos**             |
+| 401  | `SESSION_EXPIRED`         | Refresh pasado el máximo de 8 h                                                       |
+| 403  | `ACCOUNT_LOCKED`          | 5 intentos fallidos; incluye`retry_after_seconds`                                    |
+| 403  | `ACCOUNT_INACTIVE`        | El usuario está`inactive` o `suspended`                                           |
+| 404  | `ACCESS_KEY_INVALID`      | La clave no existe.**Misma respuesta que si expiró**, para no revelar si existe |
+| 409  | `ACCESS_KEY_ALREADY_USED` | La clave ya se canjeó                                                                 |
+| 409  | `ACCESS_KEY_EXPIRED`      | Pasó`expires_at`                                                                    |
+| 409  | `EMAIL_TAKEN`             | Ese email ya existe (`users.email` es único global y se guarda en minúsculas, D29)             |
+| 422  | `VALIDATION_FAILED`       | Contraseña que no cumple la política, email inválido                                |
+| 429  | `RATE_LIMITED`            | Límite por IP en los endpoints de auth                                                |
 
 Claves i18n: `auth.account_created`, `auth.logged_in`, `auth.logged_out`,
 `auth.invalid_credentials`, `auth.session_expired`, `auth.account_locked`,
@@ -135,8 +134,8 @@ Claves i18n: `auth.account_created`, `auth.logged_in`, `auth.logged_out`,
 
 De `modelo-datos-pendientes.md` P2, **las más urgentes son (a) y (c)**.
 
-| | Pregunta | Qué define aquí |
-|---|---|---|
-| a | ¿Código escrito a mano o link con token en la URL? | Si el request lleva `code` o `token`, y qué pantalla se construye |
-| b | ¿Caducidad y reenvío? | El valor de `expires_at` y si el cliente puede pedir otra |
-| e | ¿Más de un correo administrativo por empresa? | Si el canje crea uno o varios `admin_empresa` |
+|   | Pregunta                                             | Qué define aquí                                                     |
+| - | ---------------------------------------------------- | --------------------------------------------------------------------- |
+| a | ¿Código escrito a mano o link con token en la URL? | Si el request lleva`code` o `token`, y qué pantalla se construye |
+| b | ¿Caducidad y reenvío?                              | El valor de`expires_at` y si el cliente puede pedir otra            |
+| e | ¿Más de un correo administrativo por empresa?      | Si el canje crea uno o varios`admin_empresa`                        |

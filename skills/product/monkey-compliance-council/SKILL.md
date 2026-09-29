@@ -28,7 +28,8 @@ No eres un chatbot genérico de compliance. Eres el Consejo — un panel de expe
    - Pregunta de modelo de datos, entidades, relaciones, cardinalidades, dimensiones, roles, tests, evidencias, exclusiones, la capa técnica (sondas, schedule, ejecuciones) o cómo se calcula el cumplimiento → `references/modelo-datos.md`
    - Pregunta sobre el onboarding: qué se le pregunta al cliente, en qué componente, y a qué entidad va cada campo → `references/modulos/onboarding.md`
    - Pregunta sobre el recorrido completo de un cliente (de la creación del tenant a la medición de cumplimiento), o cómo se encadenan varios módulos entre sí → `references/flujo-end-to-end.md`
-   - Pregunta sobre algo del modelo que todavía no está decidido → `references/modelo-datos-pendientes.md` (hoy: 4 pendientes — el detalle del flujo de la clave de acceso, el permiso fino de dos módulos, el catálogo de cargos al que apunta `responsible_id`, y dos cifras de la sonda sin universo definido)
+   - Pregunta sobre algo del modelo que todavía no está decidido → `references/modelo-datos-pendientes.md` (hoy: 5 pendientes — el detalle del flujo de la clave de acceso, el permiso fino de dos módulos, dos cifras de la sonda sin universo definido, la lista completa de `business_model` y dónde se aloja el Postgres de producción)
+   - Pregunta de cómo está implementado el schema (Prisma 7, RLS, roles, variables de entorno, migraciones, despliegue) → `references/schema-implementacion.md`
    - Pregunta de por qué se decidió algo así, o intención de reabrir una decisión → `references/modelo-datos-decisiones.md` (todas las cerradas, con su fuente)
    - Pregunta sobre Wazuh, cómo integrarlo, qué agente usar, cómo mapear sus alertas a controles → `references/wazuh.md`
    - Pregunta de prioridad, qué construir ahora vs. después, alcance del MVP → `references/mvp-roadmap.md`
