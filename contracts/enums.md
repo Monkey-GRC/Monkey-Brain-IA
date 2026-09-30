@@ -188,13 +188,14 @@ va incluido siempre.
 `aws` AWS · `azure` Azure · `gcp` GCP · `on_premise` On-premise · `hybrid` Híbrida ·
 `mobile` Mobile · `other` Otro
 
-### `framework` — catálogo `frameworks` · 6 valores en el Componente 2
+### `framework` — catálogo `frameworks` · 1 valor en el MVP (D37)
 
-`soc2` SOC 2 · `soc1` SOC 1 · `iso27001` ISO 27001 · `pci_dss` PCI DSS · `hipaa` HIPAA ·
-`nist_csf` NIST CSF
+`soc2` SOC 2
 
-Solo se ofrecen los **contratados** por esa empresa. El Componente 1 del Excel listaba además
-`CIS Controls`, pero ese campo está vetado.
+**El MVP solo contempla SOC 2.** La lista que ve el cliente sale de la tabla `frameworks` (hoy una sola
+fila), nunca de una lista fija en el frontend: así un marco que no esté sembrado no se puede elegir y romper
+la FK de `service_frameworks`. El Excel del comité listaba además SOC 1, ISO 27001, PCI DSS, HIPAA y NIST CSF
+(y `CIS Controls`, que está vetado): quedan para fases posteriores (`mvp-roadmap.md`).
 
 ### `previous_certification` — `services.previous_certification` · opcional
 
@@ -278,7 +279,7 @@ Estos enums **no salen del Excel** (no trae opciones para ellos): son decisión 
 2026-09-29, D34 en `modelo-datos-decisiones.md`. Donde había una fuente (los contratos, el conector
 de CIS) se respetó. Si el comité entrega otros valores, gana el comité.
 
-### `framework_type` — `frameworks.type`
+### `framework_type` — `frameworks.type` (en el MVP solo se usa `attestation`)
 `attestation` Informe de auditor (SOC 1, SOC 2) · `certification` Certificación (ISO 27001) ·
 `standard` Estándar (PCI DSS, NIST CSF, CIS) · `regulation` Regulación (HIPAA y afines)
 

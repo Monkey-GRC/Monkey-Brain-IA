@@ -71,12 +71,14 @@ manual separada.
 
 Al fijarse `service_frameworks` (paso 4), el set de Riesgos y Causas de ese marco se **copia** a
 `client_risks` y `client_causes` del servicio (D28): el catálogo queda como plantilla y lo que el
-cliente edite solo lo ve él. Los Controles se clonan como `client_controls` (entidad propia,
-el cliente puede reescribir su interpretación después). `requirements` y `points_of_focus`
+cliente edite solo lo ve él. Los Controles se clonan como `client_controls` (entidad propia: el cliente puede
+reescribir su interpretación, crear controles propios y darlos de baja), junto con sus dimensiones
+(`client_control_dimensions`), el vínculo a sus tests (`client_control_tests`) y las evidencias requeridas
+(`evidence_requirements`, desde `evidence_templates`). Los tests **no se clonan**: se referencian (D36). `requirements` y `points_of_focus`
 **no se clonan** — se referencian con FK real desde `client_controls`/`service_frameworks`,
 porque son texto de un estándar y viven en la misma base (§3.5, D25).
 
-**Entidades:** `client_controls`, `client_risks`, `client_causes` (copias del cliente; plantillas: `risks`, `causes`) · `requirements`,
+**Entidades:** `client_controls`, `client_control_dimensions`, `client_control_tests`, `evidence_requirements`, `client_risks`, `client_causes` (copias del cliente; plantillas: `controls`, `evidence_templates`, `risks`, `causes`) · `requirements`,
 `points_of_focus` (referenciados, no clonados).
 **Fuente:** `modelo-datos.md` §3.5, decisión D23.
 

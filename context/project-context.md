@@ -26,7 +26,7 @@ type: context
 ## Dominio
 
 Plataforma de **compliance continuo**: mide qué porcentaje de cumplimiento
-tiene un cliente frente a los marcos que contrató (SOC 2, ISO 27001…), sobre
+tiene un cliente frente a los marcos que contrató (en el MVP, solo SOC 2), sobre
 los servicios que quiere certificar y los activos de su infraestructura
 (servidores, bases de datos, aplicaciones, nube) más su documentación.
 Wazuh es el motor de monitoreo/evidencia técnica.

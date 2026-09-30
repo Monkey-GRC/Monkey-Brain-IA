@@ -27,7 +27,7 @@ ellas. La forma exacta de cada endpoint está en `contracts/modules/`.
 | 1 — Contexto Organizacional | Formulario de 10 campos, una vez por empresa | `organizations` |
 | 2 — Contexto del Servicio | Formulario de 16 campos por servicio (repetible), incluida la carga de la Descripción del Sistema | `services`, `service_trust_criteria`, `subservice_organizations`, `service_frameworks`, `system_descriptions` |
 | 3 — Control Técnico | Escenario de despliegue + flujo de conexión de activos (conectar → validar → activar → programar) sobre el catálogo `ac_01`…`ac_06` | `scopes`, `assets`, `automated_capabilities`, `asset_provisionings` |
-| Clonado del catálogo | Al elegir marco en el Componente 2 el catálogo queda disponible sin acción manual: los **controles se clonan** a `client_controls`, y los **requisitos y puntos de enfoque se referencian con FK** (son texto del estándar, decisión D3) | — |
+| Clonado del catálogo | Al elegir marco en el Componente 2 el catálogo queda disponible sin acción manual: los **controles se clonan** a `client_controls` (con sus dimensiones, el vínculo a sus tests y las evidencias requeridas), y los **requisitos, puntos de enfoque y tests se referencian con FK** (son texto del estándar, decisión D3) | — |
 
 ## Fuera de alcance, explícitamente
 
@@ -97,7 +97,7 @@ solo activo conectado y sigue siendo una demo honesta.
 2. Los 10 + 16 campos quedan persistidos exactamente con los tipos y opciones de
    `modulos/onboarding.md` y `contracts/enums.md`.
 3. Al elegir marco en el Componente 2, el catálogo queda disponible en el escenario del cliente
-   sin acción manual: controles clonados en `client_controls`, requisitos y puntos de enfoque
+   sin acción manual: controles clonados en `client_controls`, requisitos, puntos de enfoque y tests
    referenciados con FK.
 4. Al menos una conexión de `ac_01`…`ac_06` completa el flujo conectar → validar → activar →
    programar.

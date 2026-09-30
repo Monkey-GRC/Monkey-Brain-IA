@@ -56,6 +56,55 @@ de recursos y, sobre todo, backups y recuperación (un servicio administrado tip
 alojado hay que operarlos). Alternativa: un servidor separado, dedicado solo a la base. No afecta al
 modelo (RLS, 4 schemas, roles).
 
+## P8 · ¿Un control que crea el cliente cuenta para el marco?
+
+El cliente puede crear controles propios (`client_controls` con `control_id` nulo, D36). Un control propio
+no tiene punto de enfoque, y los requisitos de un marco se derivan recorriendo requisitos → puntos de enfoque
+→ controles del catálogo. Por eso hoy **no puede cerrar ningún requisito**.
+
+**La pregunta:** ¿cuenta para el % del servicio (por su dimensión)? ¿Y el cliente puede vincularlo a puntos
+de enfoque para que sí cuente para un requisito? Mi propuesta: en el MVP cuenta para el % del servicio pero
+no para los requisitos; mapearlo a puntos de enfoque queda para después.
+
+**Qué depende:** el cálculo del cumplimiento del marco (§9) y el módulo de Cumplimiento (§7).
+
+## P9 · Datos del Excel que hay que corregir o confirmar
+
+Dos inconsistencias **dentro del propio archivo del comité**, que el seed carga tal cual sin adivinar (D38):
+
+- **Pruebas de aplicación.** La matriz *Análisis TEST x Control* asigna a 17+5+1+2+1+1 = 27 pares control↔prueba
+  seis pruebas `T-APP-001…006` que no existen en la hoja *Pruebas* (la hoja marca *"FALTAN 6"*), y la hoja
+  *Pruebas* tiene seis sin usar en la matriz: `T-SRV-011…014`, `T-BD-009` y `T-BD-010`. Sus controles coinciden
+  en 94-100%, así que probablemente son las mismas pruebas con otro código y otra dimensión. **Hoy la
+  dimensión Aplicación no tiene ninguna prueba.** ¿Son pruebas de aplicación (se recodifican a `T-APP` y
+  `app`) o de servidores/BD (se corrige la matriz)?
+- **Diez causas sin riesgo.** F003, F004, F016, F020, F026, F034, F042, F045, F053 y F054 no aparecen en ninguna
+  de las 92 relaciones riesgo↔causa. ¿A qué riesgo(s) pertenecen o se descartan?
+
+**Qué depende:** la dimensión Aplicación del cálculo (§2, §9) y qué causas ve el cliente al clonar (§7.2).
+
+## P10 · De dónde salen el tipo y las banderas de `control_dimensions`, y qué es `policies`
+
+- **`control_dimensions`** exige por cada dimensión de un control su `type` (`manual|automated|hybrid|technical_manual`),
+  `requires_probe`, `requires_ai` y `requires_compliance_confirmation` (el *gate* humano de §2). **El Excel no los
+  trae** y no se sembró. Sin ellos no se puede clonar `client_control_dimensions` ni aplicar el gate. Propuesta:
+  una dimensión aplica a un control si tiene al menos una prueba de esa dimensión (derivable de *Pruebas*); falta
+  que el comité diga cómo se fijan el tipo y las banderas.
+- **`policies`** (catálogo) lleva `approval_status`, `valid_until` y `version`, pero la aprobación de una política
+  es un estado **del cliente**, no de una plantilla global. El Excel solo trae 16 vínculos control↔política (10
+  políticas distintas, con la nota *"el control depende de la aprobación de la política"*). ¿Son plantillas
+  (solo nombre) y la aprobación vive en la evidencia del cliente?
+
+**Qué depende:** el clonado de dimensiones (MD-80) y el gate de confirmación humana.
+
+## P11 · El nombre del proveedor en los textos de las pruebas
+
+Las 61 pruebas del comité nombran al proveedor del motor de monitoreo en 15 de sus 23 columnas (25 de 61 en
+*herramienta*, 19 en *limitaciones*, 14 en *prerrequisitos*…) y en 4 nombres de prueba, lo que choca con la regla
+de confidencialidad frente al cliente final. Se guardan tal cual (son la fuente) y **ningún texto de prueba sale a
+la UI, a un reporte ni a la IA**. Falta decidir qué ve el cliente de una prueba: ¿solo su resultado y un nombre
+neutro? ¿el comité entrega una versión sin el nombre del proveedor?
+
 ## P5 · Dos cifras de la documentación de Wazuh sin universo definido
 
 **Estado:** detectadas al medir el Excel contra el repo el 2026-09-26. No se corrigieron a

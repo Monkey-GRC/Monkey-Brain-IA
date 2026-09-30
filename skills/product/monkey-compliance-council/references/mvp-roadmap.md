@@ -12,8 +12,8 @@
 
 | Fase | Horizonte | Foco |
 |---|---|---|
-| **Fase 0 — MVP** | 0-4 meses | Onboarding guiado, SOC 2 + ISO 27001, 12-15 integraciones cloud/SaaS/IdP, evaluación de Wazuh como base del agente on-prem, motor de IA (explicar/detectar/priorizar/recomendar), dashboard de 4 preguntas, modo guiado, arquitectura de datos preparada para on-prem. |
-| **Fase 1 — Expansión de framework y evidencia** | 4-8 meses | PCI DSS y HIPAA activables, redacción asistida de políticas y respuestas a cuestionarios de seguridad, conector Wazuh en producción, primeros conectores on-prem adicionales (Active Directory). |
+| **Fase 0 — MVP** | 0-4 meses | Onboarding guiado, **solo SOC 2** (D37), 12-15 integraciones cloud/SaaS/IdP, evaluación de Wazuh como base del agente on-prem, motor de IA (explicar/detectar/priorizar/recomendar), dashboard de 4 preguntas, modo guiado, arquitectura de datos preparada para on-prem. |
+| **Fase 1 — Expansión de framework y evidencia** | 4-8 meses | ISO 27001, PCI DSS y HIPAA activables, redacción asistida de políticas y respuestas a cuestionarios de seguridad, conector Wazuh en producción, primeros conectores on-prem adicionales (Active Directory). |
 | **Fase 2 — Híbrido/On-Prem real** | 8-14 meses | Agente on-prem completo (VMware, Windows Server, Linux, apalancando Wazuh), gestión de riesgo de vendors con IA, NIST CSF y CIS Controls activables. |
 | **Fase 3 — Escala regulatoria internacional** | 14-24 meses | GDPR, NIS2, DORA, LGPD como módulos completos; FedRAMP y CMMC evaluados según demanda real; benchmarking entre pares; modo air-gapped para sectores críticos. |
 
@@ -21,7 +21,7 @@
 
 ### MUST (MVP)
 - Onboarding conversacional guiado (10 pasos, ver `philosophy.md`)
-- Motor de compliance con controles atómicos multi-framework (SOC 2 + ISO 27001 activos)
+- Motor de compliance con controles atómicos, multi-framework por diseño y **SOC 2 como único marco activo** (D37)
 - Motor de IA: explicar, detectar, priorizar, recomendar — con explicabilidad
 - Motor de evidencias con cadena de custodia (origen/fecha/responsable/versión/integridad)
 - Motor de riesgos básico (registro + scoring cualitativo + tratamiento con dueño)

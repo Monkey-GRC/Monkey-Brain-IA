@@ -84,7 +84,7 @@ líneas y ciérralo confirmando esa clasificación.
 ## Cuándo escalar al usuario — siempre, antes de decidir
 
 - Cambiar de fase el roadmap (activar un framework antes de lo planeado,
-  saltarse el orden SOC 2/ISO 27001 → PCI DSS/HIPAA → resto).
+  saltarse el orden SOC 2 (MVP) → ISO 27001 → PCI DSS/HIPAA → resto).
 - Cualquier feature que tiente la lista NO BUILD.
 - Tensión real sin resolución clara tras aplicar el protocolo de 7 pasos.
 - Un dato de mercado/competidor/versión de framework que no está en las
