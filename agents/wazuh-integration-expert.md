@@ -35,7 +35,7 @@ cuatro archivos describen Wazuh como producto en general.
 - El backend necesita un nuevo endpoint/servicio que llame a la API de
   Wazuh (puerto `55000`) o a OpenSearch (`9200`) directamente.
 - Hay que mapear un check SCA / regla de Wazuh a un `Control`/`Risk` del
-  dominio del backend (`prisma/central/schema/control.prisma`, `risk.prisma`).
+  dominio del backend (`prisma/schema/catalog/tests.prisma`: `checks`, `check_mappings`).
 - Hay dudas sobre autenticación (JWT de la API de Wazuh), multi-tenancy
   (grupos de agentes por cliente) o rendimiento (cachear resultados SCA).
 - Se está diseñando cómo el backend debe traducir claves de compliance de

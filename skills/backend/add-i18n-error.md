@@ -1,39 +1,36 @@
 ---
 id: add-i18n-error
 name: Agregar un error manejado con i18n
-description: Cómo agregar un mensaje de error nuevo traducido y que sea recogido por el filtro global de excepciones.
+description: Cómo agregar un error de negocio nuevo, con su error.code del contrato y su mensaje traducido, que recoge el filtro global de excepciones.
 type: skill
 applies_to: backend
 ---
 
 # Skill: Agregar un error manejado con i18n
 
-Los errores del API pasan por `src/common/filters/http-exception.filter.ts`,
-que traduce el mensaje usando `nestjs-i18n` y las claves definidas en
-`/i18n/en` y `/i18n/es`.
+Los errores del API pasan por `src/common/filters/http-exception.filter.ts`, que arma el sobre de
+error del contrato (`contracts/conventions.md`): `{ statusCode, message, data: null, error: { code, … } }`,
+con `message` ya traducido según `Accept-Language` (`nestjs-i18n`, archivos en `i18n/es` e `i18n/en`).
 
 ## Pasos
 
-1. Elegir/crear la clave de traducción en ambos archivos de locale:
-   - `i18n/en/<archivo>.json`
-   - `i18n/es/<archivo>.json`
+1. Tomar el `error.code` de la tabla de errores del contrato del módulo
+   (`contracts/modules/*.md`). Si no está, el contrato se actualiza primero.
+2. Agregarlo al tipo `DomainErrorCode` en `src/common/errors/domain-error.ts` y a
+   `DOMAIN_ERROR_CATALOG` en `domain-error.catalog.ts`, con su status HTTP y su clave i18n
+   (`<archivo>.<clave>`, p. ej. `company.name_taken` → `i18n/<lang>/company.json`, clave `name_taken`).
+3. Agregar la clave en **los dos** idiomas, con la misma estructura.
+4. Lanzarlo desde el caso de uso: `throw new DomainError('COMPANY_NAME_TAKEN')`. Datos extra para el
+   cliente van en el segundo argumento y salen dentro de `error` (p. ej. `retry_after_seconds`).
 
-   Usar la misma estructura de clave en ambos idiomas.
-
-2. Lanzar la excepción en el use-case o servicio correspondiente usando las
-   excepciones estándar de Nest (`BadRequestException`, `NotFoundException`,
-   `ConflictException`, etc.), pasando la clave de i18n como mensaje — **no**
-   texto hardcodeado en español o inglés directo en el código.
-
-3. Verificar que `http-exception.filter.ts` resuelve esa clave correctamente
-   (usa el servicio de i18n para traducir según el header `Accept-Language`
-   o el mecanismo configurado en el módulo).
-
-4. Confirmar que la respuesta de error mantiene el formato estándar
-   (`ResponseDto` / estructura de error consistente con el resto del API).
+Los errores de validación de DTOs no se lanzan a mano: el `ValidationPipe` global devuelve `422
+VALIDATION_FAILED` con **todos** los campos, cada uno con su código corto (`required`,
+`email.invalid`…) traducido desde `i18n/<lang>/validation.json`. Un código de validación nuevo se
+mapea en `src/common/errors/validation.exception.ts`.
 
 ## Restricciones
 
-- No agregar mensajes de error solo en un idioma.
-- No lanzar excepciones genéricas (`Error`) — usar las clases HTTP de Nest para
-  que el filtro global las mapee al status code correcto.
+- No agregar mensajes en un solo idioma.
+- No lanzar `HttpException` ni `Error` genérico desde un caso de uso: el caso de uso no sabe de HTTP.
+- Un error nunca expone detalle interno (stack, SQL, nombre del proveedor de la sonda). Lo
+  inesperado sale como `500 INTERNAL_ERROR` y el detalle solo queda en el log.

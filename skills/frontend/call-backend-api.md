@@ -14,12 +14,12 @@ applies_to: frontend
 >
 > | | `Frontend` | `Frontend-Platform` |
 > |---|---|---|
-> | Features hoy | `auth`, `common`, `users` | `assets`, `auth` |
+> | Features hoy | `auth`, `common`, `companies`, `users` | `assets`, `auth`, `home` |
 > | Estructura de feature | `models/` + `services/` + `presentation/` | `domain/` + `presentation/` |
 > | `core/` y `shared/` | `core/{guards,interceptors,services}`, `shared/models` | `core/domain/*`, `shared/domain/*` |
 > | `ApiResponse<T>` | `@shared/models/api-response.model` | `@shared/domain/models/api-response.model` |
 > | i18n | ngx-translate + `public/i18n/{en,es}` | **no tiene i18n instalada** |
-> | Interceptores | `auth.interceptor`, `error-handler.interceptor` | `credentials.interceptor`, `tenant-credentials.interceptor`; **sin manejo global de errores** |
+> | Interceptores | `auth.interceptor`, `error-handler.interceptor` | `credentials.interceptor` (cookies + renovación de sesión ante 401); **sin manejo global de errores** |
 > | Syncfusion | sí | no |
 >
 > Lo común a las dos: Angular 20 standalone sin `NgModule`, TypeScript estricto, Tailwind v4,

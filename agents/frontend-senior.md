@@ -38,9 +38,10 @@ el equivalente exacto de `backend-senior` pero para el repo `frontend`.
 
 ## Reglas de ejecución
 
-- Sigue el patrón de `Frontend/src/app/features/users` como plantilla (es la feature más
-  completa: `models/` + `services/` + `presentation/{views,components}`). `grc-framework` y
-  `clients` fueron eliminadas en `acbd907` con el modelo viejo.
+- Sigue el patrón de `Frontend/src/app/features/companies` como plantilla (la primera feature
+  del modelo nuevo: `models/` + `services/` + `presentation/{views,components}`, i18n completo).
+  `users` conserva la estructura pero es del modelo viejo; `grc-framework` y `clients` fueron
+  eliminadas en `acbd907`.
 - En `Frontend-Platform` la estructura de feature es distinta (`domain/` + `presentation/`) y
   no hay i18n instalada; comprobar antes de aplicar patrones de `Frontend`.
 - Componentes standalone (sin NgModules), path aliases (`@core/*`,

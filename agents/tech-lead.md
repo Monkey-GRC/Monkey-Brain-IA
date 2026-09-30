@@ -52,10 +52,10 @@ lo confirme — solo detecta cuándo hace falta y pregunta.
 - Se agregó, eliminó o movió una feature completa en `backend/src/features/`
   o en `frontend/src/app/features/` (cambia el "Estado actual de features"
   de `project-context.md`).
-- Cambió el patrón de capas de una feature de referencia (p. ej. `risk` deja
-  de ser la plantilla, en cualquiera de los repos de frontend).
-- Se agregó o modificó un modelo en `Backend/prisma/central/schema/` o
-  `Backend/prisma/tenant/schema/` que no está reflejado en `project-context.md`.
+- Cambió el patrón de capas de una feature de referencia (p. ej. `auth` deja
+  de ser la plantilla del backend, o `companies` la de Monkey Admin).
+- Se agregó o modificó un modelo en `Backend/prisma/schema/` que no está reflejado en
+  `project-context.md` o en `modelo-datos.md`.
 - Se cambió la forma de un endpoint (request, response o errores) sin actualizar su
   archivo en `contracts/modules/`.
 - Cualquier convención nueva (guard, formato de respuesta, regla de i18n,

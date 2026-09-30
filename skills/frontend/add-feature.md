@@ -1,15 +1,17 @@
 ---
 id: add-feature
 name: Agregar una feature nueva (frontend)
-description: Pasos para crear una feature completa en src/app/features/<nombre>, siguiendo el patrón de la feature users (la referencia viva).
+description: Pasos para crear una feature completa en src/app/features/<nombre>, siguiendo el patrón de la feature companies (la referencia viva).
 type: skill
 applies_to: frontend
 ---
 
 # Skill: Agregar una feature nueva (frontend)
 
-Referencia viva: `Frontend/src/app/features/users` — es la feature más completa del repo,
-úsala como plantilla en vez de confiar solo en esta doc.
+Referencia viva: `Frontend/src/app/features/companies` — la primera feature del modelo nuevo
+(vista con lista, formulario en diálogo, i18n en `public/i18n/{es,en}/companies.json`, ruta con
+`roleGuard(['admin_monkey'])`). Úsala como plantilla en vez de confiar solo en esta doc. `users`
+tiene la misma estructura pero es del modelo viejo (`username`, `MONKEY_ADMIN`).
 
 > La feature `grc-framework` (`risks`, `reasons`, `controls`, `templates`) **fue eliminada**
 > en el commit `acbd907`, junto con `clients`, por pertenecer al modelo viejo. Si una doc o un
@@ -21,12 +23,12 @@ Referencia viva: `Frontend/src/app/features/users` — es la feature más comple
 >
 > | | `Frontend` | `Frontend-Platform` |
 > |---|---|---|
-> | Features hoy | `auth`, `common`, `users` | `assets`, `auth` |
+> | Features hoy | `auth`, `common`, `companies`, `users` | `assets`, `auth`, `home` |
 > | Estructura de feature | `models/` + `services/` + `presentation/` | `domain/` + `presentation/` |
 > | `core/` y `shared/` | `core/{guards,interceptors,services}`, `shared/models` | `core/domain/*`, `shared/domain/*` |
 > | `ApiResponse<T>` | `@shared/models/api-response.model` | `@shared/domain/models/api-response.model` |
 > | i18n | ngx-translate + `public/i18n/{en,es}` | **no tiene i18n instalada** |
-> | Interceptores | `auth.interceptor`, `error-handler.interceptor` | `credentials.interceptor`, `tenant-credentials.interceptor`; **sin manejo global de errores** |
+> | Interceptores | `auth.interceptor`, `error-handler.interceptor` | `credentials.interceptor` (cookies + renovación de sesión ante 401); **sin manejo global de errores** |
 > | Syncfusion | sí | no |
 >
 > Lo común a las dos: Angular 20 standalone sin `NgModule`, TypeScript estricto, Tailwind v4,

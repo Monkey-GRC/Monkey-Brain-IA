@@ -1,70 +1,81 @@
 ---
 id: add-feature
 name: Agregar una feature nueva
-description: Pasos exactos para crear una feature completa en src/features/<nombre>, tal como documenta el README del repo usando "control" como ejemplo.
+description: Pasos exactos para crear una feature completa en src/features/<nombre>, siguiendo la feature auth como referencia viva.
 type: skill
 applies_to: backend
 ---
 
 # Skill: Agregar una feature nueva
 
-Referencia viva: `src/features/risk/` es la feature más completa del repo y la que mejor
-sigue las 4 capas. Features existentes hoy: `asset`, `auth`, `checklist`, `client`, `control`,
-`manual-check`, `reason`, `risk`, `translation`, `user`.
+**Referencia viva: `src/features/auth/`** — la primera feature del modelo nuevo, con las 4 capas
+completas. `src/features/companies/` sigue el mismo patrón y es el ejemplo de CRUD con paginación.
+Úsalas como plantilla: el código es la fuente de verdad, esta skill es el resumen.
 
-> ⚠️ El `README.md` del `Backend` está desactualizado (pide `DATABASE_URL` y `npm run db:seed`,
-> que no existen). No lo uses como referencia sin contrastarlo con el código.
+> `risk`, `reason`, `control`, `client`, `user` y el resto de features del modelo viejo **ya no
+> existen** (se borraron en el reset del schema, septiembre de 2026). Si una doc o un agente te
+> manda usarlas de plantilla, esa doc está desactualizada.
+
+## La estructura
+
+```
+src/features/<nombre>/
+├── domain/
+│   ├── entities/        clases y tipos de negocio (reglas puras: p. ej. Session.stateAt)
+│   ├── repositories/    clases abstractas: lo que el dominio necesita de la persistencia
+│   └── ports/           (si hace falta) otras abstracciones: hashers, firmas, servicios externos
+├── application/
+│   ├── dtos/            request con class-validator (nombres snake_case del contrato)
+│   ├── use-cases/       uno por operación; dependen de las abstracciones, nunca de Prisma
+│   └── *.token.ts       tokens de inyección para valores de configuración (p. ej. SESSION_POLICY)
+├── infrastructure/
+│   └── repositories/    <nombre>.prisma.repository.ts: implementa la abstracción con PrismaService
+├── presentation/
+│   ├── <nombre>.controller.ts
+│   └── <nombre>-response.mapper.ts   entidad → JSON del contrato (snake_case)
+└── <nombre>.module.ts   provide: XRepository → useClass: XPrismaRepository
+```
+
+**Lo que no es de una sola feature va fuera de ella**, para que ninguna feature importe el
+interior de otra:
+
+| Qué | Dónde |
+|---|---|
+| Sobre de respuesta, errores de dominio, filtro global, paginación, decoradores (`@Public`, `@Roles`, `@CurrentUser`), `RolesGuard`, `TenantScope`, puertos compartidos (`TokenHasher`, `AuditLogWriter`) | `src/common/` |
+| `PrismaService` (con `withScope`), el writer de `audit_logs`, el HMAC de tokens | `src/infrastructure/` (módulos globales) |
 
 ## Pasos
 
-1. **Entidad de dominio** — `src/features/<nombre>/domain/entities/<nombre>.entity.ts`.
-   Lógica de negocio pura, sin Prisma ni Nest.
-
-2. **Interfaz del repositorio** — `src/features/<nombre>/domain/repositories/<nombre>.repository.ts`.
-   Clase abstracta con los métodos que necesita el dominio (`findAll`, `create`,
-   `update`, `delete`, etc.), usando tipos propios, no tipos de Prisma.
-
-3. **DTOs** — `src/features/<nombre>/application/dtos/`. Con `class-validator`
-   y `class-transformer` para request/response.
-
-4. **Use-cases** — `src/features/<nombre>/application/use-cases/`, uno por
-   operación (`create-<nombre>.use-case.ts`, `get-all-<nombre>s.use-case.ts`,
-   `update-<nombre>.use-case.ts`, `delete-<nombre>.use-case.ts`). Cada use-case
-   depende de la interfaz abstracta del repositorio, no de Prisma.
-
-5. **Repositorio Prisma** — `src/features/<nombre>/infrastructure/repositories/<nombre>.prisma.repository.ts`.
-   Implementa la interfaz del paso 2 usando `CentralPrismaService`
-   (`src/infrastructure/database/central-prisma.service.ts`), o la conexión del tenant vía
-   `TenantConnectionManagerService` si la entidad vive en la base del cliente.
-   **No existe una clase `PrismaService`.**
-
-6. **Controller** — `src/features/<nombre>/presentation/<nombre>.controller.ts`.
-   Mapea rutas HTTP a use-cases. Usa `@UseGuards(AuthGuard('jwt'))` +
-   `@ApiCookieAuth()` si requiere auth. Envuelve respuestas en `ResponseDto`.
-
-7. **Módulo** — `src/features/<nombre>/<nombre>.module.ts`. Registra:
-   ```ts
-   providers: [
-     { provide: <Nombre>Repository, useClass: <Nombre>PrismaRepository },
-     Create<Nombre>UseCase, GetAll<Nombre>sUseCase, Update<Nombre>UseCase, Delete<Nombre>UseCase,
-   ],
-   controllers: [<Nombre>Controller],
-   ```
-
-8. **Registrar en `app.module.ts`** — importar `<Nombre>Module` en los
-   `imports` del módulo raíz.
-
-## Antes de empezar, verificar
-
-- Si el modelo de datos no existe, agregarlo primero en `prisma/central/schema/` y/o
-  `prisma/tenant/schema/` (ver `add-prisma-model.md`) y correr la migración con su `--config`.
-- Revisar si el modelo ya existe para no duplicar el schema.
-- Contrastar la entidad con `modelo-datos.md`: el schema actual se está rehaciendo y el modelo
-  es el plan vigente (ver `CLAUDE.md`).
+1. **Leer el contrato** del módulo en `contracts/modules/` y las tablas en `modelo-datos.md`. Si el
+   endpoint no está en el contrato, el contrato se acuerda primero.
+2. **Entidades** en `domain/entities/`. Sin imports de `@nestjs/*`, `@prisma/*` ni de
+   `infrastructure/`. Pueden importar tipos puros de `src/common/` (`TenantScope`, `UserRole`).
+3. **Repositorio abstracto** en `domain/repositories/`: métodos con tipos propios, y **todo método
+   que toque tablas con RLS recibe un `TenantScope`** (`companyId`, `userId`, `role`).
+4. **DTOs** en `application/dtos/`, con `class-validator`. Los nombres de propiedad son los del
+   contrato (`admin_email`, `requires_dedicated_database`). Nada de campos que el contrato no pide:
+   el `ValidationPipe` global rechaza lo extra (`forbidNonWhitelisted`).
+5. **Casos de uso** en `application/use-cases/`, uno por operación. Lanzan `DomainError` con el
+   `error.code` del contrato; nunca excepciones HTTP. Si el código es nuevo, se agrega a
+   `src/common/errors/domain-error.ts` y a su catálogo (status + clave i18n).
+6. **Repositorio Prisma** en `infrastructure/repositories/`. **Toda consulta a una tabla con RLS
+   va dentro de `this.prisma.withScope(scope, (tx) => …)`**: fija `app.tenant_id`, `app.user_id` y
+   `app.user_role` para esa transacción (`modelo-datos.md` §4.4). Sin eso, RLS devuelve cero filas.
+   Las búsquedas previas al tenant (login, canje, refresh) usan las funciones `SECURITY DEFINER`
+   con `$queryRaw` y luego siguen con `withScope`.
+7. **Controller** en `presentation/`. Solo mapea request → caso de uso → `ResponseDto` con el
+   mapper. Todo endpoint exige sesión por defecto (`SessionAuthGuard` global); `@Public()` para lo
+   abierto y `@Roles(...)` para restringir por rol. El usuario llega con `@CurrentUser()`.
+8. **Módulo** `<nombre>.module.ts` con `provide: XRepository, useClass: XPrismaRepository` y los
+   casos de uso; importarlo en `src/app.module.ts`.
+9. **i18n**: las claves de `message` y de los errores en `i18n/es/<archivo>.json` e
+   `i18n/en/<archivo>.json` a la vez (ver `add-i18n-error.md`).
 
 ## Después de terminar
 
-- Correr `npm run lint` y `npm run test`. Ojo: hoy **no hay ni un `*.spec.ts`** en el repo,
-  así que `npm run test` no ejercita nada todavía.
-- Confirmar en Swagger (`@nestjs/swagger`) que los endpoints nuevos aparecen
-  documentados.
+- `npx nest build` sin errores. Ojo con `isolatedModules`: los tipos que aparecen en firmas
+  decoradas (`Request`, `Response`, `Principal`, tipos de política) se importan con `import type`.
+- Probar punto a punto contra la base de dev: camino feliz, 401 sin sesión, 403 por rol, 422 de
+  validación, y los errores de negocio del contrato. Hoy **no hay `*.spec.ts`**: las pruebas de
+  `auth` y `companies` se hicieron con scripts HTTP contra el servidor levantado.
+- Confirmar en Swagger (`/v1/docs`) que los endpoints aparecen.

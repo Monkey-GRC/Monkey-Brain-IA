@@ -35,7 +35,7 @@ construir: recibe una tarea concreta del **tech-lead** y la ejecuta.
 
 ## Reglas de ejecución
 
-- Sigue exactamente el patrón de `src/features/risk` (Clean Architecture).
+- Sigue exactamente el patrón de `src/features/auth` (Clean Architecture, feature de referencia;`n  `src/features/companies` es el ejemplo de CRUD paginado).
 - No inventes alcance adicional al pedido ni "mejoras" no solicitadas.
 - No tomes decisiones de arquitectura o negocio ambiguas por tu cuenta:
   repórtalas al tech-lead como pregunta abierta en vez de asumir.
