@@ -37,7 +37,7 @@ ninguno se pierde.
 | `data_types` | array&lt;enum&gt; | sí | `data_type` (8) | `services.data_types` (json) |
 | `trust_criteria` | array&lt;enum&gt; | sí | `trust_criterion` (5) | `N:M` vía `service_trust_criteria` |
 | `subservice_organizations` | array&lt;objeto&gt; | sí | `subservice_type` (7) | `1:N` → `subservice_organizations` |
-| `framework_codes` | array&lt;enum&gt; | sí | `framework` (6) | `N:M` vía `service_frameworks` |
+| `framework_codes` | array&lt;enum&gt; | sí | `framework` (1 en el MVP: `soc2`) | `N:M` vía `service_frameworks` |
 | `regulation_codes` | array&lt;enum&gt; | sí | `regulation` | ⚠️ **sin tabla puente** — ver abajo |
 | `previous_certification` | enum | **no** | `previous_certification` | `services.previous_certification` |
 | `expected_availability` | enum | sí | `expected_availability` | `services.expected_availability` |
@@ -129,10 +129,12 @@ valor**: el request lleva los cinco explícitos.
 Elegir marco **dispara el clonado sin acción manual** (criterio de aceptación del sprint). Lo que
 ocurre, según la decisión D3:
 
-- Los **controles se clonan** a `client_controls` — el cliente reescribe su interpretación.
-- Los **requisitos y puntos de enfoque se referencian con FK** al catálogo maestro: son texto de
-  un estándar, no se copian.
-- `risks` y `causes` se clonan como set base.
+- Los **controles se clonan** a `client_controls` — el cliente reescribe su interpretación — junto con
+  sus dimensiones (`client_control_dimensions`), el vínculo a sus tests (`client_control_tests`) y sus
+  evidencias requeridas (`evidence_requirements`, desde las plantillas del catálogo).
+- Los **requisitos, puntos de enfoque y tests se referencian con FK** al catálogo maestro: son texto
+  de un estándar o procedimientos que el cliente no edita, no se copian.
+- `risks` y `causes` se clonan como set base (`client_risks`, `client_causes`).
 
 `applicable_requirements` cuenta los requisitos filtrados por los `trust_criteria` contratados:
 contratar solo `security` no trae los de privacidad. `catalog.status` es `ready` o `processing`

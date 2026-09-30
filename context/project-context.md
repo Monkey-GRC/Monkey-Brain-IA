@@ -26,7 +26,7 @@ type: context
 ## Dominio
 
 Plataforma de **compliance continuo**: mide qué porcentaje de cumplimiento
-tiene un cliente frente a los marcos que contrató (SOC 2, ISO 27001…), sobre
+tiene un cliente frente a los marcos que contrató (en el MVP, solo SOC 2), sobre
 los servicios que quiere certificar y los activos de su infraestructura
 (servidores, bases de datos, aplicaciones, nube) más su documentación.
 Wazuh es el motor de monitoreo/evidencia técnica.
@@ -44,7 +44,7 @@ fija el tenant por transacción. La base dedicada (`isolation_strategy = dedicat
 una opción del modelo, pero su aprovisionamiento **no está construido**: hoy el registro la rechaza
 con `DEDICATED_DATABASE_NOT_AVAILABLE` hasta que se cierre P2(d).
 
-El schema ya implementa el modelo relacional completo (71 tablas, 21 migraciones aplicadas en dev).
+El schema ya implementa el modelo relacional completo (75 tablas, 23 migraciones aplicadas en dev).
 El modelo viejo (`Client`, `Template → Risk → Reason → Control`, una base por cliente,
 `prisma/central/` + `prisma/tenant/`) **ya no existe**.
 

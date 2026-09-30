@@ -5,10 +5,10 @@ Complementa a `modelo-datos.md` (el **qué**: tablas y relaciones) y a `modelo-d
 migraciones y despliegue. Si algo choca con `modelo-datos.md`, gana el modelo. Absorbe la bitácora
 "decisiones de la reconstrucción del schema" (septiembre de 2026), que se retiró de `assets/`.
 
-**Estado al 2026-09-30:** 21 migraciones, 57 enums, 71 tablas, todas con RLS, ninguna FK sin índice
+**Estado al 2026-09-30:** 23 migraciones, 57 enums, 75 tablas, todas con RLS, ninguna FK sin índice
 (salvo las de "quién lo hizo") y ningún `ON DELETE CASCADE`. Probado desde cero en Postgres 17.
-**Las 21 están aplicadas en la base de dev** (`135.148.138.36`), sembrada con la empresa interna y el
-primer `admin_monkey` (§9).
+**Las 23 están aplicadas en la base de dev** (`135.148.138.36`), sembrada con la empresa interna, el
+primer `admin_monkey`, las 14 regulaciones y el catálogo de SOC 2 (§9 y §11).
 
 ---
 
@@ -242,8 +242,9 @@ REVOKE UPDATE, DELETE, TRUNCATE ON audit.audit_logs, audit.compliance_events FRO
   `contracts/enums.md`, incluidas `none` y `other`); también idempotente.
   La empresa interna **no es un cliente**: existe porque `users.company_id` es obligatorio; los
   listados de empresas de Monkey Admin deben excluirla.
-- **Carga del catálogo** desde el Excel maestro (119 controles, 11.352 checks…) con un script
-  TypeScript.
+- **Resto del catálogo:** sembrado lo que tiene fuente (§11). Faltan `control_dimensions` y `policies` (sin
+  fuente: P10), y los checks (11.352), las políticas SCA, los mapeos y `automated_capabilities` (que no
+  necesita el clonado, MD-80). Las regulaciones ya las siembra el seed de arranque.
 - **`sslmode=require`** en las tres URLs contra el servidor remoto, y restringir el firewall del 5432.
 - **Rotar credenciales** antes de producción: la contraseña de `postgres`, `JWT_SECRET` y
   `WAZUH_API_PASSWORD` se pegaron en texto plano en chats de depuración.
@@ -260,6 +261,23 @@ REVOKE UPDATE, DELETE, TRUNCATE ON audit.audit_logs, audit.compliance_events FRO
 16 `platform_add_company_id_to_sessions_and_assignments` · 17 `platform_rls_and_login_lookup` ·
 18 `rename_enum_types_to_snake_case` (D26) · 19 `schema_alignment_review` (D27, D28, D32, D33, D34) ·
 20 `rls_and_lookup_hardening` (D29, D31) · 21 `platform_sessions_activity_tracking` (`created_at` y
-`last_activity_at` en `sessions`, para la política de 30 min / 8 h).
+`last_activity_at` en `sessions`, para la política de 30 min / 8 h) · 22 `catalog_seed_and_client_controls`
+(D35, D36, D38) · 23 `rls_catalog_seed_and_client_controls` (D36).
+
 
 La 17 quedó reemplazada en parte por la 20 (`find_login_candidates` se recrea con más columnas).
+
+## 11. Siembra del catálogo maestro de SOC 2
+
+Código, comandos y garantías: `Backend/prisma/seed/README.md`. Por qué se hizo así: D35 y D38.
+
+Excel → JSON versionado (con el sha256 del Excel) → una transacción que **solo inserta lo que falta**,
+aborta con diff si una fila existente difiere y no borra nada → `verify` (solo lectura). Cifras (medidas, D38): 1 marco · 5 criterios ·
+61 requisitos · 302 puntos de enfoque · 119 controles (118 asignados) · 729 relaciones · 10 riesgos · 56 causas · 92
+relaciones riesgo↔causa · 209 aristas causa→control · 61 pruebas · 284 asignaciones control↔prueba · 50
+plantillas de evidencia · 89 vínculos · 1 versión = **2.069 filas**. `requirement_relations` queda vacía (las hojas
+no traen fuente).
+
+Contra un servidor real: `pg_dump` antes, rol dueño (nunca `monkey_app`), dry-run primero y leer el destino
+que imprime (el `.env` local apunta a dev), `--apply`, `verify`. Cambiar el catálogo no es recargar: es una
+versión nueva (A4/D33).

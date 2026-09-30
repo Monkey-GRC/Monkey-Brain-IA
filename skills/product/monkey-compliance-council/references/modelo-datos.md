@@ -15,7 +15,7 @@ actual del backend es el punto de partida que se está rehaciendo. Dos consecuen
 |---|---|
 | **este** | Qué tablas hay, cómo se relacionan y cómo se calcula el cumplimiento |
 | `modelo-datos-decisiones.md` | Por qué se decidió cada cosa, con su fuente |
-| `modelo-datos-pendientes.md` | Las preguntas que solo el comité puede responder (hoy, 5: P2, P3, P5, P6 y P7) |
+| `modelo-datos-pendientes.md` | Las preguntas que solo el comité puede responder (hoy, 9: P2, P3, P5, P6, P7, P8, P9, P10 y P11) |
 | `flujo-end-to-end.md` | El recorrido de un cliente, módulo por módulo, en orden |
 | `modulos/onboarding.md` | El detalle campo por campo de los 3 componentes del onboarding |
 
@@ -31,8 +31,6 @@ Bajando de arriba a abajo se ve cómo se encadena todo.
   nombres en los diagramas son los nombres reales de la tabla y de la columna** — se
   implementan tal cual, sin traducir.
 - **Las relaciones que no son obvias se explican** debajo del diagrama.
-- **Estado:** ✅ existe en el schema · ⚠️ existe parcial · ❌ no existe todavía. Es
-  **informativo**: un ❌ no es un pendiente ni una duda, es trabajo por hacer.
 
 ### Convenciones de nomenclatura
 
@@ -80,7 +78,7 @@ archivo, **gana el documento**.
 
 | Fuente | Qué define |
 |---|---|
-| `assets/TSC INTERGRAL SOC 2 DETALLADO VF.xlsx` | **La fuente maestra**, 17 hojas: catálogo maestro (61 requisitos TSC, 302 puntos de enfoque, 119 controles de los que 118 están asignados, 729 relaciones punto de enfoque↔control), 61 TEST de 23 campos con 228 asignaciones control↔TEST, 11.352 checks de 77 políticas SCA sobre 18 plataformas con 20 referencias de mapeo, 10 riesgos, 56 causas con 92 relaciones riesgo↔causa, el modelo RBAC, y los formularios de contexto de empresa y de servicio con sus opciones literales |
+| `assets/TSC INTERGRAL SOC 2 DETALLADO VF.xlsx` | **La fuente maestra**, 17 hojas: catálogo maestro (61 requisitos TSC, 302 puntos de enfoque, 119 controles de los que 118 están asignados, 729 relaciones punto de enfoque↔control), 61 TEST de 23 columnas con 284 asignaciones control↔TEST (hoja Pruebas), 89 vínculos documento↔control (50 documentos distintos), 11.352 checks de 77 políticas SCA sobre 18 plataformas con 20 referencias de mapeo, 10 riesgos, 56 causas con 92 relaciones riesgo↔causa, el modelo RBAC, y los formularios de contexto de empresa y de servicio con sus opciones literales |
 
 ⚠️ **Las cifras salen de los datos crudos de las hojas, no de la hoja `Resumen`**, que quedó
 desactualizada: declara 658 relaciones donde los datos tienen 729, y su desglose por categoría
@@ -171,7 +169,7 @@ que les corresponde.
 
 | Término | Tabla | Qué es |
 |---|---|---|
-| **Marco** | `frameworks` | El estándar contratado (SOC 2, ISO 27001). Contiene requisitos |
+| **Marco** | `frameworks` | El estándar contratado (en el MVP, solo SOC 2: D37). Contiene requisitos |
 | **Requisito** | `requirements` | El criterio del marco: código (`CC6.1`) + criterio + **puntos de enfoque** |
 | **Punto de enfoque** | `points_of_focus` | Cada *point of focus* numerado de un requisito. **Es a él que se vincula el control**, no al requisito ni al marco |
 | **Criterio de confianza** | `trust_criteria` | Los TSC de SOC 2 (Seguridad, Disponibilidad, Confidencialidad, Integridad, Privacidad). Son catálogo: **clasifican los requisitos**. Qué criterios contrató un servicio es otra tabla (`service_trust_criteria`) y es lo que **filtra qué requisitos le aplican** |
@@ -186,7 +184,7 @@ que les corresponde.
 | **Riesgo** · **Causa** | `risks` · `causes` | El riesgo se origina en causas; las causas se mitigan con controles. Los tres niveles son `N:M` entre sí |
 | **Dimensión** | `control_dimensions` | Dos ejes distintos que no se confunden — ver §2 |
 | **Plan de testeo** | `test_plans` | Criterio de auditor: pasos **dependientes**, población y regla de muestreo |
-| **Test** | `tests` | Procedimiento de auditoría reutilizable, con 23 campos. Pertenece a **una** dimensión |
+| **Test** | `tests` | Procedimiento de auditoría reutilizable (22 campos propios; la hoja trae 23 columnas y una es su vínculo con los controles). Pertenece a **una** dimensión |
 | **Check** | `checks` | La verificación atómica que ejecuta la sonda. Clave natural de tres partes: `platform` + `policy_id` + `check_id` |
 | **Evaluación** | `evaluations` | Un test o check aplicado a **un activo**, con su resultado. **Inmutable** |
 | **Exclusión** | `exclusions` | Decisión de no medir un check, con justificación aprobada y vigencia |
@@ -237,7 +235,7 @@ servicio contrata. Ejemplo del comité: `C-01` aplica a scope **Servidores + Nub
 | Documental / Política (Gobierno) | `policy` | Sin automatización posible: es revisión documental con IA |
 | Servidores | `server` | La única con cobertura automática real hoy |
 | Bases de datos | `database` | |
-| Aplicación | `app` | |
+| Aplicación | `app` | **0 pruebas definidas todavía** (P9) |
 | Nube | `cloud` | **0 checks todavía** (§9) |
 
 Se mantienen exactamente estas 5 (decisión D5). Endpoints y dispositivos de red **se
@@ -247,7 +245,7 @@ monitorean pero no son dimensiones**.
 
 | Tabla | Cuántas dimensiones tiene |
 |---|---|
-| `controls` | Hasta 5 — una fila de `control_dimensions` por cada dimensión que le aplica |
+| `controls` | Hasta 5 — una fila de `control_dimensions` por cada dimensión que le aplica (en el escenario del cliente, `client_control_dimensions`, §7.1) |
 | `tests` | **Una sola.** El prefijo del código la encodea: `T-DOC-001` es documental, `T-SRV-007` es de servidores |
 | `evaluations` | Una: la del test o check que se aplicó, sobre un activo concreto |
 
@@ -284,7 +282,7 @@ catálogo y lo particulariza. Y como el catálogo cambia con el tiempo, se versi
 erDiagram
     frameworks {
         uuid id PK
-        string code "SOC2, ISO27001"
+        string code "soc2 (MVP: solo este)"
         string name
         string version
         enum type
@@ -295,8 +293,7 @@ erDiagram
         uuid framework_id FK
         uuid trust_criterion_id FK
         string code "CC6.1"
-        string tsc_category
-        string domain
+        string tsc_category "nombre largo de la categoria TSC (20 valores)"
         text criterion
     }
     points_of_focus {
@@ -331,10 +328,11 @@ donde el estándar dice qué se espera.
 erDiagram
     controls {
         uuid id PK
-        string code "CAP-1, GOV-11 (prefijo = dominio)"
+        string code "CAP-1, GOV-11"
         string name
         text description
-        string source_ref
+        string domain "uno de 27, valor literal del comite"
+        string source_ref "vanta:CAP-1"
     }
     point_of_focus_controls {
         uuid id PK
@@ -370,12 +368,26 @@ erDiagram
         uuid control_id FK
         uuid policy_id FK
     }
+    evidence_templates {
+        uuid id PK
+        string code "DOC-001"
+        text description
+        enum dimension "policy por defecto"
+    }
+    control_evidence_templates {
+        uuid id PK
+        uuid control_id FK
+        uuid evidence_template_id FK
+        int sequence "orden en el control"
+    }
     controls ||--o{ point_of_focus_controls : "satisface"
     points_of_focus ||--o{ point_of_focus_controls : "satisfecho por"
     controls ||--o{ control_dimensions : "se evalua en"
     controls ||--o{ control_measurements : "se califica con"
     controls ||--o{ control_policies : "depende de"
     policies ||--o{ control_policies : "sustenta"
+    controls ||--o{ control_evidence_templates : "pide"
+    evidence_templates ||--o{ control_evidence_templates : "pedida por"
 ```
 
 **El desacople es la regla estructural del modelo:** el control **no pertenece a ningún
@@ -385,15 +397,17 @@ requisitos los que pertenecen al marco. Datos reales que lo exigen: `MON-4` sati
 *"porque varios controles sirven a varias categorías"*; y un solo check trae mapeo a **20
 referencias** simultáneas.
 
-Hoy el vínculo en el código es indirecto (`Template → Risk → Reason → Control`) con el riesgo
-atado a un marco. **Eso desaparece.**
-
-**El dominio del control es un catálogo de 27** (prefijos: `AST`, `BCD`, `CAP`, `CFG`, `CHG`,
+**El dominio es del control, no del requisito, y son 27** (`controls.domain`, valor literal del
+comité: "Gestión de Activos", "Monitoreo Continuo"…). En el Excel el dominio **cambia dentro de un mismo
+requisito en 41 de los 61**, por eso no puede colgar del requisito; y no se deriva del prefijo del código
+porque `AST` tiene dos dominios (D35). Prefijos de código: `AST`, `BCD`, `CAP`, `CFG`, `CHG`,
 `CPL`, `DCH`, `GOV`, `HRS`, `IAC`/`IAO`, `IRO`, `MON`, `NET`, `SAT`, `TDA`…). Los más
 cargados: Privacidad 17, Gobierno 13, Identificación y Autenticación 13.
 
 **Un control depende de políticas y documentos**, no solo de tests: *"el control depende de
-la aprobación de la política"*.
+la aprobación de la política"*. Los documentos son `evidence_templates` (el comité vincula 89 a 67 de
+los 119 controles, 50 documentos distintos; uno sirve a varios controles) y son de donde se
+clonan las evidencias requeridas del cliente (§3.5, §7.3, D36).
 
 > **Procedencia:** el catálogo de controles fue **extraído de Vanta** (119 registros,
 > 25 ago 2026) y ampliado con los TEST y el mapeo propios. `CPL-1` es el único sin asignar
@@ -418,19 +432,20 @@ erDiagram
         enum dimension "una sola"
         string name
         text objective
-        enum type
-        string tool
+        string type "texto libre del comite"
+        string tool "INTERNO: nombra al proveedor"
         string population
         string period
-        int population_size
-        int suggested_sample_size
+        text population_size "texto, no entero"
+        text suggested_sample_size "texto, no entero"
         string selection_method
         text evidence_to_request
         text prerequisites
         json step_by_step
         json attributes_to_validate
         text compliance_criterion
-        text exceptions_handling
+        text exceptions "que se considera excepcion"
+        text exceptions_handling "que hacer con ellas"
         text evidence_to_retain
         text automated_coverage
         text complementary_manual_validation
@@ -485,9 +500,21 @@ erDiagram
     sca_policies ||--o{ checks : "contiene"
 ```
 
-**`tests` es `N:M` con `controls`, y es deliberado.** `T-DOC-001` sirve a más de 30
-controles: los 118 controles asignados y los 61 TEST producen **228 asignaciones**
-control↔TEST. Modelarlo `N:1` duplicaría 61 tests en cientos de filas.
+**`tests` es `N:M` con `controls`, y es deliberado.** `T-DOC-001` sirve a 103 controles: los 118
+controles asignados y los 61 TEST producen **284 asignaciones** control↔TEST (de 1 a 7 pruebas por control,
+2,4 de media). Modelarlo `N:1` duplicaría 61 tests en cientos de filas.
+
+**La fuente de esas 284 es la hoja *Pruebas*** (columna *Controles relacionados*), que cubre las 61 pruebas
+y los 118 controles. La matriz *Análisis TEST x Control* trae 248, de las que 27 citan `T-APP-001…006`, que
+no existen en *Pruebas* — la propia hoja marca *"FALTAN 6"* — y contiene las otras 221 (D38). Por eso hoy
+**la dimensión Aplicación no tiene ninguna prueba definida** (P9).
+
+**Las pruebas son texto interno.** Nombran al proveedor del motor de monitoreo en 15 de sus 23 columnas
+(`tool`, `automated_coverage`, `limitations`, `prerequisites`, `step_by_step`…) e incluso en 4 nombres:
+ninguno de esos textos sale tal cual a la UI, a un reporte ni a un texto generado por IA (P11). Los campos
+`population_size` y `suggested_sample_size` son **texto** porque en el Excel son frases ("Por determinar con
+base en el inventario de proveedores"; "N<5 → 100%; si no, 10% de la población (mín. 5, máx. 25)"), no
+enteros: el muestreo se guarda como dato y su cálculo se construye después (D8).
 
 **La clave natural del check es de tres partes** (`platform` + `policy_id` + `check_id`) y el
 catálogo es grande: **77 políticas, 11.352 checks, 18 plataformas** (Windows 8 políticas de
@@ -505,7 +532,7 @@ guardan ahora.
 
 > **Cuidado con la palabra "prueba", que son tres cosas distintas:** los **61 TEST** de
 > Monkey (`tests`), las **107 pruebas vinculadas** de Vanta y los **11.352 checks** de la
-> sonda (`checks`). Más 88 documentos y 16 políticas vinculadas del catálogo de origen.
+> sonda (`checks`). Más 89 vínculos a documentos (50 documentos distintos) y 16 vínculos a 10 políticas del catálogo de origen.
 >
 > **`ChecklistOs` se elimina** del schema y se reemplaza por `sca_policies` + `checks`.
 
@@ -552,7 +579,9 @@ erDiagram
 
 **Los tres niveles se reutilizan**, y por eso las tres relaciones son `N:M`: 10 riesgos y 56
 causas en el catálogo, unidos por 92 relaciones riesgo↔causa, y una causa como `F001`
-apunta a cuatro controles distintos.
+apunta a cuatro controles distintos (209 aristas causa→control en total, sobre los 118 controles). **Diez de
+las 56 causas no pertenecen a ningún riesgo** en la hoja del comité (F003, F004, F016, F020, F026, F034,
+F042, F045, F053, F054): se cargan tal cual, sin asociar (P9).
 
 **El riesgo cuelga del servicio, no del marco** (ver §7.2). Un riesgo no es "de SOC 2": es
 del negocio del cliente, y los controles que lo mitigan sirven a los marcos que sea.
@@ -584,7 +613,7 @@ erDiagram
         int number
         date published_at
         text change_summary
-        uuid published_by FK
+        uuid published_by FK "nullable: la carga inicial la hace un script"
         boolean propagated_automatically
         boolean requires_acceptance
     }
@@ -598,11 +627,14 @@ puede cambiar solo — ya pasó una vez con la reclasificación de 223 checks.
 
 | Elemento | ¿Se clona? |
 |---|---|
-| `controls` → `client_controls` | **Sí**, tabla propia: el cliente reescribe su interpretación (decisión D3) |
+| `controls` → `client_controls` | **Sí**, tabla propia: el cliente reescribe su interpretación (D3), **crea controles propios** (`control_id` nulo) y los **da de baja** (`is_active`). Ver D36 |
+| `control_dimensions` → `client_control_dimensions` | **Sí** (D36): un control propio declara las suyas y cualquiera puede justificar `reason_not_applicable` |
 | `risks` y `causes` → `client_risks` y `client_causes` | **Sí, en dos momentos distintos**, y con tablas propias del cliente (D28). El set base se clona **automáticamente** al elegir marco en el Componente 2 (§6.2), junto con sus relaciones (`client_risk_causes`, `client_cause_controls`); la **personalización** pasa después, en el módulo de Cumplimiento (§7.2), sin bloquear nada. Editar una copia jamás toca el catálogo ni a otro cliente |
 | **`requirements` y `points_of_focus`** | **No se clonan — se referencian con FK real.** Viven en la misma base; `client_controls` y `service_frameworks` apuntan directo a ellos. Es texto de un estándar, no hace falta copiarlo |
-| `evidence_requirements` | Sí, con `source_ref` al original (columna real desde D30) |
-| `tests`, `control_measurements` | **No en el MVP: se referencian con FK real** (`evaluations.test_id`, `exclusions.test_id`). El MVP no permite que el cliente reescriba un test ni el peso de un control (R-09: peso igual). Si eso cambia, se clonan entonces con `source_ref` (D30) |
+| `evidence_templates` → `evidence_requirements` | **Sí** (D36): cada plantilla ligada al control se clona por control del cliente, con `source_ref` = código de la plantilla y responsable vacío. La evidencia de un control propio la define el cliente |
+| `tests` | **No: se referencian con FK real** (`evaluations.test_id`, `exclusions.test_id`). El cliente no reescribe un test |
+| `control_tests` → `client_control_tests` | **Sí** (D36): se copia el **vínculo** control ↔ test, no el test. Lo necesita un control propio y es lo que "cambiar los tests de un control requiere aceptación" (abajo) da por hecho |
+| `control_measurements` | **No** (D2: peso lineal, sin configuración). Ausencia de fila = peso 1. Si D2 se revisa, se clonan entonces |
 
 **Qué se propaga solo y qué requiere aceptación del consultor:**
 
@@ -741,6 +773,8 @@ son únicos.**
   exige que la fila nueva también pase la política de lectura, y una acción de plataforma sin
   tenant no la pasa.
 - El `email` de `users` se guarda **en minúsculas** (hay un `CHECK`).
+- `evaluations.service_id` debe ser el mismo que `client_controls.service_id` del control evaluado: no hay
+  FK compuesta que lo imponga.
 
 **Claves únicas que el modelo exige** (todas con índice; sin ellas el catálogo se duplica al
 cargarlo y una regla de negocio depende de que nadie se equivoque):
@@ -758,6 +792,10 @@ cargarlo y una regla de negocio depende de que nadie se equivoque):
 | `user_control_assignments` | `user_id` + `client_control_id` |
 | `auditor_assignments` | `auditor_user_id` + `company_id` (renovar es cambiar `expires_at`) |
 | `service_frameworks` | `service_id` + `framework_id` (un servicio contrata un marco una vez) |
+| `client_controls` | `service_id` + `control_id` (se clona una vez por servicio; los propios, con `control_id` nulo, no chocan) y `service_id` + `own_code` |
+| `evidence_requirements` | `client_control_id` + `code` |
+| `client_control_dimensions` · `client_control_tests` | `client_control_id` + `dimension` · `client_control_id` + `test_id` |
+| `evidence_templates` · `control_evidence_templates` | `code` · `control_id` + `evidence_template_id`, y `control_id` + `sequence` |
 | `assets` | `organization_id` + `code` |
 | `vulnerabilities` | `asset_id` + `cve` + `package_name` |
 | `client_risks` · `client_causes` | `service_id` + `code`, y `service_id` + la plantilla de origen |
@@ -770,10 +808,10 @@ No hay ningún `ON DELETE CASCADE`: el histórico (`evaluations`, `findings`, `c
 `SET NULL` sobre quién actuó (`user_id`, `confirmed_by`, `approved_by`, `reported_by`): tocar un usuario
 no puede borrar la atribución de un registro inmutable, así que esas FK son `RESTRICT`.
 
-**Datos de arranque:** `access_keys.created_by` y `catalog_versions.published_by` son FK
-obligatorias a `users`, y `users.company_id` también. Antes de crear la primera empresa hace
-falta una `companies` interna de Monkey y un primer `admin_monkey` (seed). Sin eso el sistema no
-puede registrar a nadie.
+**Datos de arranque:** `access_keys.created_by` es FK obligatoria a `users`, y `users.company_id`
+también. Antes de crear la primera empresa hace falta una `companies` interna de Monkey y un primer
+`admin_monkey` (seed). Sin eso el sistema no puede registrar a nadie. `catalog_versions.published_by`
+es **opcional** (D35): la carga inicial del catálogo no necesita ningún usuario.
 
 ---
 
@@ -839,6 +877,7 @@ erDiagram
     }
     user_control_assignments {
         uuid id PK
+        uuid company_id FK "denormalizado: lo pide el RLS"
         uuid user_id FK
         uuid client_control_id FK
         uuid assigned_by FK
@@ -854,6 +893,7 @@ erDiagram
     }
     sessions {
         uuid id PK
+        uuid company_id FK "denormalizado: lo pide el RLS"
         uuid user_id FK
         string refresh_token_hash
         string ip_address
@@ -902,16 +942,7 @@ erDiagram
     companies ||--o{ api_keys : "integra con"
 ```
 
-| Tabla | Estado | Nota |
-|---|---|---|
-| `companies` | ⚠️ | Hoy se llama `Client` |
-| `users` | ⚠️ | Le faltan los **3 estados**, MFA y último login |
-| **`user_control_assignments`** | ❌ | **Qué controles le tocan a cada usuario.** El comité la mapeó a `CC6.1` |
-| `custom_roles` | ❌ | Roles con permisos específicos, cuando los 4 estándar no alcanzan |
-| `auditor_assignments` | ❌ | **Quién puede auditar a quién**: el auditor no ve todos los tenants |
-| `sessions` | ✅ | Access token 15 min; refresh rotado en cada uso; la sesión se cierra a los **30 min sin actividad** (`last_activity_at`) y a las **8 h de creada** (`created_at`, `expires_at`), como pide §5.3. Las dos columnas se añadieron el 2026-09-30 (migración 21): sin ellas el servidor no podía aplicar esa política |
-| `api_keys` | ❌ | Rotación 90 días |
-| `audit_logs` | ❌ | Acciones **sobre la plataforma**. Distinto de `compliance_events` (§7.4) |
+**`sessions`:** access token de 15 min; refresh token rotado en cada uso; la sesión se cierra a los **30 min sin actividad** (`last_activity_at`) y a las **8 h de creada** (`created_at`, `expires_at`), como pide §5.3. Las dos columnas se añadieron el 2026-09-30 (migración `platform_sessions_activity_tracking`): sin ellas el servidor no podía aplicar esa política.
 
 **El estado del usuario no es cosmético:** `CC6.3` (deprovisioning) se cumple pasando el
 usuario a `inactive` y cerrando su sesión. Es un control auditable, no una preferencia de UI.
@@ -1308,12 +1339,28 @@ límite de tiempo. Lo usa `admin_empresa`.
 erDiagram
     client_controls {
         uuid id PK
-        uuid control_id FK
+        uuid control_id FK "nullable: null si lo creo el cliente"
         uuid service_id FK
         string own_code "C01"
         text client_interpretation
         enum type
         string source_ref
+        boolean is_active "baja logica"
+    }
+    client_control_dimensions {
+        uuid id PK
+        uuid client_control_id FK
+        enum dimension
+        enum type "manual|automated|hybrid|technical_manual"
+        boolean requires_probe
+        boolean requires_ai
+        boolean requires_compliance_confirmation
+        text reason_not_applicable "nullable"
+    }
+    client_control_tests {
+        uuid id PK
+        uuid client_control_id FK
+        uuid test_id FK
     }
     action_plans {
         uuid id PK
@@ -1327,6 +1374,9 @@ erDiagram
     services ||--o{ client_controls : "aplica"
     client_controls ||--o{ action_plans : "remediado con"
     client_controls ||--o{ user_control_assignments : "asignado a"
+    client_controls ||--o{ client_control_dimensions : "se evalua en"
+    client_controls ||--o{ client_control_tests : "se verifica con"
+    tests ||--o{ client_control_tests : "verifica a"
 ```
 
 **`client_controls` es tabla propia, no columnas extra del control clonado** (decisión D3). El
@@ -1335,6 +1385,17 @@ rastro al control del catálogo para que una actualización del catálogo sepa a
 
 **El mismo control puede estar cumplido en un servicio e incumplido en otro**, porque se
 evalúa sobre insumos distintos. Por eso `client_controls` cuelga del servicio.
+
+**El cliente puede crear, editar y eliminar controles** (matriz §5.5), y por eso todo lo que se mide
+cuelga de `client_controls` y no del catálogo: `evaluations` (§7.4) y `evidence_requirements` (§7.3)
+apuntan a `client_control_id`. `control_id` es la plantilla de origen y es nulo en un control propio.
+**Eliminar es dar de baja** (`is_active = false`): las evaluaciones son inmutables y las FK son
+`RESTRICT`, así que un control con histórico no se borra. Lo mismo vale para `client_causes` y
+`client_risks`.
+
+**Un control propio no tiene punto de enfoque** (el puente `point_of_focus_controls` es del catálogo), así
+que no puede cerrar un requisito del marco. Si cuenta para el % del servicio y cómo se mapearía a un
+requisito es una pregunta abierta del comité: P8.
 
 ### 7.2 Riesgos del cliente y sus indicadores
 
@@ -1367,6 +1428,7 @@ erDiagram
         string name
         enum failure_category
         text description
+        boolean is_active "baja logica"
         datetime created_at
         datetime updated_at
     }
@@ -1440,14 +1502,14 @@ al marco), mitigación (respuesta frente a una causa o riesgo) y riesgo residual
 erDiagram
     evidence_requirements {
         uuid id PK
-        uuid control_id FK
+        uuid client_control_id FK
         uuid responsible_id FK "cargo, no persona"
         string code
         int sequence
         text description
         enum dimension
         string validity_within_period
-        string source_ref "nullable, requisito del catalogo del que se clono"
+        string source_ref "nullable: codigo de la plantilla; null si la creo el cliente"
     }
     evidence_submissions {
         uuid id PK
@@ -1472,7 +1534,7 @@ erDiagram
         text justification
         date valid_until
     }
-    controls ||--o{ evidence_requirements : "exige"
+    client_controls ||--o{ evidence_requirements : "exige"
     evidence_requirements ||--o{ evidence_submissions : "se cumple con"
     tests ||--o{ exclusions : "excluye checks por"
 ```
@@ -1481,7 +1543,9 @@ erDiagram
 `evidence_requirements.responsible_id` apunta a `organization_responsibles`, es decir, al
 **cargo** dentro de la organización del cliente (§5.4); quién lo ocupa hoy es su `person_name`.
 Se cerró así en D30 (P4): no hay catálogo global de cargos, y `evidence_requirements` se
-clona con el `responsible_id` vacío hasta que el cliente designa a sus responsables.
+clona con el `responsible_id` vacío hasta que el cliente designa a sus responsables. Se clonan desde
+`evidence_templates` (§3.2), una fila por plantilla ligada al control, con `code` = código de la
+plantilla, `sequence` = su orden en el control y `validity_within_period` = el periodo de evaluación.
 
 **La evidencia es válida si cae dentro del periodo de evaluación** del marco (decisión C1), no
 por una fecha de caducidad fija.
@@ -1500,7 +1564,7 @@ erDiagram
     evaluations {
         uuid id PK
         uuid service_id FK
-        uuid control_id FK
+        uuid client_control_id FK "el control DEL CLIENTE que se evaluo"
         uuid test_id FK "que test se evaluo"
         uuid check_id FK "nullable, el check exacto si lo midio la sonda"
         uuid asset_id FK
@@ -1552,7 +1616,7 @@ erDiagram
         text recommendation
     }
     services ||--o{ evaluations : "evaluado en"
-    controls ||--o{ evaluations : "registra"
+    client_controls ||--o{ evaluations : "registra"
     tests ||--o{ evaluations : "aplicado en"
     checks ||--o{ evaluations : "aplicado en"
     assets ||--o{ evaluations : "sobre"
@@ -1561,7 +1625,7 @@ erDiagram
     assets ||--o{ vulnerabilities : "expone"
 ```
 
-**Una evaluación dice qué se evaluó** (D27): `test_id` siempre —el test es lo que define la
+**Una evaluación dice qué se evaluó** (D27, D36): el control del cliente (`client_control_id`), `test_id` siempre —el test es lo que define la
 dimensión y a qué exclusiones responde— y `check_id` cuando la midió la sonda. Sin esos dos campos
 no se puede "señalar el activo y el check exactos" de una falla (§9). `evaluated_at` es un
 **instante**, no un día: la sonda corre cada 6 horas y "la última evaluación" tiene que ser
@@ -1659,6 +1723,16 @@ erDiagram
     executions ||--o{ check_results : "produce"
     executions ||--o{ execution_logs : "registra"
     checks ||--o{ check_results : "evaluado como"
+    monitoring_domain_requirements {
+        uuid id PK
+        uuid monitoring_domain_id FK
+        uuid requirement_id FK
+    }
+    monitoring_domain_capabilities {
+        uuid id PK
+        uuid monitoring_domain_id FK
+        uuid automated_capability_id FK
+    }
     monitoring_domains ||--o{ monitoring_domain_requirements : "cubre"
     requirements ||--o{ monitoring_domain_requirements : "cubierto por"
     monitoring_domains ||--o{ monitoring_domain_capabilities : "se apoya en"
@@ -1839,7 +1913,12 @@ erDiagram
     controls ||--o{ control_dimensions : "se evalua en"
     controls ||--o{ control_measurements : "se califica con"
     controls ||--o{ test_plans : "se prueba segun"
-    controls ||--o{ evidence_requirements : "exige"
+    client_controls ||--o{ evidence_requirements : "exige"
+    controls ||--o{ control_evidence_templates : "pide"
+    evidence_templates ||--o{ control_evidence_templates : "pedida por"
+    client_controls ||--o{ client_control_dimensions : "se evalua en"
+    client_controls ||--o{ client_control_tests : "se verifica con"
+    tests ||--o{ client_control_tests : "verifica a"
     controls }o--o{ tests : "se verifica con"
     controls }o--o{ policies : "depende de"
 
@@ -1862,7 +1941,7 @@ erDiagram
     checks ||--o{ check_results : "evaluado como"
 
     services ||--o{ evaluations : "evaluado en"
-    controls ||--o{ evaluations : "registra"
+    client_controls ||--o{ evaluations : "registra"
     assets ||--o{ evaluations : "sobre"
     catalog_versions ||--o{ evaluations : "medida contra"
     evaluations ||--o{ findings : "detecta"

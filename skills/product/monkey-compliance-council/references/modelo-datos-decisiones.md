@@ -8,7 +8,7 @@ construir. Este archivo existe para responder *"¿por qué se decidió así?"* s
 discutirlo, y para que si alguna decisión resulta equivocada se pueda revisar sabiendo en
 qué se apoyaba.
 
-Lo que sigue abierto está en **`modelo-datos-pendientes.md`** (hoy, 5 preguntas: P2, P3, P5, P6 y P7).
+Lo que sigue abierto está en **`modelo-datos-pendientes.md`** (hoy, 9 preguntas: P2, P3, P5, P6, P7, P8, P9, P10 y P11).
 
 > Este contenido estuvo hasta el 16 de septiembre de 2026 en una sección "§8" de
 > `modelo-datos.md`. Si un ticket de Jira o un comentario viejo apunta a "§8", se refiere
@@ -497,6 +497,120 @@ filtro o el cálculo. Si el comité entrega otros valores, gana el comité y se 
 migración sin pérdida de datos.
 
 **Fuente:** decisión de Héctor, 2026-09-29.
+
+---
+## D35 · Siembra del catálogo de SOC 2 (MD-65): dominio del control, publicador opcional y estrategia
+
+**Decisión:**
+1. **El dominio pasa de `requirements` a `controls`** (`controls.domain`, 27 valores literales). Se
+   elimina `requirements.domain`.
+2. **`catalog_versions.published_by` es opcional.** La versión 1 la publica un script, sin usuario
+   humano, y lo dice en `change_summary`. No se crean usuarios ni empresas falsas.
+3. **Se siembran 119 controles**, incluido CPL-1 ("Descripción del Sistema"), que queda sin puntos de
+   enfoque (en el producto lo cubre `system_descriptions`). Son **729 relaciones**, no 658.
+4. **Estrategia:** el Excel se convierte a un JSON versionado (`prisma/seed/data/soc2-catalog.json`,
+   con el sha256 del archivo de origen); el seed lee ese JSON. Valida antes de escribir, inserta en una
+   sola transacción, **solo agrega lo que falta**, aborta con diff si una fila existente difiere y no
+   borra nada. Un cambio al catálogo entra por una versión nueva (A4/D33), no por recarga.
+
+**Por qué:** al perfilar el Excel, `Dominio` varía dentro del mismo requisito en 41 de 61 (es atributo del
+control) y `requirements.domain`, obligatorio, no tenía fuente. La cifra de 658 relaciones del ticket
+MD-65 sale de la hoja `Resumen`, que el propio modelo ya documenta como desactualizada: los datos crudos
+traen 729. Y la FK obligatoria `published_by → users` habría exigido crear un usuario solo para poder
+sembrar. Un JSON versionado permite reproducir la carga sin tener el Excel (que está en `.gitignore`) y
+deja trazable de qué archivo salió.
+
+**Fuente:** `assets/TSC INTERGRAL SOC 2 DETALLADO VF.xlsx`, hojas *Controles Monkey* y *Tabla controles
+SOC 2*. Decisión de Héctor, 2026-09-30.
+
+---
+## D36 · Controles del cliente completos, clonado y plantillas de evidencia
+
+**Decisión** (precisa D3, D28 y D30):
+1. **El cliente crea, edita y elimina controles**, así que todo lo que se mide cuelga de
+   `client_controls`: `evaluations` y `evidence_requirements` apuntan a `client_control_id`, no al control
+   del catálogo. `client_controls.control_id` es opcional (plantilla de origen; nulo en un control propio).
+2. **Eliminar es dar de baja**: `is_active` en `client_controls` y `client_causes` (`client_risks` ya lo
+   tenía). Las evaluaciones son inmutables y las FK son `RESTRICT`.
+3. **Único `(service_id, control_id)`** en `client_controls`: el clonado es idempotente (MD-80).
+4. **Se clonan** las dimensiones (`client_control_dimensions`) y el **vínculo** control ↔ test
+   (`client_control_tests`). **No se clonan** los tests (se referencian) ni `control_measurements` (D2).
+5. **Plantillas de evidencia** en el catálogo (`evidence_templates`, `control_evidence_templates`), de donde
+   se clonan las `evidence_requirements` de cada control del cliente.
+
+**Por qué:** con `control_id` obligatorio y las evaluaciones colgadas del catálogo, un control propio no se
+podía evaluar ni pedirle evidencia, aunque la matriz de permisos deja a `admin_empresa` crearlos. Los tests
+son 61 procedimientos que el cliente no edita: copiarlos solo los duplica por cliente, pero el vínculo sí es
+suyo (A4 exige aceptación para cambiar los tests de un control, lo que presupone esa copia). D2 fija el peso
+lineal sin configuración, así que una fila de `control_measurements` sería un dato muerto. Las plantillas de
+evidencia salen del Excel: 89 vínculos entre 67 de los 119 controles y 50 documentos distintos (la
+hoja *Tabla controles SOC 2*, "Documentos vinculados"); antes `evidence_requirements` se decía clonable pero no
+existía de dónde. La dimensión de esas plantillas es `policy`: el Excel no la trae y son documentos.
+
+**Deja abierto (P8):** un control propio no tiene punto de enfoque, así que no puede cerrar un requisito
+del marco; si aun así cuenta para el % del servicio, y cómo se mapearía a un requisito, lo decide el comité.
+
+**Fuente:** decisión de Héctor, 2026-09-30.
+
+---
+## D37 · El MVP contempla solo SOC 2
+
+**Decisión:** el MVP trabaja únicamente con **SOC 2**. ISO 27001, SOC 1, PCI DSS, HIPAA, NIST CSF y el resto
+quedan para fases posteriores (`mvp-roadmap.md`: ISO 27001 pasa a la Fase 1).
+
+**Qué implica:**
+- `frameworks` tiene una sola fila (`soc2`, versión 2017) y el selector de marco del Componente 2 sale de esa
+  tabla, no de una lista fija: un marco no sembrado no se puede elegir (la FK de `service_frameworks` lo
+  rompería).
+- El modelo sigue siendo multi-framework por diseño (el control es atómico): no se construye nada que
+  impida sumar marcos después, pero tampoco se siembra ni se ofrece ninguno.
+- No cambia `services.previous_certification` (es lo que el cliente ya tuvo, no lo que contrata) ni el
+  catálogo `regulations` (leyes aplicables, no se puntúan: D10).
+- `frameworks.type` conserva sus 4 valores; en el MVP solo se usa `attestation`.
+
+**Por qué:** un selector con seis marcos y un catálogo con uno es una trampa: elegir cualquiera de los otros
+cinco fallaba o dejaba al cliente sin nada que clonar. **Fuente:** decisión de Héctor, 2026-09-30.
+
+---
+
+## D38 · El dato real manda: cómo se siembra y qué se encontró
+
+**Regla:** las cifras de cualquier documento, ticket o resumen se comprueban contra los datos crudos de las
+hojas; si difieren, **vale lo medido** y el documento se corrige. El seed fija esas cifras medidas (si el
+Excel cambia, la extracción falla hasta que se actualicen de forma consciente) y deja constancia en
+`catalog_versions.change_summary` de lo que el archivo dice y los datos no confirman. **No se adivina ni se
+infiere nada**: lo que no tiene fuente no se siembra y pasa a pendiente.
+
+**Lo medido contra lo que decían los documentos:**
+
+| Dato | Decía | Hay |
+|---|---|---|
+| Relaciones punto de enfoque ↔ control | 658 (hoja *Resumen*) | **729** |
+| Controles del catálogo | 118 | **119** (118 asignados + CPL-1, Descripción del Sistema) |
+| Asignaciones control ↔ prueba | 228 | **284** en la hoja *Pruebas*; la matriz trae 248, de las que 27 citan pruebas inexistentes |
+| Documentos vinculados a controles | 88 | **89** vínculos, **50** documentos distintos, en 67 controles |
+| Políticas vinculadas | 16 | 16 vínculos a **10** políticas distintas (no se siembran: P10) |
+| Controles a los que sirve `T-DOC-001` | "más de 30" | **103** |
+| Pruebas con checks automáticos · checks · políticas SCA · plataformas · referencias de mapeo | 13 · 11.352 · 77 · 18 · 20 | confirmados: **13 · 11.352 · 77 · 18 · 20** |
+
+**Correcciones al schema que salen de los datos** (migración `catalog_seed_and_client_controls`):
+`tests.population_size` y `tests.suggested_sample_size` pasan de entero a **texto** (en el Excel son frases);
+se agrega `tests.exceptions` (la hoja trae *Excepciones/Desviaciones* y *Tratamiento de excepciones*, el schema
+solo guardaba una); el dominio pasa al control (D35).
+
+**Decisiones de siembra:**
+- **Asignaciones control ↔ prueba:** se usa la hoja *Pruebas* (284: cubre 61/61 pruebas y 118/118 controles y
+  contiene las 221 resolubles de la matriz). Las 6 pruebas `T-APP-001…006` de la matriz **no se equiparan** con
+  `T-SRV-011…014` y `T-BD-009/010`, aunque coinciden en 94-100% de sus controles: es una pregunta del comité (P9).
+- **Causas:** se cargan las 56; 10 no pertenecen a ningún riesgo en la hoja y se cargan sin asociar (P9).
+- **Plantillas de evidencia:** el código es `DOC-` + hash del texto normalizado, no un consecutivo, para que
+  agregar un documento no renumere los demás (las evidencias del cliente guardan ese código en `source_ref`).
+- **`control_dimensions`, `control_measurements` y `policies` no se siembran**: sin fuente en el Excel (P10) o
+  sin uso en el MVP (D2).
+- **Pruebas en texto:** el paso a paso y los atributos se guardan como listas separadas por su numeración
+  (`1.`/`1)`) o sus viñetas; si una prueba no trae numeración 1, 2, 3… la extracción falla en vez de adivinar.
+
+**Fuente:** perfilado de `TSC INTERGRAL SOC 2 DETALLADO VF.xlsx` del 2026-09-30. Decisión de Héctor.
 
 ---
 
