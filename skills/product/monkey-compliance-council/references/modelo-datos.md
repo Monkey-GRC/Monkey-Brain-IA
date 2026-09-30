@@ -668,7 +668,9 @@ requiere base de datos dedicada, y el correo administrativo de la empresa. Al en
    > aplazado (MD-69), así que `admin_monkey` **copia la clave desde la UI de Monkey Admin**
    > y la entrega por el canal que sea. Por eso el registro debe **mostrar la clave en claro
    > una sola vez**: es el único medio de obtenerla. El destino sigue siendo el `admin_email`.
-4. El cliente usa la clave para crear su cuenta `admin_empresa` en Monkey Platform.
+4. El cliente usa la clave para crear su cuenta `admin_empresa` en Monkey Platform, **con el
+   `admin_email` registrado aquí** (D39). La clave sirve una sola vez; después entra con correo y
+   contraseña.
 5. Arranca el onboarding (§6). El campo "nombre / razón social" del Componente 1 llega
    **precargado y bloqueado**: ya se fijó aquí.
 
@@ -856,8 +858,10 @@ erDiagram
         string refresh_token_hash
         string ip_address
         string user_agent
-        datetime expires_at
+        datetime expires_at "created_at + 8 h"
         datetime revoked_at "nullable"
+        datetime created_at "inicio: tope de 8 h"
+        datetime last_activity_at "inactividad: 30 min"
     }
     api_keys {
         uuid id PK
@@ -905,7 +909,7 @@ erDiagram
 | **`user_control_assignments`** | ❌ | **Qué controles le tocan a cada usuario.** El comité la mapeó a `CC6.1` |
 | `custom_roles` | ❌ | Roles con permisos específicos, cuando los 4 estándar no alcanzan |
 | `auditor_assignments` | ❌ | **Quién puede auditar a quién**: el auditor no ve todos los tenants |
-| `sessions` | ⚠️ | JWT 15 min → refresh 7 días → timeout 30 min |
+| `sessions` | ✅ | Access token 15 min; refresh rotado en cada uso; la sesión se cierra a los **30 min sin actividad** (`last_activity_at`) y a las **8 h de creada** (`created_at`, `expires_at`), como pide §5.3. Las dos columnas se añadieron el 2026-09-30 (migración 21): sin ellas el servidor no podía aplicar esa política |
 | `api_keys` | ❌ | Rotación 90 días |
 | `audit_logs` | ❌ | Acciones **sobre la plataforma**. Distinto de `compliance_events` (§7.4) |
 

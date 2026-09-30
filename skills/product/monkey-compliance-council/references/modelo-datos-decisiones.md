@@ -499,3 +499,72 @@ migración sin pérdida de datos.
 **Fuente:** decisión de Héctor, 2026-09-29.
 
 ---
+
+## D39 · La clave de acceso se canjea una sola vez, y solo con el correo administrativo
+
+**Decisión:** el canje (`POST /v1/auth/redeem`) crea la cuenta `admin_empresa` **únicamente si el
+correo que escribe el cliente es el `admin_email` que Monkey registró para su empresa** (se compara
+en minúsculas). Si no coincide: `422 ACCESS_KEY_EMAIL_MISMATCH` y la clave sigue pendiente. La clave
+sirve **una vez**: al canjearla pasa a `used` y, desde ahí, ese administrador entra siempre con correo
+y contraseña (`POST /v1/auth/login`).
+
+**Por qué:** D24 ya dice que la clave se emite **para** el `admin_email` capturado en el registro; atar
+el canje a ese correo es lo que hace que una clave interceptada o reenviada por error no sirva para
+crear una cuenta con otro correo. Y como `users.email` es único global (D29), el administrador de la
+empresa queda identificado sin ambigüedad desde el primer acceso.
+
+**Cómo quedó implementado** (detalle en `contracts/modules/auth.md`, "Estado de implementación"):
+
+- La clave se marca como usada con una actualización **condicional** (solo si sigue `pending` y
+  vigente) en la misma transacción que crea el usuario: dos canjes simultáneos no pueden crear dos
+  cuentas.
+- Clave vencida → `409 ACCESS_KEY_EXPIRED`; ya usada → `409 ACCESS_KEY_ALREADY_USED`; inexistente,
+  revocada, o de una empresa suspendida → `404 ACCESS_KEY_INVALID` (a quien solo tiene la clave no se
+  le revela el estado de la empresa).
+- Se registran en `audit_logs` el canje (`auth.redeem`, también los intentos fallidos con el correo
+  tecleado) y la creación del usuario (`user.create`).
+
+**No cierra P2(e)** (¿más de un correo administrativo por empresa?): hoy hay uno, y el resto de
+usuarios de la empresa se invitará desde el módulo de Usuarios.
+
+**Fuente:** confirmación de Carlos, 2026-09-30.
+
+---
+
+## D40 · Componente 1 del onboarding: huecos del contrato resueltos por desarrollo
+
+**Decisiones** (Carlos, 2026-09-30; **pendientes de ratificar con el comité**, ninguna toca cómo se
+calcula el cumplimiento). Son los huecos que el contrato de `onboarding-organizational-context.md`
+dejaba abiertos:
+
+1. **Sin guardado parcial.** El contrato hablaba de un `PATCH` "mientras el cliente escribe", pero las
+   columnas obligatorias de `organizations` son `NOT NULL` y no se podía guardar a medias. Se eligió no
+   tocar el schema: el avance vive en el navegador del cliente (por usuario, sobrevive a la expiración
+   de la sesión) y se envía completo con `PUT` al final. Si el comité quiere borradores en el servidor,
+   se vuelven opcionales esas columnas y se mueve la validación de completitud a la aplicación.
+2. **Un solo `PUT`** crea o actualiza. Se retira `ORGANIZATION_ALREADY_EXISTS`, que citaba un `POST`
+   que el contrato nunca definió.
+3. **«Ninguna» es excluyente; «Otra» queda solo marcada.** «Otra» no tiene campo de texto porque el
+   modelo no tiene dónde guardar cuál es; se añade si el comité lo pide.
+4. **`none` y `other` son filas de `catalog.regulations`** (jurisdicción `n/a`): la tabla puente
+   referencia por FK, y guardar «Ninguna» deja constancia de que el cliente contestó que no le aplica
+   ninguna, que no es lo mismo que no haber contestado.
+5. **Etiquetas en inglés traducidas por desarrollo** (el Excel solo trae español, salvo `size`),
+   pendientes de revisión. Platform todavía no tiene i18n: hoy se ve todo en español.
+6. **Dos catálogos de países** (`incorporation_country` y `client_country`) en lugar del único
+   `country` del contrato: son listas distintas (12 y 13) y el schema ya tiene dos enums.
+7. **Pasos del onboarding en `/auth/me`:** `organizational_context`, `service_context`,
+   `technical_control`; `next_step` es `null` cuando el cliente terminó los tres. Hoy solo se deriva el
+   primero (existe la organización).
+8. **Presentación:** asistente guiado de 5 pantallas cortas más una de revisión, en vez de 10
+   pantallas de una pregunta. Es una lectura de `philosophy.md` ("una pregunta o acción clara por
+   paso") que agrupa campos afines para no cansar; si el comité prefiere una pregunta por pantalla,
+   es un cambio solo de frontend.
+
+**Por qué:** el brain define los 10 campos, sus opciones y la forma de la API, pero no estas
+decisiones de detalle; en vez de dejar el sprint detenido se tomó el camino que no cambia el modelo y
+se deja aquí para revisión.
+
+**Fuente:** confirmación de Carlos, 2026-09-30.
+
+---

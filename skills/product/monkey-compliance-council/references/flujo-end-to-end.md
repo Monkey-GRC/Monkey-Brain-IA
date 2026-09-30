@@ -38,8 +38,11 @@ Al enviar el formulario:
 ## 2. Primer acceso del cliente
 
 Con la clave recibida en su correo administrativo, el cliente entra a **Monkey
-Platform** y crea su cuenta `admin_empresa`. La `access_keys` pasa a `used`. A partir de
-aquí el cliente ya está autenticado (JWT 15 min, refresh 7 días) dentro de su tenant.
+Platform** ("Activa tu cuenta") y crea su cuenta `admin_empresa` **con ese mismo correo
+administrativo** — con otro correo el canje se rechaza (D39). La `access_keys` pasa a `used`: la
+clave sirve una sola vez. A partir de aquí el cliente ya está autenticado dentro de su tenant
+(access token de 15 min, cierre a los 30 min sin actividad y a las 8 h), y las siguientes veces
+entra con correo y contraseña.
 
 **Entidades:** `users`, `sessions`.
 **Fuente:** `modelo-datos.md` §5.1-§5.3. (`Auth.md` de la bóveda se cita como fuente

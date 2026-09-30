@@ -113,6 +113,7 @@ llama al arrancar para saber si hay sesión y dónde continuar.
 | 409  | `ACCESS_KEY_EXPIRED`      | Pasó`expires_at`                                                                    |
 | 409  | `EMAIL_TAKEN`             | Ese email ya existe (`users.email` es único global y se guarda en minúsculas, D29)             |
 | 422  | `VALIDATION_FAILED`       | Contraseña que no cumple la política, email inválido                                |
+| 422  | `ACCESS_KEY_EMAIL_MISMATCH` | El correo del canje no es el `admin_email` registrado para la empresa (D39). La clave sigue pendiente |
 | 429  | `RATE_LIMITED`            | Límite por IP en los endpoints de auth                                                |
 
 Claves i18n: `auth.account_created`, `auth.logged_in`, `auth.logged_out`,
@@ -139,3 +140,37 @@ De `modelo-datos-pendientes.md` P2, **las más urgentes son (a) y (c)**.
 | a | ¿Código escrito a mano o link con token en la URL? | Si el request lleva`code` o `token`, y qué pantalla se construye |
 | b | ¿Caducidad y reenvío?                              | El valor de`expires_at` y si el cliente puede pedir otra            |
 | e | ¿Más de un correo administrativo por empresa?      | Si el canje crea uno o varios`admin_empresa`                        |
+
+## Estado de implementación (2026-09-30)
+
+Implementado en `Backend/src/features/auth` (feature de referencia del backend), consumido por
+`Frontend` (Monkey Admin) y `Frontend-Platform`.
+
+| Endpoint | Estado |
+|---|---|
+| `POST /v1/auth/redeem` | ✅ Forma de **código** (supuesto de P2a). Devuelve `user`, `company` y `onboarding` (`next_step: organizational_context`) y abre sesión |
+| `POST /v1/auth/login` | ✅ Por email; bloqueo a los 5 intentos por 15 min con `retry_after_seconds` |
+| `POST /v1/auth/refresh` | ✅ Rota el refresh token en cada uso (el anterior deja de servir) |
+| `POST /v1/auth/logout` | ✅ `204`, idempotente |
+| `GET /v1/auth/me` | ✅ `user` + `company` + `onboarding` (solo para `admin_empresa`; `login` y `redeem` lo traen igual). `next_step` es el primer paso sin hacer y `null` si ya terminó los tres; `completed_steps` lista los hechos. **Hoy solo se deriva el Componente 1** (existe su fila en `organizations`): al completarlo, `next_step` pasa a `service_context`. Los pasos `service_context` y `technical_control` se suman a `completed_steps` cuando esos componentes existan (MD-78, MD-85) |
+
+Decisiones de implementación, dentro de lo que el contrato ya decía:
+
+- **Sesión (§5.3):** access token JWT HS256 de 15 min en la cookie `mnk_access`; refresh token opaco
+  en `mnk_refresh`, que solo viaja a los endpoints de auth. La sesión se cierra a los **30 min sin
+  actividad** (`sessions.last_activity_at`, que el guard actualiza como máximo una vez por minuto) y a
+  las **8 h** de creada (`sessions.expires_at`). Tiempos en el `.env`.
+- **Autorización en cada request:** un guard global verifica contra la base, en cada petición, que
+  la sesión siga viva y el usuario siga `active`; el rol sale de la base, no del token. Sin la caché
+  de 5 min de §5.3 por ahora: la base se consulta siempre.
+- **Refresh tokens y claves de acceso** se guardan como HMAC-SHA256 con `TOKEN_HASH_PEPPER`.
+- **Canje (D39):** solo con el `admin_email` de la empresa; la clave se acepta tal como el cliente la
+  escriba (sin guiones, en minúsculas); marcarla como usada y crear el usuario es una sola transacción
+  condicional. Vencida → `409 ACCESS_KEY_EXPIRED`; revocada, inexistente o de empresa suspendida →
+  `404 ACCESS_KEY_INVALID`.
+- **Qué app acepta a quién:** Monkey Admin solo admite `admin_monkey`; Monkey Platform rechaza a
+  `admin_monkey`. Es un control de las apps (D24), no del endpoint: el login es el mismo.
+- **Pendiente:** `429 RATE_LIMITED` (no hay rate limiting todavía) y MFA (MD-94).
+- **En local**, las dos apps comparten las cookies de `localhost` (los puertos no las separan): una
+  sesión en Admin (puerto 4201) y otra en Platform (4200) en el mismo navegador se pisan. En dominios
+  propios no pasa.

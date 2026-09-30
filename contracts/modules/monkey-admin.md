@@ -141,6 +141,7 @@ a `revoked`.
 | 409 | `COMPANY_ALREADY_ONBOARDED` | Se intenta editar tras el canje de la clave |
 | 409 | `ACCESS_KEY_NOT_PENDING` | Se intenta regenerar una clave ya usada |
 | 422 | `VALIDATION_FAILED` | `name` vacío o >255, `admin_email` inválido |
+| 422 | `DEDICATED_DATABASE_NOT_AVAILABLE` | **Temporal**: `requires_dedicated_database: true` mientras el aprovisionamiento dedicado no exista (P2d). Clave i18n `company.dedicated_not_available` |
 | 503 | `PROVISIONING_FAILED` | Falló el aprovisionamiento de la base dedicada |
 
 Claves i18n: `company.created`, `company.list`, `company.updated`,
@@ -167,3 +168,31 @@ De `modelo-datos-pendientes.md` P2. **Ninguna se resuelve aquí.**
 
 El ejemplo de arriba asume: caducidad de 7 días, `PATCH` permitido mientras la clave esté
 `pending`, `202` para dedicada, y un solo `admin_email`. **Son supuestos, no decisiones.**
+
+## Estado de implementación (2026-09-30)
+
+Implementado en `Backend/src/features/companies` y `Frontend/src/app/features/companies`:
+
+| Endpoint | Estado |
+|---|---|
+| `POST /v1/companies` | ✅ Solo el caso `shared`. Empresa y clave en la misma transacción; la clave se muestra una vez en un diálogo de Monkey Admin |
+| `GET /v1/companies` | ✅ Paginado, `sort` = `created_at`/`name` (± ), filtro `status`. **Excluye la empresa interna de Monkey** (la del `admin_monkey`), que no es un cliente |
+| `GET /v1/companies/{id}` | ✅ Con historial de claves. La empresa interna responde `404` |
+| `PATCH /v1/companies/{id}` | ❌ Espera a P2(c) |
+| `POST /v1/companies/{id}/access-key/regenerate` | ❌ Espera a P2(b) |
+
+Decisiones de implementación, dentro de lo que el contrato ya asumía:
+
+- **Clave:** `MNK-XXXX-XXXX-XXXX` con 31 símbolos sin ambigüedad (sin `0/O`, `1/I/L`). Vigencia en
+  `ACCESS_KEY_TTL_HOURS` del `.env` (hoy 168 = 7 días, el supuesto de P2b). En `access_keys.code_hash`
+  va el **HMAC-SHA256 con `TOKEN_HASH_PEPPER`** del código normalizado (sin prefijo, guiones ni
+  mayúsculas), para que el canje acepte la clave como el cliente la escriba y
+  `find_access_key` la encuentre por igualdad.
+- **`access_key_status` derivado:** una clave `pending` con `expires_at` vencido se informa como
+  `expired` (nadie actualiza la fila al vencer). La "vigente" es la de `expires_at` más reciente,
+  porque `access_keys` no tiene `created_at`.
+- **`COMPANY_NAME_TAKEN`** compara sin mayúsculas ni espacios repetidos, solo contra empresas
+  `active`. **`ADMIN_EMAIL_TAKEN`** compara contra todas. Las dos son validaciones de aplicación: la
+  base no tiene índice único para ellas.
+- **Audit trail:** `company.create` en `audit_logs` con `tenant_id` nulo (acción de plataforma); la
+  clave nunca entra, ni en claro ni en hash.

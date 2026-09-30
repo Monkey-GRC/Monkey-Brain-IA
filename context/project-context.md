@@ -8,8 +8,8 @@ type: context
 # Monkey Backend
 
 > ⚠️ **Este archivo describe el código tal como está hoy, no el diseño objetivo.** El plan
-> vigente es `skills/product/monkey-compliance-council/references/modelo-datos.md`: el schema
-> actual se está rehaciendo y varias entidades de aquí quedan derogadas por él (ver `CLAUDE.md`).
+> vigente es `skills/product/monkey-compliance-council/references/modelo-datos.md` (ver `CLAUDE.md`).
+> Actualizado el 2026-09-30.
 
 > **Convención de rutas**: este folder (`Monkey-Brain-IA`) vive como repo
 > independiente, separado del código de producto. Todas las rutas de código
@@ -34,51 +34,43 @@ Wazuh es el motor de monitoreo/evidencia técnica.
 El modelo de dominio completo (entidades, relaciones, cardinalidades,
 dimensiones, tests, evidencias, exclusiones y cálculo del cumplimiento) está
 en `skills/product/monkey-compliance-council/references/modelo-datos.md`.
-Leerlo antes de tocar el schema.
+Leerlo antes de tocar el schema. Cómo está implementado (Prisma 7, RLS, roles, migraciones, `.env`)
+está en `schema-implementacion.md`.
 
-**Multi-tenant.** Hoy el código implementa **una base de datos física por cliente**, con dos
-proyectos Prisma separados: `prisma/central/schema/` (catálogo maestro, registro de clientes) y
-`prisma/tenant/schema/` (el escenario de cada cliente).
+**Multi-tenant (D25).** Una sola base (`monkey`) con **cuatro schemas de Postgres** —`catalog`,
+`platform`, `tenant`, `audit`— y los clientes aislados por **Row-Level Security** sobre
+`tenant_id`/`company_id`. La app se conecta como `monkey_app` (sin superusuario ni `BYPASSRLS`) y
+fija el tenant por transacción. La base dedicada (`isolation_strategy = dedicated`) sigue siendo
+una opción del modelo, pero su aprovisionamiento **no está construido**: hoy el registro la rechaza
+con `DEDICATED_DATABASE_NOT_AVAILABLE` hasta que se cierre P2(d).
 
-> ⚠️ **La decisión D25 deroga ese diseño para el MVP**: una sola base con el catálogo y los
-> datos de todos los tenants, aislados por Row-Level Security sobre `tenant_id`, y la base
-> dedicada como excepción que elige `admin_monkey` al crear la empresa. Lo de arriba es el
-> punto de partida que se está rehaciendo, no la meta. Ver `modelo-datos-decisiones.md` D25 y
-> `modelo-datos.md` §4.3.
-
-Entidades que existen hoy en el schema (⚠️ varias las deroga `modelo-datos.md`):
-- Central: `Client`, `TenantIdentifierDirectory`, `CisCheckTranslation`
-- En ambos: `Risk` (con `RiskLevel`), `Reason`, `RiskReason`, `ReasonControl`, `Control`,
-  `ControlDimensionRequirement` (las 5 dimensiones), `ControlCheck`, `ManualCheckItem` +
-  `ManualCheckEvidence`, `Asset`, `User` (con `Role`)
-- Solo tenant: `CompanyProfile`
-
-`template.prisma` y `model Template` **ya no existen**: se eliminaron en `f7ed77f` con el
-modelo viejo. El encadenamiento `Template → Risk → Reason → Control` desaparece del modelo
-nuevo (`modelo-datos.md` §3.2): el control es atómico y se vincula a puntos de enfoque.
+El schema ya implementa el modelo relacional completo (71 tablas, 21 migraciones aplicadas en dev).
+El modelo viejo (`Client`, `Template → Risk → Reason → Control`, una base por cliente,
+`prisma/central/` + `prisma/tenant/`) **ya no existe**.
 
 ## Stack técnico
 
 - **Framework:** NestJS 11 (Express platform), TypeScript 5.7
-- **ORM/DB:** Prisma 7 (`@prisma/adapter-pg`, `@prisma/adapter-planetscale`), PostgreSQL
-- **Auth:** `@nestjs/jwt` + `@nestjs/passport` (`passport-jwt`), JWT vía cookies (`cookie-parser`), hashing con `bcrypt`
-- **Validación/Docs:** `class-validator`, `class-transformer`, `@nestjs/swagger`
+- **ORM/DB:** Prisma 7 (`prisma-client` con `moduleFormat = "cjs"`, `@prisma/adapter-pg`), PostgreSQL 17
+- **Auth:** `@nestjs/jwt` (access token HS256 de 15 min) + refresh token opaco rotado, ambos en
+  cookies httpOnly (`mnk_access`, `mnk_refresh`); contraseñas con `bcrypt` (costo 12)
+- **Validación/Docs:** `class-validator`, `class-transformer`, `@nestjs/swagger` (`/v1/docs`)
 - **i18n:** `nestjs-i18n`, locales en `/i18n/en` y `/i18n/es`
-- **Tests:** Jest + ts-jest + supertest
+- **Tests:** Jest + ts-jest + supertest instalados, pero **sin `*.spec.ts`** todavía
 - **Lint/Format:** ESLint 9 (flat config) + Prettier (`singleQuote`, `trailingComma: all`)
-- **CI/CD:** GitHub Actions — build de imagen Docker y despliegue al VPS de dev
+- **CI/CD:** GitHub Actions — build de imagen Docker y despliegue al VPS de dev (sin paso de migración)
 
 ## Arquitectura
 
 Clean Architecture + Feature-Based. Cada feature vive en `src/features/<nombre>/`
-con hasta 4 capas:
+con 4 capas:
 
 | Capa | Carpeta | Responsabilidad |
 |------|---------|-----------------|
-| Domain | `domain/` | Entidades y interfaces de repositorio. Cero dependencias externas. |
-| Application | `application/` | Casos de uso y DTOs. No sabe de HTTP ni Prisma. |
-| Infrastructure | `infrastructure/` | Implementaciones concretas (repos Prisma, estrategias auth). |
-| Presentation | `presentation/` | Controladores HTTP. Delega a los casos de uso. |
+| Domain | `domain/` | Entidades, repositorios abstractos y puertos. Cero dependencias externas. |
+| Application | `application/` | Casos de uso y DTOs. No sabe de HTTP ni de Prisma. Lanza `DomainError`. |
+| Infrastructure | `infrastructure/` | Repositorios Prisma (siempre con `prisma.withScope`). |
+| Presentation | `presentation/` | Controladores HTTP y mappers al JSON del contrato. |
 
 **Regla de dependencias (no violar):**
 ```
@@ -86,57 +78,61 @@ Presentation → Application → Domain
 Infrastructure → Domain
 ```
 
+Lo transversal vive fuera de las features: `src/common/` (sobre `ResponseDto`, `DomainError` y su
+catálogo, filtro global de excepciones, `ValidationException`, paginación, decoradores `@Public`,
+`@Roles`, `@CurrentUser`, `RolesGuard`, `TenantScope`, `Principal`, puertos `TokenHasher` y
+`AuditLogWriter`, política de contraseña, formato de la clave de acceso) y `src/infrastructure/`
+(`PrismaService`, writer de `audit_logs`, HMAC de tokens — módulos globales).
+
 ### Estado actual de features
 
-Features en `src/features/`: `asset`, `auth`, `checklist`, `client`, `control`,
-`manual-check`, `reason`, `risk`, `translation`, `user`.
-
-`dashboard`, `onboarding` y `template` **fueron eliminadas** en `f7ed77f` junto con el modelo
-viejo, con su `compliance.calculator.ts`. El onboarding se reconstruye desde cero (épicos
-MD-57 a MD-61).
-
-- `risk`: 4 capas completas — **feature de referencia**, úsala como plantilla.
-- `auth`: 3 capas (application, infrastructure, presentation) — sin domain propio.
-- `reason`: tiene las 4 capas, pero conserva un `application/reason.service.ts` heredado y su
-  carpeta es `application/use-case/` (singular) en vez de `use-cases/`. Deuda menor.
-- `checklist`: expone el catálogo de checks CIS; lee de la base que alimenta
-  `monkey-cis-sync`, no de la API de Wazuh directamente.
-- `client`: registro de tenants. El aprovisionamiento en sí **no es una feature**: vive en
-  `src/infrastructure/tenancy/` (`tenant-provisioning.service.ts`,
-  `tenant-connection-manager.service.ts`, `tenant-prisma-client.factory.ts`), y usa
-  `POSTGRES_ADMIN_URL` para `CREATE ROLE`/`CREATE DATABASE`.
-- Evidencias: `src/infrastructure/storage/` (S3/MinIO, `@aws-sdk/client-s3`), que consume
-  `manual-check`.
+- `auth`: **feature de referencia**, 4 capas completas. Login, refresh (rotado), logout y `me`
+  (`contracts/modules/auth.md`); bloqueo a 5 intentos por 15 min; sesión con cierre a los 30 min sin
+  actividad y a las 8 h; `SessionAuthGuard` global que verifica sesión y usuario contra la base en
+  cada request. Incluye el canje de la clave (`POST /v1/auth/redeem`, D39: una sola vez y solo con
+  el `admin_email`), que crea el `admin_empresa` y abre sesión; login y canje comparten
+  `SessionIssuer`. Falta el bloque `onboarding` de `me` (llega con MD-74).
+- `companies`: registro de empresas de Monkey Admin (`contracts/modules/monkey-admin.md`),
+  solo `admin_monkey`. `POST /v1/companies` (empresa + clave `MNK-XXXX-XXXX-XXXX` de un solo uso,
+  guardada como HMAC), `GET /v1/companies` (paginado, sin la empresa interna de Monkey) y
+  `GET /v1/companies/{id}`. `PATCH` y la regeneración de clave esperan a P2(b)/(c).
+- `catalogs`: `GET /v1/catalogs/{name}` sirve las opciones de los formularios (con la etiqueta según
+  `Accept-Language`). Los valores están en `src/common/catalogs/onboarding-catalogs.ts` (fuente:
+  `contracts/enums.md`) y las etiquetas en `i18n/{es,en}/catalogs.json`; solo las regulaciones salen
+  de la base (`catalog.regulations`).
+- `onboarding`: Componente 1 (contexto organizacional): `GET` y `PUT
+  /v1/onboarding/organizational-context`, solo `admin_empresa`, con auditoría antes/después. El
+  avance de cada paso lo deriva `auth` (`GetOnboardingProgressUseCase`) para el bloque `onboarding`
+  de `me`. Los Componentes 2 y 3 son los siguientes (MD-78, MD-85). Decisiones en D40.
+- Seed de arranque: `prisma/seed/seed.ts` (`npx prisma db seed`) crea la empresa interna de Monkey
+  y el primer `admin_monkey` desde las variables `SEED_*` del `.env`, y siembra las 14 regulaciones
+  del catálogo (idempotente).
 
 ## Convenciones clave
 
-- Respuestas HTTP estandarizadas con `ResponseDto` (`{ statusCode, message, data }`),
-  en `src/common/dtos/response.dto.ts`.
-- Errores manejados globalmente por `src/common/filters/http-exception.filter.ts`,
-  con mensajes traducidos vía i18n (`/i18n/en`, `/i18n/es`).
-- Guard de auth: `@UseGuards(AuthGuard('jwt'))` + `@ApiCookieAuth()` en controladores;
-  el id de usuario se lee de `req.user.id`.
-- Prisma usa **dos proyectos separados**, cada uno con schema multi-archivo (uno
-  por dominio) y su propio config en la raíz (estilo Prisma 7):
-  `prisma/central/schema/*.prisma` + `prisma.config.central.ts` (catálogo maestro
-  y registro de clientes) y `prisma/tenant/schema/*.prisma` +
-  `prisma.config.tenant.ts` (base de cada cliente). Un cambio que aplique a los dos hay que
-  hacerlo en ambos y migrar por separado, con `npm run prisma:migrate:central` /
-  `prisma:migrate:tenant` — `npx prisma migrate dev` a secas no resuelve ningún schema.
-- Acceso a datos: `CentralPrismaService` (`src/infrastructure/database/central-prisma.service.ts`)
-  para la base central; `TenantConnectionManagerService` para la de cada cliente. **No existe
-  una clase `PrismaService`.** Excepción: `checklist` usa `pg` directo contra `prueba_wazuh`.
-- Guards y decoradores adicionales en `src/common/`: `roles.guard.ts`,
-  `client-credentials.guard.ts`, `roles.decorator.ts`, `user-context.interceptor.ts`.
-- **No hay tests**: no existe ni un `*.spec.ts` en `src/`, ni `test/jest-e2e.json`.
-- Inversión de dependencias vía tokens abstractos: cada `*.module.ts` registra
+- Respuestas HTTP con `ResponseDto` (`{ statusCode, message, data }`); `message` traducido según
+  `Accept-Language`. Errores con el mismo sobre más `error.code` (`contracts/conventions.md`), vía
+  `src/common/filters/http-exception.filter.ts`.
+- Todo endpoint exige sesión por defecto; `@Public()` lo abre y `@Roles(...)` restringe por rol. El
+  usuario autenticado llega con `@CurrentUser()` (`Principal`: `userId`, `companyId`, `role`,
+  `sessionId`), con el rol leído de la base, no del token.
+- Acceso a datos: `PrismaService` (`src/infrastructure/database/prisma.service.ts`), conectado con
+  `APP_DATABASE_URL`. **Toda consulta a una tabla con RLS va dentro de `withScope(scope, tx => …)`**.
+  Las búsquedas previas al tenant (login, canje, refresh) usan las funciones `SECURITY DEFINER` de
+  `platform` con `$queryRaw`.
+- Schema en `prisma/schema/<catalog|platform|tenant|audit>/*.prisma`, un solo `prisma.config.ts`;
+  migrar con `npx prisma migrate dev` (dev) o `migrate deploy` (staging/prod) — ver
+  `skills/backend/add-prisma-model.md`.
+- Inversión de dependencias vía clases abstractas: cada `*.module.ts` registra
   `provide: XRepository, useClass: XPrismaRepository`.
+- Tipos en firmas decoradas se importan con `import type` (`isolatedModules` + `emitDecoratorMetadata`).
 
 ## Qué NO hacer (backend)
 
 - No importar Prisma ni decoradores de Nest dentro de `domain/`.
-- No crear un schema Prisma monolítico; usar el archivo del dominio correspondiente
-  en `prisma/central/schema/` o `prisma/tenant/schema/`, según a cuál aplique.
+- No consultar tablas con RLS fuera de `withScope`, ni conectar la app como `postgres`.
+- No importar el interior de una feature desde otra: lo compartido va a `common/` o `infrastructure/`.
+- No crear un schema Prisma monolítico; usar el archivo del dominio correspondiente.
 - No saltarse capas (p. ej. controller llamando directo al repositorio Prisma).
 
 ---
@@ -154,12 +150,12 @@ al revés.
 |---|---|---|
 | Para quién | Equipo interno de Monkey | El cliente final |
 | Para qué | Administración de la plataforma: creación y gestión de tenants, usuarios, y el catálogo maestro GRC (marcos, riesgos, causas, controles) | Que el cliente descubra y declare sus servicios y activos, y vea su estado de cumplimiento |
-| Features hoy | `auth`, `common`, `users` | `assets`, `auth` |
+| Features hoy | `auth`, `common`, `companies`, `users` | `assets`, `auth`, `home`, `onboarding` |
 | Estructura de feature | `models/` + `services/` + `presentation/` | `domain/` + `presentation/` |
 | `core/` y `shared/` | `core/{guards,interceptors,services}`, `shared/models` | `core/domain/*`, `shared/domain/*` |
 | `ApiResponse<T>` | `@shared/models/api-response.model` | `@shared/domain/models/api-response.model` |
 | i18n | ngx-translate + `public/i18n/{en,es}` | **no instalada** |
-| Interceptores | `auth`, `error-handler` | `credentials`, `tenant-credentials`; sin manejo global de errores |
+| Interceptores | `error-handler`, `auth` (en ese orden) | `credentials` (cookies + renovación de sesión); sin manejo global de errores |
 | Syncfusion | sí | no |
 
 `grc-framework` y `clients` se eliminaron del admin en `acbd907`; `onboarding`, `templates` y
@@ -212,15 +208,30 @@ arriba):
 
 Ver la tabla de "Las dos plataformas" arriba para qué feature vive en cuál repo.
 
-- `Frontend` · `grc-framework` / `risks`: **feature de referencia** (form, list,
-  kpis, matriz). Úsala como plantilla para las demás.
-- `Frontend` · `clients`, `users`: gestión de tenants y de usuarios internos.
-- `Frontend-Platform` · `onboarding`: el flujo de descubrimiento, en pasos
-  (`account-setup`, `characterization`, `company-profile`, `template-selection`).
-  Es donde entran los datos que alimentan el modelo — cualquier campo nuevo del
-  scope o de los activos se capta aquí.
-- `Frontend-Platform` · `dashboard`: el estado de cumplimiento que ve el cliente.
-  Aplica `philosophy.md`: readiness cualitativo primero, el % nunca solo.
+- `Frontend` · `companies`: **feature de referencia del admin** (vista + lista + formulario +
+  diálogo). Registro de empresas con la clave de acceso a la vista una sola vez.
+- `Frontend` · `auth`: login por email contra `/v1/auth`; solo admite `admin_monkey`. El
+  `authInterceptor` renueva la sesión ante un 401 y reintenta (va **después** de
+  `errorHandlerInterceptor` en `app.config.ts` para recibir el `HttpErrorResponse` crudo).
+- `Frontend` · `users`: **del modelo viejo** (`username`, `MONKEY_ADMIN`, `client_id`) y sin
+  endpoint en el backend; se rehace con el módulo de Usuarios.
+- `Frontend-Platform` · `auth`: "Activa tu cuenta" (`/register`, canje de la clave con el correo
+  administrativo, nombre, apellido y contraseña) e inicio de sesión (`/signin`, por email). Rechaza
+  `admin_monkey`. El `credentialsInterceptor` renueva la sesión ante un 401 y reintenta; el usuario y
+  la empresa en sesión viven en `core/domain/services/session.service.ts`. Se retiraron los headers
+  `mnk-client-*` y sus servicios (modelo viejo).
+- `Frontend-Platform` · `onboarding`: **feature de referencia de la plataforma** (`domain/` +
+  `presentation/`). Asistente del Componente 1 en `/onboarding`: 5 pantallas cortas más una de
+  revisión, opciones como píldoras tocables, avance guardado en el navegador (`localStorage` por
+  usuario) y edición posterior desde «Mi empresa». Todo el texto está en español hardcodeado (la
+  plataforma no tiene i18n). Las opciones salen del backend vía `shared/domain/services/catalog.service.ts`.
+- `Frontend-Platform` · `home`: bienvenida provisional; invita al primer paso si `onboarding.next_step`
+  es `organizational_context`. `assets` sigue siendo del modelo viejo y no tiene ruta.
+- Tras entrar (login o canje), Platform manda a `/onboarding` a quien aún no lo ha llenado. Los
+  Componentes 2 y 3 y el `dashboard` se reconstruyen en los épicos MD-59 a MD-61 (`philosophy.md`:
+  readiness cualitativo primero, el % nunca solo).
+- **Puertos en local:** Monkey Platform `4200`, Monkey Admin `4201` (fijado en su `angular.json`).
+  Comparten las cookies de `localhost`: dos sesiones en el mismo navegador se pisan.
 
 ## Convenciones clave
 

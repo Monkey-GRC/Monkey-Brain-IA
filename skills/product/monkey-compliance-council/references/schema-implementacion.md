@@ -5,8 +5,10 @@ Complementa a `modelo-datos.md` (el **qué**: tablas y relaciones) y a `modelo-d
 migraciones y despliegue. Si algo choca con `modelo-datos.md`, gana el modelo. Absorbe la bitácora
 "decisiones de la reconstrucción del schema" (septiembre de 2026), que se retiró de `assets/`.
 
-**Estado al 2026-09-29:** 20 migraciones, 57 enums, 71 tablas, todas con RLS, ninguna FK sin índice
+**Estado al 2026-09-30:** 21 migraciones, 57 enums, 71 tablas, todas con RLS, ninguna FK sin índice
 (salvo las de "quién lo hizo") y ningún `ON DELETE CASCADE`. Probado desde cero en Postgres 17.
+**Las 21 están aplicadas en la base de dev** (`135.148.138.36`), sembrada con la empresa interna y el
+primer `admin_monkey` (§9).
 
 ---
 
@@ -64,8 +66,9 @@ ponerla en `platform` crearía una dependencia circular al migrar), y `schedule_
   TypeScript, así que no es problema.
 - **`shadowDatabaseUrl` se lee con `process.env`, no con `env()`**: `env()` lanza error si falta la
   variable, y en staging y producción nunca existe (ahí solo `migrate deploy`).
-- **Generador:** `provider = "prisma-client"`. Si el build CommonJS de Nest rompe por ESM, se añade
-  `moduleFormat = "cjs"`.
+- **Generador:** `provider = "prisma-client"` con **`moduleFormat = "cjs"`** (añadido el 2026-09-30):
+  sin él el cliente generado usa `import.meta.url`, compila con `nest build` pero no carga en runtime,
+  porque el build de Nest es CommonJS.
 - **Enums:** todos con `@@map("snake_case")`; en SQL a mano se referencian sin comillas
   (`platform.user_role`). Un valor no puede empezar por dígito: `"24x7"` es `h24x7 @map("24x7")`.
 
@@ -100,7 +103,24 @@ DATABASE_URL="postgresql://postgres:...@host:5432/monkey"          # solo CLI/de
 SHADOW_DATABASE_URL="postgresql://postgres:...@host:5432/monkey_shadow"  # solo dev
 APP_DATABASE_URL="postgresql://monkey_app:...@host:5432/monkey"    # runtime
 CORS_ORIGINS="http://localhost:4200,http://localhost:4201"
+
+# Auth (§5.3 del modelo). Tiempos en segundos.
+JWT_SECRET="..."                  # 64 bytes aleatorios, distinto por ambiente
+JWT_ACCESS_EXPIRES_IN=900         # access token: 15 min
+SESSION_IDLE_TIMEOUT=1800         # cierre a los 30 min sin actividad
+SESSION_MAX_DURATION=28800        # tope absoluto: 8 h
+TOKEN_HASH_PEPPER="..."           # HMAC de refresh tokens y claves de acceso; cambiarlo cierra todas las sesiones
+
+# Seed de arranque (npx prisma db seed), solo donde se siembra
+SEED_MONKEY_COMPANY_NAME=... SEED_MONKEY_COMPANY_EMAIL=... SEED_ADMIN_EMAIL=...
+SEED_ADMIN_NAME=... SEED_ADMIN_LAST_NAME=... SEED_ADMIN_PASSWORD=...
 ```
+
+**Cómo se guardan los secretos que se buscan por igualdad** (`sessions.refresh_token_hash`, y
+`access_keys.code_hash`, sobre el código normalizado: sin prefijo `MNK`, guiones ni mayúsculas): **HMAC-SHA256 con `TOKEN_HASH_PEPPER`**, no
+bcrypt. La búsqueda previa al tenant (`find_session_by_token`, `find_access_key`) es por igualdad y
+bcrypt da una huella distinta cada vez; el pepper impide recalcular las huellas a quien solo lea la
+tabla. Las contraseñas sí van con bcrypt (costo 12).
 
 Retiradas (modelo viejo): `CENTRAL_DATABASE_URL`, `CENTRAL_SHADOW_DATABASE_URL`,
 `TENANT_MIGRATION_DATABASE_URL`, `TENANT_MIGRATION_SHADOW_DATABASE_URL`, `POSTGRES_ADMIN_URL`,
@@ -214,9 +234,14 @@ REVOKE UPDATE, DELETE, TRUNCATE ON audit.audit_logs, audit.compliance_events FRO
 
 - **Paso de migración en el deploy:** el workflow no corre `migrate deploy`; hoy es manual. El
   runtime instala con `--omit=dev`, no lleva el CLI de Prisma ni `DATABASE_URL`.
-- **Seed de arranque:** una `companies` interna de Monkey y el primer `admin_monkey`. Sin eso no
-  se puede crear la primera clave de acceso (`access_keys.created_by` y
-  `catalog_versions.published_by` son FK obligatorias a `users`).
+- ~~**Seed de arranque**~~ — **hecho el 2026-09-30**: `prisma/seed/seed.ts` (`npx prisma db seed`)
+  crea la `companies` interna de Monkey y el primer `admin_monkey` a partir de las variables `SEED_*`
+  del `.env` (nada de datos personales en git). Corre con `DATABASE_URL`, exige la política de
+  contraseña de §5.3 y es idempotente: si el admin ya existe no toca su contraseña. Sembrado en dev.
+  El mismo seed siembra el catálogo de regulaciones (`catalog.regulations`, 14 filas de
+  `contracts/enums.md`, incluidas `none` y `other`); también idempotente.
+  La empresa interna **no es un cliente**: existe porque `users.company_id` es obligatorio; los
+  listados de empresas de Monkey Admin deben excluirla.
 - **Carga del catálogo** desde el Excel maestro (119 controles, 11.352 checks…) con un script
   TypeScript.
 - **`sslmode=require`** en las tres URLs contra el servidor remoto, y restringir el firewall del 5432.
@@ -234,6 +259,7 @@ REVOKE UPDATE, DELETE, TRUNCATE ON audit.audit_logs, audit.compliance_events FRO
 14 `rls_policies_tenant_and_audit` · 15 `set_database_timezone_utc` ·
 16 `platform_add_company_id_to_sessions_and_assignments` · 17 `platform_rls_and_login_lookup` ·
 18 `rename_enum_types_to_snake_case` (D26) · 19 `schema_alignment_review` (D27, D28, D32, D33, D34) ·
-20 `rls_and_lookup_hardening` (D29, D31).
+20 `rls_and_lookup_hardening` (D29, D31) · 21 `platform_sessions_activity_tracking` (`created_at` y
+`last_activity_at` en `sessions`, para la política de 30 min / 8 h).
 
 La 17 quedó reemplazada en parte por la 20 (`find_login_candidates` se recrea con más columnas).

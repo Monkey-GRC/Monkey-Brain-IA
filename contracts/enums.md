@@ -100,6 +100,12 @@ CCPA/CPRA (US) · `glba_us` GLBA (US) · `pci_dss` PCI DSS · `none` Ninguna · 
 
 `regulations` no se puntúa (decisión D10): determina qué aplica, no entra al cálculo.
 
+`none` y `other` son filas del catálogo como las demás (jurisdicción `n/a`); `none` es excluyente
+(D40). Las etiquetas en inglés de todas las listas de esta página las tradujo desarrollo y están
+pendientes de revisión del comité: el Excel solo las trae en español (salvo `size`). Se sirven desde
+`GET /v1/catalogs/{name}` (`size`, `industry`, `business_model`, `years_in_operation`,
+`incorporation_country`, `client_country`, `compliance_maturity`, `regulations`).
+
 > **No existe el campo "framework que desea gestionar" a nivel de empresa.** El Excel lo trae
 > (`framework_a_gestionar`) pero el comité lo **vetó**: los marcos se contratan por servicio.
 > No se construye.
