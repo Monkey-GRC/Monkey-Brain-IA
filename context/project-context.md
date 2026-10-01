@@ -108,8 +108,13 @@ catálogo, filtro global de excepciones, `ValidationException`, paginación, dec
   `POST /v1/services/{id}/system-description` (solo enlace), solo `admin_empresa`. **Crear o ampliar un
   servicio clona el catálogo del marco en la misma transacción** (`infrastructure/catalog-cloner.ts`):
   controles con evidencias y vínculo a tests, y el set base de riesgos y causas; requisitos, puntos de
-  enfoque y tests se referencian. Cada servicio tiene su propia copia. El Componente 3 es el siguiente
-  (MD-85). Decisiones en D41.
+  enfoque y tests se referencian. Cada servicio tiene su propia copia. Decisiones en D41.
+- `technical-control`: Componente 3 (control técnico): `PUT /v1/services/{id}/deployment-scenario` y
+  `/scope`, `GET /v1/services/{id}/technical-control`, y `POST/GET /v1/assets` con `validate`, `activate` y
+  `schedule`, solo `admin_empresa`. Credenciales cifradas (AES-256-GCM); la **sonda** es un puerto
+  (`ConnectionProbe`) con adaptadores `simulated` (solo dev/demostración) y `unavailable` (por defecto),
+  elegidos por `PROBE_MODE`: no hay conectores reales y no se finge ninguna conexión. El proveedor del motor
+  **nunca** sale. Decisiones en D42; parches en `deuda-tecnica.md`.
 - Seed de arranque: `prisma/seed/seed.ts` (`npx prisma db seed`) crea la empresa interna de Monkey
   y el primer `admin_monkey` desde las variables `SEED_*` del `.env`, y siembra las 14 regulaciones
   del catálogo (idempotente).
@@ -238,9 +243,13 @@ Ver la tabla de "Las dos plataformas" arriba para qué feature vive en cuál rep
 - `Frontend-Platform` · `home`: bienvenida provisional; según `onboarding.next_step` invita al primer
   paso (`organizational_context`) o al siguiente (`service_context`). `assets` sigue siendo del modelo
   viejo y no tiene ruta.
+- `Frontend-Platform` · `technical-control`: Componente 3 en `/services/:id/technical-control` (tres pasos:
+  dónde vive, cuánto tienes, conectar), con tarjeta por sistema (comprobar → activar → programar), formulario
+  de conexión con credenciales de solo lectura y avisos honestos de «modo demostración» o «aún no
+  disponible».
 - Tras entrar (login o canje), Platform manda a `/onboarding` a quien aún no lo ha llenado. El
-  Componente 3 y el `dashboard` se reconstruyen en los épicos MD-59 a MD-61 (`philosophy.md`:
-  readiness cualitativo primero, el % nunca solo).
+  `dashboard` se reconstruye en los épicos MD-59 a MD-61 (`philosophy.md`: readiness cualitativo primero,
+  el % nunca solo).
 - **Puertos en local:** Monkey Platform `4200`, Monkey Admin `4201` (fijado en su `angular.json`).
   Comparten las cookies de `localhost`: dos sesiones en el mismo navegador se pisan.
 

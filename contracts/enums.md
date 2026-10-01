@@ -228,7 +228,7 @@ falta, se añade un valor al enum.
 | `cloud_managed_only` | Solo nube (gestionada) | `ac_01` |
 | `cloud_with_servers` | Nube con servidores / VPS | `ac_01`, `ac_02`, `ac_03` |
 | `on_premise` | On-premise | `ac_04`, `ac_05`, `ac_06` |
-| `hybrid` | Híbrido | combinación de los anteriores |
+| `hybrid` | Híbrido | las seis (el cliente usa las que le sirvan, D42) |
 
 ### `connection_category` — `assets.connection_category` y `automated_capabilities.catalog_code`
 
@@ -323,6 +323,10 @@ Documentación
 
 `endpoint` y `network_device` se monitorean pero no son dimensiones (D5).
 
+El tipo **se deduce de la conexión** al registrar el activo (D42): `ac_01` → `cloud_service` · `ac_02` y
+`ac_04` → `server` · `ac_03` y `ac_05` → `database` · `ac_06` → `endpoint`. `network_device` y
+`documentation` todavía no tienen conexión que los produzca (DT-8).
+
 ### `asset_criticality` — `assets.criticality`
 `low` Baja · `medium` Media · `high` Alta · `critical` Crítica
 
@@ -337,6 +341,10 @@ Documentación
 `failed` Falló la validación
 
 Flujo: conectar → validar → activar → programar. Una conexión que falla no es un incumplimiento.
+
+### `schedule_frequency` — `asset_provisionings.schedule_frequency` (D42)
+`continuous` Continua · `every_6h` Cada 6 horas · `every_24h` Cada 24 horas. Nulo hasta el paso
+«programar». `ac_01` admite `every_6h` y `every_24h`; `ac_02` a `ac_06`, solo `continuous`.
 
 ### `execution_status` — `executions.status`
 `queued` En cola · `running` En curso · `completed` Completada · `failed` Falló · `cancelled`

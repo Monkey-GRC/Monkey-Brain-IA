@@ -45,6 +45,10 @@ enrutar la pregunta al archivo correcto** (ver `SKILL.md` de esa skill, sección
 - `modelo-datos-pendientes.md` — las preguntas que **todavía no están cerradas** y que
   solo el comité puede responder (hoy son 9: P2, P3, P5, P6, P7, P8, P9, P10 y P11). Antes de construir algo que dependa de una,
   consúltala: si sigue ahí, no la resuelvas por tu cuenta — pregunta.
+- `deuda-tecnica.md` — lo que está **parchado o construido a medias** por desarrollo (la sonda simulada, la
+  Descripción del Sistema solo como enlace, las pruebas fuera del repo…), con su riesgo y qué lo cierra. No son
+  preguntas del comité (esas van en `modelo-datos-pendientes.md`) ni decisiones cerradas (esas, en
+  `modelo-datos-decisiones.md`). Si construyes algo con un atajo, **regístralo ahí**; si cierras uno, bórralo.
 - `schema-implementacion.md` — el **cómo** en el Backend: Prisma 7, RLS, roles, variables de
   entorno, migraciones y despliegue. Léelo antes de tocar el schema, una migración o el `.env`.
 - `modelo-datos-decisiones.md` — el **por qué** de cada decisión ya cerrada, con su

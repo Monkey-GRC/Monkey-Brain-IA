@@ -92,6 +92,10 @@ conexión del catálogo AC-01…AC-06 corre conectar → validar → activar →
 cliente nunca ve el nombre real del motor de monitoreo detrás ("sonda",
 "capacidad automática").
 
+El paso se da por hecho con el **escenario y el scope**; conectar sistemas se recomienda pero se puede dejar
+para después (D42). Hoy no hay conectores reales: la comprobación es `unavailable` o `simulated` y **nunca se
+finge una conexión** (Automatizado ≠ Operativo).
+
 **Entidades:** `scopes`, `assets`, `automated_capabilities`.
 **Fuente:** `modulos/onboarding.md`, Componente 3; `wazuh.md`.
 

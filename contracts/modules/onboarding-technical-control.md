@@ -29,7 +29,7 @@ El cliente conecta su infraestructura real. Ver `conventions.md` y `enums.md`.
 | `cloud_managed_only` | `ac_01` |
 | `cloud_with_servers` | `ac_01`, `ac_02`, `ac_03` |
 | `on_premise` | `ac_04`, `ac_05`, `ac_06` |
-| `hybrid` | combinación de los anteriores |
+| `hybrid` | las seis (`ac_01` a `ac_06`): el cliente usa las que le sirvan (D42) |
 
 ### `PUT /v1/services/{id}/deployment-scenario`
 
@@ -205,7 +205,9 @@ trae `code`, `name`, `connection_category`, `operational_status`, `technical_cov
 | 409 | `DEPLOYMENT_SCENARIO_NOT_SET` | Se registra un activo antes de elegir escenario |
 | 409 | `CAPABILITY_NOT_APPLICABLE` | La `connection_category` no aplica al escenario del servicio |
 | 409 | `ASSET_NOT_VALIDATED` | Se activa sin validar |
-| 409 | `ASSET_ALREADY_ACTIVE` | Se activa un activo ya activo |
+| 409 | `ASSET_ALREADY_ACTIVE` | Se activa o se valida un activo ya activo |
+| 409 | `ASSET_NOT_ACTIVE` | Se programa un activo que aún no está activo *(añadido, D42)* |
+| 503 | `CONNECTION_UNAVAILABLE` | Esta instalación aún no puede comprobar conexiones (sin sonda); el activo sigue `pending` *(añadido, D42)* |
 | 422 | `CONNECTION_FAILED` | La validación no pudo conectar |
 | 422 | `FREQUENCY_NOT_SUPPORTED` | Frecuencia que la capacidad no admite |
 | 422 | `VALIDATION_FAILED` | Enum inválido, `ip_address` mal formada, sin `service_ids` |
@@ -228,11 +230,51 @@ Claves i18n: `deployment_scenario.saved`, `scope.saved`, `asset.created`, `asset
 
 ## Preguntas abiertas
 
-- **Los cinco contadores de `scopes` vs las cinco dimensiones**: no coinciden (`endpoint` no es
-  dimensión, `policy` no se cuenta). Hay que decidir si `scopes` cambia o si son dos ejes
-  distintos y se documenta como tal.
-- **`assets.responsible_id`** apunta a `organization_responsibles` (el cargo dentro de la
-  organización del cliente; no hay catálogo global de cargos — D30, que cerró P4 pendiente de
-  ratificar con el comité). El campo es opcional.
-- **Valores de `assets.type`, `criticality`, `origin` y `status`**: cerrados en `enums.md` (D34, decisión de
-  desarrollo; si el comité entrega otros, gana el comité).
+Todas las que había quedaron **cubiertas por desarrollo en D42**; lo que sigue siendo un parche está en
+`deuda-tecnica.md`. Ninguna bloquea el componente.
+
+| Qué | Estado |
+|---|---|
+| **Los cinco contadores de `scopes` vs las cinco dimensiones** | ✅ Son **dos ejes distintos** (D42, DT-6): el scope es lo que el cliente *dice* que tiene y se compara con lo conectado por tipo de activo |
+| **`assets.responsible_id`** | ◐ Opcional y aceptado por la API; **no hay forma de crear cargos todavía** (DT-9) y la pantalla lo oculta |
+| **Valores de `assets.type`, `criticality`, `origin` y `status`** | ✅ Cerrados en `enums.md` (D34). El tipo ahora se **deduce de la conexión** (D42) |
+| **¿Qué es «híbrido»?** | ✅ Las seis conexiones (D42, DT-7) |
+| **Dónde guardar la frecuencia de `schedule`** | ✅ `asset_provisionings.schedule_frequency` (D42) |
+| **Qué credenciales pide cada conexión** | ◐ Definido por desarrollo (D42, DT-4); falta confirmarlo con el equipo de la sonda y definir cómo se entrega el agente |
+| **Las 18 capacidades de `technical_coverage`** | ❌ Sin definir (DT-2): hoy es una constante |
+
+## Estado de implementación (2026-10-01)
+
+Implementado en `Backend/src/features/technical-control` (más `catalogs` y el progreso de `auth`) y en
+`Frontend-Platform/src/app/features/technical-control`. Decisiones D42.
+
+| Endpoint | Estado |
+|---|---|
+| `PUT /v1/services/{id}/deployment-scenario` | ✅ Devuelve las conexiones que aplican. `409 CAPABILITY_NOT_APPLICABLE` si dejaría fuera un activo ya registrado |
+| `PUT /v1/services/{id}/scope` | ✅ Cinco contadores `>= 0`; devuelve `declared_total`, `connected_total` y `connected` por tipo |
+| `GET /v1/services/{id}/technical-control` | ➕ **No está en el contrato original.** Escenario, conexiones aplicables, scope, `is_complete` y `probe_mode` en una sola lectura |
+| `GET /v1/catalogs/automated-capabilities` | ✅ Las 6, sin `provider` |
+| `POST /v1/assets` | ✅ Tipo deducido de la conexión; código `AST-0001` por empresa; credenciales validadas por conexión y **cifradas** |
+| `GET /v1/assets` · `GET /v1/assets/{id}` | ✅ Paginado con filtros `service_id`, `connection_category`, `operational_status`. El detalle es **adición** (DT-11) |
+| `POST /v1/assets/{id}/validate` | ◐ Según `PROBE_MODE`: `simulated` → `200` con `mode: demo`; `unavailable` (por defecto) → `503 CONNECTION_UNAVAILABLE`. Credenciales con el marcador `permission-denied` simulan `422 CONNECTION_FAILED` |
+| `POST /v1/assets/{id}/activate` | ✅ Con la sonda simulada deja `operational_status = warning`, **no** `operational` («Automatizado ≠ Operativo») |
+| `PUT /v1/assets/{id}/schedule` | ✅ Valida la frecuencia por conexión; `409 ASSET_NOT_ACTIVE` si no está activo |
+
+- **Credenciales por conexión:** `ac_01` → `account_id` + `read_only_role` (opcional `external_id`);
+  `ac_03`/`ac_05` → `db_user` + `db_password` (opcional `db_port`); `ac_02`/`ac_04` →
+  `connection_method` = `agent` (por defecto, sin credenciales) o `ssh` (`ssh_user` + `ssh_private_key`);
+  `ac_06` → solo agente. Error por campo con la notación `credentials.<campo>`.
+- **Seguridad:** las credenciales no vuelven en ningún response, no se escriben en logs ni en `audit_logs`.
+  La comprobación corre fuera de la transacción de base de datos.
+- **Auditoría:** `service.deployment_scenario`, `service.scope`, `asset.create`, `asset.validate`
+  (también el fallo, con `result = error`), `asset.activate` y `asset.schedule`, con el estado antes y después.
+- **Progreso:** `GET /v1/auth/me` añade `technical_control` a `onboarding.completed_steps` cuando algún servicio
+  tiene escenario **y** scope; entonces `next_step` es `null`. El servicio trae `technical_control`
+  (`deployment_scenario`, `has_scope`, `is_complete`).
+- **Confidencialidad:** el tipo `Capability` del backend no tiene `provider`; el catálogo y las respuestas lo
+  omiten, y una prueba revisa respuestas, i18n, `src/`, logs y el bundle de la aplicación en cada recorrido.
+- **Variables de entorno nuevas:** `CREDENTIALS_ENCRYPTION_KEY` (obligatoria) y `PROBE_MODE`
+  (`simulated` | `unavailable`; `simulated` no arranca en producción).
+- **Pantalla (Platform):** `/services/{id}/technical-control`, tres pasos cortos (dónde vive · cuánto tienes ·
+  conectar). Los dos primeros dan el paso por hecho. Avisos honestos: «modo demostración» o «aún no está
+  disponible». «Mis servicios» marca lo que falta.

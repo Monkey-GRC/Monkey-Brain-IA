@@ -1,0 +1,72 @@
+# Deuda técnica — lo que está parchado y hay que revisar
+
+Aquí vive lo que **se construyó a medias, con un supuesto o con un atajo** para no detener el
+sprint, y que debe volver a revisarse. No es una lista de errores: cada fila es una decisión
+consciente con su razón, su riesgo y qué la cierra.
+
+**Cómo se distingue de los otros documentos**
+
+| Documento | Qué guarda |
+|---|---|
+| `modelo-datos-decisiones.md` | Lo que **ya se decidió** y por qué (incluye cómo se cubrió cada hueco: D39 a D42) |
+| `modelo-datos-pendientes.md` | Preguntas de producto que **solo el comité o Nelson pueden responder** |
+| **este archivo** | Parches de **desarrollo**: lo que funciona hoy pero no es la forma definitiva |
+
+**Reglas:** una fila se **borra** cuando se cierra (deja constancia en el commit o en la decisión que
+la cierra). Los ID (`DT-n`) no se reutilizan. Si una fila depende del comité, enlaza su pregunta en
+`modelo-datos-pendientes.md` o pídela ahí: no se resuelve por cuenta propia.
+
+**Severidad:** 🔴 puede causar daño o engaño si se ignora · 🟠 limita el producto o el equipo ·
+🟡 mejora pendiente.
+
+---
+
+## Componente 3 — Control Técnico (D42)
+
+| ID | | Qué está parchado | Por qué | Qué lo cierra |
+|---|---|---|---|---|
+| **DT-1** | 🔴 | **La sonda es simulada o no está disponible.** No existen conectores productivos: `PROBE_MODE=simulated` da por buena una conexión con credenciales completas (y nunca la marca `operational`: queda `warning`); sin él, `validate` responde `503 CONNECTION_UNAVAILABLE` | El sprint entrega el flujo y la UI, no la integración (`onboarding-technical-control.md`) | Un adaptador real de `ConnectionProbe` (sin tocar los casos de uso) y retirar las etiquetas de «modo demostración». Mientras tanto el backend **se niega a arrancar** con `simulated` en producción |
+| **DT-2** | 🟠 | **«n/18» y `checks_available` son constantes** (18/18 y 402). Nadie ha definido cuáles son las 18 capacidades técnicas, y `catalog.checks` tiene 0 filas | El contrato las nombra sin listarlas | Que el comité entregue las 18 y se siembren los checks; la cobertura pasa a calcularse |
+| **DT-3** | 🟠 | **`ac_04` a `ac_06` se completaron por analogía** con sus equivalentes en nube (método, permisos, evidencia generada); la evidencia de `ac_02`/`ac_03` también la redactó desarrollo | El brain solo da la ficha completa de `ac_01` a `ac_03` | Revisión del comité; ajustar el seed (`prisma/seed/capabilities.ts`) |
+| **DT-4** | 🟠 | **Credenciales por conexión definidas por desarrollo** (`account_id` + `read_only_role`; `db_user` + `db_password`; SSH o agente). No hay instalador del agente: «instalar el agente de Monkey» es una promesa sin entrega, y el cliente no recibe instrucciones | El contrato muestra un solo ejemplo (SSH) | Definir con el equipo de la sonda qué pide cada conexión y cómo se entrega el agente (token de enrolamiento, instrucciones, expiración) |
+| **DT-5** | 🟠 | **Llave de cifrado en el `.env`.** `CREDENTIALS_ENCRYPTION_KEY` (AES-256-GCM) no tiene rotación ni gestor de secretos; el formato `v1.` deja espacio para versionar la llave, pero no hay procedimiento | Alcance del sprint | Gestor de secretos / KMS en producción y un procedimiento de rotación (re-cifrar con `v2`) |
+| **DT-6** | 🟡 | **Scope declarado frente a dimensiones.** Los 5 contadores (`server`, `cloud`, `app`, `database`, `endpoint`) no son las 5 dimensiones del modelo; se tratan como un **eje distinto** («lo que dices que tienes») | Pregunta abierta del contrato | Confirmación del comité; si no, cambiar `scopes` |
+| **DT-7** | 🟡 | **«Híbrido» ofrece las 6 conexiones** y el cliente usa las que le sirvan | El contrato dice «combinación de los anteriores» | Ratificar con el comité |
+| **DT-8** | 🟡 | **El tipo del activo se deduce de la conexión.** `network_device` y `documentation` no tienen forma de darse de alta (ninguna conexión los produce) | Evita preguntar dos veces | Decidir cómo se inventarían esos tipos |
+| **DT-9** | 🟠 | **`responsible_id` se acepta en la API pero no hay forma de crear cargos** (`organization_responsibles`): ni endpoint ni pantalla. La UI lo oculta | El Módulo de Usuarios no existe | Módulo de Usuarios / Cumplimiento |
+| **DT-10** | 🟠 | **La UI promete «te avisaremos» cuando la evaluación automática esté disponible, y no existe ningún aviso** (ni correo ni notificación) | Mensaje honesto para el modo `unavailable` | Construir las notificaciones **o** reescribir el mensaje. No dejar la promesa sin mecanismo |
+| **DT-11** | 🟡 | **Sin editar ni eliminar un activo**; `GET /v1/assets/{id}` se añadió fuera del contrato | El contrato no los define | Módulo de Cumplimiento |
+
+## Componente 2 — Contexto del Servicio (D41)
+
+| ID | | Qué está parchado | Por qué | Qué lo cierra |
+|---|---|---|---|---|
+| **DT-12** | 🟠 | **Descripción del Sistema: solo enlace.** No hay carga de archivo (multipart, 25 MB, PDF/docx), no se procesan las 10 secciones AICPA (`sections` queda vacío) y por eso **no existen `PUT csocs` / `PUT cuecs`** | No hay dónde guardar binarios todavía | Almacenamiento de archivos + procesamiento del documento |
+| **DT-13** | 🟠 | **Todos los controles clonados quedan `manual` y sin dimensiones**, porque `catalog.control_dimensions` está vacío | P10 sin respuesta del comité | Sembrar las dimensiones; el clonado ya las copia |
+| **DT-14** | 🟡 | **El clonado es síncrono** (60 s de límite de transacción) y `catalog.status` siempre es `ready`; el `202 processing` del contrato no existe | Con 1 marco tarda unos segundos | Cola/trabajo en segundo plano cuando haya más marcos o catálogos más grandes |
+| **DT-15** | 🟡 | **El nombre único del servicio por empresa lo impone la aplicación**, no un índice de la base (una carrera extrema podría duplicarlo) | Evitar otra migración en ese momento | Índice único sobre `(organization_id, lower(name))` |
+| **DT-16** | 🟡 | **`evaluation_period` = trimestre natural de la contratación** (`2026-Q4`) | El brain da el formato, no la regla | Confirmar con el comité cómo se define el periodo |
+| **DT-17** | 🟡 | `FRAMEWORK_NOT_CONTRACTED` y `TRUST_CRITERION_REQUIRED` del contrato **no se usan** (no hay contratación de marcos por empresa; el servidor añade `security` en vez de rechazar) | El modelo contrata por servicio | Retirarlos del contrato o implementarlos si cambia el modelo |
+
+## Componente 1 — Contexto Organizacional (D40)
+
+| ID | | Qué está parchado | Por qué | Qué lo cierra |
+|---|---|---|---|---|
+| **DT-18** | 🟡 | **Sin guardado parcial en el servidor.** El avance vive en `localStorage` del navegador; el formulario se envía completo al final | Columnas `NOT NULL` | Volver opcionales las columnas y mover la validación de completitud a la aplicación, si el comité quiere borradores |
+| **DT-19** | 🟡 | **`business_model` trae 19 de «40+»**; «Otra» regulación no tiene campo de texto | P6 / el modelo no tiene dónde guardarlo | Lista completa del comité |
+
+## Transversal
+
+| ID | | Qué está parchado | Por qué | Qué lo cierra |
+|---|---|---|---|---|
+| **DT-20** | 🔴 | **Las pruebas automáticas no están en los repositorios.** Se hicieron como scripts de recorrido (API y navegador) fuera de `Backend/` y `Frontend-Platform/`: no corren en CI y se pueden perder | Velocidad del sprint | Llevarlas a `Backend/test` (e2e con jest/supertest) y a un recorrido con Playwright, y correrlas en CI |
+| **DT-21** | 🟠 | **Traducciones al inglés hechas por desarrollo** y sin revisar; Monkey Platform no tiene i18n (todo en español) | El Excel solo trae español | Revisión del comité; instalar i18n en Platform |
+| **DT-22** | 🟠 | **Base de datos dedicada → «no disponible»**; sin regenerar clave ni editar empresa | P2(b)(c)(d) | Respuestas del comité y el aprovisionamiento |
+| **DT-23** | 🟠 | **Sin MFA** (MD-94) | Fuera del alcance de MD-64 | Su propio ticket |
+| **DT-24** | 🟡 | Tailwind avisa de clases canónicas (`dark:bg-white/[0.03]` → `dark:bg-white/3`) en Platform | Solo estético | Una pasada de limpieza |
+
+## Funcionalidad que el brain menciona y aún no tiene contrato
+
+| ID | | Qué | Nota |
+|---|---|---|---|
+| **DT-25** | 🟠 | **Ver el catálogo maestro SOC 2 en Monkey Admin y poder crear un control, riesgo o causa nuevos.** El principio está en `modelo-datos.md` §3 y D9/D31, pero no hay contrato, pantallas ni épico | Primero un contrato en `contracts/modules/` (qué campos, cómo se vincula un control nuevo, cuándo se publica la versión, A4) |

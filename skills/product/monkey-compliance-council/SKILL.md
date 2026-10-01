@@ -67,6 +67,7 @@ monkey-compliance-council/
     ├── modelo-datos.md             el modelo relacional, ordenado por módulos (obligado antes de tocar el schema)
     ├── modelo-datos-decisiones.md  por qué se decidió cada cosa, con su fuente
     ├── modelo-datos-pendientes.md  las preguntas todavía abiertas (hoy, 4: P2 a P5)
+    ├── deuda-tecnica.md            lo parchado por desarrollo que debe revisarse (DT-n), con su riesgo
     ├── flujo-end-to-end.md         el recorrido completo de un cliente, módulo por módulo
     ├── modulos/
     │   └── onboarding.md           los 3 componentes, campo por campo

@@ -749,3 +749,71 @@ revisión.
 **Fuente:** confirmación de Carlos, 2026-09-30.
 
 ---
+
+## D42 · Componente 3 del onboarding: huecos cerrados por desarrollo
+
+**Decisiones** (Carlos, 2026-10-01; **pendientes de ratificar con el comité**; ninguna toca cómo se
+calcula el cumplimiento). Es el registro de cada hueco que `onboarding-technical-control.md` dejaba abierto
+y cómo se cubrió. Lo que sigue siendo un parche está en **`deuda-tecnica.md`** (DT-1 a DT-11).
+
+**Cambios de schema** (migración 25, `asset_provisioning_schedule_frequency`, más el seed de las 6 capacidades):
+
+1. **`asset_provisionings.schedule_frequency`** (nullable, enum `continuous|every_6h|every_24h`): el paso
+   «programar» no tenía dónde guardar la frecuencia. `ac_01` admite `every_6h` y `every_24h`; `ac_02` a
+   `ac_06`, solo `continuous`.
+2. **`catalog.automated_capabilities` se siembra** con `ac_01` a `ac_06` (estaba vacía). `ac_01` a `ac_03`
+   salen del contrato; `ac_04` a `ac_06` se completaron por analogía (DT-3). El campo interno de proveedor
+   existe solo en el seed.
+
+**Reglas del producto:**
+
+3. **«Híbrido» ofrece las seis conexiones**: el cliente usa las que le sirvan, sin tener que clasificarse (DT-7).
+4. **El tipo del activo se deduce de la conexión** (`ac_01` servicio en nube · `ac_02`/`ac_04` servidor ·
+   `ac_03`/`ac_05` base de datos · `ac_06` endpoint): el cliente elige «qué quiere conectar» y no lo clasifica
+   dos veces. Criticidad por defecto `medium`. Código del activo `AST-0001`, consecutivo **por empresa**.
+5. **El scope declarado es un eje distinto de las dimensiones** («lo que dices que tienes»). Se compara con lo
+   conectado por tipo: servidor, base de datos, nube, aplicación y endpoint cuentan; `network_device` y
+   `documentation` no. «Conectado» = la conexión ya se comprobó (`validated`, `active` o `scheduled`). Los
+   contadores admiten `0` y se piden como «más o menos» (DT-6).
+6. **El paso 3 está hecho con el escenario y el scope**; conectar sistemas se recomienda pero se puede dejar para
+   después («Lo haré más tarde»). Así no se bloquea a quien aún no tiene sus accesos a la mano.
+7. **Cambiar de escenario no puede dejar huérfana una conexión ya registrada** (`409 CAPABILITY_NOT_APPLICABLE`
+   con los códigos de los activos afectados).
+8. **Un activo puede dar soporte a varios servicios** (A2): se enlaza al crearlo y borrar un servicio no borra el
+   activo.
+
+**Honestidad con el cliente («Automatizado ≠ Operativo»):**
+
+9. **La sonda es un puerto (`ConnectionProbe`) con dos adaptadores**, elegidos por `PROBE_MODE`:
+   - `unavailable` (por defecto): `validate` responde `503 CONNECTION_UNAVAILABLE`; el activo sigue
+     `pending` (no `failed`: no es culpa del cliente) y la pantalla lo explica con calma.
+   - `simulated` (solo desarrollo y demostración): da por buena la conexión si las credenciales están completas
+     y **nunca confirma que el activo opere**: al activar queda `warning` y la pantalla lo etiqueta «modo
+     demostración». El backend **se niega a arrancar** con `simulated` en producción.
+   Cuando exista un conector real se agrega un tercer adaptador sin tocar los casos de uso (DT-1).
+10. **`GET /v1/services/{id}/technical-control`** devuelve en una lectura el escenario, las conexiones que
+    aplican, el scope (declarado y conectado), `is_complete` y `probe_mode`. `POST /validate` añade `mode`
+    (`demo` | `live`). Se añaden `GET /v1/assets/{id}` y el error `409 ASSET_NOT_ACTIVE` (programar sin activar).
+
+**Seguridad de las credenciales:**
+
+11. **Se cifran con AES-256-GCM** (`CREDENTIALS_ENCRYPTION_KEY`, 32 bytes en base64; sin ella la app no arranca).
+    Formato `v1.<iv>.<etiqueta>.<cifrado>`. Solo viajan al crear el activo; **nunca se devuelven, se registran en
+    logs ni entran al audit trail**. Se descifran en memoria solo durante la comprobación, y la sonda corre
+    **fuera** de la transacción de base de datos.
+12. **Credenciales por conexión** (validadas, error por campo `credentials.<campo>`): `ac_01` cuenta + rol de
+    solo lectura; `ac_03`/`ac_05` usuario y contraseña de solo lectura; `ac_02`/`ac_04` agente (sin
+    credenciales, por defecto) o SSH (usuario + llave privada); `ac_06` solo agente. Los agentes no guardan
+    credenciales (§6.3). Qué pide cada una en realidad y cómo se entrega el agente: DT-4.
+
+**Confidencialidad (criterio de aceptación):** el proveedor del motor no aparece en ninguna respuesta, mensaje,
+log, texto de i18n, archivo de `src/` ni bundle de la aplicación. El tipo `Capability` del backend **no tiene**
+`provider`, así que ningún mapper puede filtrarlo por descuido, y una prueba lo comprueba en cada recorrido.
+
+**Por qué:** el brain define el flujo y los endpoints pero no estas decisiones de detalle, y la aplicación va
+a clientes reales: en vez de dejar el sprint detenido —o de fingir conexiones que no existen— se tomó el camino
+más honesto y seguro, y se deja aquí para revisión.
+
+**Fuente:** confirmación de Carlos, 2026-10-01.
+
+---

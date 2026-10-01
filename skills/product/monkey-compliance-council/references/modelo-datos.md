@@ -1288,8 +1288,9 @@ erDiagram
         enum connection_status
         datetime last_validated_at
         string technical_coverage
-        text encrypted_credentials
+        text encrypted_credentials "cifrado AES-256-GCM, nunca se devuelve"
         boolean is_active
+        enum schedule_frequency "nullable: continuous|every_6h|every_24h"
     }
     services ||--|| scopes : "declara"
     services ||--o{ service_assets : "usa"
@@ -1326,7 +1327,16 @@ opcional porque las conexiones agentless no guardan credenciales.
 | `ac_06` | **Endpoints / estaciones de trabajo** | Agente ligero | Continuo |
 
 Solo nube → `ac_01` · nube con servidores → `ac_01`+`ac_02`+`ac_03` · on-premise →
-`ac_04`+`ac_05`+`ac_06` · híbrido → los que apliquen.
+`ac_04`+`ac_05`+`ac_06` · híbrido → **las seis** (el cliente usa las que le sirvan, D42).
+
+**El tipo del activo se deduce de la conexión** con que se registra (D42): `ac_01` servicio en nube ·
+`ac_02`/`ac_04` servidor · `ac_03`/`ac_05` base de datos · `ac_06` endpoint. **El scope declarado** (`scopes`) es un
+eje aparte de las dimensiones: lo que el cliente *dice* que tiene, que se compara con lo conectado por tipo
+(servidor, nube, aplicación, base de datos, endpoint). «Conectado» significa que la conexión ya se comprobó.
+
+**Honestidad: Automatizado ≠ Operativo.** Mientras no haya una sonda real, una conexión no puede declararse
+`operational`: la comprobación está `unavailable` (503, el activo sigue `pending`) o `simulated` (solo
+desarrollo y demostración, el activo queda en `warning`). Ver D42 y `deuda-tecnica.md` DT-1.
 
 **El flujo de cada conexión es conectar → validar → activar → programar.**
 
