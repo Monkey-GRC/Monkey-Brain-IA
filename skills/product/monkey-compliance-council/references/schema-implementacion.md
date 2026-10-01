@@ -214,11 +214,11 @@ REVOKE UPDATE, DELETE, TRUNCATE ON audit.audit_logs, audit.compliance_events FRO
 
 - **Paso de migración en el deploy:** el workflow no corre `migrate deploy`; hoy es manual. El
   runtime instala con `--omit=dev`, no lleva el CLI de Prisma ni `DATABASE_URL`.
-- **Seed de arranque:** una `companies` interna de Monkey y el primer `admin_monkey`. Sin eso no
-  se puede crear la primera clave de acceso (`access_keys.created_by` es FK obligatoria a `users`).
-- **Resto del catálogo:** sembrado lo que tiene fuente (§11). Faltan `control_dimensions` y `policies` (sin
-  fuente: P10), y los checks (11.352), las políticas SCA, los mapeos, las regulaciones y
-  `automated_capabilities`, que no necesita el clonado (MD-80).
+- **Seed de arranque:** `npm run bootstrap:admin` crea la `companies` interna de Monkey y el primer
+  `admin_monkey` (§11). En dev ya existen; el script es para staging y producción.
+- **Resto del catálogo:** sembrado lo que tiene fuente (§11), incluidas `control_dimensions` y `policies` (D39,
+  cierra P10), las regulaciones y `automated_capabilities`. Faltan los checks (11.352), las políticas SCA y los
+  mapeos, que no necesita el clonado (MD-80).
 - **`sslmode=require`** en las tres URLs contra el servidor remoto, y restringir el firewall del 5432.
 - **Rotar credenciales** antes de producción: la contraseña de `postgres`, `JWT_SECRET` y
   `WAZUH_API_PASSWORD` se pegaron en texto plano en chats de depuración.
@@ -234,14 +234,14 @@ REVOKE UPDATE, DELETE, TRUNCATE ON audit.audit_logs, audit.compliance_events FRO
 14 `rls_policies_tenant_and_audit` · 15 `set_database_timezone_utc` ·
 16 `platform_add_company_id_to_sessions_and_assignments` · 17 `platform_rls_and_login_lookup` ·
 18 `rename_enum_types_to_snake_case` (D26) · 19 `schema_alignment_review` (D27, D28, D32, D33, D34) ·
-20 `rls_and_lookup_hardening` (D29, D31) · 21 `catalog_seed_and_client_controls` (D35, D36, D38) · 22 `rls_catalog_seed_and_client_controls` (D36).
+20 `rls_and_lookup_hardening` (D29, D31) · 21 `catalog_seed_and_client_controls` (D35, D36, D38) · 22 `rls_catalog_seed_and_client_controls` (D36) · 23 `catalog_policies_as_templates` (D39).
 
 
 La 17 quedó reemplazada en parte por la 20 (`find_login_candidates` se recrea con más columnas).
 
 ## 11. Siembra del catálogo maestro de SOC 2
 
-Código, comandos y garantías: `Backend/prisma/seed/README.md`. Por qué se hizo así: D35 y D38.
+Código, comandos y garantías: `Backend/prisma/seed/README.md`. Por qué se hizo así: D35, D38 y D39.
 
 Excel → JSON versionado (con el sha256 del Excel) → una transacción que **solo inserta lo que falta**,
 aborta con diff si una fila existente difiere y no borra nada → `verify` (solo lectura). Cifras (medidas, D38): 1 marco · 5 criterios ·
@@ -249,6 +249,20 @@ aborta con diff si una fila existente difiere y no borra nada → `verify` (solo
 relaciones riesgo↔causa · 209 aristas causa→control · 61 pruebas · 284 asignaciones control↔prueba · 50
 plantillas de evidencia · 89 vínculos · 1 versión = **2.069 filas**. `requirement_relations` queda vacía (las hojas
 no traen fuente).
+
+**Dimensiones y políticas (D39, cierra P10):** al mismo pipeline se suman 210 dimensiones por control (derivadas de
+las pruebas: aplica si hay una prueba de esa dimensión; el tipo y las banderas salen del tipo de la prueba), 10
+políticas (plantillas, solo el nombre) y 16 vínculos = **+236 filas, 2.305 en total**. `policies` pierde
+`approval_status`, `valid_until` y `version`: son del cliente.
+
+**Catálogos de referencia** (`npm run reference:load` / `reference:verify`, datos en `prisma/seed/reference/data.ts`):
+las 14 regulaciones (MD-75) y las 6 capacidades `ac_01…ac_06` (MD-83), con `provider` interno y confidencial. Las
+listas de opciones del Componente 1 (tamaño, industria, modelo de negocio…) **no se siembran: son enums de
+Postgres**, no tablas.
+
+**Primer `admin_monkey`** (`npm run bootstrap:admin`): el correo, el nombre y la contraseña llegan por variables de
+entorno (`BOOTSTRAP_ADMIN_*`), nunca por argumento; la contraseña cumple §5.3 y se guarda con bcrypt. Idempotente: si
+ya hay un `admin_monkey` no hace nada.
 
 Contra un servidor real: `pg_dump` antes, rol dueño (nunca `monkey_app`), dry-run primero y leer el destino
 que imprime (el `.env` local apunta a dev), `--apply`, `verify`. Cambiar el catálogo no es recargar: es una

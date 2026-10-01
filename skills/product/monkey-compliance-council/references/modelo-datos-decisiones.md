@@ -589,7 +589,7 @@ infiere nada**: lo que no tiene fuente no se siembra y pasa a pendiente.
 | Controles del catálogo | 118 | **119** (118 asignados + CPL-1, Descripción del Sistema) |
 | Asignaciones control ↔ prueba | 228 | **284** en la hoja *Pruebas*; la matriz trae 248, de las que 27 citan pruebas inexistentes |
 | Documentos vinculados a controles | 88 | **89** vínculos, **50** documentos distintos, en 67 controles |
-| Políticas vinculadas | 16 | 16 vínculos a **10** políticas distintas (no se siembran: P10) |
+| Políticas vinculadas | 16 | 16 vínculos a **10** políticas distintas (se siembran como plantillas en D39) |
 | Controles a los que sirve `T-DOC-001` | "más de 30" | **103** |
 | Pruebas con checks automáticos · checks · políticas SCA · plataformas · referencias de mapeo | 13 · 11.352 · 77 · 18 · 20 | confirmados: **13 · 11.352 · 77 · 18 · 20** |
 
@@ -605,11 +605,45 @@ solo guardaba una); el dominio pasa al control (D35).
 - **Causas:** se cargan las 56; 10 no pertenecen a ningún riesgo en la hoja y se cargan sin asociar (P9).
 - **Plantillas de evidencia:** el código es `DOC-` + hash del texto normalizado, no un consecutivo, para que
   agregar un documento no renumere los demás (las evidencias del cliente guardan ese código en `source_ref`).
-- **`control_dimensions`, `control_measurements` y `policies` no se siembran**: sin fuente en el Excel (P10) o
-  sin uso en el MVP (D2).
+- **`control_measurements` no se siembra** (sin uso en el MVP, D2). `control_dimensions` y `policies` no se
+  sembraron aquí por falta de fuente (P10); se resuelven en D39.
 - **Pruebas en texto:** el paso a paso y los atributos se guardan como listas separadas por su numeración
   (`1.`/`1)`) o sus viñetas; si una prueba no trae numeración 1, 2, 3… la extracción falla en vez de adivinar.
 
 **Fuente:** perfilado de `TSC INTERGRAL SOC 2 DETALLADO VF.xlsx` del 2026-09-30. Decisión de Héctor.
 
 ---
+
+---
+
+## D39 · Dimensiones por control y políticas del catálogo (cierra P10)
+
+**Decisión:**
+1. **Una dimensión aplica a un control si el control tiene al menos una prueba de esa dimensión.** Se deriva de
+   *Pruebas*; no hay una lista aparte. Salen **210 filas** de `control_dimensions`: 118 documentales, 43 de
+   servidores, 18 de BD, 31 de nube y **0 de aplicación** (no hay pruebas T-APP: P9). CPL-1 no tiene.
+2. **El tipo** sale del tipo de sus pruebas en esa dimensión: documentales → `manual` (§2: revisión documental);
+   `Manual` → `manual`; `Mixta` o "automatizado + manual" → `hybrid`; `Técnica` → `technical_manual` (D4);
+   "automatizado" a secas → `automated`. Si las pruebas de una misma dimensión no coinciden → `hybrid`. Un
+   texto que no reconoce **falla la extracción** en vez de adivinar.
+3. **Las banderas**: `requires_probe` = la dimensión no es documental y el tipo es `automated` o `hybrid`;
+   `requires_ai` = solo la documental; `requires_compliance_confirmation` = todo menos `automated` (R-03: en lo
+   manual evalúa el consultor; la IA no certifica).
+4. **`policies` es una plantilla del catálogo: solo `name`** (único). `approval_status`, `valid_until` y `version`
+   se eliminan: aprobar una política, hasta cuándo vale y qué versión es son estado **del cliente** y viven en la
+   evidencia que él entrega. Se siembran las 10 políticas y los 16 vínculos; `control_policies` gana
+   `requires_employee_acceptance` porque el Excel distingue "aprobación de la política" de "… y la aceptación
+   del empleado".
+5. Se siembran dentro de la versión 1 del catálogo, sin versión nueva: ningún cliente había clonado nada.
+
+**Por qué:** sin dimensiones no se puede clonar `client_control_dimensions` (MD-80) ni aplicar el gate de §2, y el
+modelo exige que cada control declare dónde se evalúa. Derivarlas de las pruebas deja una sola fuente de verdad: si
+el comité cambia las pruebas de un control, sus dimensiones cambian con ellas. Una política global no puede estar
+"aprobada": la aprobó (o no) cada empresa.
+
+**Qué queda por ratificar:** el punto 1 es la propuesta que ya figuraba en P10. **Los puntos 2 y 3 (tipo y
+banderas) los derivó desarrollo** y no vienen del Excel: se aplican para no bloquear el clonado y se ratifican con
+el comité (igual que D30). Si el comité define otra cosa, se corrige con una versión nueva del catálogo.
+
+**Fuente:** decisión de Héctor, 2026-10-01. Implementación: migración `catalog_policies_as_templates`;
+`Backend/prisma/seed/` (`deriveControlDimensions`, `testKind`, `parsePolicyLine`).

@@ -265,6 +265,11 @@ Por cada dimensión de un control se define:
   **`requires_compliance_confirmation`** — el gate human-in-the-loop. La tercera decide si
   un porcentaje puede cerrar un control por sí solo.
 
+**De dónde salen (D39):** el catálogo solo trae las dimensiones que **aplican** (las que tienen al menos una
+prueba del control; 210 filas, ninguna de `app`), con el tipo y las banderas derivados de sus pruebas. Una
+dimensión que no aplica se declara en el escenario del cliente (`client_control_dimensions`) con su
+`reason_not_applicable`.
+
 ---
 
 ## 3. Catálogo maestro
@@ -358,15 +363,13 @@ erDiagram
     }
     policies {
         uuid id PK
-        string name
-        enum approval_status
-        date valid_until
-        string version
+        string name "unico; plantilla, la aprobacion es del cliente (D39)"
     }
     control_policies {
         uuid id PK
         uuid control_id FK
         uuid policy_id FK
+        boolean requires_employee_acceptance
     }
     evidence_templates {
         uuid id PK
