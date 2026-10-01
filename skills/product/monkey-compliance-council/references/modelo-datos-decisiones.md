@@ -682,3 +682,70 @@ se deja aquí para revisión.
 **Fuente:** confirmación de Carlos, 2026-09-30.
 
 ---
+
+## D41 · Componente 2 del onboarding: ajustes del schema y huecos resueltos por desarrollo
+
+**Decisiones** (Carlos, 2026-09-30; **pendientes de ratificar con el comité**; ninguna toca cómo se
+calcula el cumplimiento). Son los huecos que `onboarding-service-context.md` dejaba abiertos o que el
+schema contradecía:
+
+**Cambios de schema** (migración 24, `service_context_optional_fields_and_regulations`):
+
+1. **`services.deployment_scenario` pasa a nullable.** El contrato dice que se captura en el
+   Componente 3, pero la columna era `NOT NULL`: era imposible declarar el servicio antes de conectar la
+   infraestructura.
+2. **`subservice_organizations.provider`, `service_provided` y `responsibility` pasan a nullable.** El
+   "detalle" del Excel es opcional y solo el `type` es obligatorio (el contrato ya lo decía).
+3. **Nueva tabla `service_regulations`** (servicio ↔ regulación, con RLS por `tenant_id`). Cierra la
+   pregunta abierta "regulación a nivel de servicio": el request del contrato ya traía
+   `regulation_codes` y no tenía dónde persistir. No se puntúa (D10).
+
+**Reglas del clonado** (lo que MD-80 / D36 dejaban sin precisar):
+
+4. **Qué controles se clonan:** los ligados, por punto de enfoque, a requisitos del marco **cuyo criterio
+   de confianza contrató el servicio** (contratar solo `security` no trae los de privacidad). Es lo que
+   cuenta `applicable_requirements`. Con los 3 criterios `security + availability + confidentiality`
+   salen 38 requisitos y 86 controles; con los 5, 61 y 118.
+5. **Qué se clona del control:** `own_code` = código del catálogo (`CAP-1`); `client_interpretation`
+   parte como la descripción del catálogo (el cliente la reescribe); `source_ref` = código de
+   origen; `type` se deriva de sus dimensiones (una sola clase → esa; mezcla → `hybrid`; sin
+   dimensiones → `manual`).
+6. **Riesgos y causas:** se clonan **todos** los riesgos activos y todas las causas del catálogo (no se
+   filtran por criterio: el criterio de un riesgo es de otra lista, §3.3), con sus relaciones; la
+   relación causa ↔ control solo entre controles que el servicio sí clonó.
+7. **Evidencia:** `validity_within_period` = el `evaluation_period` del marco (`AAAA-Tn`, trimestre de la
+   contratación); `responsible_id` vacío (D30).
+8. **El clonado es idempotente y nunca pisa:** repetirlo (al ampliar criterios con `PATCH`) solo añade lo
+   que falta. Quitar criterios o un marco **no borra** nada: el marco pasa a `paused`.
+9. **Es síncrono:** corre en la misma transacción que crea el servicio y el `201` ya trae
+   `catalog.status = ready`. Tarda unos segundos contra la base remota (por eso `withScope` acepta un
+   timeout mayor); el `processing` / `202` del contrato queda para cuando el volumen lo pida.
+
+**Resto de huecos:**
+
+10. **Descripción del Sistema: solo enlace** (`kind = link`, `http`/`https`). El archivo
+    (`multipart`, 25 MB) no se construyó: no hay dónde guardar binarios todavía. `kind = file` responde 422.
+11. **Nombre único por empresa** sin importar mayúsculas ni espacios (`SERVICE_NAME_TAKEN`); la base no lo
+    impone, la aplicación sí.
+12. **`DELETE` con historia:** además de evaluaciones, bloquean la eliminación las **evidencias entregadas
+    y los planes de acción** (todo trabajo del cliente). `409 SERVICE_HAS_EVALUATIONS`.
+13. **`FRAMEWORK_NOT_CONTRACTED` no se usa:** no existe una contratación de marcos a nivel de empresa en el
+    modelo (los marcos se contratan por servicio, §6.1). Un código que no esté en `catalog.frameworks`
+    responde 422 (`enum.invalid`); hoy solo existe `soc2` (D37).
+14. **`PUT csocs` / `PUT cuecs` no se construyeron:** salen de las secciones 7 y 8 de la Descripción del
+    Sistema, que aún no se procesa.
+15. **Progreso (`/auth/me`):** `service_context` entra en `completed_steps` cuando existe al menos un
+    servicio con un marco activo y su Descripción del Sistema; entonces `next_step` es `technical_control`.
+16. **Presentación:** asistente de 6 pantallas más una de revisión (Tu servicio · Tus clientes · Datos y
+    alcance · Marco · Proveedores · Cumplimiento), como el Componente 1. Una ficha de proveedor por tipo.
+
+**Deja abierto:** `control_dimensions` está vacío en el catálogo (P10), así que hoy **todos los controles
+clonados quedan `manual`** y sin dimensiones; el clonado ya las copia cuando se siembren.
+
+**Por qué:** el brain define los 16 campos y la forma de la API, pero no estas decisiones de detalle; en
+vez de dejar el sprint detenido se tomó el camino que no cambia el modelo de medición y se deja aquí para
+revisión.
+
+**Fuente:** confirmación de Carlos, 2026-09-30.
+
+---

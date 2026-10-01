@@ -5,9 +5,10 @@ Complementa a `modelo-datos.md` (el **qué**: tablas y relaciones) y a `modelo-d
 migraciones y despliegue. Si algo choca con `modelo-datos.md`, gana el modelo. Absorbe la bitácora
 "decisiones de la reconstrucción del schema" (septiembre de 2026), que se retiró de `assets/`.
 
-**Estado al 2026-09-30:** 23 migraciones, 57 enums, 75 tablas, todas con RLS, ninguna FK sin índice
+**Estado al 2026-09-30:** 24 migraciones, 57 enums, 76 tablas, todas con RLS, ninguna FK sin índice
 (salvo las de "quién lo hizo") y ningún `ON DELETE CASCADE`. Probado desde cero en Postgres 17.
-**Las 23 están aplicadas en la base de dev** (`135.148.138.36`), sembrada con la empresa interna, el
+(La 24, `service_context_optional_fields_and_regulations`, es la del Componente 2: D41.)
+**Las 24 están aplicadas en la base de dev** (`135.148.138.36`), sembrada con la empresa interna, el
 primer `admin_monkey`, las 14 regulaciones y el catálogo de SOC 2 (§9 y §11).
 
 ---

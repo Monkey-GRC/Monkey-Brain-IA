@@ -103,7 +103,13 @@ catálogo, filtro global de excepciones, `ValidationException`, paginación, dec
 - `onboarding`: Componente 1 (contexto organizacional): `GET` y `PUT
   /v1/onboarding/organizational-context`, solo `admin_empresa`, con auditoría antes/después. El
   avance de cada paso lo deriva `auth` (`GetOnboardingProgressUseCase`) para el bloque `onboarding`
-  de `me`. Los Componentes 2 y 3 son los siguientes (MD-78, MD-85). Decisiones en D40.
+  de `me`. Decisiones en D40.
+- `services`: Componente 2 (contexto del servicio): `POST/GET/PATCH/DELETE /v1/services` y
+  `POST /v1/services/{id}/system-description` (solo enlace), solo `admin_empresa`. **Crear o ampliar un
+  servicio clona el catálogo del marco en la misma transacción** (`infrastructure/catalog-cloner.ts`):
+  controles con evidencias y vínculo a tests, y el set base de riesgos y causas; requisitos, puntos de
+  enfoque y tests se referencian. Cada servicio tiene su propia copia. El Componente 3 es el siguiente
+  (MD-85). Decisiones en D41.
 - Seed de arranque: `prisma/seed/seed.ts` (`npx prisma db seed`) crea la empresa interna de Monkey
   y el primer `admin_monkey` desde las variables `SEED_*` del `.env`, y siembra las 14 regulaciones
   del catálogo (idempotente).
@@ -225,10 +231,15 @@ Ver la tabla de "Las dos plataformas" arriba para qué feature vive en cuál rep
   revisión, opciones como píldoras tocables, avance guardado en el navegador (`localStorage` por
   usuario) y edición posterior desde «Mi empresa». Todo el texto está en español hardcodeado (la
   plataforma no tiene i18n). Las opciones salen del backend vía `shared/domain/services/catalog.service.ts`.
-- `Frontend-Platform` · `home`: bienvenida provisional; invita al primer paso si `onboarding.next_step`
-  es `organizational_context`. `assets` sigue siendo del modelo viejo y no tiene ruta.
-- Tras entrar (login o canje), Platform manda a `/onboarding` a quien aún no lo ha llenado. Los
-  Componentes 2 y 3 y el `dashboard` se reconstruyen en los épicos MD-59 a MD-61 (`philosophy.md`:
+- `Frontend-Platform` · `services`: Componente 2 en `/services/new` (asistente de 6 pantallas más
+  revisión, mismo estilo que el Componente 1; el marco SOC 2 ya viene elegido y los criterios de
+  confianza son tarjetas con su explicación), «Mis servicios» en `/services` (lista, edita y elimina con
+  confirmación) y `/services/:id`. `OptionChips` vive en `shared/presentation`.
+- `Frontend-Platform` · `home`: bienvenida provisional; según `onboarding.next_step` invita al primer
+  paso (`organizational_context`) o al siguiente (`service_context`). `assets` sigue siendo del modelo
+  viejo y no tiene ruta.
+- Tras entrar (login o canje), Platform manda a `/onboarding` a quien aún no lo ha llenado. El
+  Componente 3 y el `dashboard` se reconstruyen en los épicos MD-59 a MD-61 (`philosophy.md`:
   readiness cualitativo primero, el % nunca solo).
 - **Puertos en local:** Monkey Platform `4200`, Monkey Admin `4201` (fijado en su `angular.json`).
   Comparten las cookies de `localhost`: dos sesiones en el mismo navegador se pisan.

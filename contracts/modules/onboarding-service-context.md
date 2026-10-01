@@ -218,6 +218,42 @@ Claves i18n: `service.created`, `service.list`, `service.updated`, `service.dele
 
 | Qué | Estado |
 |---|---|
-| **Regulación a nivel de servicio** | El modelo solo define `organization_regulations` (§6.1). Falta decidir si se añade `service_regulations` o si la regulación se declara solo a nivel de empresa. Mientras tanto, `regulation_codes` se acepta en el request pero **no tiene dónde persistir** |
-| **Descripción del Sistema: enlace o archivo** | El Excel dice enlace, `onboarding.md` decía adjunto. El contrato soporta ambas con `kind`; hay que cerrar cuál se construye |
+| **Regulación a nivel de servicio** | ✅ Resuelta por desarrollo (D41): tabla `service_regulations`. Pendiente de ratificar con el comité |
+| **Descripción del Sistema: enlace o archivo** | ◐ Se construyó **solo el enlace** (D41). El archivo queda pendiente: no hay dónde guardar binarios todavía |
 | **`business_model` y `services.type`** | El Excel gana sobre el modelo (11 tipos de servicio, no 5). Hay que corregir el enum en `modelo-datos.md` §6.2 |
+| **Dimensiones de los controles clonados** | `control_dimensions` está vacío en el catálogo (P10): los controles se clonan sin dimensiones y como `manual` hasta que se siembren |
+
+## Estado de implementación (2026-09-30)
+
+Implementado en `Backend/src/features/services` (más `catalogs` y el progreso de `auth`) y en
+`Frontend-Platform/src/app/features/services` (asistente y «Mis servicios»). Decisiones D41.
+
+| Endpoint | Estado |
+|---|---|
+| `POST /v1/services` | ✅ Solo `admin_empresa`. Crea el servicio **y clona el catálogo en la misma transacción**; el `201` ya trae `catalog.status = ready` |
+| `GET /v1/services` | ✅ Paginado: `id`, `name`, `type`, `is_complete`, `frameworks[]`, `catalog` y `created_at` |
+| `GET /v1/services/{id}` | ✅ Todos los campos declarados (el response del `201` los trae igual, para que la pantalla de edición no pida dos veces) |
+| `PATCH /v1/services/{id}` | ✅ Solo las claves presentes (`null` borra un opcional). Ampliar `trust_criteria` o `framework_codes` recalcula y clona lo que falte; no borra ni pisa nada |
+| `DELETE /v1/services/{id}` | ✅ `409 SERVICE_HAS_EVALUATIONS` con evaluaciones, evidencias entregadas o planes de acción; si no, borra todo lo del servicio |
+| `POST /v1/services/{id}/system-description` | ◐ Solo `kind = link` (`http`/`https`). `kind = file` → 422 |
+| `PUT .../csocs` y `PUT .../cuecs` | ❌ No se construyeron (salen de las secciones 7 y 8 de la Descripción del Sistema, que aún no se procesa) |
+| `GET /v1/catalogs/{name}` | ✅ Nuevos: `service_type`, `served_industry`, `active_client_count`, `service_country`, `data_type`, `trust_criterion`, `subservice_type`, `expected_availability`, `previous_certification` y `frameworks` (sale de `catalog.frameworks`: hoy solo `soc2`) |
+
+- **Aislamiento:** RLS por `tenant_id` entre empresas; entre servicios de la misma empresa, el filtro por
+  `service_id` (cada servicio tiene su propia copia: único `service_id + control_id`). Un servicio de otra
+  empresa responde `404`, no `403`.
+- **Qué se clona y cómo:** ver D41 (puntos 4 a 9). Con `security + availability + confidentiality`:
+  38 requisitos y 86 controles; con los 5 criterios: 61 y 118. Más 10 riesgos, 56 causas y sus relaciones.
+- **Validación** (todos los errores a la vez): valores fuera de catálogo (`enum.invalid`), listas vacías
+  (`array.min`) o repetidas (`array.unique`), «Ninguna» con otras (`regulation.none_exclusive`), enlace
+  inválido (`url.invalid`), marco que no existe (`framework_codes: enum.invalid`).
+  `ORGANIZATION_NOT_DECLARED` si falta el Componente 1; `SERVICE_NAME_TAKEN` por nombre repetido en la
+  empresa (sin importar mayúsculas). `FRAMEWORK_NOT_CONTRACTED` y `TRUST_CRITERION_REQUIRED` no se usan:
+  no hay contratación de marcos a nivel de empresa y el servidor añade `security` en vez de rechazar.
+- **Auditoría:** `service.create`, `service.update`, `service.system_description` y `service.delete` en
+  `audit_logs`, con el estado antes y después (CC9.2).
+- **Progreso:** `GET /v1/auth/me` añade `service_context` a `onboarding.completed_steps` cuando hay al
+  menos un servicio con marco activo y Descripción del Sistema; entonces `next_step = technical_control`.
+- **Pantalla (Platform):** 6 pantallas cortas y una de revisión; el avance se guarda en el navegador y,
+  al terminar, se muestran los requisitos y controles preparados sin jerga. «Mis servicios» lista, edita
+  y elimina (con confirmación).

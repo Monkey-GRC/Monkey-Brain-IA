@@ -1139,7 +1139,7 @@ erDiagram
         json countries
         json data_types "pii|payment|phi"
         enum expected_availability
-        enum deployment_scenario
+        enum deployment_scenario "nullable, lo captura el Componente 3"
         enum previous_certification "nullable"
         datetime created_at
         datetime updated_at
@@ -1148,6 +1148,11 @@ erDiagram
         uuid id PK
         uuid service_id FK
         uuid trust_criterion_id FK
+    }
+    service_regulations {
+        uuid id PK
+        uuid service_id FK
+        uuid regulation_id FK
     }
     service_frameworks {
         uuid id PK
@@ -1161,9 +1166,9 @@ erDiagram
     subservice_organizations {
         uuid id PK
         uuid service_id FK
-        string provider
-        string service_provided
-        text responsibility
+        string provider "nullable"
+        string service_provided "nullable"
+        text responsibility "nullable"
         enum type "aws|azure|gcp|on_premise|hybrid"
     }
     csocs {
@@ -1185,6 +1190,8 @@ erDiagram
     organizations ||--o{ services : "presta"
     services ||--o{ service_trust_criteria : "contrata"
     trust_criteria ||--o{ service_trust_criteria : "contratado por"
+    services ||--o{ service_regulations : "sujeto a"
+    regulations ||--o{ service_regulations : "aplica a"
     services ||--o{ service_frameworks : "contrata marco"
     frameworks ||--o{ service_frameworks : "contratado en"
     services ||--o{ subservice_organizations : "depende de"
@@ -1211,6 +1218,14 @@ ese marco (riesgos, causas, controles) se clona al escenario del cliente (§3.5)
 también **contra qué versión del catálogo** (`catalog_version_id`) y **desde qué periodo**
 (`evaluation_period`) aplica, que es lo que evita que un control nuevo mueva el número a
 mitad de periodo.
+
+**La regulación también se declara por servicio** (decisión D41). `organization_regulations` dice
+a qué leyes está sujeta la empresa; `service_regulations` dice cuáles aplican a *este* servicio,
+porque dos servicios de una misma empresa pueden tratar datos distintos. Tampoco se puntúa (D10).
+
+**`deployment_scenario` y el detalle del subservicio son opcionales al declarar el servicio** (D41):
+el escenario de despliegue se captura en el Componente 3, así que no puede ser obligatorio al
+crear el servicio; y de un proveedor solo el `type` es obligatorio (el "detalle" del Excel lo es).
 
 **`csocs` y `cuecs` son tablas propias marcadas como no medibles por Monkey** (decisión D11).
 Salen de las secciones 7 y 8 de la Descripción del Sistema. Existen porque el auditor los
