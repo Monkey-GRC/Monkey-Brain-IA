@@ -614,7 +614,7 @@ solo guardaba una); el dominio pasa al control (D35).
 
 ---
 
-## D39 · La clave de acceso se canjea una sola vez, y solo con el correo administrativo
+## D43 · La clave de acceso se canjea una sola vez, y solo con el correo administrativo
 
 **Decisión:** el canje (`POST /v1/auth/redeem`) crea la cuenta `admin_empresa` **únicamente si el
 correo que escribe el cliente es el `admin_email` que Monkey registró para su empresa** (se compara
@@ -645,7 +645,7 @@ usuarios de la empresa se invitará desde el módulo de Usuarios.
 
 ---
 
-## D40 · Componente 1 del onboarding: huecos del contrato resueltos por desarrollo
+## D44 · Componente 1 del onboarding: huecos del contrato resueltos por desarrollo
 
 **Decisiones** (Carlos, 2026-09-30; **pendientes de ratificar con el comité**, ninguna toca cómo se
 calcula el cumplimiento). Son los huecos que el contrato de `onboarding-organizational-context.md`
@@ -683,7 +683,7 @@ se deja aquí para revisión.
 
 ---
 
-## D41 · Componente 2 del onboarding: ajustes del schema y huecos resueltos por desarrollo
+## D45 · Componente 2 del onboarding: ajustes del schema y huecos resueltos por desarrollo
 
 **Decisiones** (Carlos, 2026-09-30; **pendientes de ratificar con el comité**; ninguna toca cómo se
 calcula el cumplimiento). Son los huecos que `onboarding-service-context.md` dejaba abiertos o que el
@@ -729,7 +729,7 @@ schema contradecía:
     impone, la aplicación sí.
 12. **`DELETE` con historia:** además de evaluaciones, bloquean la eliminación las **evidencias entregadas
     y los planes de acción** (todo trabajo del cliente). `409 SERVICE_HAS_EVALUATIONS`.
-13. **(Superado por D43: `FRAMEWORK_NOT_CONTRACTED` ya se usa.)** **`FRAMEWORK_NOT_CONTRACTED` no se usa:** no existe una contratación de marcos a nivel de empresa en el
+13. **(Superado por D47: `FRAMEWORK_NOT_CONTRACTED` ya se usa.)** **`FRAMEWORK_NOT_CONTRACTED` no se usa:** no existe una contratación de marcos a nivel de empresa en el
     modelo (los marcos se contratan por servicio, §6.1). Un código que no esté en `catalog.frameworks`
     responde 422 (`enum.invalid`); hoy solo existe `soc2` (D37).
 14. **`PUT csocs` / `PUT cuecs` no se construyeron:** salen de las secciones 7 y 8 de la Descripción del
@@ -750,7 +750,7 @@ revisión.
 
 ---
 
-## D42 · Componente 3 del onboarding: huecos cerrados por desarrollo
+## D46 · Componente 3 del onboarding: huecos cerrados por desarrollo
 
 **Decisiones** (Carlos, 2026-10-01; **pendientes de ratificar con el comité**; ninguna toca cómo se
 calcula el cumplimiento). Es el registro de cada hueco que `onboarding-technical-control.md` dejaba abierto
@@ -818,7 +818,7 @@ más honesto y seguro, y se deja aquí para revisión.
 
 ---
 
-## D43 · El marco se contrata al registrar la empresa (revierte el veto de §6.1)
+## D47 · El marco se contrata al registrar la empresa (revierte el veto de §6.1)
 
 **Decisión** (Carlos, 2026-10-01; **pendiente de ratificar con el comité**). **Monkey Admin contrata el marco
 para la empresa al registrarla** —hoy solo SOC 2 (D37), fijo y bloqueado en el formulario— y, al declarar un
@@ -828,7 +828,7 @@ servicio, el cliente solo puede elegir entre los marcos que su empresa tiene con
 empresa; los marcos se contratan por servicio»*. Ese veto era sobre que **el cliente** lo eligiera en su Componente
 1, y sigue en pie. Lo que se añade es una capa **comercial** anterior: quién vende el marco es Monkey Admin, y el
 servicio solo **elige** entre lo vendido. El contrato del Componente 2 ya traía un error `FRAMEWORK_NOT_CONTRACTED`
-que apuntaba a esto y que D41 había dejado sin uso.
+que apuntaba a esto y que D45 había dejado sin uso.
 
 **Cómo quedó:**
 

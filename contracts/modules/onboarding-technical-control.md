@@ -29,7 +29,7 @@ El cliente conecta su infraestructura real. Ver `conventions.md` y `enums.md`.
 | `cloud_managed_only` | `ac_01` |
 | `cloud_with_servers` | `ac_01`, `ac_02`, `ac_03` |
 | `on_premise` | `ac_04`, `ac_05`, `ac_06` |
-| `hybrid` | las seis (`ac_01` a `ac_06`): el cliente usa las que le sirvan (D42) |
+| `hybrid` | las seis (`ac_01` a `ac_06`): el cliente usa las que le sirvan (D46) |
 
 ### `PUT /v1/services/{id}/deployment-scenario`
 
@@ -206,8 +206,8 @@ trae `code`, `name`, `connection_category`, `operational_status`, `technical_cov
 | 409 | `CAPABILITY_NOT_APPLICABLE` | La `connection_category` no aplica al escenario del servicio |
 | 409 | `ASSET_NOT_VALIDATED` | Se activa sin validar |
 | 409 | `ASSET_ALREADY_ACTIVE` | Se activa o se valida un activo ya activo |
-| 409 | `ASSET_NOT_ACTIVE` | Se programa un activo que aún no está activo *(añadido, D42)* |
-| 503 | `CONNECTION_UNAVAILABLE` | Esta instalación aún no puede comprobar conexiones (sin sonda); el activo sigue `pending` *(añadido, D42)* |
+| 409 | `ASSET_NOT_ACTIVE` | Se programa un activo que aún no está activo *(añadido, D46)* |
+| 503 | `CONNECTION_UNAVAILABLE` | Esta instalación aún no puede comprobar conexiones (sin sonda); el activo sigue `pending` *(añadido, D46)* |
 | 422 | `CONNECTION_FAILED` | La validación no pudo conectar |
 | 422 | `FREQUENCY_NOT_SUPPORTED` | Frecuencia que la capacidad no admite |
 | 422 | `VALIDATION_FAILED` | Enum inválido, `ip_address` mal formada, sin `service_ids` |
@@ -230,23 +230,23 @@ Claves i18n: `deployment_scenario.saved`, `scope.saved`, `asset.created`, `asset
 
 ## Preguntas abiertas
 
-Todas las que había quedaron **cubiertas por desarrollo en D42**; lo que sigue siendo un parche está en
+Todas las que había quedaron **cubiertas por desarrollo en D46**; lo que sigue siendo un parche está en
 `deuda-tecnica.md`. Ninguna bloquea el componente.
 
 | Qué | Estado |
 |---|---|
-| **Los cinco contadores de `scopes` vs las cinco dimensiones** | ✅ Son **dos ejes distintos** (D42, DT-6): el scope es lo que el cliente *dice* que tiene y se compara con lo conectado por tipo de activo |
+| **Los cinco contadores de `scopes` vs las cinco dimensiones** | ✅ Son **dos ejes distintos** (D46, DT-6): el scope es lo que el cliente *dice* que tiene y se compara con lo conectado por tipo de activo |
 | **`assets.responsible_id`** | ◐ Opcional y aceptado por la API; **no hay forma de crear cargos todavía** (DT-9) y la pantalla lo oculta |
-| **Valores de `assets.type`, `criticality`, `origin` y `status`** | ✅ Cerrados en `enums.md` (D34). El tipo ahora se **deduce de la conexión** (D42) |
-| **¿Qué es «híbrido»?** | ✅ Las seis conexiones (D42, DT-7) |
-| **Dónde guardar la frecuencia de `schedule`** | ✅ `asset_provisionings.schedule_frequency` (D42) |
-| **Qué credenciales pide cada conexión** | ◐ Definido por desarrollo (D42, DT-4); falta confirmarlo con el equipo de la sonda y definir cómo se entrega el agente |
+| **Valores de `assets.type`, `criticality`, `origin` y `status`** | ✅ Cerrados en `enums.md` (D34). El tipo ahora se **deduce de la conexión** (D46) |
+| **¿Qué es «híbrido»?** | ✅ Las seis conexiones (D46, DT-7) |
+| **Dónde guardar la frecuencia de `schedule`** | ✅ `asset_provisionings.schedule_frequency` (D46) |
+| **Qué credenciales pide cada conexión** | ◐ Definido por desarrollo (D46, DT-4); falta confirmarlo con el equipo de la sonda y definir cómo se entrega el agente |
 | **Las 18 capacidades de `technical_coverage`** | ❌ Sin definir (DT-2): hoy es una constante |
 
 ## Estado de implementación (2026-10-01)
 
 Implementado en `Backend/src/features/technical-control` (más `catalogs` y el progreso de `auth`) y en
-`Frontend-Platform/src/app/features/technical-control`. Decisiones D42.
+`Frontend-Platform/src/app/features/technical-control`. Decisiones D46.
 
 | Endpoint | Estado |
 |---|---|

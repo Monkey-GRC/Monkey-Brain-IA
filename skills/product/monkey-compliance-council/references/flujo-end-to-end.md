@@ -39,7 +39,7 @@ Al enviar el formulario:
 
 Con la clave recibida en su correo administrativo, el cliente entra a **Monkey
 Platform** ("Activa tu cuenta") y crea su cuenta `admin_empresa` **con ese mismo correo
-administrativo** — con otro correo el canje se rechaza (D39). La `access_keys` pasa a `used`: la
+administrativo** — con otro correo el canje se rechaza (D43). La `access_keys` pasa a `used`: la
 clave sirve una sola vez. A partir de aquí el cliente ya está autenticado dentro de su tenant
 (access token de 15 min, cierre a los 30 min sin actividad y a las 8 h), y las siguientes veces
 entra con correo y contraseña.
@@ -53,7 +53,7 @@ original pero **no está en este repo** — ver `modelo-datos.md` §0.)
 Una vez por empresa. Diez campos → `organizations`. **El campo "nombre / razón social"
 llega precargado y bloqueado**: ya se fijó en el registro del tenant (paso 1) y no se
 puede editar aquí. El **cliente** no elige framework a nivel de empresa en este componente: **Monkey Admin
-contrata el marco al registrar la empresa** (paso 1, D43) y el cliente lo elige, entre los contratados, al
+contrata el marco al registrar la empresa** (paso 1, D47) y el cliente lo elige, entre los contratados, al
 declarar su servicio (Componente 2).
 
 **Entidad:** `organizations`.
@@ -67,7 +67,7 @@ Una vez por servicio (repetible). Dieciséis campos, incluida la Descripción de
 **Al elegir marco aquí, se dispara el paso 5 automáticamente** — no es una acción
 manual separada.
 
-**Entidades:** `services`, `service_trust_criteria`, `service_regulations` (D41),
+**Entidades:** `services`, `service_trust_criteria`, `service_regulations` (D45),
 `subservice_organizations`, `service_frameworks`, `system_descriptions`.
 **Fuente:** `modulos/onboarding.md`, Componente 2.
 
@@ -94,7 +94,7 @@ cliente nunca ve el nombre real del motor de monitoreo detrás ("sonda",
 "capacidad automática").
 
 El paso se da por hecho con el **escenario y el scope**; conectar sistemas se recomienda pero se puede dejar
-para después (D42). Hoy no hay conectores reales: la comprobación es `unavailable` o `simulated` y **nunca se
+para después (D46). Hoy no hay conectores reales: la comprobación es `unavailable` o `simulated` y **nunca se
 finge una conexión** (Automatizado ≠ Operativo).
 
 **Entidades:** `scopes`, `assets`, `automated_capabilities`.

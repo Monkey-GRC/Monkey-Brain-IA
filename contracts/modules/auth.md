@@ -113,7 +113,7 @@ llama al arrancar para saber si hay sesión y dónde continuar.
 | 409  | `ACCESS_KEY_EXPIRED`      | Pasó`expires_at`                                                                    |
 | 409  | `EMAIL_TAKEN`             | Ese email ya existe (`users.email` es único global y se guarda en minúsculas, D29)             |
 | 422  | `VALIDATION_FAILED`       | Contraseña que no cumple la política, email inválido                                |
-| 422  | `ACCESS_KEY_EMAIL_MISMATCH` | El correo del canje no es el `admin_email` registrado para la empresa (D39). La clave sigue pendiente |
+| 422  | `ACCESS_KEY_EMAIL_MISMATCH` | El correo del canje no es el `admin_email` registrado para la empresa (D43). La clave sigue pendiente |
 | 429  | `RATE_LIMITED`            | Límite por IP en los endpoints de auth                                                |
 
 Claves i18n: `auth.account_created`, `auth.logged_in`, `auth.logged_out`,
@@ -164,7 +164,7 @@ Decisiones de implementación, dentro de lo que el contrato ya decía:
   la sesión siga viva y el usuario siga `active`; el rol sale de la base, no del token. Sin la caché
   de 5 min de §5.3 por ahora: la base se consulta siempre.
 - **Refresh tokens y claves de acceso** se guardan como HMAC-SHA256 con `TOKEN_HASH_PEPPER`.
-- **Canje (D39):** solo con el `admin_email` de la empresa; la clave se acepta tal como el cliente la
+- **Canje (D43):** solo con el `admin_email` de la empresa; la clave se acepta tal como el cliente la
   escriba (sin guiones, en minúsculas); marcarla como usada y crear el usuario es una sola transacción
   condicional. Vencida → `409 ACCESS_KEY_EXPIRED`; revocada, inexistente o de empresa suspendida →
   `404 ACCESS_KEY_INVALID`.

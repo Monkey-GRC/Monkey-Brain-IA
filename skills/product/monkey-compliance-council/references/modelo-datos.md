@@ -701,7 +701,7 @@ requiere base de datos dedicada, y el correo administrativo de la empresa. Al en
    > y la entrega por el canal que sea. Por eso el registro debe **mostrar la clave en claro
    > una sola vez**: es el único medio de obtenerla. El destino sigue siendo el `admin_email`.
 4. El cliente usa la clave para crear su cuenta `admin_empresa` en Monkey Platform, **con el
-   `admin_email` registrado aquí** (D39). La clave sirve una sola vez; después entra con correo y
+   `admin_email` registrado aquí** (D43). La clave sirve una sola vez; después entra con correo y
    contraseña.
 5. Arranca el onboarding (§6). El campo "nombre / razón social" del Componente 1 llega
    **precargado y bloqueado**: ya se fijó aquí.
@@ -1116,7 +1116,7 @@ de i18n, no del enum — la tabla de correspondencia está en `contracts/enums.m
 **`regulations` es tabla propia y no se puntúa** (decisión D10): nadie "contrata" la Ley
 1581, pero sí determina qué le aplica. No entra al cálculo de cumplimiento.
 
-> **Actualizado por D43:** el **cliente** sigue sin elegir un marco a nivel de empresa (no hay tal pregunta en
+> **Actualizado por D47:** el **cliente** sigue sin elegir un marco a nivel de empresa (no hay tal pregunta en
 > este Componente 1), pero **Monkey Admin sí contrata el marco para la empresa al registrarla**
 > (`platform.company_frameworks`, hoy solo SOC 2) y, al declarar un servicio, el cliente solo puede elegir
 > entre los marcos que su empresa tiene contratados. Lo que dice el párrafo siguiente es la versión anterior.
@@ -1224,11 +1224,11 @@ también **contra qué versión del catálogo** (`catalog_version_id`) y **desde
 (`evaluation_period`) aplica, que es lo que evita que un control nuevo mueva el número a
 mitad de periodo.
 
-**La regulación también se declara por servicio** (decisión D41). `organization_regulations` dice
+**La regulación también se declara por servicio** (decisión D45). `organization_regulations` dice
 a qué leyes está sujeta la empresa; `service_regulations` dice cuáles aplican a *este* servicio,
 porque dos servicios de una misma empresa pueden tratar datos distintos. Tampoco se puntúa (D10).
 
-**`deployment_scenario` y el detalle del subservicio son opcionales al declarar el servicio** (D41):
+**`deployment_scenario` y el detalle del subservicio son opcionales al declarar el servicio** (D45):
 el escenario de despliegue se captura en el Componente 3, así que no puede ser obligatorio al
 crear el servicio; y de un proveedor solo el `type` es obligatorio (el "detalle" del Excel lo es).
 
@@ -1332,16 +1332,16 @@ opcional porque las conexiones agentless no guardan credenciales.
 | `ac_06` | **Endpoints / estaciones de trabajo** | Agente ligero | Continuo |
 
 Solo nube → `ac_01` · nube con servidores → `ac_01`+`ac_02`+`ac_03` · on-premise →
-`ac_04`+`ac_05`+`ac_06` · híbrido → **las seis** (el cliente usa las que le sirvan, D42).
+`ac_04`+`ac_05`+`ac_06` · híbrido → **las seis** (el cliente usa las que le sirvan, D46).
 
-**El tipo del activo se deduce de la conexión** con que se registra (D42): `ac_01` servicio en nube ·
+**El tipo del activo se deduce de la conexión** con que se registra (D46): `ac_01` servicio en nube ·
 `ac_02`/`ac_04` servidor · `ac_03`/`ac_05` base de datos · `ac_06` endpoint. **El scope declarado** (`scopes`) es un
 eje aparte de las dimensiones: lo que el cliente *dice* que tiene, que se compara con lo conectado por tipo
 (servidor, nube, aplicación, base de datos, endpoint). «Conectado» significa que la conexión ya se comprobó.
 
 **Honestidad: Automatizado ≠ Operativo.** Mientras no haya una sonda real, una conexión no puede declararse
 `operational`: la comprobación está `unavailable` (503, el activo sigue `pending`) o `simulated` (solo
-desarrollo y demostración, el activo queda en `warning`). Ver D42 y `deuda-tecnica.md` DT-1.
+desarrollo y demostración, el activo queda en `warning`). Ver D46 y `deuda-tecnica.md` DT-1.
 
 **El flujo de cada conexión es conectar → validar → activar → programar.**
 

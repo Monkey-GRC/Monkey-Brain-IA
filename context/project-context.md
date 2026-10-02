@@ -89,11 +89,11 @@ catálogo, filtro global de excepciones, `ValidationException`, paginación, dec
 - `auth`: **feature de referencia**, 4 capas completas. Login, refresh (rotado), logout y `me`
   (`contracts/modules/auth.md`); bloqueo a 5 intentos por 15 min; sesión con cierre a los 30 min sin
   actividad y a las 8 h; `SessionAuthGuard` global que verifica sesión y usuario contra la base en
-  cada request. Incluye el canje de la clave (`POST /v1/auth/redeem`, D39: una sola vez y solo con
+  cada request. Incluye el canje de la clave (`POST /v1/auth/redeem`, D43: una sola vez y solo con
   el `admin_email`), que crea el `admin_empresa` y abre sesión; login y canje comparten
   `SessionIssuer`. Falta el bloque `onboarding` de `me` (llega con MD-74).
 - `companies`: registro de empresas de Monkey Admin (`contracts/modules/monkey-admin.md`),
-  solo `admin_monkey`. `POST /v1/companies` (empresa + **marcos contratados**, hoy SOC 2 fijo, D43 + clave `MNK-XXXX-XXXX-XXXX` de un solo uso,
+  solo `admin_monkey`. `POST /v1/companies` (empresa + **marcos contratados**, hoy SOC 2 fijo, D47 + clave `MNK-XXXX-XXXX-XXXX` de un solo uso,
   guardada como HMAC), `GET /v1/companies` (paginado, sin la empresa interna de Monkey) y
   `GET /v1/companies/{id}`. `PATCH` y la regeneración de clave esperan a P2(b)/(c).
 - `catalogs`: `GET /v1/catalogs/{name}` sirve las opciones de los formularios (con la etiqueta según
@@ -103,18 +103,18 @@ catálogo, filtro global de excepciones, `ValidationException`, paginación, dec
 - `onboarding`: Componente 1 (contexto organizacional): `GET` y `PUT
   /v1/onboarding/organizational-context`, solo `admin_empresa`, con auditoría antes/después. El
   avance de cada paso lo deriva `auth` (`GetOnboardingProgressUseCase`) para el bloque `onboarding`
-  de `me`. Decisiones en D40.
+  de `me`. Decisiones en D44.
 - `services`: Componente 2 (contexto del servicio): `POST/GET/PATCH/DELETE /v1/services` y
   `POST /v1/services/{id}/system-description` (solo enlace), solo `admin_empresa`. **Crear o ampliar un
   servicio clona el catálogo del marco en la misma transacción** (`infrastructure/catalog-cloner.ts`):
   controles con evidencias y vínculo a tests, y el set base de riesgos y causas; requisitos, puntos de
-  enfoque y tests se referencian. Cada servicio tiene su propia copia. Decisiones en D41.
+  enfoque y tests se referencian. Cada servicio tiene su propia copia. Decisiones en D45.
 - `technical-control`: Componente 3 (control técnico): `PUT /v1/services/{id}/deployment-scenario` y
   `/scope`, `GET /v1/services/{id}/technical-control`, y `POST/GET /v1/assets` con `validate`, `activate` y
   `schedule`, solo `admin_empresa`. Credenciales cifradas (AES-256-GCM); la **sonda** es un puerto
   (`ConnectionProbe`) con adaptadores `simulated` (solo dev/demostración) y `unavailable` (por defecto),
   elegidos por `PROBE_MODE`: no hay conectores reales y no se finge ninguna conexión. El proveedor del motor
-  **nunca** sale. Decisiones en D42; parches en `deuda-tecnica.md`.
+  **nunca** sale. Decisiones en D46; parches en `deuda-tecnica.md`.
 - Seed de arranque: `prisma/seed/seed.ts` (`npx prisma db seed`) crea la empresa interna de Monkey
   y el primer `admin_monkey` desde las variables `SEED_*` del `.env`, y siembra las 14 regulaciones
   del catálogo (idempotente).

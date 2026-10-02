@@ -73,7 +73,7 @@ Devuelve lo guardado y el progreso. En el primer acceso, todo `null` salvo `name
 
 Es un formulario único por empresa, así que se guarda completo: **crea la organización la primera
 vez y la actualiza las siguientes** (mismo endpoint, idempotente). El guardado parcial con `PATCH`
-**no se construyó** (D40): el avance mientras el cliente escribe vive en su navegador y al final se
+**no se construyó** (D44): el avance mientras el cliente escribe vive en su navegador y al final se
 envía todo junto.
 
 ```json
@@ -136,7 +136,7 @@ Cualquier usuario con sesión las puede leer. Un nombre que no existe responde `
 (jurisdicción `n/a`), porque `organization_regulations` las referencia por FK: así "Ninguna" queda
 guardada como una respuesta real, distinta de no haber contestado. **"Ninguna" es excluyente**
 (no puede ir con otras: `422` con `regulation.none_exclusive`). "Otra" queda solo marcada, sin
-campo de texto, porque el modelo no tiene dónde guardar el detalle (D40).
+campo de texto, porque el modelo no tiene dónde guardar el detalle (D44).
 
 ## Errores
 
@@ -145,7 +145,7 @@ campo de texto, porque el modelo no tiene dónde guardar el detalle (D40).
 | 403 | `FORBIDDEN` | El rol no es `admin_empresa` |
 | 422 | `VALIDATION_FAILED` | Valor fuera del enum, array vacío en un multi-select obligatorio, `description` >2000 |
 | 422 | `VALIDATION_FAILED` | Se envió `name` (campo `name` con código `field.not_editable`, como en el ejemplo de abajo) o se combinó «Ninguna» con otras regulaciones (`regulation.none_exclusive`) |
-| ~~409~~ | ~~`ORGANIZATION_ALREADY_EXISTS`~~ | **Retirado (D40):** citaba un `POST` que el contrato nunca definió. `PUT` crea o actualiza |
+| ~~409~~ | ~~`ORGANIZATION_ALREADY_EXISTS`~~ | **Retirado (D44):** citaba un `POST` que el contrato nunca definió. `PUT` crea o actualiza |
 
 Ejemplo de validación:
 
@@ -190,13 +190,13 @@ al implementar:
 ## Estado de implementación (2026-09-30)
 
 Implementado en `Backend/src/features/onboarding` y `catalogs`, y en
-`Frontend-Platform/src/app/features/onboarding` (asistente). Decisiones D40.
+`Frontend-Platform/src/app/features/onboarding` (asistente). Decisiones D44.
 
 | Endpoint | Estado |
 |---|---|
 | `GET /v1/onboarding/organizational-context` | ✅ Solo `admin_empresa`. Sin nada guardado devuelve la razón social y el resto vacío (1 de 9) |
 | `PUT /v1/onboarding/organizational-context` | ✅ Formulario completo; crea o actualiza. La razón social se copia de `companies` al crear y no se toca después |
-| `PATCH` (guardado parcial) | ❌ No se construyó (D40): las columnas de `organizations` son `NOT NULL` y cambiarlo exige migración |
+| `PATCH` (guardado parcial) | ❌ No se construyó (D44): las columnas de `organizations` son `NOT NULL` y cambiarlo exige migración |
 | `GET /v1/catalogs/{name}` | ✅ `size`, `industry`, `business_model`, `years_in_operation`, `incorporation_country`, `client_country`, `compliance_maturity`, `regulations` |
 
 - **Validación** (todos los errores a la vez, con el código del campo): valores fuera de catálogo
@@ -214,4 +214,4 @@ Implementado en `Backend/src/features/onboarding` y `catalogs`, y en
   (`localStorage`, por usuario) y se borra al guardar en el backend; si el cliente ya había guardado,
   entra directo a la revisión con lo guardado y puede editar. El progreso es "Paso 2 de 5", nunca un
   porcentaje de cumplimiento (`philosophy.md`).
-- **Sin definir en el brain, resuelto con el supuesto más conservador:** ver D40.
+- **Sin definir en el brain, resuelto con el supuesto más conservador:** ver D44.

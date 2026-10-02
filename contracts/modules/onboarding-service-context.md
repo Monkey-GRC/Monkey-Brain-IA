@@ -191,7 +191,7 @@ No se puntúan ni entran al cálculo: se transcriben para el informe.
 |---|---|---|
 | 409 | `ORGANIZATION_NOT_DECLARED` | Se declara un servicio antes del Componente 1 |
 | 409 | `SERVICE_NAME_TAKEN` | Ya existe un servicio con ese nombre en la organización |
-| 409 | `FRAMEWORK_NOT_CONTRACTED` | Se eligió un marco que Monkey Admin no contrató para la empresa (`platform.company_frameworks`, D43) |
+| 409 | `FRAMEWORK_NOT_CONTRACTED` | Se eligió un marco que Monkey Admin no contrató para la empresa (`platform.company_frameworks`, D47) |
 | 409 | `SERVICE_HAS_EVALUATIONS` | `DELETE` sobre un servicio ya evaluado |
 | 413 | `FILE_TOO_LARGE` | La Descripción del Sistema pasa de 25 MB |
 | 415 | `UNSUPPORTED_MEDIA_TYPE` | Tipo de archivo no permitido |
@@ -218,15 +218,15 @@ Claves i18n: `service.created`, `service.list`, `service.updated`, `service.dele
 
 | Qué | Estado |
 |---|---|
-| **Regulación a nivel de servicio** | ✅ Resuelta por desarrollo (D41): tabla `service_regulations`. Pendiente de ratificar con el comité |
-| **Descripción del Sistema: enlace o archivo** | ◐ Se construyó **solo el enlace** (D41). El archivo queda pendiente: no hay dónde guardar binarios todavía |
+| **Regulación a nivel de servicio** | ✅ Resuelta por desarrollo (D45): tabla `service_regulations`. Pendiente de ratificar con el comité |
+| **Descripción del Sistema: enlace o archivo** | ◐ Se construyó **solo el enlace** (D45). El archivo queda pendiente: no hay dónde guardar binarios todavía |
 | **`business_model` y `services.type`** | El Excel gana sobre el modelo (11 tipos de servicio, no 5). Hay que corregir el enum en `modelo-datos.md` §6.2 |
 | **Dimensiones de los controles clonados** | `control_dimensions` está vacío en el catálogo (P10): los controles se clonan sin dimensiones y como `manual` hasta que se siembren |
 
 ## Estado de implementación (2026-09-30)
 
 Implementado en `Backend/src/features/services` (más `catalogs` y el progreso de `auth`) y en
-`Frontend-Platform/src/app/features/services` (asistente y «Mis servicios»). Decisiones D41.
+`Frontend-Platform/src/app/features/services` (asistente y «Mis servicios»). Decisiones D45.
 
 | Endpoint | Estado |
 |---|---|
@@ -242,13 +242,13 @@ Implementado en `Backend/src/features/services` (más `catalogs` y el progreso d
 - **Aislamiento:** RLS por `tenant_id` entre empresas; entre servicios de la misma empresa, el filtro por
   `service_id` (cada servicio tiene su propia copia: único `service_id + control_id`). Un servicio de otra
   empresa responde `404`, no `403`.
-- **Qué se clona y cómo:** ver D41 (puntos 4 a 9). Con `security + availability + confidentiality`:
+- **Qué se clona y cómo:** ver D45 (puntos 4 a 9). Con `security + availability + confidentiality`:
   38 requisitos y 86 controles; con los 5 criterios: 61 y 118. Más 10 riesgos, 56 causas y sus relaciones.
 - **Validación** (todos los errores a la vez): valores fuera de catálogo (`enum.invalid`), listas vacías
   (`array.min`) o repetidas (`array.unique`), «Ninguna» con otras (`regulation.none_exclusive`), enlace
   inválido (`url.invalid`), marco que no existe (`framework_codes: enum.invalid`).
   `ORGANIZATION_NOT_DECLARED` si falta el Componente 1; `SERVICE_NAME_TAKEN` por nombre repetido en la
-  empresa (sin importar mayúsculas). `FRAMEWORK_NOT_CONTRACTED` **sí se usa desde D43**: el marco debe estar
+  empresa (sin importar mayúsculas). `FRAMEWORK_NOT_CONTRACTED` **sí se usa desde D47**: el marco debe estar
   entre los que Monkey Admin contrató para la empresa (también en `PATCH`), y el cliente los lista con
   `GET /v1/catalogs/contracted-frameworks`. `TRUST_CRITERION_REQUIRED` no se usa: el servidor añade `security`
   en vez de rechazar.

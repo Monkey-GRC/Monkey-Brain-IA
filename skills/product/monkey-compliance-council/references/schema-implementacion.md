@@ -7,9 +7,9 @@ migraciones y despliegue. Si algo choca con `modelo-datos.md`, gana el modelo. A
 
 **Estado al 2026-10-02:** 26 migraciones, 58 enums, 77 tablas, todas con RLS, ninguna FK sin índice
 (salvo las de "quién lo hizo") y ningún `ON DELETE CASCADE`. Probado desde cero en Postgres 17.
-(La 24, `service_context_optional_fields_and_regulations`, es la del Componente 2: D41. La 25,
-`asset_provisioning_schedule_frequency`, la del Componente 3: D42. La 26, `company_frameworks`, el contrato
-de marcos por empresa: D43.)
+(La 24, `service_context_optional_fields_and_regulations`, es la del Componente 2: D45. La 25,
+`asset_provisioning_schedule_frequency`, la del Componente 3: D46. La 26, `company_frameworks`, el contrato
+de marcos por empresa: D47.)
 **Las 26 están aplicadas en la base de dev** (`135.148.138.36`), sembrada con la empresa interna, el
 primer `admin_monkey`, las 14 regulaciones y el catálogo de SOC 2 (§9 y §11).
 
@@ -114,7 +114,7 @@ SESSION_IDLE_TIMEOUT=1800         # cierre a los 30 min sin actividad
 SESSION_MAX_DURATION=28800        # tope absoluto: 8 h
 TOKEN_HASH_PEPPER="..."           # HMAC de refresh tokens y claves de acceso; cambiarlo cierra todas las sesiones
 
-# Componente 3 (D42)
+# Componente 3 (D46)
 CREDENTIALS_ENCRYPTION_KEY="..."  # 32 bytes en base64 (AES-256-GCM): cifra las credenciales de los sistemas que
                                   # el cliente conecta. OBLIGATORIA (sin ella la app no arranca). Si se pierde o se
                                   # cambia, lo ya cifrado deja de poder leerse. Genérala con
