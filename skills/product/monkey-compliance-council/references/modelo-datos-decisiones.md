@@ -647,3 +647,36 @@ el comité (igual que D30). Si el comité define otra cosa, se corrige con una v
 
 **Fuente:** decisión de Héctor, 2026-10-01. Implementación: migración `catalog_policies_as_templates`;
 `Backend/prisma/seed/` (`deriveControlDimensions`, `testKind`, `parsePolicyLine`).
+
+---
+
+## D40 · Reglas del clonado del catálogo al elegir marco (MD-80)
+
+**Decisión** — lo que `modelo-datos.md` §3.5 y §6.2 no fijaban y el clonado necesitó:
+1. **Qué controles son aplicables:** los que llegan por los puntos de enfoque de los requisitos del marco cuyo
+   criterio de confianza contrató el servicio. Un control en dos requisitos se clona una vez. CPL-1 (sin punto de
+   enfoque) no se clona: lo cubre `system_descriptions`. Un servicio **sin criterios contratados falla** con un
+   error claro, no clona vacío.
+2. **`own_code` = el código del catálogo** (`CAP-1`); los controles propios del cliente llevan su propia
+   numeración (`C01`). **`client_interpretation` arranca con la descripción del catálogo** y `source_ref` =
+   `vanta:<código>`.
+3. **`client_controls.type` = el tipo común de sus dimensiones**, o `hybrid` si no coinciden (la misma regla de D39).
+4. **Evidencias:** una `evidence_requirement` por plantilla, en el orden del comité, con `validity_within_period` =
+   el periodo de evaluación del marco (C1), `dimension` = `policy` y responsable vacío (D30).
+5. **Riesgos y causas: el set base completo (10 y 56), no solo lo aplicable** (D28); las aristas riesgo↔causa se
+   copian todas y las causa→control **solo hacia controles que se clonaron**.
+6. **Es idempotente y respeta la personalización:** lo que el servicio ya tiene (clonado antes, editado, dado de
+   baja o propio) no se vuelve a crear, y **los hijos solo se crean para padres nuevos** — si el cliente quitó una
+   evidencia de un control clonado, no reaparece. Al contratar otro criterio después se suma solo lo nuevo y se
+   enlaza con lo que ya había.
+7. **Corre dentro de la misma transacción que crea `service_frameworks`**, con el contexto de tenant ya fijado:
+   contratar y clonar son todo o nada. El catálogo se clona contra la versión que ya guarda
+   `service_frameworks.catalog_version_id`.
+
+**Por qué:** sin estas reglas el clonado quedaba a criterio de quien lo escribiera, y 6 y 7 son las que protegen al
+cliente: lo que personalizó no se pisa y un fallo no deja un servicio a medias. Medido contra SOC 2 sembrado: Seguridad
+sola da 79 controles, 139 dimensiones, 194 vínculos con pruebas, 56 evidencias, 10 riesgos, 56 causas y 158 aristas
+causa→control; sumar Disponibilidad agrega 6 controles.
+
+**Fuente:** decisión de Héctor, 2026-10-01. Implementación: `Backend/src/features/onboarding/` y
+`npm run clone:verify`.

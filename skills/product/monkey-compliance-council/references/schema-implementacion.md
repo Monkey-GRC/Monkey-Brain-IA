@@ -267,3 +267,19 @@ ya hay un `admin_monkey` no hace nada.
 Contra un servidor real: `pg_dump` antes, rol dueño (nunca `monkey_app`), dry-run primero y leer el destino
 que imprime (el `.env` local apunta a dev), `--apply`, `verify`. Cambiar el catálogo no es recargar: es una
 versión nueva (A4/D33).
+
+## 12. El clonado del catálogo (MD-80)
+
+Código: `Backend/src/features/onboarding/` — la regla pura en `domain/clone-plan.ts` (con sus pruebas) y
+`application/clone-catalog.service.ts`, que lee, pide el plan y escribe. Reglas y por qué: D40.
+
+`CloneCatalogService.cloneForServiceFramework(tx, serviceFrameworkId)` **recibe el cliente transaccional** y debe
+llamarse en la misma transacción que crea la fila de `service_frameworks`, con `app.tenant_id` ya fijado (RLS). El
+endpoint del Componente 2 (MD-77) lo llama; hoy no hay controlador.
+
+`npm run clone:verify` lo comprueba contra la base real con el catálogo sembrado, **dentro de una transacción que se
+revierte** (incluye una corrida con `SET LOCAL ROLE monkey_app` bajo RLS). No es una prueba de jest: el cliente de
+Prisma 7 es ESM y el jest del repo es CommonJS.
+
+> ⚠️ Prisma 7 con `@map`: el enum `ExpectedAvailability` tiene el miembro `h24x7` con valor `24x7`; el tipo generado
+> pide `"24x7"` pero el cliente en runtime espera el nombre del miembro (`h24x7`). Tenerlo presente al construir MD-77.
