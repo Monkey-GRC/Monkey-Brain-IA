@@ -680,3 +680,35 @@ causa→control; sumar Disponibilidad agrega 6 controles.
 
 **Fuente:** decisión de Héctor, 2026-10-01. Implementación: `Backend/src/features/onboarding/` y
 `npm run clone:verify`.
+
+---
+
+## D41 · El audit trail es inmutable en la base de datos y se retiene 7 años (MD-92)
+
+**Decisión:**
+1. **Inmutable para todos los roles, no solo para la app.** `audit.audit_logs` y `audit.compliance_events`
+   rechazan `UPDATE`, `DELETE` y `TRUNCATE` con triggers (migración `audit_append_only_triggers`), además del
+   `REVOKE` que ya tenía `monkey_app`. Antes, el dueño de las tablas podía editar y borrar el histórico.
+2. **Una corrección es una fila nueva**, nunca una edición.
+3. **Retención de 7 años = no borrar nada durante 7 años + respaldos que lo sostengan.** No hay purga: a los 7 años, si
+   se decide eliminar algo, es un procedimiento aparte, aprobado por el comité y con su propia migración. No se diseña
+   hoy.
+4. **Qué se registra** (acciones del onboarding, campos, secretos prohibidos): `contracts/conventions.md` → *Auditoría*.
+
+**Lo que garantiza y lo que no:** un rol con permisos puede desactivar un trigger (`ALTER TABLE … DISABLE TRIGGER`) o
+ser superusuario. El control que lo cubre es **organizativo**: solo el dueño de la base tiene esa capacidad, sus
+credenciales no están en el runtime de la app y un cambio de este tipo deja rastro en las migraciones. No se
+agrega un event trigger: sería complejidad sin un riesgo que lo justifique en el MVP.
+
+**Respaldos (lo que sostiene los 7 años):**
+- **Staging:** volcado nocturno (`pg_dump`) a MinIO. Se construye con MD-91.
+- **Producción:** depende de **P7** (dónde se aloja el Postgres). Un servicio administrado con respaldos y
+  recuperación a un punto en el tiempo lo resuelve; auto-alojado hay que operarlo. La política de 7 años del audit
+  se fija al cerrar P7. Hasta entonces el compromiso solo se puede sostener desde que haya clientes reales.
+
+**Por qué ahora y no después:** si el audit trail arranca sin ser inmutable, el histórico de los primeros clientes no
+sirve como evidencia y no se puede reconstruir. **Alcance:** `tenant.evaluations` también es inmutable y solo está
+protegida por `REVOKE`; queda como siguiente candidato a la misma garantía.
+
+**Fuente:** `modelo-datos.md` §5.3 y §7.4 (SOC 2 Type II). Decisión de Héctor, 2026-10-01. Implementación:
+`Backend/prisma/migrations/20261001190000_audit_append_only_triggers` y `npm run audit:verify`.

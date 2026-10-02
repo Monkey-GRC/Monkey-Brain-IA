@@ -733,7 +733,7 @@ cada cosa sin adivinar:
 | `catalog` | El catálogo maestro (§3). Global, ninguna tabla lleva `tenant_id` | **solo de escritura**: cualquiera lo lee, únicamente `admin_monkey` lo modifica (D31) |
 | `platform` | Monkey Admin y usuarios (§4, §5) | sí, todas: `companies` y `access_keys` por `admin_monkey` o por su propio tenant (D31) |
 | `tenant` | Onboarding, Cumplimiento y Control Técnico (§6 a §9) | sí, todo |
-| `audit` | `audit_logs` y `compliance_events`, con `REVOKE UPDATE, DELETE` que refuerza el append-only | sí (`audit_logs`: lo lee su tenant o `admin_monkey`) |
+| `audit` | `audit_logs` y `compliance_events`, con `REVOKE UPDATE, DELETE` y **triggers** que garantizan el append-only para todos los roles (D41) | sí (`audit_logs`: lo lee su tenant o `admin_monkey`) |
 
 Las FK **cruzan schemas con normalidad**: `service_frameworks` en `tenant` referencia
 `frameworks` en `catalog` con una foreign key real. Un schema es un namespace, no un perímetro.

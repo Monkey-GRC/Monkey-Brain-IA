@@ -55,7 +55,8 @@ recomendación planteada (no decidida) es **no alojarlo en el mismo servidor que
 la VPS actual ni una nueva compartida—: superficie de ataque compartida con n8n y minio, contención
 de recursos y, sobre todo, backups y recuperación (un servicio administrado tipo RDS los trae; auto-
 alojado hay que operarlos). Alternativa: un servidor separado, dedicado solo a la base. No afecta al
-modelo (RLS, 4 schemas, roles).
+modelo (RLS, 4 schemas, roles). **Sí condiciona la retención de 7 años del audit trail (D41):** los respaldos que
+la sostienen dependen de dónde viva el Postgres.
 
 ## P8 · ¿Un control que crea el cliente cuenta para el marco?
 
