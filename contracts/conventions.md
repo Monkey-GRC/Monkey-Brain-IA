@@ -136,6 +136,32 @@ para descendente.
 - Un `POST` que dispara trabajo lento (aprovisionar una base dedicada) devuelve `202` con el
   recurso y su estado, no espera.
 
+## Auditoría
+
+Toda acción que cambia el estado de la plataforma o de la seguridad deja una fila en `audit_logs` (MD-92). Es una
+convención de **todos** los módulos, no de uno. La tabla es append-only: se agrega, nunca se edita ni se borra.
+
+- **Qué lleva:** `action`, `resource`, `result` (`success` | `error`), `user_id` (o `attempted_email` si no hay
+  usuario), `tenant_id` (nulo en una acción de plataforma), `ip_address`, `user_agent` y, si cambia un dato,
+  `before_state` y `after_state`.
+- **`action` es `<recurso>.<verbo>` en `snake_case`.** Las del onboarding:
+
+| `action` | Cuándo | Quién | `tenant_id` |
+|---|---|---|---|
+| `company.register` | `admin_monkey` registra la empresa | `admin_monkey` | nulo |
+| `access_key.regenerate` | `admin_monkey` regenera o reenvía la clave | `admin_monkey` | la empresa |
+| `access_key.redeem` | el cliente canjea la clave (también si falla: `result = error`) | nuevo `admin_empresa`, o `attempted_email` | la empresa |
+| `user.create` | se crea una cuenta, incluida la de `admin_empresa` al canjear | quien la crea | la empresa |
+| `auth.login` | inicio de sesión correcto | el usuario | su empresa |
+| `auth.login_failed` | intento fallido (CC7.2); el email puede no existir | `attempted_email` | nulo |
+
+- **Los fallos también se registran**, con `result = error`: un intento rechazado es justo lo que un auditor pide ver.
+- **Nunca se guarda un secreto** en `before_state` ni `after_state`: ni la clave de acceso, ni la contraseña, ni un
+  hash, ni un token. Se guarda el `id` del recurso, no su credencial.
+- **Se escribe sin `RETURNING`** (`createMany` o SQL directo): una acción de plataforma sin tenant no pasa la
+  política de lectura (`modelo-datos.md` §5.3).
+- **Se escribe en la misma transacción** que la acción: si la acción se revierte, su fila también.
+
 ## Progreso del onboarding
 
 Los formularios del comité calculan completitud. La API la expone en vez de que el frontend la

@@ -43,7 +43,7 @@ enrutar la pregunta al archivo correcto** (ver `SKILL.md` de esa skill, sección
   con fuente y fecha verificada. No inventar citas ni cifras de un framework.
 - `council.md` — cómo se resuelven desacuerdos de diseño entre los roles del panel.
 - `modelo-datos-pendientes.md` — las preguntas que **todavía no están cerradas** y que
-  solo el comité puede responder (hoy son 9: P2, P3, P5, P6, P7, P8, P9, P10 y P11). Antes de construir algo que dependa de una,
+  solo el comité puede responder (hoy son 8: P2, P3, P5, P6, P7, P8, P9 y P11). Antes de construir algo que dependa de una,
   consúltala: si sigue ahí, no la resuelvas por tu cuenta — pregunta.
 - `deuda-tecnica.md` — lo que está **parchado o construido a medias** por desarrollo (la sonda simulada, la
   Descripción del Sistema solo como enlace, las pruebas fuera del repo…), con su riesgo y qué lo cierra. No son

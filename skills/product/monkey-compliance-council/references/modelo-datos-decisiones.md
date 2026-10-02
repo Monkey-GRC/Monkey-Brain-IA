@@ -589,7 +589,7 @@ infiere nada**: lo que no tiene fuente no se siembra y pasa a pendiente.
 | Controles del catálogo | 118 | **119** (118 asignados + CPL-1, Descripción del Sistema) |
 | Asignaciones control ↔ prueba | 228 | **284** en la hoja *Pruebas*; la matriz trae 248, de las que 27 citan pruebas inexistentes |
 | Documentos vinculados a controles | 88 | **89** vínculos, **50** documentos distintos, en 67 controles |
-| Políticas vinculadas | 16 | 16 vínculos a **10** políticas distintas (no se siembran: P10) |
+| Políticas vinculadas | 16 | 16 vínculos a **10** políticas distintas (se siembran como plantillas en D39) |
 | Controles a los que sirve `T-DOC-001` | "más de 30" | **103** |
 | Pruebas con checks automáticos · checks · políticas SCA · plataformas · referencias de mapeo | 13 · 11.352 · 77 · 18 · 20 | confirmados: **13 · 11.352 · 77 · 18 · 20** |
 
@@ -605,14 +605,140 @@ solo guardaba una); el dominio pasa al control (D35).
 - **Causas:** se cargan las 56; 10 no pertenecen a ningún riesgo en la hoja y se cargan sin asociar (P9).
 - **Plantillas de evidencia:** el código es `DOC-` + hash del texto normalizado, no un consecutivo, para que
   agregar un documento no renumere los demás (las evidencias del cliente guardan ese código en `source_ref`).
-- **`control_dimensions`, `control_measurements` y `policies` no se siembran**: sin fuente en el Excel (P10) o
-  sin uso en el MVP (D2).
+- **`control_measurements` no se siembra** (sin uso en el MVP, D2). `control_dimensions` y `policies` no se
+  sembraron aquí por falta de fuente (P10); se resuelven en D39.
 - **Pruebas en texto:** el paso a paso y los atributos se guardan como listas separadas por su numeración
   (`1.`/`1)`) o sus viñetas; si una prueba no trae numeración 1, 2, 3… la extracción falla en vez de adivinar.
 
 **Fuente:** perfilado de `TSC INTERGRAL SOC 2 DETALLADO VF.xlsx` del 2026-09-30. Decisión de Héctor.
 
 ---
+
+---
+
+## D39 · Dimensiones por control y políticas del catálogo (cierra P10)
+
+**Decisión:**
+1. **Una dimensión aplica a un control si el control tiene al menos una prueba de esa dimensión.** Se deriva de
+   *Pruebas*; no hay una lista aparte. Salen **210 filas** de `control_dimensions`: 118 documentales, 43 de
+   servidores, 18 de BD, 31 de nube y **0 de aplicación** (no hay pruebas T-APP: P9). CPL-1 no tiene.
+2. **El tipo** sale del tipo de sus pruebas en esa dimensión: documentales → `manual` (§2: revisión documental);
+   `Manual` → `manual`; `Mixta` o "automatizado + manual" → `hybrid`; `Técnica` → `technical_manual` (D4);
+   "automatizado" a secas → `automated`. Si las pruebas de una misma dimensión no coinciden → `hybrid`. Un
+   texto que no reconoce **falla la extracción** en vez de adivinar.
+3. **Las banderas**: `requires_probe` = la dimensión no es documental y el tipo es `automated` o `hybrid`;
+   `requires_ai` = solo la documental; `requires_compliance_confirmation` = todo menos `automated` (R-03: en lo
+   manual evalúa el consultor; la IA no certifica).
+4. **`policies` es una plantilla del catálogo: solo `name`** (único). `approval_status`, `valid_until` y `version`
+   se eliminan: aprobar una política, hasta cuándo vale y qué versión es son estado **del cliente** y viven en la
+   evidencia que él entrega. Se siembran las 10 políticas y los 16 vínculos; `control_policies` gana
+   `requires_employee_acceptance` porque el Excel distingue "aprobación de la política" de "… y la aceptación
+   del empleado".
+5. Se siembran dentro de la versión 1 del catálogo, sin versión nueva: ningún cliente había clonado nada.
+
+**Por qué:** sin dimensiones no se puede clonar `client_control_dimensions` (MD-80) ni aplicar el gate de §2, y el
+modelo exige que cada control declare dónde se evalúa. Derivarlas de las pruebas deja una sola fuente de verdad: si
+el comité cambia las pruebas de un control, sus dimensiones cambian con ellas. Una política global no puede estar
+"aprobada": la aprobó (o no) cada empresa.
+
+**Qué queda por ratificar:** el punto 1 es la propuesta que ya figuraba en P10. **Los puntos 2 y 3 (tipo y
+banderas) los derivó desarrollo** y no vienen del Excel: se aplican para no bloquear el clonado y se ratifican con
+el comité (igual que D30). Si el comité define otra cosa, se corrige con una versión nueva del catálogo.
+
+**Fuente:** decisión de Héctor, 2026-10-01. Implementación: migración `catalog_policies_as_templates`;
+`Backend/prisma/seed/` (`deriveControlDimensions`, `testKind`, `parsePolicyLine`).
+
+---
+
+## D40 · Reglas del clonado del catálogo al elegir marco (MD-80)
+
+**Decisión** — lo que `modelo-datos.md` §3.5 y §6.2 no fijaban y el clonado necesitó:
+1. **Qué controles son aplicables:** los que llegan por los puntos de enfoque de los requisitos del marco cuyo
+   criterio de confianza contrató el servicio. Un control en dos requisitos se clona una vez. CPL-1 (sin punto de
+   enfoque) no se clona: lo cubre `system_descriptions`. Un servicio **sin criterios contratados falla** con un
+   error claro, no clona vacío.
+2. **`own_code` = el código del catálogo** (`CAP-1`); los controles propios del cliente llevan su propia
+   numeración (`C01`). **`client_interpretation` arranca con la descripción del catálogo** y `source_ref` =
+   `vanta:<código>`.
+3. **`client_controls.type` = el tipo común de sus dimensiones**, o `hybrid` si no coinciden (la misma regla de D39).
+4. **Evidencias:** una `evidence_requirement` por plantilla, en el orden del comité, con `validity_within_period` =
+   el periodo de evaluación del marco (C1), `dimension` = `policy` y responsable vacío (D30).
+5. **Riesgos y causas: el set base completo (10 y 56), no solo lo aplicable** (D28); las aristas riesgo↔causa se
+   copian todas y las causa→control **solo hacia controles que se clonaron**.
+6. **Es idempotente y respeta la personalización:** lo que el servicio ya tiene (clonado antes, editado, dado de
+   baja o propio) no se vuelve a crear, y **los hijos solo se crean para padres nuevos** — si el cliente quitó una
+   evidencia de un control clonado, no reaparece. Al contratar otro criterio después se suma solo lo nuevo y se
+   enlaza con lo que ya había.
+7. **Corre dentro de la misma transacción que crea `service_frameworks`**, con el contexto de tenant ya fijado:
+   contratar y clonar son todo o nada. El catálogo se clona contra la versión que ya guarda
+   `service_frameworks.catalog_version_id`.
+
+**Por qué:** sin estas reglas el clonado quedaba a criterio de quien lo escribiera, y 6 y 7 son las que protegen al
+cliente: lo que personalizó no se pisa y un fallo no deja un servicio a medias. Medido contra SOC 2 sembrado: Seguridad
+sola da 79 controles, 139 dimensiones, 194 vínculos con pruebas, 56 evidencias, 10 riesgos, 56 causas y 158 aristas
+causa→control; sumar Disponibilidad agrega 6 controles.
+
+**Fuente:** decisión de Héctor, 2026-10-01. Implementación: `Backend/src/features/onboarding/` y
+`npm run clone:verify`.
+
+---
+
+## D41 · El audit trail es inmutable en la base de datos y se retiene 7 años (MD-92)
+
+**Decisión:**
+1. **Inmutable para todos los roles, no solo para la app.** `audit.audit_logs` y `audit.compliance_events`
+   rechazan `UPDATE`, `DELETE` y `TRUNCATE` con triggers (migración `audit_append_only_triggers`), además del
+   `REVOKE` que ya tenía `monkey_app`. Antes, el dueño de las tablas podía editar y borrar el histórico.
+2. **Una corrección es una fila nueva**, nunca una edición.
+3. **Retención de 7 años = no borrar nada durante 7 años + respaldos que lo sostengan.** No hay purga: a los 7 años, si
+   se decide eliminar algo, es un procedimiento aparte, aprobado por el comité y con su propia migración. No se diseña
+   hoy.
+4. **Qué se registra** (acciones del onboarding, campos, secretos prohibidos): `contracts/conventions.md` → *Auditoría*.
+
+**Lo que garantiza y lo que no:** un rol con permisos puede desactivar un trigger (`ALTER TABLE … DISABLE TRIGGER`) o
+ser superusuario. El control que lo cubre es **organizativo**: solo el dueño de la base tiene esa capacidad, sus
+credenciales no están en el runtime de la app y un cambio de este tipo deja rastro en las migraciones. No se
+agrega un event trigger: sería complejidad sin un riesgo que lo justifique en el MVP.
+
+**Respaldos (lo que sostiene los 7 años):**
+- **Staging:** volcado nocturno (`pg_dump`) a MinIO. Se construye con MD-91.
+- **Producción:** depende de **P7** (dónde se aloja el Postgres). Un servicio administrado con respaldos y
+  recuperación a un punto en el tiempo lo resuelve; auto-alojado hay que operarlo. La política de 7 años del audit
+  se fija al cerrar P7. Hasta entonces el compromiso solo se puede sostener desde que haya clientes reales.
+
+**Por qué ahora y no después:** si el audit trail arranca sin ser inmutable, el histórico de los primeros clientes no
+sirve como evidencia y no se puede reconstruir. **Alcance:** `tenant.evaluations` también es inmutable y solo está
+protegida por `REVOKE`; queda como siguiente candidato a la misma garantía.
+
+**Fuente:** `modelo-datos.md` §5.3 y §7.4 (SOC 2 Type II). Decisión de Héctor, 2026-10-01. Implementación:
+`Backend/prisma/migrations/20261001190000_audit_append_only_triggers` y `npm run audit:verify`.
+
+---
+
+## D42 · Cómo viaja una migración a staging (MD-91)
+
+**Decisión:**
+1. **El deploy migra solo, antes de levantar el backend**, con `prisma migrate deploy` en un contenedor desechable
+   construido de la etapa `build` del Dockerfile. La imagen de runtime **no** lleva el CLI de Prisma ni credenciales de
+   dueño.
+2. **El rol dueño llega solo a ese paso** (secret `MIGRATE_DATABASE_URL`); el `.env` del backend sigue con `APP_DATABASE_URL`
+   (rol `monkey_app`, sujeto a RLS).
+3. **Respaldo con `pg_dump` antes de cada migración** si la base ya tiene datos, verificado (no vacío y legible), con las
+   últimas 14 copias en `~/backups/monkey/`.
+4. **Si falla, el deploy se aborta** y el backend anterior sigue corriendo.
+5. **No hay "deshacer": se corrige hacia adelante**; si hubo pérdida de datos, se restaura el respaldo. Una migración
+   aplicada nunca se edita.
+6. **Una migración nueva lleva fecha posterior a la última de `develop`**, y **la base compartida de dev solo se migra desde
+   `develop`**, no desde ramas.
+
+**Por qué:** el workflow no migraba y la base de staging nació vacía; hacerlo a mano en cada deploy es justo lo que se
+olvida. Separar el rol dueño del runtime evita que un fallo de la app tenga permisos para cambiar el esquema. La regla 6
+sale de un síntoma real: la base de dev tenía 3 migraciones aplicadas que el repo no tiene.
+
+**Falta acordar con Carlos** la regla 6 (hoy los dos aplican migraciones en la base compartida desde sus ramas).
+
+**Fuente:** decisión de Héctor, 2026-10-01. Implementación: `Backend/scripts/deploy/migrate.sh`,
+`Backend/.github/workflows/deploy-dev.yml`; procedimiento y primer arranque: `schema-implementacion.md` §7, §8 y §13.
 
 ## D43 · La clave de acceso se canjea una sola vez, y solo con el correo administrativo
 

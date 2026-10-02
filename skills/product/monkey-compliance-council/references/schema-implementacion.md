@@ -5,13 +5,13 @@ Complementa a `modelo-datos.md` (el **qué**: tablas y relaciones) y a `modelo-d
 migraciones y despliegue. Si algo choca con `modelo-datos.md`, gana el modelo. Absorbe la bitácora
 "decisiones de la reconstrucción del schema" (septiembre de 2026), que se retiró de `assets/`.
 
-**Estado al 2026-10-02:** 26 migraciones, 58 enums, 77 tablas, todas con RLS, ninguna FK sin índice
+**Estado al 2026-10-02:** 28 migraciones, 58 enums, 77 tablas, todas con RLS, ninguna FK sin índice
 (salvo las de "quién lo hizo") y ningún `ON DELETE CASCADE`. Probado desde cero en Postgres 17.
 (La 24, `service_context_optional_fields_and_regulations`, es la del Componente 2: D45. La 25,
-`asset_provisioning_schedule_frequency`, la del Componente 3: D46. La 26, `company_frameworks`, el contrato
-de marcos por empresa: D47.)
-**Las 26 están aplicadas en la base de dev** (`135.148.138.36`), sembrada con la empresa interna, el
-primer `admin_monkey`, las 14 regulaciones y el catálogo de SOC 2 (§9 y §11).
+`asset_provisioning_schedule_frequency`, la del Componente 3: D46. La 28, `company_frameworks`, el contrato
+de marcos por empresa: D47. Las 26 y 27 son de Héctor: D39 y D41.)
+**Las 28 están aplicadas en la base de dev** (`135.148.138.36`), sembrada con la empresa interna, el
+primer `admin_monkey`, las 14 regulaciones, las 6 capacidades y el catálogo de SOC 2 (§9 y §11).
 
 ---
 
@@ -60,6 +60,9 @@ ponerla en `platform` crearía una dependencia circular al migrar), y `schedule_
 `prisma@7.2.0` y `@prisma/client@7.2.0` con `@prisma/adapter-pg`.
 
 - `multiSchema` es GA: no va en `previewFeatures`.
+- **El generador debe llevar `moduleFormat = "cjs"`.** `provider = "prisma-client"` emite por defecto un cliente ESM
+  (`import.meta`) y Nest compila a CommonJS: sin esa opción el backend desplegado termina al arrancar
+  (`Cannot use 'import.meta' outside a module`) y queda en `Restarting`. Se encontró en staging el 2026-10-01.
 - **La `url` vive en `prisma.config.ts`**, no en `schema.prisma`; ahí el `datasource` solo lleva
   `provider` y `schemas`.
 - **No hay campo `adapter` en `prisma.config.ts`.** El CLI se conecta directo con `datasource.url`.
@@ -190,6 +193,10 @@ GRANT SELECT, INSERT ON ALL TABLES IN SCHEMA audit TO monkey_app;   -- append-on
 REVOKE UPDATE, DELETE, TRUNCATE ON audit.audit_logs, audit.compliance_events FROM monkey_app;
 ```
 
+**Y para todos los roles, los triggers** `audit.reject_mutation()` (migración 24, D41): `UPDATE`, `DELETE` y `TRUNCATE` sobre
+las dos tablas de `audit` fallan también para el dueño. `npm run audit:verify` lo comprueba contra la base real, en una
+transacción que se revierte, con el rol dueño y con `monkey_app`.
+
 ## 6. Ubicaciones ambiguas del ER, resueltas
 
 - **`regulations`** → `catalog`: las mismas leyes para todos, sin columna de tenant. El puente
@@ -217,8 +224,31 @@ REVOKE UPDATE, DELETE, TRUNCATE ON audit.audit_logs, audit.compliance_events FRO
 - **`contracts/enums.md`** manda sobre `modelo-datos.md` en los valores de enum.
 - **Enums:** el estado y su cierre están en `contracts/enums.md` y en D34. Lo único abierto es la
   lista completa de `business_model` (P6).
+- **Una migración nueva tiene fecha posterior a la última de `develop`.** Antes de abrir el PR, `git pull` de
+  `develop`: si trae migraciones más nuevas que la tuya, renombra la carpeta de la tuya a una fecha posterior (solo
+  si nadie la aplicó todavía fuera de tu máquina).
+- **Dos personas migrando el mismo día no chocan por el nombre** (llevan la hora), sino por el contenido: si las dos
+  tocan la misma tabla, quien mergea segundo **rehace su migración** sobre el schema ya actualizado (borra su
+  carpeta, `prisma migrate dev` otra vez) en lugar de editar la del otro.
+- **La base compartida de dev solo se migra desde `develop`** (después del merge), no desde una rama. Una rama se
+  prueba con un Postgres local. Si una rama aplica su migración en la base compartida y luego cambia, la base queda
+  con migraciones que el repo no tiene y `migrate dev` de los demás empieza a fallar.
 - **Sin datos:** las migraciones de septiembre asumen tablas vacías (agregan columnas NOT NULL). Si
   un ambiente tiene filas, fallan sin dejar nada a medias: vaciar o escribir un backfill.
+
+### Reversa de una migración que salió mal
+
+Prisma **no tiene "deshacer"**: se corrige hacia adelante. Qué hacer según el caso (probado contra un Postgres
+desechable, ver §13):
+
+- **Falló al aplicarse en staging.** La migración corre atómica: no deja tablas a medias, queda marcada como fallida en
+  `_prisma_migrations` y **bloquea los deploys siguientes** (`P3009`). El deploy se aborta solo y el backend anterior
+  sigue corriendo. Se corrige: (1) arreglar el SQL en una migración **nueva**, o quitar la fallida del repo si no hace
+  falta; (2) en staging, `prisma migrate resolve --rolled-back <nombre_de_la_fallida>`; (3) volver a desplegar.
+- **Se aplicó bien pero hace daño** (borró o cambió algo que no debía). Primero **corregir hacia adelante** con una
+  migración nueva que lo repare. Si hubo pérdida de datos, **restaurar el respaldo previo** (el script lo guarda en
+  `~/backups/monkey/` antes de cada migración, últimas 14): `pg_restore` a una base nueva, comprobar y reemplazar.
+- **Nunca** editar una migración ya aplicada ni borrar filas de `_prisma_migrations` a mano.
 
 ## 8. Infraestructura y despliegue
 
@@ -236,25 +266,26 @@ REVOKE UPDATE, DELETE, TRUNCATE ON audit.audit_logs, audit.compliance_events FRO
   corrompería.
 - **El `.env` de runtime** solo lleva `APP_DATABASE_URL` (no `DATABASE_URL`), más JWT, Wazuh, S3 y
   CORS cuando `auth` y los conectores lo usen.
+- **El deploy migra solo** (MD-91, D42): antes de levantar el backend nuevo, `backend/scripts/deploy/migrate.sh`
+  construye la etapa `build` del Dockerfile (trae el CLI de Prisma y tsx; la imagen de runtime no), **respalda** la
+  base con `pg_dump` y corre `prisma migrate deploy` en un contenedor desechable con el rol dueño. Ese rol llega por el
+  secret `MIGRATE_DATABASE_URL` y **solo existe en ese paso**: el `.env` del backend sigue llevando únicamente
+  `APP_DATABASE_URL`. Si algo falla, el deploy se aborta y el backend anterior sigue corriendo.
 - **`Dockerfile`:** `prisma.config.ts` exige `DATABASE_URL` al cargarse (con cualquier comando), así
   que el build define un placeholder antes de `prisma generate`. `SHADOW_DATABASE_URL` no hace falta.
 - **Staging aplica con `prisma migrate deploy`**, nunca `migrate dev`.
 
 ## 9. Lo que sigue pendiente (operativo, no del modelo)
 
-- **Paso de migración en el deploy:** el workflow no corre `migrate deploy`; hoy es manual. El
-  runtime instala con `--omit=dev`, no lleva el CLI de Prisma ni `DATABASE_URL`.
-- ~~**Seed de arranque**~~ — **hecho el 2026-09-30**: `prisma/seed/seed.ts` (`npx prisma db seed`)
-  crea la `companies` interna de Monkey y el primer `admin_monkey` a partir de las variables `SEED_*`
-  del `.env` (nada de datos personales en git). Corre con `DATABASE_URL`, exige la política de
-  contraseña de §5.3 y es idempotente: si el admin ya existe no toca su contraseña. Sembrado en dev.
-  El mismo seed siembra el catálogo de regulaciones (`catalog.regulations`, 14 filas de
-  `contracts/enums.md`, incluidas `none` y `other`); también idempotente.
+- **Paso de migración en el deploy:** resuelto en MD-91 (§8, §13). El runtime sigue sin llevar el CLI de Prisma ni
+  `DATABASE_URL`: la migración corre en un contenedor aparte.
+- **Seed de arranque:** `npm run bootstrap:admin` crea la `companies` interna de Monkey y el primer
+  `admin_monkey` (§11). En dev ya existen; el script es para staging y producción.
+- **Resto del catálogo:** sembrado lo que tiene fuente (§11), incluidas `control_dimensions` y `policies` (D39,
+  cierra P10), las regulaciones y `automated_capabilities`. Faltan los checks (11.352), las políticas SCA y los
+  mapeos, que no necesita el clonado (MD-80).
   La empresa interna **no es un cliente**: existe porque `users.company_id` es obligatorio; los
   listados de empresas de Monkey Admin deben excluirla.
-- **Resto del catálogo:** sembrado lo que tiene fuente (§11). Faltan `control_dimensions` y `policies` (sin
-  fuente: P10), y los checks (11.352), las políticas SCA, los mapeos y `automated_capabilities` (que no
-  necesita el clonado, MD-80). Las regulaciones ya las siembra el seed de arranque.
 - **`sslmode=require`** en las tres URLs contra el servidor remoto, y restringir el firewall del 5432.
 - **Rotar credenciales** antes de producción: la contraseña de `postgres`, `JWT_SECRET` y
   `WAZUH_API_PASSWORD` se pegaron en texto plano en chats de depuración.
@@ -272,14 +303,20 @@ REVOKE UPDATE, DELETE, TRUNCATE ON audit.audit_logs, audit.compliance_events FRO
 18 `rename_enum_types_to_snake_case` (D26) · 19 `schema_alignment_review` (D27, D28, D32, D33, D34) ·
 20 `rls_and_lookup_hardening` (D29, D31) · 21 `platform_sessions_activity_tracking` (`created_at` y
 `last_activity_at` en `sessions`, para la política de 30 min / 8 h) · 22 `catalog_seed_and_client_controls`
-(D35, D36, D38) · 23 `rls_catalog_seed_and_client_controls` (D36).
+(D35, D36, D38) · 23 `rls_catalog_seed_and_client_controls` (D36) ·
+24 `service_context_optional_fields_and_regulations` (D45) · 25 `asset_provisioning_schedule_frequency` (D46) ·
+26 `catalog_policies_as_templates` (D39) · 27 `audit_append_only_triggers` (D41) · 28 `company_frameworks` (D47).
+
+> **Orden por fecha, no por número:** la 25 (`20261001120000`) quedó **antes** de la 26 y la 27 (`20261001180000` y
+> `20261001190000`) aunque se escribió en paralelo; ninguna depende de la otra. Prisma las aplica por nombre. Se
+> comprobó que la cadena completa se aplica limpia sobre una base vacía (D42, regla 6).
 
 
 La 17 quedó reemplazada en parte por la 20 (`find_login_candidates` se recrea con más columnas).
 
 ## 11. Siembra del catálogo maestro de SOC 2
 
-Código, comandos y garantías: `Backend/prisma/seed/README.md`. Por qué se hizo así: D35 y D38.
+Código, comandos y garantías: `Backend/prisma/seed/README.md`. Por qué se hizo así: D35, D38 y D39.
 
 Excel → JSON versionado (con el sha256 del Excel) → una transacción que **solo inserta lo que falta**,
 aborta con diff si una fila existente difiere y no borra nada → `verify` (solo lectura). Cifras (medidas, D38): 1 marco · 5 criterios ·
@@ -288,6 +325,64 @@ relaciones riesgo↔causa · 209 aristas causa→control · 61 pruebas · 284 as
 plantillas de evidencia · 89 vínculos · 1 versión = **2.069 filas**. `requirement_relations` queda vacía (las hojas
 no traen fuente).
 
+**Dimensiones y políticas (D39, cierra P10):** al mismo pipeline se suman 210 dimensiones por control (derivadas de
+las pruebas: aplica si hay una prueba de esa dimensión; el tipo y las banderas salen del tipo de la prueba), 10
+políticas (plantillas, solo el nombre) y 16 vínculos = **+236 filas, 2.305 en total**. `policies` pierde
+`approval_status`, `valid_until` y `version`: son del cliente.
+
+**Catálogos de referencia** (`npm run reference:load` / `reference:verify`, datos en `prisma/seed/reference/data.ts`):
+las 14 regulaciones (MD-75) y las 6 capacidades `ac_01…ac_06` (MD-83), con `provider` interno y confidencial. Las
+listas de opciones del Componente 1 (tamaño, industria, modelo de negocio…) **no se siembran: son enums de
+Postgres**, no tablas.
+
+**Primer `admin_monkey`** (`npm run bootstrap:admin`): el correo, el nombre y la contraseña llegan por variables de
+entorno (`BOOTSTRAP_ADMIN_*`), nunca por argumento; la contraseña cumple §5.3 y se guarda con bcrypt. Idempotente: si
+ya hay un `admin_monkey` no hace nada.
+
 Contra un servidor real: `pg_dump` antes, rol dueño (nunca `monkey_app`), dry-run primero y leer el destino
 que imprime (el `.env` local apunta a dev), `--apply`, `verify`. Cambiar el catálogo no es recargar: es una
 versión nueva (A4/D33).
+
+## 12. El clonado del catálogo (MD-80)
+
+Código: `Backend/src/features/onboarding/` — la regla pura en `domain/clone-plan.ts` (con sus pruebas) y
+`application/clone-catalog.service.ts`, que lee, pide el plan y escribe. Reglas y por qué: D40.
+
+`CloneCatalogService.cloneForServiceFramework(tx, serviceFrameworkId)` **recibe el cliente transaccional** y debe
+llamarse en la misma transacción que crea la fila de `service_frameworks`, con `app.tenant_id` ya fijado (RLS). El
+endpoint del Componente 2 (MD-77) lo llama; hoy no hay controlador.
+
+`npm run clone:verify` lo comprueba contra la base real con el catálogo sembrado, **dentro de una transacción que se
+revierte** (incluye una corrida con `SET LOCAL ROLE monkey_app` bajo RLS). No es una prueba de jest: el cliente de
+Prisma 7 es ESM y el jest del repo es CommonJS.
+
+> ⚠️ Prisma 7 con `@map`: el enum `ExpectedAvailability` tiene el miembro `h24x7` con valor `24x7`; el tipo generado
+> pide `"24x7"` pero el cliente en runtime espera el nombre del miembro (`h24x7`). Tenerlo presente al construir MD-77.
+
+## 13. Primer arranque de staging y migración automática (MD-91)
+
+`postgres-staging` (imagen `postgres:17.10`, red `proxy_net`, sin puertos expuestos) se creó con la base `monkey` **vacía**
+y solo el rol `postgres`: sin schemas, sin tablas y sin el rol `monkey_app`. Hasta que se prepare, el backend desplegado
+no puede arrancar (queda en bucle de reinicios).
+
+**Qué se probó** (contra un Postgres 17 desechable, con la misma imagen de herramientas, y luego se borró todo): desde una
+base vacía las migraciones se aplican completas; con una migración mala el script **falla, deja el respaldo y avisa**, y
+una migración fallida bloquea los deploys hasta resolverla; el respaldo se restaura y trae los datos; el arranque
+completo (rol, catálogo, referencia, `admin_monkey`) deja las comprobaciones `catalog:verify`, `reference:verify`,
+`clone:verify` y `audit:verify` en verde con el rol `monkey_app`. **No se probó en la VPS ni en GitHub Actions.**
+
+**Una sola vez, para dejar staging listo** (en la VPS, desde `~/monkey-dev/backend`; las claves se piden por variable, no
+se escriben en el historial):
+
+1. **Secret de GitHub `MIGRATE_DATABASE_URL`** = `postgresql://postgres:<clave>@postgres-staging:5432/monkey` (la clave sin
+   caracteres especiales, o codificada como URL; sin `?sslmode=require`: es la red interna de Docker). Con `gh`:
+   `gh secret set MIGRATE_DATABASE_URL -R Monkey-GRC/Backend`.
+2. **El primer deploy a `develop` con el paso de migración.** Crea los schemas y el rol `monkey_app`, que nace **sin
+   contraseña**. El backend sigue reiniciando hasta el paso siguiente.
+3. **`bash scripts/deploy/bootstrap-staging.sh`** en la VPS (desde `~/monkey-dev/backend`), **una sola vez**. Pide las
+   claves sin mostrarlas y hace: contraseña de `monkey_app`, catálogo de SOC 2 y de referencia, primer `admin_monkey` y
+   verificación con `monkey_app`. Las claves solo pueden llevar letras, números y `. _ ~ -`. Es repetible. Probado contra
+   un Postgres desechable. Al final imprime la línea `APP_DATABASE_URL` que debe ir en el secret `ENV_FILE`.
+4. **Actualizar `ENV_FILE`** (base64, en una sola línea) con esa `APP_DATABASE_URL` y **redesplegar el backend**.
+
+Desde ahí, cada push a `develop` migra solo. Los respaldos previos quedan en `~/backups/monkey/` (últimos 14).

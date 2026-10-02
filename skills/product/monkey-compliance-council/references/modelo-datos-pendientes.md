@@ -13,6 +13,7 @@ Cerradas hasta hoy:
 | | Pregunta | Cerrada |
 |---|---|---|
 | **P1** | Cumplimiento fuera del onboarding | 2026-09-26 — el comité confirmó D23: el onboarding se queda en 3 componentes |
+| **P10** | Origen de `control_dimensions` y qué es `policies` | 2026-10-01 — cerrada por desarrollo en D39: la dimensión aplica si el control tiene una prueba de ella; `policies` es una plantilla. **Falta ratificar con el comité el tipo y las banderas derivados**; no bloquea nada |
 | **P4** | `responsible_id` sin catálogo de cargos | 2026-09-29 — cerrada por desarrollo en D30: el cargo es `organization_responsibles`. **Falta ratificarla con el comité**; no bloquea nada |
 
 ## P2 · El flujo de la clave de acceso — 5 detalles sin definir
@@ -54,7 +55,8 @@ recomendación planteada (no decidida) es **no alojarlo en el mismo servidor que
 la VPS actual ni una nueva compartida—: superficie de ataque compartida con n8n y minio, contención
 de recursos y, sobre todo, backups y recuperación (un servicio administrado tipo RDS los trae; auto-
 alojado hay que operarlos). Alternativa: un servidor separado, dedicado solo a la base. No afecta al
-modelo (RLS, 4 schemas, roles).
+modelo (RLS, 4 schemas, roles). **Sí condiciona la retención de 7 años del audit trail (D41):** los respaldos que
+la sostienen dependen de dónde viva el Postgres.
 
 ## P8 · ¿Un control que crea el cliente cuenta para el marco?
 
@@ -82,20 +84,6 @@ Dos inconsistencias **dentro del propio archivo del comité**, que el seed carga
   de las 92 relaciones riesgo↔causa. ¿A qué riesgo(s) pertenecen o se descartan?
 
 **Qué depende:** la dimensión Aplicación del cálculo (§2, §9) y qué causas ve el cliente al clonar (§7.2).
-
-## P10 · De dónde salen el tipo y las banderas de `control_dimensions`, y qué es `policies`
-
-- **`control_dimensions`** exige por cada dimensión de un control su `type` (`manual|automated|hybrid|technical_manual`),
-  `requires_probe`, `requires_ai` y `requires_compliance_confirmation` (el *gate* humano de §2). **El Excel no los
-  trae** y no se sembró. Sin ellos no se puede clonar `client_control_dimensions` ni aplicar el gate. Propuesta:
-  una dimensión aplica a un control si tiene al menos una prueba de esa dimensión (derivable de *Pruebas*); falta
-  que el comité diga cómo se fijan el tipo y las banderas.
-- **`policies`** (catálogo) lleva `approval_status`, `valid_until` y `version`, pero la aprobación de una política
-  es un estado **del cliente**, no de una plantilla global. El Excel solo trae 16 vínculos control↔política (10
-  políticas distintas, con la nota *"el control depende de la aprobación de la política"*). ¿Son plantillas
-  (solo nombre) y la aprobación vive en la evidencia del cliente?
-
-**Qué depende:** el clonado de dimensiones (MD-80) y el gate de confirmación humana.
 
 ## P11 · El nombre del proveedor en los textos de las pruebas
 
