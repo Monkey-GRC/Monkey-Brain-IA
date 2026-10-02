@@ -115,9 +115,10 @@ catálogo, filtro global de excepciones, `ValidationException`, paginación, dec
   (`ConnectionProbe`) con adaptadores `simulated` (solo dev/demostración) y `unavailable` (por defecto),
   elegidos por `PROBE_MODE`: no hay conectores reales y no se finge ninguna conexión. El proveedor del motor
   **nunca** sale. Decisiones en D46; parches en `deuda-tecnica.md`.
-- Seed de arranque: `prisma/seed/seed.ts` (`npx prisma db seed`) crea la empresa interna de Monkey
-  y el primer `admin_monkey` desde las variables `SEED_*` del `.env`, y siembra las 14 regulaciones
-  del catálogo (idempotente).
+- Siembra (una sola vía, la de Héctor): `npm run bootstrap:admin` crea la empresa interna de Monkey y el
+  primer `admin_monkey` desde las variables `BOOTSTRAP_*` del `.env`; `npm run reference:load` carga las
+  14 regulaciones y las 6 capacidades automatizadas (idempotente; `reference:verify` solo compara); el
+  catálogo SOC 2 con `catalog:load`. Ya no existe `prisma db seed`.
 
 ## Convenciones clave
 
