@@ -712,3 +712,30 @@ protegida por `REVOKE`; queda como siguiente candidato a la misma garantía.
 
 **Fuente:** `modelo-datos.md` §5.3 y §7.4 (SOC 2 Type II). Decisión de Héctor, 2026-10-01. Implementación:
 `Backend/prisma/migrations/20261001190000_audit_append_only_triggers` y `npm run audit:verify`.
+
+---
+
+## D42 · Cómo viaja una migración a staging (MD-91)
+
+**Decisión:**
+1. **El deploy migra solo, antes de levantar el backend**, con `prisma migrate deploy` en un contenedor desechable
+   construido de la etapa `build` del Dockerfile. La imagen de runtime **no** lleva el CLI de Prisma ni credenciales de
+   dueño.
+2. **El rol dueño llega solo a ese paso** (secret `MIGRATE_DATABASE_URL`); el `.env` del backend sigue con `APP_DATABASE_URL`
+   (rol `monkey_app`, sujeto a RLS).
+3. **Respaldo con `pg_dump` antes de cada migración** si la base ya tiene datos, verificado (no vacío y legible), con las
+   últimas 14 copias en `~/backups/monkey/`.
+4. **Si falla, el deploy se aborta** y el backend anterior sigue corriendo.
+5. **No hay "deshacer": se corrige hacia adelante**; si hubo pérdida de datos, se restaura el respaldo. Una migración
+   aplicada nunca se edita.
+6. **Una migración nueva lleva fecha posterior a la última de `develop`**, y **la base compartida de dev solo se migra desde
+   `develop`**, no desde ramas.
+
+**Por qué:** el workflow no migraba y la base de staging nació vacía; hacerlo a mano en cada deploy es justo lo que se
+olvida. Separar el rol dueño del runtime evita que un fallo de la app tenga permisos para cambiar el esquema. La regla 6
+sale de un síntoma real: la base de dev tenía 3 migraciones aplicadas que el repo no tiene.
+
+**Falta acordar con Carlos** la regla 6 (hoy los dos aplican migraciones en la base compartida desde sus ramas).
+
+**Fuente:** decisión de Héctor, 2026-10-01. Implementación: `Backend/scripts/deploy/migrate.sh`,
+`Backend/.github/workflows/deploy-dev.yml`; procedimiento y primer arranque: `schema-implementacion.md` §7, §8 y §13.
