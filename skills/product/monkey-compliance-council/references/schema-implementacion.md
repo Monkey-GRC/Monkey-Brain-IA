@@ -55,6 +55,9 @@ ponerla en `platform` crearía una dependencia circular al migrar), y `schedule_
 `prisma@7.2.0` y `@prisma/client@7.2.0` con `@prisma/adapter-pg`.
 
 - `multiSchema` es GA: no va en `previewFeatures`.
+- **El generador debe llevar `moduleFormat = "cjs"`.** `provider = "prisma-client"` emite por defecto un cliente ESM
+  (`import.meta`) y Nest compila a CommonJS: sin esa opción el backend desplegado termina al arrancar
+  (`Cannot use 'import.meta' outside a module`) y queda en `Restarting`. Se encontró en staging el 2026-10-01.
 - **La `url` vive en `prisma.config.ts`**, no en `schema.prisma`; ahí el `datasource` solo lleva
   `provider` y `schemas`.
 - **No hay campo `adapter` en `prisma.config.ts`.** El CLI se conecta directo con `datasource.url`.
