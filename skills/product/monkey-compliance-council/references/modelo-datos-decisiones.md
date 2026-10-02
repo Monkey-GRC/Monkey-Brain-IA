@@ -826,7 +826,12 @@ schema contradecía:
    pregunta abierta "regulación a nivel de servicio": el request del contrato ya traía
    `regulation_codes` y no tenía dónde persistir. No se puntúa (D10).
 
-**Reglas del clonado** (lo que MD-80 / D36 dejaban sin precisar):
+**Reglas del clonado** (lo que MD-80 / D36 dejaban sin precisar). **Superadas por D40** (Héctor, el
+motor `CloneCatalogService`, que es el que corre): al fusionar `develop` se adoptó su versión. Lo que
+cambia frente a lo escrito aquí: `source_ref` es `vanta:<código>`; las dimensiones y los vínculos con
+pruebas **sí se clonan** (D39 sembró `control_dimensions`, ya no hay controles todos `manual`); con
+solo `security` salen 79 controles. Se conservan de esta decisión la idempotencia, el no pisar y la
+transacción única (puntos 8 y 9):
 
 4. **Qué controles se clonan:** los ligados, por punto de enfoque, a requisitos del marco **cuyo criterio
    de confianza contrató el servicio** (contratar solo `security` no trae los de privacidad). Es lo que

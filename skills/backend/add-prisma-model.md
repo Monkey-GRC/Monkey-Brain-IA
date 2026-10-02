@@ -44,7 +44,7 @@ Los antiguos `prisma/central/` y `prisma/tenant/` (una base por cliente) **ya no
    falla). Toda tabla nueva de `tenant`/`platform` necesita su política RLS; toda tabla nueva de
    `catalog`, las cuatro políticas de lectura/escritura (`schema-implementacion.md` §5).
 5. `npm run prisma:generate` si el paso anterior no regeneró el cliente (`generated/prisma`).
-6. Datos iniciales: `prisma/seed/seed.ts` (`npx prisma db seed`), con los valores sensibles desde
+6. Datos iniciales: `prisma/seed/seed-reference.ts` (`npm run reference:load`) para catálogos de referencia y `bootstrap-admin.ts` para el primer administrador, con los valores sensibles desde
    el `.env`, nunca en git.
 7. Staging y producción aplican con `npx prisma migrate deploy`, nunca `migrate dev`.
 

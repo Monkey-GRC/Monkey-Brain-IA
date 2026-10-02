@@ -205,7 +205,7 @@ Implementado en `Backend/src/features/onboarding` y `catalogs`, y en
   (`regulation.none_exclusive`). `eu` no vale como país de constitución.
 - **Auditoría:** cada guardado escribe `organizational_context.save` en `audit_logs` con el estado
   antes (`null` la primera vez) y después (CC9.2).
-- **Seed:** `catalog.regulations` se siembra con `npx prisma db seed` (14 filas, idempotente).
+- **Seed:** `catalog.regulations` se siembra con `npm run reference:load` (14 filas, idempotente).
 - **Etiquetas:** `i18n/{es,en}/catalogs.json`. Las de español son las del Excel; **las de inglés las
   tradujo desarrollo** (el Excel solo las trae en español, salvo `size`) y quedan pendientes de revisión
   del comité. Platform todavía no tiene i18n instalada: hoy el cliente ve todo en español.
