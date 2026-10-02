@@ -1116,6 +1116,11 @@ de i18n, no del enum — la tabla de correspondencia está en `contracts/enums.m
 **`regulations` es tabla propia y no se puntúa** (decisión D10): nadie "contrata" la Ley
 1581, pero sí determina qué le aplica. No entra al cálculo de cumplimiento.
 
+> **Actualizado por D43:** el **cliente** sigue sin elegir un marco a nivel de empresa (no hay tal pregunta en
+> este Componente 1), pero **Monkey Admin sí contrata el marco para la empresa al registrarla**
+> (`platform.company_frameworks`, hoy solo SOC 2) y, al declarar un servicio, el cliente solo puede elegir
+> entre los marcos que su empresa tiene contratados. Lo que dice el párrafo siguiente es la versión anterior.
+>
 > **Se vetó a propósito el campo "framework que desea gestionar" a nivel de empresa.** Los
 > marcos se contratan **por servicio** — cada servicio puede perseguir uno distinto y no
 > existe un framework "de la empresa". Esa pregunta vive en el Componente 2.

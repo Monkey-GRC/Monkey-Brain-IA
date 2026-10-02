@@ -729,7 +729,7 @@ schema contradecía:
     impone, la aplicación sí.
 12. **`DELETE` con historia:** además de evaluaciones, bloquean la eliminación las **evidencias entregadas
     y los planes de acción** (todo trabajo del cliente). `409 SERVICE_HAS_EVALUATIONS`.
-13. **`FRAMEWORK_NOT_CONTRACTED` no se usa:** no existe una contratación de marcos a nivel de empresa en el
+13. **(Superado por D43: `FRAMEWORK_NOT_CONTRACTED` ya se usa.)** **`FRAMEWORK_NOT_CONTRACTED` no se usa:** no existe una contratación de marcos a nivel de empresa en el
     modelo (los marcos se contratan por servicio, §6.1). Un código que no esté en `catalog.frameworks`
     responde 422 (`enum.invalid`); hoy solo existe `soc2` (D37).
 14. **`PUT csocs` / `PUT cuecs` no se construyeron:** salen de las secciones 7 y 8 de la Descripción del
@@ -813,6 +813,47 @@ log, texto de i18n, archivo de `src/` ni bundle de la aplicación. El tipo `Capa
 **Por qué:** el brain define el flujo y los endpoints pero no estas decisiones de detalle, y la aplicación va
 a clientes reales: en vez de dejar el sprint detenido —o de fingir conexiones que no existen— se tomó el camino
 más honesto y seguro, y se deja aquí para revisión.
+
+**Fuente:** confirmación de Carlos, 2026-10-01.
+
+---
+
+## D43 · El marco se contrata al registrar la empresa (revierte el veto de §6.1)
+
+**Decisión** (Carlos, 2026-10-01; **pendiente de ratificar con el comité**). **Monkey Admin contrata el marco
+para la empresa al registrarla** —hoy solo SOC 2 (D37), fijo y bloqueado en el formulario— y, al declarar un
+servicio, el cliente solo puede elegir entre los marcos que su empresa tiene contratados (también fijo: SOC 2).
+
+**Qué cambia respecto a lo anterior:** `modelo-datos.md` §6.1 decía *«se vetó a propósito el framework a nivel de
+empresa; los marcos se contratan por servicio»*. Ese veto era sobre que **el cliente** lo eligiera en su Componente
+1, y sigue en pie. Lo que se añade es una capa **comercial** anterior: quién vende el marco es Monkey Admin, y el
+servicio solo **elige** entre lo vendido. El contrato del Componente 2 ya traía un error `FRAMEWORK_NOT_CONTRACTED`
+que apuntaba a esto y que D41 había dejado sin uso.
+
+**Cómo quedó:**
+
+1. **`platform.company_frameworks`** (migración 26): `company_id`, `framework_id` (la versión vigente), `contracted_by`
+   (el `admin_monkey` que lo contrató), `contracted_at`; único `(company_id, framework_id)`.
+2. **RLS:** la empresa **lee** lo suyo y `admin_monkey` lee todo; **solo `admin_monkey` escribe**. Un cliente no puede
+   contratarse un marco ni con acceso directo a la base (probado como `monkey_app`).
+3. **`POST /v1/companies`** acepta `framework_codes` (opcional, por defecto `["soc2"]`); empresa, clave y contrato
+   se crean en **la misma transacción**. Un código fuera del catálogo → `422`. Las respuestas del registro, del listado
+   y del detalle traen `frameworks`.
+4. **`POST` / `PATCH /v1/services`**: un marco no contratado → `409 FRAMEWORK_NOT_CONTRACTED`. Editar otros campos de un
+   servicio no se bloquea.
+5. **`GET /v1/catalogs/contracted-frameworks`** (solo `admin_empresa`): lo que el cliente puede elegir. Una empresa sin
+   contrato recibe una lista vacía y la pantalla se lo explica.
+6. **Pantallas:** Monkey Admin muestra «Marco contratado: SOC 2 (fijo por ahora)» en el registro y el marco de cada
+   empresa en el listado; Monkey Platform muestra SOC 2 como tarjeta fija «incluido en tu contrato».
+7. **`service_frameworks` no cambia:** sigue guardando qué marco persigue cada servicio, con su versión de catálogo y su
+   periodo de evaluación (A4).
+
+**Deja abierto** (en `deuda-tecnica.md`): no hay forma de contratar o cancelar un marco después del registro (DT-26) y el
+contrato no guarda condiciones comerciales (DT-27). Las empresas que existían antes de la migración no tienen contrato; en
+desarrollo no había ninguna.
+
+**Por qué:** con un solo marco hoy el cambio es pequeño, pero fija el orden correcto para cuando haya más (ISO 27001,
+PCI DSS, HIPAA en la Fase 1): lo que un cliente puede declarar lo decide lo que Monkey le vendió, no un campo libre.
 
 **Fuente:** confirmación de Carlos, 2026-10-01.
 

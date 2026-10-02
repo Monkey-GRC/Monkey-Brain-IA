@@ -52,8 +52,9 @@ original pero **no está en este repo** — ver `modelo-datos.md` §0.)
 
 Una vez por empresa. Diez campos → `organizations`. **El campo "nombre / razón social"
 llega precargado y bloqueado**: ya se fijó en el registro del tenant (paso 1) y no se
-puede editar aquí. Se vetó a propósito la pregunta de "framework a nivel de empresa": el
-framework se elige por servicio, no aquí.
+puede editar aquí. El **cliente** no elige framework a nivel de empresa en este componente: **Monkey Admin
+contrata el marco al registrar la empresa** (paso 1, D43) y el cliente lo elige, entre los contratados, al
+declarar su servicio (Componente 2).
 
 **Entidad:** `organizations`.
 **Fuente:** `modulos/onboarding.md`, Componente 1.

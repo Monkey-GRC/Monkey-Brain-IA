@@ -191,7 +191,7 @@ No se puntúan ni entran al cálculo: se transcriben para el informe.
 |---|---|---|
 | 409 | `ORGANIZATION_NOT_DECLARED` | Se declara un servicio antes del Componente 1 |
 | 409 | `SERVICE_NAME_TAKEN` | Ya existe un servicio con ese nombre en la organización |
-| 409 | `FRAMEWORK_NOT_CONTRACTED` | Se eligió un marco que la empresa no tiene contratado |
+| 409 | `FRAMEWORK_NOT_CONTRACTED` | Se eligió un marco que Monkey Admin no contrató para la empresa (`platform.company_frameworks`, D43) |
 | 409 | `SERVICE_HAS_EVALUATIONS` | `DELETE` sobre un servicio ya evaluado |
 | 413 | `FILE_TOO_LARGE` | La Descripción del Sistema pasa de 25 MB |
 | 415 | `UNSUPPORTED_MEDIA_TYPE` | Tipo de archivo no permitido |
@@ -248,8 +248,10 @@ Implementado en `Backend/src/features/services` (más `catalogs` y el progreso d
   (`array.min`) o repetidas (`array.unique`), «Ninguna» con otras (`regulation.none_exclusive`), enlace
   inválido (`url.invalid`), marco que no existe (`framework_codes: enum.invalid`).
   `ORGANIZATION_NOT_DECLARED` si falta el Componente 1; `SERVICE_NAME_TAKEN` por nombre repetido en la
-  empresa (sin importar mayúsculas). `FRAMEWORK_NOT_CONTRACTED` y `TRUST_CRITERION_REQUIRED` no se usan:
-  no hay contratación de marcos a nivel de empresa y el servidor añade `security` en vez de rechazar.
+  empresa (sin importar mayúsculas). `FRAMEWORK_NOT_CONTRACTED` **sí se usa desde D43**: el marco debe estar
+  entre los que Monkey Admin contrató para la empresa (también en `PATCH`), y el cliente los lista con
+  `GET /v1/catalogs/contracted-frameworks`. `TRUST_CRITERION_REQUIRED` no se usa: el servidor añade `security`
+  en vez de rechazar.
 - **Auditoría:** `service.create`, `service.update`, `service.system_description` y `service.delete` en
   `audit_logs`, con el estado antes y después (CC9.2).
 - **Progreso:** `GET /v1/auth/me` añade `service_context` a `onboarding.completed_steps` cuando hay al

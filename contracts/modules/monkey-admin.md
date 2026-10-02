@@ -16,13 +16,18 @@ sobre, los errores y la paginación.
 
 ## Campos del registro
 
-El comité fija **3 campos**, no más (`modelo-datos.md` §4.2).
+El comité fija **3 campos** (`modelo-datos.md` §4.2) y **D43 añade el marco que se contrata**.
 
 | Campo | Tipo | Oblig. | Enum | Destino |
 |---|---|---|---|---|
 | `name` | string | sí | — | `companies.name` — razón social. Se fija aquí y llega bloqueada al Componente 1 |
 | `requires_dedicated_database` | boolean | sí | — | deriva `companies.isolation_strategy` |
 | `admin_email` | string (email) | sí | — | `companies.admin_email` |
+| `framework_codes` | array&lt;string&gt; | **no** (por defecto `["soc2"]`) | `framework` (1 valor en el MVP: `soc2`) | `platform.company_frameworks` — los marcos que se contratan para la empresa (D43) |
+
+`framework_codes` va fijo en `soc2` por ahora (D37): Monkey Admin lo muestra bloqueado. Un código que no esté
+en `catalog.frameworks` → `422`. Al declarar un servicio, el cliente solo puede elegir entre los marcos que su
+empresa tiene contratados (`409 FRAMEWORK_NOT_CONTRACTED`, ver `onboarding-service-context.md`).
 
 `requires_dedicated_database: true` → `isolation_strategy: "dedicated"`; `false` → `"shared"`.
 El booleano es lo que ve `admin_monkey`; el enum es lo que se guarda.
@@ -33,7 +38,8 @@ El booleano es lo que ve `admin_monkey`; el enum es lo que se guarda.
 {
   "name": "Next Audit & Consulting S.A.S.",
   "requires_dedicated_database": false,
-  "admin_email": "contacto@ejemplo.com"
+  "admin_email": "contacto@ejemplo.com",
+  "framework_codes": ["soc2"]
 }
 ```
 
@@ -50,6 +56,7 @@ hash.
     "admin_email": "contacto@ejemplo.com",
     "isolation_strategy": "shared",
     "status": "active",
+    "frameworks": [{ "code": "soc2", "name": "SOC 2", "contracted_at": "2026-09-28" }],
     "created_at": "2026-09-28T15:04:02Z",
     "updated_at": "2026-09-28T15:04:02Z",
     "access_key": {
@@ -90,6 +97,7 @@ GET /v1/companies?page=1&page_size=25&sort=-created_at&status=active
         "admin_email": "contacto@ejemplo.com",
         "isolation_strategy": "shared",
         "status": "active",
+        "frameworks": [{ "code": "soc2", "name": "SOC 2", "contracted_at": "2026-09-28" }],
         "access_key_status": "pending",
         "access_key_expires_at": "2026-10-05T15:04:02Z",
         "onboarding_completed": false,
@@ -175,7 +183,7 @@ Implementado en `Backend/src/features/companies` y `Frontend/src/app/features/co
 
 | Endpoint | Estado |
 |---|---|
-| `POST /v1/companies` | ✅ Solo el caso `shared`. Empresa y clave en la misma transacción; la clave se muestra una vez en un diálogo de Monkey Admin |
+| `POST /v1/companies` | ✅ Solo el caso `shared`. Empresa, clave **y marcos contratados** en la misma transacción (D43); la clave se muestra una vez en un diálogo de Monkey Admin. El formulario muestra SOC 2 **fijo y bloqueado** |
 | `GET /v1/companies` | ✅ Paginado, `sort` = `created_at`/`name` (± ), filtro `status`. **Excluye la empresa interna de Monkey** (la del `admin_monkey`), que no es un cliente |
 | `GET /v1/companies/{id}` | ✅ Con historial de claves. La empresa interna responde `404` |
 | `PATCH /v1/companies/{id}` | ❌ Espera a P2(c) |

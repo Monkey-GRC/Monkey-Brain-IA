@@ -93,7 +93,7 @@ catálogo, filtro global de excepciones, `ValidationException`, paginación, dec
   el `admin_email`), que crea el `admin_empresa` y abre sesión; login y canje comparten
   `SessionIssuer`. Falta el bloque `onboarding` de `me` (llega con MD-74).
 - `companies`: registro de empresas de Monkey Admin (`contracts/modules/monkey-admin.md`),
-  solo `admin_monkey`. `POST /v1/companies` (empresa + clave `MNK-XXXX-XXXX-XXXX` de un solo uso,
+  solo `admin_monkey`. `POST /v1/companies` (empresa + **marcos contratados**, hoy SOC 2 fijo, D43 + clave `MNK-XXXX-XXXX-XXXX` de un solo uso,
   guardada como HMAC), `GET /v1/companies` (paginado, sin la empresa interna de Monkey) y
   `GET /v1/companies/{id}`. `PATCH` y la regeneración de clave esperan a P2(b)/(c).
 - `catalogs`: `GET /v1/catalogs/{name}` sirve las opciones de los formularios (con la etiqueta según
