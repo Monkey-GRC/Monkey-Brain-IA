@@ -160,6 +160,10 @@ GRANT SELECT, INSERT ON ALL TABLES IN SCHEMA audit TO monkey_app;   -- append-on
 REVOKE UPDATE, DELETE, TRUNCATE ON audit.audit_logs, audit.compliance_events FROM monkey_app;
 ```
 
+**Y para todos los roles, los triggers** `audit.reject_mutation()` (migración 24, D41): `UPDATE`, `DELETE` y `TRUNCATE` sobre
+las dos tablas de `audit` fallan también para el dueño. `npm run audit:verify` lo comprueba contra la base real, en una
+transacción que se revierte, con el rol dueño y con `monkey_app`.
+
 ## 6. Ubicaciones ambiguas del ER, resueltas
 
 - **`regulations`** → `catalog`: las mismas leyes para todos, sin columna de tenant. El puente
@@ -234,7 +238,7 @@ REVOKE UPDATE, DELETE, TRUNCATE ON audit.audit_logs, audit.compliance_events FRO
 14 `rls_policies_tenant_and_audit` · 15 `set_database_timezone_utc` ·
 16 `platform_add_company_id_to_sessions_and_assignments` · 17 `platform_rls_and_login_lookup` ·
 18 `rename_enum_types_to_snake_case` (D26) · 19 `schema_alignment_review` (D27, D28, D32, D33, D34) ·
-20 `rls_and_lookup_hardening` (D29, D31) · 21 `catalog_seed_and_client_controls` (D35, D36, D38) · 22 `rls_catalog_seed_and_client_controls` (D36) · 23 `catalog_policies_as_templates` (D39).
+20 `rls_and_lookup_hardening` (D29, D31) · 21 `catalog_seed_and_client_controls` (D35, D36, D38) · 22 `rls_catalog_seed_and_client_controls` (D36) · 23 `catalog_policies_as_templates` (D39) · 24 `audit_append_only_triggers` (D41).
 
 
 La 17 quedó reemplazada en parte por la 20 (`find_login_candidates` se recrea con más columnas).
