@@ -116,8 +116,8 @@ catálogo, filtro global de excepciones, `ValidationException`, paginación, dec
   elegidos por `PROBE_MODE`: no hay conectores reales y no se finge ninguna conexión. El proveedor del motor
   **nunca** sale. Decisiones en D46; parches en `deuda-tecnica.md`. **El paso 3 (conectar un activo) es
   provisional:** no coincide con cómo funciona la sonda real (D48, DT-31 a DT-36, pendiente P12).
-- Estado del código (2026-10-02): el Backend de la rama de onboarding ya está en `develop` (PR #15); los PR de
-  `Frontend` y `Frontend-Platform` siguen sin mergear. Una ráfaga de peticiones ya no falla con 500 (D49).
+- Estado del código (2026-10-02): la rama de onboarding ya está en `develop` en los tres repos (Backend PR #15,
+  Frontend PR #4, Frontend-Platform PR #7). Una ráfaga de peticiones ya no falla con 500 (D49).
 - Siembra (una sola vía, la de Héctor): `npm run bootstrap:admin` crea la empresa interna de Monkey y el
   primer `admin_monkey` desde las variables `BOOTSTRAP_*` del `.env`; `npm run reference:load` carga las
   14 regulaciones y las 6 capacidades automatizadas (idempotente; `reference:verify` solo compara); el
