@@ -106,6 +106,21 @@ ojo porque no se puede saber a qué se refieren.
 
 ---
 
+## P12 · Cómo se conecta Monkey a la sonda (paso 3 del control técnico)
+
+**Estado:** abierto desde 2026-10-02 (D48). Bloquea el rediseño del paso 3 (DT-31 a DT-36); no bloquea el resto del onboarding.
+
+Preguntas para Nelson, Bryan y el comité:
+
+1. **¿Quién instala los agentes?** ¿El cliente con un comando que entrega Monkey, o el equipo de la sonda?
+2. **¿Cómo se asigna cada cliente a su grupo** y quién impide que un agente se declare de otra empresa? (la clave de inscripción es global)
+3. **¿Cómo lee Monkey los resultados?** ¿Base de la sonda, API o ambas? ¿Con un usuario de solo lectura por grupo?
+4. **¿Quién configura la nube** (AWS/GCP/Azure) y con qué modelo (rol entre cuentas / federación de identidad)? Las integraciones de la sonda son de registros.
+5. **¿Qué se promete a un cliente con un sistema que no sea Ubuntu 22.04, Ubuntu 14.04 o Windows 11?** Hoy no hay pruebas para él.
+6. **¿Se autoriza la IP de desarrollo** en la API de la sonda para poder probar un adaptador real?
+
+---
+
 ## Cómo se cierra un pendiente
 
 1. El comité responde.

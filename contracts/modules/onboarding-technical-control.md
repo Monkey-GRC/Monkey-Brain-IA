@@ -87,6 +87,10 @@ Pendiente de reconciliar.
 
 ## Paso 3 — El flujo de conexión de un activo
 
+> **⚠ Provisional (D48).** Lo que sigue describe lo que está construido, hecho antes de verificar cómo funciona la sonda real.
+> El modelo real no entrega credenciales a Monkey (agente instalado por el cliente; Monkey lee la base/API del manager), de modo
+> que la forma de `credentials` y de `validate` va a cambiar. Ver D48, DT-31 a DT-36 y P12.
+
 Cuatro pasos: **conectar → validar → activar → programar**. Al menos uno completo de punta a
 punta es criterio de aceptación del sprint.
 
@@ -240,7 +244,8 @@ Todas las que había quedaron **cubiertas por desarrollo en D46**; lo que sigue 
 | **Valores de `assets.type`, `criticality`, `origin` y `status`** | ✅ Cerrados en `enums.md` (D34). El tipo ahora se **deduce de la conexión** (D46) |
 | **¿Qué es «híbrido»?** | ✅ Las seis conexiones (D46, DT-7) |
 | **Dónde guardar la frecuencia de `schedule`** | ✅ `asset_provisionings.schedule_frequency` (D46) |
-| **Qué credenciales pide cada conexión** | ◐ Definido por desarrollo (D46, DT-4); falta confirmarlo con el equipo de la sonda y definir cómo se entrega el agente |
+| **Qué credenciales pide cada conexión** | ❌ **Provisional y probablemente incorrecto** (D48, DT-31): en la sonda real Monkey no recibe credenciales del cliente, sino que lee lo que el agente ya reportó. Se rediseña cuando el comité responda **P12** (quién instala los agentes, cómo se asigna cada empresa a su grupo, cómo se conecta la nube) |
+| **Vínculo del activo con su agente, aislamiento entre empresas, cobertura de plataformas, nube** | ❌ Sin definir (DT-32 a DT-35, P12): hoy el activo no sabe qué agente es y solo hay pruebas para Ubuntu 22.04, Ubuntu 14.04 y Windows 11 |
 | **Las 18 capacidades de `technical_coverage`** | ❌ Sin definir (DT-2): hoy es una constante |
 
 ## Estado de implementación (2026-10-01)

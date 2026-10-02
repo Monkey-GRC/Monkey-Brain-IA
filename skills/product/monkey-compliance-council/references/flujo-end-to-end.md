@@ -88,6 +88,9 @@ porque son texto de un estándar y viven en la misma base (§3.5, D25).
 
 ## 6. Onboarding — Componente 3: Control Técnico
 
+> **Provisional (D48):** la parte de «conectar» no coincide con cómo funciona la sonda real (el cliente instala un agente y
+> Monkey lee lo que el agente reporta; no se entregan credenciales). Se rediseña al responder P12 (DT-31 a DT-36).
+
 El cliente conecta su infraestructura real. Elige escenario de despliegue, y por cada
 conexión del catálogo AC-01…AC-06 corre conectar → validar → activar → programar. El
 cliente nunca ve el nombre real del motor de monitoreo detrás ("sonda",

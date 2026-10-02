@@ -37,6 +37,17 @@ la cierra). Los ID (`DT-n`) no se reutilizan. Si una fila depende del comité, e
 | **DT-10** | 🟠 | **La UI promete «te avisaremos» cuando la evaluación automática esté disponible, y no existe ningún aviso** (ni correo ni notificación) | Mensaje honesto para el modo `unavailable` | Construir las notificaciones **o** reescribir el mensaje. No dejar la promesa sin mecanismo |
 | **DT-11** | 🟡 | **Sin editar ni eliminar un activo**; `GET /v1/assets/{id}` se añadió fuera del contrato | El contrato no los define | Módulo de Cumplimiento |
 
+## Paso 3 del control técnico: el modelo de conexión (D48)
+
+| ID | | Qué está parchado | Por qué | Qué lo cierra |
+|---|---|---|---|---|
+| **DT-31** | 🔴 | **El formulario de «Conectar mi primer sistema» pide credenciales que el modelo real no usa.** En la sonda real el cliente instala un agente y Monkey lee la base/API del manager; no hay rol de lectura, usuario de base ni llave SSH que entregar a Monkey | Se construyó antes de verificar la sonda (D46, DT-4) | Rediseñar el paso 3 (P12): sin credenciales, mostrar el comando de instalación del agente y el estado «esperando al agente» |
+| **DT-32** | 🔴 | **No hay vínculo activo ↔ agente.** `assets` no sabe qué agente de la sonda es, así que no hay forma real de «validar» una conexión ni de leer resultados | Depende de DT-31 | Campo o tabla de enlace y un adaptador real de `ConnectionProbe` que lea la sonda en **solo lectura** |
+| **DT-33** | 🔴 | **Aislamiento entre empresas sin imponer.** Clave de inscripción global y grupo autodeclarado por el agente: sin una regla de Monkey, un agente podría caer en otra empresa | Es una propiedad de la sonda, no de Monkey | Decidir con el equipo de la sonda cómo se asigna cada empresa a su grupo y validar la pertenencia al sincronizar |
+| **DT-34** | 🟠 | **Cobertura honesta de plataformas.** Hoy hay pruebas para Ubuntu 22.04, Ubuntu 14.04 y Windows 11; la pantalla ofrece más tipos de sistema | La UI nació del contrato, no de la cobertura | Mostrar qué sistemas tienen evaluación real y marcar el resto «próximamente» |
+| **DT-35** | 🟠 | **Conexión a la nube diferida.** El modelo de rol entre cuentas / federación de identidad sin contraseñas (como en AWS, GCP, Azure) no está decidido y las integraciones de la sonda son solo de registros | Decisión de arquitectura | Decidir el modelo con el comité; mientras tanto `ac_01` queda «próximamente» |
+| **DT-36** | 🟠 | **El `.env` de pruebas usa el superusuario de la base de la sonda y un usuario de API con permisos amplios** | Se puso para investigar | Pedir un usuario de base **solo lectura** y un rol de API de solo lectura por grupo; autorizar la IP de desarrollo en la API si se quiere probar |
+
 ## Componente 2 — Contexto del Servicio (D45)
 
 | ID | | Qué está parchado | Por qué | Qué lo cierra |

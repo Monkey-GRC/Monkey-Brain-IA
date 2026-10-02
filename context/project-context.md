@@ -106,15 +106,18 @@ catálogo, filtro global de excepciones, `ValidationException`, paginación, dec
   de `me`. Decisiones en D44.
 - `services`: Componente 2 (contexto del servicio): `POST/GET/PATCH/DELETE /v1/services` y
   `POST /v1/services/{id}/system-description` (solo enlace), solo `admin_empresa`. **Crear o ampliar un
-  servicio clona el catálogo del marco en la misma transacción** (`infrastructure/catalog-cloner.ts`):
-  controles con evidencias y vínculo a tests, y el set base de riesgos y causas; requisitos, puntos de
-  enfoque y tests se referencian. Cada servicio tiene su propia copia. Decisiones en D45.
+  servicio clona el catálogo del marco en la misma transacción** (`CloneCatalogService` en `features/onboarding`,
+  D40 de Héctor): controles con dimensiones, evidencias y vínculo a tests, y el set base de riesgos y causas;
+  requisitos, puntos de enfoque y tests se referencian. Cada servicio tiene su propia copia. Decisiones en D45.
 - `technical-control`: Componente 3 (control técnico): `PUT /v1/services/{id}/deployment-scenario` y
   `/scope`, `GET /v1/services/{id}/technical-control`, y `POST/GET /v1/assets` con `validate`, `activate` y
   `schedule`, solo `admin_empresa`. Credenciales cifradas (AES-256-GCM); la **sonda** es un puerto
   (`ConnectionProbe`) con adaptadores `simulated` (solo dev/demostración) y `unavailable` (por defecto),
   elegidos por `PROBE_MODE`: no hay conectores reales y no se finge ninguna conexión. El proveedor del motor
-  **nunca** sale. Decisiones en D46; parches en `deuda-tecnica.md`.
+  **nunca** sale. Decisiones en D46; parches en `deuda-tecnica.md`. **El paso 3 (conectar un activo) es
+  provisional:** no coincide con cómo funciona la sonda real (D48, DT-31 a DT-36, pendiente P12).
+- Estado del código (2026-10-02): el Backend de la rama de onboarding ya está en `develop` (PR #15); los PR de
+  `Frontend` y `Frontend-Platform` siguen sin mergear. Una ráfaga de peticiones ya no falla con 500 (D49).
 - Siembra (una sola vía, la de Héctor): `npm run bootstrap:admin` crea la empresa interna de Monkey y el
   primer `admin_monkey` desde las variables `BOOTSTRAP_*` del `.env`; `npm run reference:load` carga las
   14 regulaciones y las 6 capacidades automatizadas (idempotente; `reference:verify` solo compara); el

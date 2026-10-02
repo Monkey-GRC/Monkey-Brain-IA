@@ -885,7 +885,7 @@ revisión.
 
 **Decisiones** (Carlos, 2026-10-01; **pendientes de ratificar con el comité**; ninguna toca cómo se
 calcula el cumplimiento). Es el registro de cada hueco que `onboarding-technical-control.md` dejaba abierto
-y cómo se cubrió. Lo que sigue siendo un parche está en **`deuda-tecnica.md`** (DT-1 a DT-11).
+y cómo se cubrió. Lo que sigue siendo un parche está en **`deuda-tecnica.md`** (DT-1 a DT-36).
 
 **Cambios de schema** (migración 25, `asset_provisioning_schedule_frequency`, más el seed de las 6 capacidades):
 
@@ -987,5 +987,45 @@ desarrollo no había ninguna.
 PCI DSS, HIPAA en la Fase 1): lo que un cliente puede declarar lo decide lo que Monkey le vendió, no un campo libre.
 
 **Fuente:** confirmación de Carlos, 2026-10-01.
+
+---
+
+## D48 · Paso 3 del control técnico: lo verificado contra la sonda real y por qué el flujo actual es provisional
+
+**Qué se verificó** (Carlos y desarrollo, 2026-10-02, con el `.env` de pruebas y la documentación pública de la sonda):
+
+1. **Monkey no instala ni se conecta a los equipos del cliente.** El agente corre en el equipo del cliente, habla **hacia
+   afuera** con el manager (1514/1515) y las pruebas de configuración (SCA) corren **en el agente**. Lo que Monkey lee es lo que
+   el manager ya tiene: su base y su API. La base de referencia del repo (`prueba_wazuh`: `cis_checks`, `cis_check_results`,
+   `wazuh_agents`) es el destino de esa sincronización; no tiene columna de empresa y guarda solo la última foto.
+2. **Las integraciones de AWS y Azure de la sonda son ingestión de registros**, no evaluación de la configuración de la cuenta.
+   No equivalen al modelo de Vanta (rol entre cuentas en AWS, federación de identidad en GCP, registro de aplicación en Azure,
+   sin contraseñas).
+3. **El aislamiento entre clientes no lo da la sonda.** La clave de inscripción es global y el agente puede declarar su propio
+   grupo: Monkey debe imponer que un agente solo se asocie a la empresa que lo inscribió. La API permite roles de solo lectura
+   por grupo.
+4. **Cobertura real de plataformas hoy:** 3 políticas (Ubuntu 22.04, Ubuntu 14.04, Windows 11). Cualquier otro sistema no tiene
+   pruebas de configuración.
+5. Desde la máquina de desarrollo la API de la sonda no respondió (todos los puertos): probable lista de IP permitidas. No se
+   envió ninguna credencial.
+
+**Consecuencia:** el formulario actual del paso 3 (credenciales por conexión: rol de lectura, usuario de base, llave SSH) lo
+definió desarrollo (D46, DT-4) **antes** de esta verificación y **no coincide** con el modelo real. Se deja como está y se
+declara provisional; no se promete a ningún cliente. Qué cambia y en qué orden queda como pendiente del comité (**P12**) y como
+deuda (**DT-31 a DT-36**).
+
+**Por qué no se cambió ya:** rediseñarlo sin saber quién instala los agentes, cómo se asigna cada cliente a su grupo y quién
+configura la nube sería inventar; el brain manda y ante un vacío se pregunta.
+
+---
+
+## D49 · Las peticiones esperan hasta 10 s por una conexión del pool
+
+`PrismaService.withScope` fija `maxWait` en 10 s (antes 2 s por defecto). Con la base remota a ~200 ms por consulta, una ráfaga
+de peticiones paralelas agotaba la espera y el cliente recibía `500 INTERNAL_ERROR` («Unable to start a transaction in the
+given time») aunque la base estuviera sana; ocurría hasta en los endpoints públicos de catálogos. Ahora se encolan. No cambia el
+límite de duración de la transacción (`timeoutMs`).
+
+**Fuente:** hallazgo de las pruebas de navegador, 2026-10-02.
 
 ---
