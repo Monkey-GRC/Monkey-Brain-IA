@@ -191,8 +191,31 @@ transacción que se revierte, con el rol dueño y con `monkey_app`.
 - **`contracts/enums.md`** manda sobre `modelo-datos.md` en los valores de enum.
 - **Enums:** el estado y su cierre están en `contracts/enums.md` y en D34. Lo único abierto es la
   lista completa de `business_model` (P6).
+- **Una migración nueva tiene fecha posterior a la última de `develop`.** Antes de abrir el PR, `git pull` de
+  `develop`: si trae migraciones más nuevas que la tuya, renombra la carpeta de la tuya a una fecha posterior (solo
+  si nadie la aplicó todavía fuera de tu máquina).
+- **Dos personas migrando el mismo día no chocan por el nombre** (llevan la hora), sino por el contenido: si las dos
+  tocan la misma tabla, quien mergea segundo **rehace su migración** sobre el schema ya actualizado (borra su
+  carpeta, `prisma migrate dev` otra vez) en lugar de editar la del otro.
+- **La base compartida de dev solo se migra desde `develop`** (después del merge), no desde una rama. Una rama se
+  prueba con un Postgres local. Si una rama aplica su migración en la base compartida y luego cambia, la base queda
+  con migraciones que el repo no tiene y `migrate dev` de los demás empieza a fallar.
 - **Sin datos:** las migraciones de septiembre asumen tablas vacías (agregan columnas NOT NULL). Si
   un ambiente tiene filas, fallan sin dejar nada a medias: vaciar o escribir un backfill.
+
+### Reversa de una migración que salió mal
+
+Prisma **no tiene "deshacer"**: se corrige hacia adelante. Qué hacer según el caso (probado contra un Postgres
+desechable, ver §13):
+
+- **Falló al aplicarse en staging.** La migración corre atómica: no deja tablas a medias, queda marcada como fallida en
+  `_prisma_migrations` y **bloquea los deploys siguientes** (`P3009`). El deploy se aborta solo y el backend anterior
+  sigue corriendo. Se corrige: (1) arreglar el SQL en una migración **nueva**, o quitar la fallida del repo si no hace
+  falta; (2) en staging, `prisma migrate resolve --rolled-back <nombre_de_la_fallida>`; (3) volver a desplegar.
+- **Se aplicó bien pero hace daño** (borró o cambió algo que no debía). Primero **corregir hacia adelante** con una
+  migración nueva que lo repare. Si hubo pérdida de datos, **restaurar el respaldo previo** (el script lo guarda en
+  `~/backups/monkey/` antes de cada migración, últimas 14): `pg_restore` a una base nueva, comprobar y reemplazar.
+- **Nunca** editar una migración ya aplicada ni borrar filas de `_prisma_migrations` a mano.
 
 ## 8. Infraestructura y despliegue
 
@@ -210,14 +233,19 @@ transacción que se revierte, con el rol dueño y con `monkey_app`.
   corrompería.
 - **El `.env` de runtime** solo lleva `APP_DATABASE_URL` (no `DATABASE_URL`), más JWT, Wazuh, S3 y
   CORS cuando `auth` y los conectores lo usen.
+- **El deploy migra solo** (MD-91, D42): antes de levantar el backend nuevo, `backend/scripts/deploy/migrate.sh`
+  construye la etapa `build` del Dockerfile (trae el CLI de Prisma y tsx; la imagen de runtime no), **respalda** la
+  base con `pg_dump` y corre `prisma migrate deploy` en un contenedor desechable con el rol dueño. Ese rol llega por el
+  secret `MIGRATE_DATABASE_URL` y **solo existe en ese paso**: el `.env` del backend sigue llevando únicamente
+  `APP_DATABASE_URL`. Si algo falla, el deploy se aborta y el backend anterior sigue corriendo.
 - **`Dockerfile`:** `prisma.config.ts` exige `DATABASE_URL` al cargarse (con cualquier comando), así
   que el build define un placeholder antes de `prisma generate`. `SHADOW_DATABASE_URL` no hace falta.
 - **Staging aplica con `prisma migrate deploy`**, nunca `migrate dev`.
 
 ## 9. Lo que sigue pendiente (operativo, no del modelo)
 
-- **Paso de migración en el deploy:** el workflow no corre `migrate deploy`; hoy es manual. El
-  runtime instala con `--omit=dev`, no lleva el CLI de Prisma ni `DATABASE_URL`.
+- **Paso de migración en el deploy:** resuelto en MD-91 (§8, §13). El runtime sigue sin llevar el CLI de Prisma ni
+  `DATABASE_URL`: la migración corre en un contenedor aparte.
 - **Seed de arranque:** `npm run bootstrap:admin` crea la `companies` interna de Monkey y el primer
   `admin_monkey` (§11). En dev ya existen; el script es para staging y producción.
 - **Resto del catálogo:** sembrado lo que tiene fuente (§11), incluidas `control_dimensions` y `policies` (D39,
@@ -287,3 +315,31 @@ Prisma 7 es ESM y el jest del repo es CommonJS.
 
 > ⚠️ Prisma 7 con `@map`: el enum `ExpectedAvailability` tiene el miembro `h24x7` con valor `24x7`; el tipo generado
 > pide `"24x7"` pero el cliente en runtime espera el nombre del miembro (`h24x7`). Tenerlo presente al construir MD-77.
+
+## 13. Primer arranque de staging y migración automática (MD-91)
+
+`postgres-staging` (imagen `postgres:17.10`, red `proxy_net`, sin puertos expuestos) se creó con la base `monkey` **vacía**
+y solo el rol `postgres`: sin schemas, sin tablas y sin el rol `monkey_app`. Hasta que se prepare, el backend desplegado
+no puede arrancar (queda en bucle de reinicios).
+
+**Qué se probó** (contra un Postgres 17 desechable, con la misma imagen de herramientas, y luego se borró todo): desde una
+base vacía las migraciones se aplican completas; con una migración mala el script **falla, deja el respaldo y avisa**, y
+una migración fallida bloquea los deploys hasta resolverla; el respaldo se restaura y trae los datos; el arranque
+completo (rol, catálogo, referencia, `admin_monkey`) deja las comprobaciones `catalog:verify`, `reference:verify`,
+`clone:verify` y `audit:verify` en verde con el rol `monkey_app`. **No se probó en la VPS ni en GitHub Actions.**
+
+**Una sola vez, para dejar staging listo** (en la VPS, desde `~/monkey-dev/backend`; las claves se piden por variable, no
+se escriben en el historial):
+
+1. **Secret de GitHub `MIGRATE_DATABASE_URL`** = `postgresql://postgres:<clave>@postgres-staging:5432/monkey` (la clave sin
+   caracteres especiales, o codificada como URL; sin `?sslmode=require`: es la red interna de Docker). Con `gh`:
+   `gh secret set MIGRATE_DATABASE_URL -R Monkey-GRC/Backend`.
+2. **El primer deploy a `develop` con el paso de migración.** Crea los schemas y el rol `monkey_app`, que nace **sin
+   contraseña**. El backend sigue reiniciando hasta el paso siguiente.
+3. **`bash scripts/deploy/bootstrap-staging.sh`** en la VPS (desde `~/monkey-dev/backend`), **una sola vez**. Pide las
+   claves sin mostrarlas y hace: contraseña de `monkey_app`, catálogo de SOC 2 y de referencia, primer `admin_monkey` y
+   verificación con `monkey_app`. Las claves solo pueden llevar letras, números y `. _ ~ -`. Es repetible. Probado contra
+   un Postgres desechable. Al final imprime la línea `APP_DATABASE_URL` que debe ir en el secret `ENV_FILE`.
+4. **Actualizar `ENV_FILE`** (base64, en una sola línea) con esa `APP_DATABASE_URL` y **redesplegar el backend**.
+
+Desde ahí, cada push a `develop` migra solo. Los respaldos previos quedan en `~/backups/monkey/` (últimos 14).
