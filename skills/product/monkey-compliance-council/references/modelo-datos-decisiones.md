@@ -742,6 +742,9 @@ sale de un síntoma real: la base de dev tenía 3 migraciones aplicadas que el r
 
 ## D43 · La clave de acceso se canjea una sola vez, y solo con el correo administrativo
 
+> ⚠️ **Ampliada por D51 (2026-10-05):** la activación es de dos pasos (`POST /v1/auth/redeem/lookup` + `redeem`), el canje ya
+> no recibe nombre ni apellido, y ambos endpoints tienen un freno de intentos.
+
 **Decisión:** el canje (`POST /v1/auth/redeem`) crea la cuenta `admin_empresa` **únicamente si el
 correo que escribe el cliente es el `admin_email` que Monkey registró para su empresa** (se compara
 en minúsculas). Si no coincide: `422 ACCESS_KEY_EMAIL_MISMATCH` y la clave sigue pendiente. La clave
@@ -810,6 +813,9 @@ se deja aquí para revisión.
 ---
 
 ## D45 · Componente 2 del onboarding: ajustes del schema y huecos resueltos por desarrollo
+
+> ⚠️ **Parcialmente revertida por D51 (2026-10-05):** `service_regulations` (la regulación por servicio) se eliminó, y la
+> Descripción del Sistema ya no es solo un enlace. Lo demás sigue vigente.
 
 **Decisiones** (Carlos, 2026-09-30; **pendientes de ratificar con el comité**; ninguna toca cómo se
 calcula el cumplimiento). Son los huecos que `onboarding-service-context.md` dejaba abiertos o que el
@@ -1027,5 +1033,77 @@ given time») aunque la base estuviera sana; ocurría hasta en los endpoints pú
 límite de duración de la transacción (`timeoutMs`).
 
 **Fuente:** hallazgo de las pruebas de navegador, 2026-10-02.
+
+---
+
+## D50 · Todos los marcos se ofrecen, solo SOC 2 se contrata; cada marco con sus categorías
+
+**Decisión** (comité, correcciones del 2026-10-05; categorías confirmadas por Carlos). Cuatro puntos:
+
+1. **Se ofrecen 7 marcos y solo SOC 2 se puede contratar.** Monkey Admin y la pantalla del servicio muestran todos como
+   gancho comercial (SOC 2, ISO 27001, HIPAA, GDPR, PCI DSS, NIST CSF y SOC 1, en orden de demanda), pero **solo se habilita lo
+   que está construido** (hoy, SOC 2) y, en el servicio, lo que la empresa contrató. Si el cliente toca un marco que no tiene
+   contratado, no se selecciona: se abre un aviso que lo invita a hablar con mercadeo (mock, DT-41).
+2. **`catalog.frameworks.availability`** (`available` | `coming_soon`, migración 27): `soc2` es `available`; los otros seis se
+   siembran con `npm run reference:load` como `coming_soon` y **sin requisitos ni controles**. El registro de empresa rechaza un
+   `coming_soon` con `409 FRAMEWORK_NOT_AVAILABLE`. `GET /v1/catalogs/frameworks` los trae todos, con `availability`.
+3. **Qué marcos y por qué esos.** Los más demandados hoy: SOC 2 es el estándar del SaaS B2B; ISO 27001 es la expansión más
+   común (32 % de los clientes de Drata con SOC 2 la suman), seguida de HIPAA (20 %) y GDPR (19 %); PCI DSS lo exigen fintech y
+   pagos; NIST CSF es el marco de referencia citado en Colombia; SOC 1 es el hermano financiero de SOC 2. Los siete tienen ficha
+   en `frameworks/*.md`. Se dejan fuera CIS Controls (vetado) y FedRAMP, CMMC, DORA y NIS2 (nicho o de otra región).
+4. **Categorías: cada marco usa las suyas (opción 2).** ISO 27001:2022 se organiza en 4 temas, PCI DSS en 12 requisitos y NIST
+   CSF 2.0 en 6 funciones; forzarlas a las 5 categorías de SOC 2 (seguridad, disponibilidad, confidencialidad, integridad,
+   privacidad) distorsiona la cobertura y la lectura del auditor, y ISO ni siquiera tiene un tema «disponibilidad». Es coherente
+   con el principio de que el **control es atómico e independiente del marco**: los controles no cambian, solo cómo se agrupan
+   los requisitos de cada marco. **La base actual no permite la opción 1** ni sin migrar: `requirements.trust_criterion_id` es una
+   FK a un enum de 5 valores.
+
+**Qué no se hizo y por qué:** no se migró el schema. Con SOC 2 como único marco construido, generalizar `trust_criteria` a
+dominios por marco sería un cambio grande sin uso. Queda como **DT-38**, y se hace al sembrar el primer marco que no sea SOC 2:
+`trust_criteria` → dominios con `framework_id`, `code`, `name` e `is_mandatory`, y `service_trust_criteria` →
+`service_framework_domains` (la regla «seguridad siempre» pasa a ser `is_mandatory` del dominio).
+
+**La pantalla del marco:** el texto dice **consultoría**, no auditoría (Monkey acompaña al cliente; no audita). Cada categoría de
+SOC 2 trae qué significa y qué se revisará (sin códigos técnicos, `philosophy.md`). Si el cliente no selecciona todas las
+categorías, se le avisa que lo recomendable es cubrirlas todas; si decide continuar, se respeta.
+
+**Fuente:** correcciones del comité del 2026-10-05; Carlos confirmó la opción 2 y la lista de marcos. Demanda: Drata (clientes con
+SOC 2), ACC 2025, guías sectoriales de cumplimiento.
+
+---
+
+## D51 · Correcciones al Componente 2 y a la activación de cuenta (2026-10-05)
+
+**Decisión** (comité, confirmada por Carlos). Revierte parte de D45 y D43:
+
+1. **Activación en dos pasos y sin nombre.** El primer paso pide solo el código y, al comprobarlo
+   (`POST /v1/auth/redeem/lookup`), muestra la razón social y el correo que Monkey Admin ya fijó; el segundo pide solo la
+   contraseña y su confirmación. El administrador se identifica por su correo: **`users.name` y `users.last_name` pasan a
+   ser opcionales** y `redeem` ya no los recibe. El nuevo endpoint es público y revela razón social y correo a quien tenga el
+   código, así que tiene un freno de 10 fallos / 15 min por dirección compartido con el canje (DT-37); antes, `redeem` no tenía
+   ninguno.
+2. **La regulación ya no se declara por servicio.** Las leyes de protección de datos aplican a la **empresa**, y ya se declaran
+   en el Componente 1 (`organization_regulations`). Se retira `service_regulations` (migración 27), `regulation_codes` del
+   servicio y su pregunta. Revierte D45 (que la había añadido «por analogía»). Quedan 12 campos obligatorios.
+3. **La lista de regulaciones solo trae normas de protección de datos.** Salió PCI DSS (estándar de la industria de tarjetas,
+   no una ley; ya es un marco). HIPAA y GLBA se quedan: son leyes sectoriales de EE. UU. que protegen datos de salud y
+   financieros. Entraron la Ley 21.719 de Chile (vigente desde el 1-dic-2026, reemplaza a la 19.628) y las de Uruguay (18.331),
+   Ecuador (LOPDP), Panamá (Ley 81) y Costa Rica (8968): 18 en total. La migración borra la marca PCI DSS de las empresas que la
+   habían elegido. **Falta que el comité ratifique la lista** (DT-40).
+4. **Descripción del Sistema: enlace, archivo, o los dos.** `system_descriptions.file_path` se reemplaza por `link_url` y
+   `file_key` (ambos opcionales, `CHECK` de que haya al menos uno). El archivo (PDF o .docx, 25 MB, validado por extensión y por
+   firma) se guarda en S3 / minio detrás del puerto `FileStorage`; sin `S3_*` la app arranca y la subida responde 503. Como el
+   archivo necesita el servicio, `system_description` pasa a ser **opcional al crear**: con archivo se crea el servicio y
+   luego se sube. La llave del objeto nunca sale; se baja con un enlace temporal de 5 minutos. Se borra el objeto al reemplazarlo
+   y al eliminar el servicio. **No está probado contra el minio real** (DT-39).
+5. **El nombre del proveedor ya no se pregunta** (el tipo —AWS, Azure…— ya lo dice). `subservice_organizations.provider`
+   sigue existiendo y opcional; hoy no se captura.
+6. **Certificación previa:** pasa de 4 a 8 valores (SOC 2, SOC 1, ISO 27001, PCI DSS, HIPAA, NIST CSF, GDPR, ninguna), preguntando
+   por una «certificación o evaluación» porque algunos no se certifican como tal.
+
+**Por qué:** el comité revisó el onboarding con el producto delante y pidió estos ajustes; ninguno contradice una regla del modelo
+(el control sigue siendo atómico, el cumplimiento se sigue derivando).
+
+**Fuente:** correcciones del comité del 2026-10-05, pasadas por Carlos el mismo día.
 
 ---

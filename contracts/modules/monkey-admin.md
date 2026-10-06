@@ -25,8 +25,9 @@ El comité fija **3 campos** (`modelo-datos.md` §4.2) y **D47 añade el marco q
 | `admin_email` | string (email) | sí | — | `companies.admin_email` |
 | `framework_codes` | array&lt;string&gt; | **no** (por defecto `["soc2"]`) | `framework` (1 valor en el MVP: `soc2`) | `platform.company_frameworks` — los marcos que se contratan para la empresa (D47) |
 
-`framework_codes` va fijo en `soc2` por ahora (D37): Monkey Admin lo muestra bloqueado. Un código que no esté
-en `catalog.frameworks` → `422`. Al declarar un servicio, el cliente solo puede elegir entre los marcos que su
+Monkey Admin muestra **todos los marcos que Monkey ofrece** (D50) y solo deja contratar los `available` (hoy solo
+`soc2`, D37); el resto aparece como «próximamente». Un código que no esté en `catalog.frameworks` → `422`; uno que
+esté pero sea `coming_soon` → `409 FRAMEWORK_NOT_AVAILABLE` con `error.framework_codes`. Al declarar un servicio, el cliente solo puede elegir entre los marcos que su
 empresa tiene contratados (`409 FRAMEWORK_NOT_CONTRACTED`, ver `onboarding-service-context.md`).
 
 `requires_dedicated_database: true` → `isolation_strategy: "dedicated"`; `false` → `"shared"`.
@@ -183,7 +184,7 @@ Implementado en `Backend/src/features/companies` y `Frontend/src/app/features/co
 
 | Endpoint | Estado |
 |---|---|
-| `POST /v1/companies` | ✅ Solo el caso `shared`. Empresa, clave **y marcos contratados** en la misma transacción (D47); la clave se muestra una vez en un diálogo de Monkey Admin. El formulario muestra SOC 2 **fijo y bloqueado** |
+| `POST /v1/companies` | ✅ Solo el caso `shared`. Empresa, clave **y marcos contratados** en la misma transacción (D47); la clave se muestra una vez en un diálogo de Monkey Admin. El formulario lista los 7 marcos del catálogo (D50): SOC 2 elegible y los otros 6 deshabilitados («próximamente») |
 | `GET /v1/companies` | ✅ Paginado, `sort` = `created_at`/`name` (± ), filtro `status`. **Excluye la empresa interna de Monkey** (la del `admin_monkey`), que no es un cliente |
 | `GET /v1/companies/{id}` | ✅ Con historial de claves. La empresa interna responde `404` |
 | `PATCH /v1/companies/{id}` | ❌ Espera a P2(c) |

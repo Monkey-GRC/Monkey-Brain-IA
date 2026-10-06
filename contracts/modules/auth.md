@@ -11,8 +11,9 @@ Es la **auth mínima** del sprint: login con JWT y refresh, sin segundo factor. 
 
 **Entidades:** `access_keys`, `users` (`modelo-datos.md` §4.2, §5.2, §5.3).
 
-`users.name` y `users.last_name` se añadieron al modelo el 2026-09-26: no estaban, pero
-el modelo de usuarios del comité los exige (`modelo-datos.md` §5.2).
+`users.name` y `users.last_name` se añadieron al modelo el 2026-09-26 (`modelo-datos.md` §5.2) y **desde D51
+(2026-10-05) son opcionales**: el administrador de la empresa se identifica por su correo y la activación solo le pide la
+contraseña. En los responses `name` y `last_name` pueden venir `null`; la UI muestra el correo cuando no hay nombre.
 **App:** Monkey Platform (`Frontend-Platform`) y Monkey Admin (`Frontend`) comparten estos
 endpoints.
 
@@ -20,9 +21,44 @@ endpoints.
 > `admin_empresa` y `auditor` (`modelo-datos.md` §5.3): es deuda conocida, no una decisión
 > revertida. Cuando entre, el login devolverá un paso intermedio y este contrato cambia.
 
-## `POST /v1/auth/redeem` — canjear la clave y crear `admin_empresa`
+## Activación de la cuenta: dos pasos (D51)
 
-Primer acceso del cliente. Crea su cuenta con la clave que le entregó `admin_monkey`.
+La pantalla de activación de Monkey Platform es de **dos pasos**:
+
+1. **Solo el código.** `POST /v1/auth/redeem/lookup` comprueba la clave **sin gastarla** y devuelve lo que Monkey Admin
+   ya fijó para la empresa.
+2. **Datos fijos + contraseña.** Se muestran la razón social y el correo administrativo **bloqueados** (no se editan) y
+   solo se pide la contraseña y su confirmación. Con eso se llama a `POST /v1/auth/redeem`.
+
+### `POST /v1/auth/redeem/lookup` — paso 1
+
+Público. Request: `{ "code": "MNK-7F3A-92KD-5QXB" }`. `200`:
+
+```json
+{
+  "statusCode": 200,
+  "message": "auth.access_key_found",
+  "data": {
+    "company": { "name": "Next Audit & Consulting S.A.S." },
+    "admin_email": "ana.perez@ejemplo.com",
+    "expires_at": "2026-10-12T09:12:44Z"
+  }
+}
+```
+
+Errores (los mismos del canje, para no revelar más de la cuenta): `404 ACCESS_KEY_INVALID` (no existe, o la empresa no
+está activa), `409 ACCESS_KEY_ALREADY_USED`, `409 ACCESS_KEY_EXPIRED` y `429 ACCESS_KEY_RATE_LIMITED`. Cada intento fallido se
+audita (`access_key.lookup`) y cuenta para el límite: **10 fallos por dirección cada 15 minutos**, compartido con el canje
+(DT-37). No devuelve nada si la clave no es canjeable.
+
+**Seguridad:** este endpoint revela la razón social y el correo administrativo a quien tenga el código. Es aceptable porque
+el código es de 12 caracteres aleatorios, se entrega solo al cliente y el límite impide adivinarlo; el correo ya es la
+condición para canjearlo (D43).
+
+## `POST /v1/auth/redeem` — canjear la clave y crear `admin_empresa` (paso 2)
+
+Primer acceso del cliente. Crea su cuenta con la clave que le entregó `admin_monkey`. **Solo se pide la contraseña**: el
+correo es el administrativo que registró Monkey y no se pide ni se edita nombre ni apellido (D51).
 
 ⚠️ **La forma de este request depende de la pregunta abierta (a):** si la clave es un código
 que el cliente escribe, o un link con token en la URL. Abajo va la forma de **código**, que es
@@ -32,9 +68,7 @@ la que asume el sprint (la clave se copia de la UI de Monkey Admin, no llega por
 {
   "code": "MNK-7F3A-92KD-5QXB",
   "email": "ana.perez@ejemplo.com",
-  "password": "UnaClaveLarga123!",
-  "name": "Ana",
-  "last_name": "Pérez"
+  "password": "UnaClaveLarga123!"
 }
 ```
 
@@ -48,8 +82,8 @@ la que asume el sprint (la clave se copia de la UI de Monkey Admin, no llega por
     "user": {
       "id": "c4a1f2e8-9b30-4d5a-b7e1-6f8c0d2a3b44",
       "email": "ana.perez@ejemplo.com",
-      "name": "Ana",
-      "last_name": "Pérez",
+      "name": null,
+      "last_name": null,
       "role": "admin_empresa",
       "status": "active",
       "is_mfa_enabled": false,
@@ -148,7 +182,8 @@ Implementado en `Backend/src/features/auth` (feature de referencia del backend),
 
 | Endpoint | Estado |
 |---|---|
-| `POST /v1/auth/redeem` | ✅ Forma de **código** (supuesto de P2a). Devuelve `user`, `company` y `onboarding` (`next_step: organizational_context`) y abre sesión |
+| `POST /v1/auth/redeem/lookup` | ✅ Paso 1 de la activación (D51): código → razón social y correo fijados por Monkey Admin. Sin gastar la clave; límite de 10 fallos / 15 min por dirección (DT-37) |
+| `POST /v1/auth/redeem` | ✅ Solo `code`, `email` y `password` (D51: sin nombre ni apellido). Forma de **código** (supuesto de P2a). Devuelve `user`, `company` y `onboarding` (`next_step: organizational_context`) y abre sesión |
 | `POST /v1/auth/login` | ✅ Por email; bloqueo a los 5 intentos por 15 min con `retry_after_seconds` |
 | `POST /v1/auth/refresh` | ✅ Rota el refresh token en cada uso (el anterior deja de servir) |
 | `POST /v1/auth/logout` | ✅ `204`, idempotente |
