@@ -121,6 +121,19 @@ Preguntas para Nelson, Bryan y el comité:
 
 ---
 
+## P13 · Ratificar lo que desarrollo decidió en las correcciones del 2026-10-05 (D50, D51)
+
+**Estado:** abierto desde 2026-10-06. No bloquea nada: todo está construido y funcionando; falta que el comité lo confirme.
+
+1. **Lista de 7 marcos ofrecidos** (SOC 2, ISO 27001, HIPAA, GDPR, PCI DSS, NIST CSF, SOC 1) y su orden. La armó desarrollo con datos de demanda de proveedores de cumplimiento (Drata, ACC 2025), no el comité. ¿Es la lista correcta para la oferta comercial?
+2. **Lista de 18 normas de protección de datos** (DT-40): ¿se ratifica que salga PCI DSS, que HIPAA y GLBA se queden, y las 5 que entraron (Ley 21.719 CL, UY, EC, PA, CR)? ¿Faltan otras (p. ej. Ley 1266 de Colombia)?
+3. **Categorías por marco** (D50, DT-38): confirmada la opción de que cada marco use las suyas. Falta que el comité entregue **cuáles son** las de cada marco (ISO 27001: ¿4 temas del Anexo A? PCI DSS: ¿12 requisitos? NIST CSF: ¿6 funciones?) y si «seguridad siempre obligatoria» se generaliza a un dominio obligatorio por marco.
+4. **Contacto de ventas** (DT-41): ¿qué canal real recibe el interés cuando un cliente toca un marco que no contrató?
+5. **Textos «auditoría» → «consultoría»** (DT-42): ¿se cambian también en Inicio y «Mis servicios»?
+6. **Certificación previa:** ¿las 8 opciones son las correctas para una «certificación o evaluación» previa?
+
+---
+
 ## Cómo se cierra un pendiente
 
 1. El comité responde.
