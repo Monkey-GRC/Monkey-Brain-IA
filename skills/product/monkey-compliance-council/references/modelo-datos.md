@@ -287,11 +287,12 @@ catálogo y lo particulariza. Y como el catálogo cambia con el tiempo, se versi
 erDiagram
     frameworks {
         uuid id PK
-        string code "soc2 (MVP: solo este)"
+        string code "7 ofrecidos; solo soc2 construido (D50)"
         string name
         string version
         enum type
         string scope_description
+        enum availability "available | coming_soon (D50)"
     }
     requirements {
         uuid id PK
@@ -858,8 +859,8 @@ erDiagram
         uuid company_id FK
         uuid custom_role_id FK "nullable"
         string email "unico global, en minusculas"
-        string name
-        string last_name
+        string name "nullable (D51): la cuenta se identifica por su correo"
+        string last_name "nullable (D51)"
         string password_hash "bcrypt+salt"
         enum role "admin_monkey|admin_empresa|funcional|auditor"
         enum status "active|inactive|suspended"
@@ -1157,11 +1158,6 @@ erDiagram
         uuid service_id FK
         uuid trust_criterion_id FK
     }
-    service_regulations {
-        uuid id PK
-        uuid service_id FK
-        uuid regulation_id FK
-    }
     service_frameworks {
         uuid id PK
         uuid framework_id FK
@@ -1192,14 +1188,13 @@ erDiagram
     system_descriptions {
         uuid id PK
         uuid service_id FK
-        string file_path
+        string link_url "nullable; al menos uno de los dos (D51)"
+        string file_key "nullable; llave del objeto en S3/minio"
         json sections "10 secciones AICPA"
     }
     organizations ||--o{ services : "presta"
     services ||--o{ service_trust_criteria : "contrata"
     trust_criteria ||--o{ service_trust_criteria : "contratado por"
-    services ||--o{ service_regulations : "sujeto a"
-    regulations ||--o{ service_regulations : "aplica a"
     services ||--o{ service_frameworks : "contrata marco"
     frameworks ||--o{ service_frameworks : "contratado en"
     services ||--o{ subservice_organizations : "depende de"
@@ -1227,9 +1222,16 @@ también **contra qué versión del catálogo** (`catalog_version_id`) y **desde
 (`evaluation_period`) aplica, que es lo que evita que un control nuevo mueva el número a
 mitad de periodo.
 
-**La regulación también se declara por servicio** (decisión D45). `organization_regulations` dice
-a qué leyes está sujeta la empresa; `service_regulations` dice cuáles aplican a *este* servicio,
-porque dos servicios de una misma empresa pueden tratar datos distintos. Tampoco se puntúa (D10).
+**La regulación se declara solo a nivel de empresa** (D51, que revierte D45). `organization_regulations` dice a qué
+normas de protección de datos está sujeta la empresa; **no hay `service_regulations`**: esas leyes aplican a la empresa,
+no al servicio. No se puntúa (D10).
+
+**La Descripción del Sistema se entrega con un enlace, un archivo o los dos** (D51): `system_descriptions.link_url` y
+`file_key` (ambos opcionales, `CHECK` de que haya al menos uno). El archivo vive en S3 / minio; el modelo solo guarda la
+llave. **Los marcos y sus categorías (D50):** `frameworks.availability` (`available` | `coming_soon`) distingue lo construido
+de la oferta comercial. Hoy las categorías de los requisitos son las 5 de SOC 2 (`trust_criteria`); cuando se siembre otro
+marco, cada marco usará las suyas (ISO 27001: 4 temas, PCI DSS: 12 requisitos, NIST CSF: 6 funciones): `trust_criteria` se
+generaliza a dominios por marco (DT-38).
 
 **`deployment_scenario` y el detalle del subservicio son opcionales al declarar el servicio** (D45):
 el escenario de despliegue se captura en el Componente 3, así que no puede ser obligatorio al

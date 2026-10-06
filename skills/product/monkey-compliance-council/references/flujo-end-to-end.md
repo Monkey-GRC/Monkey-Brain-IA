@@ -67,8 +67,7 @@ Una vez por servicio (repetible). Dieciséis campos, incluida la Descripción de
 **Al elegir marco aquí, se dispara el paso 5 automáticamente** — no es una acción
 manual separada.
 
-**Entidades:** `services`, `service_trust_criteria`, `service_regulations` (D45),
-`subservice_organizations`, `service_frameworks`, `system_descriptions`.
+**Entidades:** `services`, `service_trust_criteria`, `subservice_organizations`, `service_frameworks`, `system_descriptions`.
 **Fuente:** `modulos/onboarding.md`, Componente 2.
 
 ## 5. Clonado del catálogo
