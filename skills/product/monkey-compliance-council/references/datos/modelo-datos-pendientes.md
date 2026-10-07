@@ -118,13 +118,13 @@ Preguntas para Nelson, Bryan y el comité:
 1. **¿Quién instala los agentes?** ¿El cliente con un comando que entrega Monkey, o el equipo de la sonda?
 2. **¿Cómo se asigna cada cliente a su grupo** y quién impide que un agente se declare de otra empresa? (la clave de inscripción es global)
 3. **¿Cómo lee Monkey los resultados?** ¿Base de la sonda, API o ambas? ¿Con un usuario de solo lectura por grupo?
-4. **¿Quién configura la nube** (AWS/GCP/Azure) y con qué modelo (rol entre cuentas / federación de identidad)? Las integraciones de la sonda son de registros, no de configuración. **Actualización 2026-10-07:** se probó un escaneo de configuración de AWS con un usuario IAM de solo lectura y llaves estáticas (método de prueba, no el definitivo). Qué motor lo ejecuta y cómo se conecta en producción es **P13**.
+4. **¿Quién configura la nube** (AWS/GCP/Azure) y con qué modelo (rol entre cuentas / federación de identidad)? Las integraciones de la sonda son de registros, no de configuración. **Actualización 2026-10-07:** se probó un escaneo de configuración de AWS con un usuario IAM de solo lectura y llaves estáticas (método de prueba, no el definitivo). Qué motor lo ejecuta y cómo se conecta en producción es **P14**.
 5. **¿Qué se promete a un cliente con un sistema que no sea Ubuntu 22.04, Ubuntu 14.04 o Windows 11?** Hoy no hay pruebas para él.
 6. **¿Se autoriza la IP de desarrollo** en la API de la sonda para poder probar un adaptador real?
 
 ---
 
-## P13 · Motores de evaluación: rol de cada uno y cómo se relacionan con el modelo
+## P14 · Motores de evaluación: rol de cada uno y cómo se relacionan con el modelo
 
 **Estado:** abierto desde 2026-10-07. Nace de una prueba real: un escaneo de configuración de una cuenta de AWS
 (292 hallazgos, 70 checks, 8 servicios, 17 regiones) hecho con una herramienta distinta de la sonda. Choca con la
@@ -164,6 +164,16 @@ cubriría servidores, BD y endpoints; un motor de configuración, la nube.
 2. Quién revisa el texto de IA antes de que llegue al cliente y quién responde por un falso positivo.
 
 **Qué depende:** columnas nuevas de `check_results` (recurso, región, detalle), carga de checks, `Evaluation` en nube y el paso 3 del onboarding para nube (DT-35).
+## P13 · Ratificar lo que desarrollo decidió en las correcciones del 2026-10-05 (D50, D51)
+
+**Estado:** abierto desde 2026-10-06. No bloquea nada: todo está construido y funcionando; falta que el comité lo confirme.
+
+1. **Lista de 7 marcos ofrecidos** (SOC 2, ISO 27001, HIPAA, GDPR, PCI DSS, NIST CSF, SOC 1) y su orden. La armó desarrollo con datos de demanda de proveedores de cumplimiento (Drata, ACC 2025), no el comité. ¿Es la lista correcta para la oferta comercial?
+2. **Lista de 18 normas de protección de datos** (DT-40): ¿se ratifica que salga PCI DSS, que HIPAA y GLBA se queden, y las 5 que entraron (Ley 21.719 CL, UY, EC, PA, CR)? ¿Faltan otras (p. ej. Ley 1266 de Colombia)?
+3. **Categorías por marco** (D50, DT-38): confirmada la opción de que cada marco use las suyas. Falta que el comité entregue **cuáles son** las de cada marco (ISO 27001: ¿4 temas del Anexo A? PCI DSS: ¿12 requisitos? NIST CSF: ¿6 funciones?) y si «seguridad siempre obligatoria» se generaliza a un dominio obligatorio por marco.
+4. **Contacto de ventas** (DT-41): ¿qué canal real recibe el interés cuando un cliente toca un marco que no contrató?
+5. **Textos «auditoría» → «consultoría»** (DT-42): ¿se cambian también en Inicio y «Mis servicios»?
+6. **Certificación previa:** ¿las 8 opciones son las correctas para una «certificación o evaluación» previa?
 
 ---
 

@@ -28,7 +28,7 @@ No eres un chatbot genérico de compliance. Eres el Consejo — un panel de expe
    - Pregunta de modelo de datos, entidades, relaciones, cardinalidades, dimensiones, roles, tests, evidencias, exclusiones, la capa técnica (sondas, schedule, ejecuciones) o cómo se calcula el cumplimiento → `references/datos/modelo-datos.md`
    - Pregunta sobre el onboarding: qué se le pregunta al cliente, en qué componente, y a qué entidad va cada campo → `references/modulos/onboarding.md`
    - Pregunta sobre el recorrido completo de un cliente (de la creación del tenant a la medición de cumplimiento), o cómo se encadenan varios módulos entre sí → `references/producto/flujo-end-to-end.md`
-   - Pregunta sobre algo del modelo que todavía no está decidido → `references/datos/modelo-datos-pendientes.md` (hoy: 10 pendientes — el detalle del flujo de la clave de acceso, el permiso fino de dos módulos, dos cifras de la sonda sin universo definido, la lista completa de `business_model`, dónde se aloja el Postgres de producción, si un control propio del cliente cuenta para el marco, dos inconsistencias del Excel (pruebas de aplicación y causas sin riesgo), el nombre del proveedor en los textos de las pruebas, cómo se conecta Monkey a la sonda (P12) y el rol de cada motor de evaluación, incluida la nube (P13))
+   - Pregunta sobre algo del modelo que todavía no está decidido → `references/datos/modelo-datos-pendientes.md` (hoy: 11 pendientes — el detalle del flujo de la clave de acceso, el permiso fino de dos módulos, dos cifras de la sonda sin universo definido, la lista completa de `business_model`, dónde se aloja el Postgres de producción, si un control propio del cliente cuenta para el marco, dos inconsistencias del Excel (pruebas de aplicación y causas sin riesgo), el nombre del proveedor en los textos de las pruebas, cómo se conecta Monkey a la sonda (P12) lo que el comité debe ratificar de las correcciones D50/D51 (P13) y el rol de cada motor de evaluación, incluida la nube (P14))
    - Pregunta de cómo está implementado el schema (Prisma 7, RLS, roles, variables de entorno, migraciones, despliegue) → `references/datos/schema-implementacion.md`
    - Pregunta de por qué se decidió algo así, o intención de reabrir una decisión → `references/datos/modelo-datos-decisiones.md` (todas las cerradas, con su fuente)
    - Pregunta de seguridad (aislamiento entre empresas, sesión, contraseñas, MFA, secretos, auditoría, confidencialidad del proveedor, CI) o si algo nuevo cumple los requisitos de seguridad → `references/seguridad/requisitos.md` (registro `SEG-n` con fuente, estado real y la prueba que lo verifica)
@@ -73,7 +73,7 @@ monkey-compliance-council/
     │   ├── modelo-datos.md          el qué, ordenado por módulos (obligado antes de tocar el schema)
     │   ├── schema-implementacion.md el cómo: Prisma 7, RLS, roles, migraciones, despliegue
     │   ├── modelo-datos-decisiones.md  el porqué de cada decisión cerrada (D-n)
-    │   └── modelo-datos-pendientes.md  las preguntas abiertas que solo el comité responde (P-n, hoy 10)
+    │   └── modelo-datos-pendientes.md  las preguntas abiertas que solo el comité responde (P-n, hoy 11)
     ├── seguridad/                   requisitos.md: requisitos de seguridad (SEG-n), su estado real y la prueba que los verifica
     ├── cumplimiento/frameworks/     qué exige cada marco (14: SOC 2, ISO 27001, PCI DSS, HIPAA…)
     ├── control-tecnico/             wazuh: la sonda, cómo se integra y las reglas que no se rompen

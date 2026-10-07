@@ -84,7 +84,7 @@ Las de HTTP de aislamiento ya están en `develop` (PR #18 y #19). **Las de `test
 |---|---|---|---|---|---|
 | **SEG-24** | Las credenciales de los sistemas del cliente se guardan cifradas (AES-256-GCM) y nunca se devuelven | D46, `modelo-datos.md` §6.3 | `aes-credential.cipher.ts` | `test/autenticacion/autenticacion.e2e-spec.ts`: ni la respuesta del alta, ni el detalle, ni el listado las devuelven; en la base están cifradas (`v1.…`) y no contienen el secreto. La gestión de la llave es **SEG-25** | ✅ |
 | **SEG-25** | La llave de cifrado se gestiona y se rota con un procedimiento | DT-5 | Hoy: variable de entorno, sin rotación | — | 🔴 `DT-5` |
-| **SEG-26** | Las credenciales de la nube del cliente no se guardan como llaves estáticas en un servidor compartido: rol entre cuentas, sin secretos, ejecución aislada por cliente | `P13` C1/C3, DT-35, DT-43 | — (la prueba de viabilidad usó llaves estáticas) | — | 🔴 `DT-43`, `P13` |
+| **SEG-26** | Las credenciales de la nube del cliente no se guardan como llaves estáticas en un servidor compartido: rol entre cuentas, sin secretos, ejecución aislada por cliente | `P14` C1/C3, DT-35, DT-43 | — (la prueba de viabilidad usó llaves estáticas) | — | 🔴 `DT-43`, `P14` |
 | **SEG-27** | Cifrado en tránsito: TLS 1.3 y HSTS | §5.3 (PCI DSS) | Lo da el proxy, no la app (la app no fija HSTS) | No verificable desde el repo | ⚪ |
 | **SEG-28** | Conexión a la base con `sslmode=require` y firewall del 5432 restringido | `schema-implementacion.md` §9 | — | — | 🔴 |
 | **SEG-29** | Los datos crudos de escaneos de clientes (cuentas, recursos, fallos) no se versionan | 2026-10-07 | `.gitignore` (`assets/soc2/`, `assets/*.html`) | Revisión manual | 🟡 |

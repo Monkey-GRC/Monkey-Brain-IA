@@ -46,7 +46,7 @@ enrutar la pregunta al archivo correcto** (ver `SKILL.md` de esa skill, sección
   nombres de archivo de abajo viven dentro de esas carpetas.
 - `council.md` — cómo se resuelven desacuerdos de diseño entre los roles del panel.
 - `modelo-datos-pendientes.md` — las preguntas que **todavía no están cerradas** y que
-  solo el comité puede responder (hoy son 10: P2, P3, P5, P6, P7, P8, P9, P11, P12 y P13). Antes de construir algo que dependa de una,
+  solo el comité puede responder (hoy son 11: P2, P3, P5, P6, P7, P8, P9, P11, P12, P13 y P14). Antes de construir algo que dependa de una,
   consúltala: si sigue ahí, no la resuelvas por tu cuenta — pregunta.
 - `deuda-tecnica/README.md` — lo que está **parchado o construido a medias** por desarrollo (la sonda simulada, la
   Descripción del Sistema sin procesar, el recorrido de navegador fuera del repo…), con su riesgo y qué lo cierra. No son
