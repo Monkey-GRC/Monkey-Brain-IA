@@ -31,7 +31,7 @@ Aquí vive **una sola lista** de lo que Monkey debe cumplir en seguridad, con **
 
 Pruebas citadas: `Backend/test/aislamiento/` (RLS en base de datos: `rls-cobertura`, `rls-comportamiento`; API real:
 `http`), `npm run audit:verify`, `catalog:verify`, `clone:verify`. El flujo de CI es `Backend/.github/workflows/ci.yml`.
-Las de HTTP están en la rama `test/aislamiento-http` del Backend; **hasta que se mergee, su ✅ es provisional**.
+Las de HTTP de aislamiento ya están en `develop` (PR #18 y #19). **Las de `test/auditoria/` y `test/autenticacion/` están en la rama `feat/audit-in-same-transaction` del Backend: su ✅ es provisional hasta que se mergee.**
 
 ---
 
@@ -60,13 +60,13 @@ Las de HTTP están en la rama `test/aislamiento-http` del Backend; **hasta que s
 |---|---|---|---|---|---|
 | **SEG-10** | Sin sesión válida no hay datos: sin cookie o con una cookie manipulada → 401 | `contracts/modules/auth.md` | Guard de sesión global | `http` | ✅ |
 | **SEG-11** | Cerrar sesión invalida el refresh | `auth.md` | Revocación de la sesión | `http` | ✅ |
-| **SEG-12** | Sesión: 30 min de inactividad, 8 h máximo | `modelo-datos.md` §5.3 | `SESSION_IDLE_TIMEOUT`, `SESSION_MAX_DURATION` | Ninguna | 🟡 |
-| **SEG-13** | Contraseña de 12+ caracteres con mayúscula, minúscula, número y símbolo | §5.3 (NIST SP 800-63) | `common/security/password-policy.ts`, validada al canjear la clave | Ninguna prueba de la política | 🟡 |
+| **SEG-12** | Sesión: 30 min de inactividad, 8 h máximo | `modelo-datos.md` §5.3 | `SESSION_IDLE_TIMEOUT`, `SESSION_MAX_DURATION` | `test/autenticacion/autenticacion.e2e-spec.ts`: 29 min sigue viva; 31 min se cierra y el refresh tampoco sirve; pasadas las 8 h se cierra; el token de una sesión cerrada no sirve | ✅ |
+| **SEG-13** | Contraseña de 12+ caracteres con mayúscula, minúscula, número y símbolo | §5.3 (NIST SP 800-63) | `PASSWORD_POLICY` en `common/security/password-policy.ts`, **única definición**, aplicada con `IsStrongPassword` al canjear la clave (antes había una segunda función sin uso que podía divergir; se eliminó) | `test/autenticacion/autenticacion.e2e-spec.ts`: 5 contraseñas débiles dan 422 por campo sin gastar la clave; la guardada es bcrypt. Una mutación de la regla hace fallar la prueba | ✅ |
 | **SEG-14** | La contraseña expira a los 90 días | §5.3 (SOC 2) | — | No hay nada en el código | 🔴 |
-| **SEG-15** | Bloqueo a los 5 intentos fallidos, por 15 min | §5.3, `auth.md` (`ACCOUNT_LOCKED`) | Lógica en el login | Ninguna | 🟡 |
+| **SEG-15** | Bloqueo a los 5 intentos fallidos, por 15 min | §5.3, `auth.md` (`ACCOUNT_LOCKED`) | Lógica en el login | `test/autenticacion/autenticacion.e2e-spec.ts`: al 5.º fallo `403 ACCOUNT_LOCKED`; bloqueada, ni la contraseña correcta entra; el bloqueo dura ≤ 15 min; al vencer entra y el contador vuelve a 0; el error no distingue usuario inexistente de contraseña mala | ✅ |
 | **SEG-16** | MFA TOTP obligatoria para `admin_monkey`, `admin_empresa` y `auditor` | §5.3 | — (el campo `is_mfa_enabled` existe, el flujo no) | — | 🔴 `DT-23`, MD-94 |
-| **SEG-17** | Refresh tokens, claves de acceso y API keys se guardan como HMAC con *pepper*, nunca en claro | `schema-implementacion.md` §4 | `TOKEN_HASH_PEPPER` | Ninguna | 🟡 |
-| **SEG-18** | Los tokens viajan en cookie `httpOnly`; el frontend nunca los toca | `contracts/conventions.md` | `auth-cookies.ts` (`secure` solo en producción) | Se ejercita en `http`; no se comprueban las banderas | 🟡 |
+| **SEG-17** | Refresh tokens, claves de acceso y API keys se guardan como HMAC con *pepper*, nunca en claro | `schema-implementacion.md` §4 | `TOKEN_HASH_PEPPER` | `test/autenticacion/autenticacion.e2e-spec.ts`: el hash guardado ≠ el token; la clave de acceso no aparece ni en claro ni en el rastro de auditoría. **Las API keys no tienen endpoint todavía** | ✅ (API keys ⚪) |
+| **SEG-18** | Los tokens viajan en cookie `httpOnly`; el frontend nunca los toca | `contracts/conventions.md` | `auth-cookies.ts` (`secure` solo en producción) | `test/autenticacion/autenticacion.e2e-spec.ts`: `HttpOnly` y `SameSite=Lax` en las dos cookies, el refresh solo en `/v1/auth`, y ningún token en el cuerpo. **La bandera `Secure` (solo en producción) no se prueba** | 🟠 |
 | **SEG-19** | Límite de peticiones: 100/min por usuario, 1000/min por empresa | §5.3 | Solo existe el freno de intentos de la **clave de acceso** (10 fallos cada 15 min por dirección, en memoria de la instancia: DT-37). El general no existe | Ninguna | 🟠 |
 
 ## C. Autorización
@@ -76,15 +76,15 @@ Las de HTTP están en la rama `test/aislamiento-http` del Backend; **hasta que s
 | **SEG-20** | La autorización se verifica en cada petición; no se confía en el frontend | §5.3 | `@Roles()` + guard | `http`: una empresa no accede a rutas de `admin_monkey` y `admin_monkey` no actúa como `admin_empresa` | ✅ (2 de 4 roles) |
 | **SEG-21** | Matriz de permisos por rol (13 acciones) | §5.5 | Por módulo | Solo `admin_monkey` y `admin_empresa`. `funcional` y `auditor` no tienen endpoints todavía | 🟠 `P3` |
 | **SEG-22** | `funcional` siempre acotado a lo que tiene asignado | §5.5 | `user_control_assignments` | No existe aún el módulo | 🔴 |
-| **SEG-23** | Un usuario desactivado pierde el acceso y se cierran sus sesiones (CC6.3) | §5.6 | — | Pendiente: MD-132 | 🔴 |
+| **SEG-23** | Un usuario desactivado pierde el acceso y se cierran sus sesiones (CC6.3) | §5.6 | El guard comprueba el estado del usuario en cada petición | `test/autenticacion/autenticacion.e2e-spec.ts`: con el usuario `inactive` su sesión abierta deja de servir y no puede volver a entrar. **Falta el endpoint para desactivarlo (MD-132)** | 🟠 |
 
 ## D. Datos y secretos
 
 | ID | Requisito | Fuente | Cómo se hace cumplir | Verificación | Estado |
 |---|---|---|---|---|---|
-| **SEG-24** | Las credenciales de los sistemas del cliente se guardan cifradas (AES-256-GCM) y nunca se devuelven | D46, `modelo-datos.md` §6.3 | `aes-credential.cipher.ts` | Ninguna prueba de que no salgan en una respuesta | 🟡 |
+| **SEG-24** | Las credenciales de los sistemas del cliente se guardan cifradas (AES-256-GCM) y nunca se devuelven | D46, `modelo-datos.md` §6.3 | `aes-credential.cipher.ts` | `test/autenticacion/autenticacion.e2e-spec.ts`: ni la respuesta del alta, ni el detalle, ni el listado las devuelven; en la base están cifradas (`v1.…`) y no contienen el secreto. La gestión de la llave es **SEG-25** | ✅ |
 | **SEG-25** | La llave de cifrado se gestiona y se rota con un procedimiento | DT-5 | Hoy: variable de entorno, sin rotación | — | 🔴 `DT-5` |
-| **SEG-26** | Las credenciales de la nube del cliente no se guardan como llaves estáticas en un servidor compartido: rol entre cuentas, sin secretos, ejecución aislada por cliente | `P13` C1/C3, DT-35, DT-38 | — (la prueba de viabilidad usó llaves estáticas) | — | 🔴 `DT-38`, `P13` |
+| **SEG-26** | Las credenciales de la nube del cliente no se guardan como llaves estáticas en un servidor compartido: rol entre cuentas, sin secretos, ejecución aislada por cliente | `P13` C1/C3, DT-35, DT-43 | — (la prueba de viabilidad usó llaves estáticas) | — | 🔴 `DT-43`, `P13` |
 | **SEG-27** | Cifrado en tránsito: TLS 1.3 y HSTS | §5.3 (PCI DSS) | Lo da el proxy, no la app (la app no fija HSTS) | No verificable desde el repo | ⚪ |
 | **SEG-28** | Conexión a la base con `sslmode=require` y firewall del 5432 restringido | `schema-implementacion.md` §9 | — | — | 🔴 |
 | **SEG-29** | Los datos crudos de escaneos de clientes (cuentas, recursos, fallos) no se versionan | 2026-10-07 | `.gitignore` (`assets/soc2/`, `assets/*.html`) | Revisión manual | 🟡 |
@@ -101,8 +101,8 @@ Las de HTTP están en la rama `test/aislamiento-http` del Backend; **hasta que s
 | **SEG-33** | `audit_logs` y `compliance_events` son append-only para **todos** los roles | D41, §4.3 | `REVOKE` + triggers `audit.reject_mutation()` | `audit:verify` (en CI) | ✅ |
 | **SEG-34** | El audit trail de una empresa no se lee ni se escribe desde otra | §4.3 | RLS en `audit` | `rls-comportamiento` | ✅ |
 | **SEG-35** | Retención de 7 años | D41, §5.3 (SOC 2 Tipo II) | Depende de los respaldos | Inmutabilidad ✅; la retención depende de dónde viva el Postgres | 🟠 `P7` |
-| **SEG-36** | La auditoría se escribe **en la misma transacción** que la acción | D41 | Hoy se escribe después | — | 🔴 `DT-28`, MD-113 |
-| **SEG-37** | Los intentos de acceso denegados se registran (CC7.2/CC7.3) | §5.6 | — | No lo comprobé | ⚪ |
+| **SEG-36** | La auditoría se escribe **en la misma transacción** que la acción | D41, D52 | Cada método del repositorio que cambia datos **exige** un `AuditIntent` (el compilador lo impone) y lo escribe con `insertAuditLog(tx, …)` dentro de su transacción. Excepción documentada: los intentos fallidos y los cierres automáticos de sesión (DT-47) | `test/auditoria/audit-atomica.e2e-spec.ts`: cada acción deja exactamente 1 rastro con su empresa; forzando que el rastro falle **después** de insertarse, la acción se revierte (servicio, escenario, alcance, activo, descripción, contexto, login, logout, empresa, canje) y la fila de auditoría también. Una mutación (rastro tras el commit) hace fallar la prueba | ✅ |
+| **SEG-37** | Los intentos de acceso denegados se registran (CC7.2/CC7.3) | §5.6 | `auth.login_failed` y el canje fallido (`access_key.redeem` con `result = error`), de mejor esfuerzo y sin tenant | `test/autenticacion/autenticacion.e2e-spec.ts`: cada fallo de login deja su rastro (con `user_id`, o con el correo tecleado si no existe). **Un 403 por rol no se registra** | 🟠 |
 | **SEG-38** | `evaluations` es inmutable salvo el cierre humano | §7.4 | `REVOKE` + `GRANT UPDATE` por columna | Ninguna prueba | 🟡 MD-145 |
 
 ## F. Confidencialidad del proveedor del motor
@@ -119,7 +119,7 @@ Las de HTTP están en la rama `test/aislamiento-http` del Backend; **hasta que s
 | ID | Requisito | Fuente | Cómo se hace cumplir | Verificación | Estado |
 |---|---|---|---|---|---|
 | **SEG-40** | Lint, build, pruebas unitarias, migraciones desde cero, verificadores y pruebas de aislamiento corren en cada PR | DT-20 | `.github/workflows/ci.yml` | El propio CI | ✅ |
-| **SEG-41** | Un PR en rojo no se puede mergear, y un despliegue no sale si el CI falla | DT-41 | Exige el plan GitHub Team (protección de rama) o que el deploy dependa del CI | — | 🔴 `DT-41` |
+| **SEG-41** | Un PR en rojo no se puede mergear, y un despliegue no sale si el CI falla | DT-46 | Exige el plan GitHub Team (protección de rama) o que el deploy dependa del CI | — | 🔴 `DT-46` |
 | **SEG-42** | Las migraciones desplegadas se respaldan antes y no se editan una vez aplicadas | `schema-implementacion.md` §7 y §13 | `scripts/deploy/migrate.sh` | Probado a mano, no en GitHub Actions | 🟡 |
 
 ---

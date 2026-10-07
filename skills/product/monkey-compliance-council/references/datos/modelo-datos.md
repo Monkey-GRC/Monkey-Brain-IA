@@ -287,12 +287,12 @@ catálogo y lo particulariza. Y como el catálogo cambia con el tiempo, se versi
 erDiagram
     frameworks {
         uuid id PK
-        string code "soc2 (el único available en el MVP)"
+        string code "7 ofrecidos; solo soc2 construido (D50)"
         string name
         string version
         enum type
         string scope_description
-        enum availability "available|coming_soon (D50)"
+        enum availability "available | coming_soon (D50)"
     }
     requirements {
         uuid id PK
@@ -773,7 +773,7 @@ son únicos.**
 - Una FK no valida que el padre sea del mismo tenant (las comprobaciones de FK ignoran RLS).
   Antes de escribir una fila con FK a otra tabla de tenant, **se lee el padre con el cliente
   ya sujeto a RLS**: si no lo ve, no es suyo.
-- `audit_logs` se escribe **sin `RETURNING`** (`createMany` o SQL directo). Un `INSERT … RETURNING`
+- `audit_logs` se escribe **dentro de la transacción de la acción** (D52, SEG-36) y **sin `RETURNING`** (`createMany` o SQL directo). Un `INSERT … RETURNING`
   exige que la fila nueva también pase la política de lectura, y una acción de plataforma sin
   tenant no la pasa.
 - El `email` de `users` se guarda **en minúsculas** (hay un `CHECK`).
@@ -859,7 +859,7 @@ erDiagram
         uuid company_id FK
         uuid custom_role_id FK "nullable"
         string email "unico global, en minusculas"
-        string name "nullable (D51)"
+        string name "nullable (D51): la cuenta se identifica por su correo"
         string last_name "nullable (D51)"
         string password_hash "bcrypt+salt"
         enum role "admin_monkey|admin_empresa|funcional|auditor"
@@ -1191,8 +1191,8 @@ erDiagram
     system_descriptions {
         uuid id PK
         uuid service_id FK
-        string link_url "nullable (D51)"
-        string file_key "nullable (D51): llave del archivo en S3/minio"
+        string link_url "nullable; al menos uno de los dos (D51)"
+        string file_key "nullable; llave del objeto en S3/minio"
         json sections "10 secciones AICPA"
     }
     organizations ||--o{ services : "presta"
@@ -1225,12 +1225,16 @@ también **contra qué versión del catálogo** (`catalog_version_id`) y **desde
 (`evaluation_period`) aplica, que es lo que evita que un control nuevo mueva el número a
 mitad de periodo.
 
-**La regulación se declara solo a nivel de empresa** (D51; revierte D45). `organization_regulations` dice a qué leyes está
-sujeta la empresa; **no existe `service_regulations`** (la tabla se eliminó). Tampoco se puntúa (D10). El catálogo `regulations`
-tiene 18 filas: 16 normas de protección de datos más `none` y `other`; PCI DSS ya no es una regulación sino un marco.
+**La regulación se declara solo a nivel de empresa** (D51, que revierte D45). `organization_regulations` dice a qué
+normas de protección de datos está sujeta la empresa; **no hay `service_regulations`**: esas leyes aplican a la empresa,
+no al servicio. No se puntúa (D10).
 
-**La Descripción del Sistema se entrega como enlace y/o archivo** (D51): `link_url` y `file_key`, con un `CHECK` de que al menos
-una exista. El archivo vive en S3/minio, no en la base.
+**La Descripción del Sistema se entrega con un enlace, un archivo o los dos** (D51): `system_descriptions.link_url` y
+`file_key` (ambos opcionales, `CHECK` de que haya al menos uno). El archivo vive en S3 / minio; el modelo solo guarda la
+llave. **Los marcos y sus categorías (D50):** `frameworks.availability` (`available` | `coming_soon`) distingue lo construido
+de la oferta comercial. Hoy las categorías de los requisitos son las 5 de SOC 2 (`trust_criteria`); cuando se siembre otro
+marco, cada marco usará las suyas (ISO 27001: 4 temas, PCI DSS: 12 requisitos, NIST CSF: 6 funciones): `trust_criteria` se
+generaliza a dominios por marco (DT-38).
 
 **`deployment_scenario` y el detalle del subservicio son opcionales al declarar el servicio** (D45):
 el escenario de despliegue se captura en el Componente 3, así que no puede ser obligatorio al

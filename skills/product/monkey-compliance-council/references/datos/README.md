@@ -110,5 +110,6 @@ D1 a D22 están agrupadas en bloques (A estructura, B y C el cálculo, D lo que 
 - D47 · El marco se contrata al registrar la empresa (revierte el veto de §6.1)
 - D48 · Paso 3 del control técnico: lo verificado contra la sonda real y por qué el flujo actual es provisional
 - D49 · Las peticiones esperan hasta 10 s por una conexión del pool
-- D50 · El catálogo ofrece varios marcos, pero solo se contrata el que ya está construido
-- D51 · Correcciones del comité al onboarding: activación, regulaciones, certificación previa y Descripción del Sistema
+- D50 · Todos los marcos se ofrecen, solo SOC 2 se contrata; cada marco con sus categorías
+- D51 · Correcciones al Componente 2 y a la activación de cuenta (2026-10-05)
+- D52 · La auditoría se escribe en la misma transacción que la acción (cierra DT-28, SEG-36)

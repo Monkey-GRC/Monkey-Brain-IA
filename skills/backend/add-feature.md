@@ -66,16 +66,24 @@ interior de otra:
 7. **Controller** en `presentation/`. Solo mapea request → caso de uso → `ResponseDto` con el
    mapper. Todo endpoint exige sesión por defecto (`SessionAuthGuard` global); `@Public()` para lo
    abierto y `@Roles(...)` para restringir por rol. El usuario llega con `@CurrentUser()`.
-8. **Módulo** `<nombre>.module.ts` con `provide: XRepository, useClass: XPrismaRepository` y los
+8. **Auditar** (SEG-36, D52). Todo método del repositorio que **cambia datos** recibe un último parámetro
+   `audit: AuditIntent<Resultado>`: una función que el caso de uso construye con lo que ya sabe (usuario, IP,
+   `before`) y que el repositorio ejecuta **dentro de la misma transacción**, con el resultado ya escrito, llamando a
+   `insertAuditLog(tx, audit(resultado))`. Si el rastro falla, el cambio se revierte; nunca queda una acción sin
+   rastro. El tipo hace obligatorio el parámetro: un método nuevo no compila sin él. `AuditLogWriter.write` es solo para
+   lo que no acompaña a una acción revertible (intentos fallidos). Un `null` explícito se reserva a casos justificados
+   (p. ej. cierres automáticos de sesión, DT-47) y se comenta por qué.
+9. **Módulo** `<nombre>.module.ts` con `provide: XRepository, useClass: XPrismaRepository` y los
    casos de uso; importarlo en `src/app.module.ts`.
-9. **i18n**: las claves de `message` y de los errores en `i18n/es/<archivo>.json` e
+10. **i18n**: las claves de `message` y de los errores en `i18n/es/<archivo>.json` e
    `i18n/en/<archivo>.json` a la vez (ver `add-i18n-error.md`).
 
 ## Después de terminar
 
 - `npx nest build` sin errores. Ojo con `isolatedModules`: los tipos que aparecen en firmas
   decoradas (`Request`, `Response`, `Principal`, tipos de política) se importan con `import type`.
-- Probar punto a punto contra la base de dev: camino feliz, 401 sin sesión, 403 por rol, 422 de
-  validación, y los errores de negocio del contrato. Hoy **no hay `*.spec.ts`**: las pruebas de
-  `auth` y `companies` se hicieron con scripts HTTP contra el servidor levantado.
+- Probar punto a punto: camino feliz, 401 sin sesión, 403 por rol, 422 de validación, y los errores de negocio
+  del contrato. Las pruebas viven en el repo (`Backend/test/`, `npm run test:e2e`, y se corren en el CI) contra un
+  **Postgres desechable** (nunca la base compartida de dev): añade el recorrido de tu feature, el aislamiento entre
+  empresas y, si audita, la prueba de que el rastro falla junto con la acción (ver `test/auditoria/`).
 - Confirmar en Swagger (`/v1/docs`) que los endpoints aparecen.

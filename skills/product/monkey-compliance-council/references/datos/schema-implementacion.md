@@ -126,6 +126,14 @@ CREDENTIALS_ENCRYPTION_KEY="..."  # 32 bytes en base64 (AES-256-GCM): cifra las 
                                   # node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
 PROBE_MODE=simulated              # simulated (solo dev/demostración) | unavailable (por defecto). simulated NO arranca en producción
 
+# Almacenamiento de archivos del cliente (Descripción del Sistema, D51). S3 o compatible (minio).
+# Sin S3_BUCKET + S3_ACCESS_KEY_ID + S3_SECRET_ACCESS_KEY la app arranca igual y subir un archivo responde 503.
+S3_ENDPOINT=...                   # solo con minio (https://<host>); vacío = AWS S3
+S3_REGION=us-east-1
+S3_BUCKET=...
+S3_ACCESS_KEY_ID=... S3_SECRET_ACCESS_KEY=...   # un usuario con permisos SOLO sobre ese bucket
+S3_FORCE_PATH_STYLE=true          # true con minio
+
 # Primer administrador (npm run bootstrap:admin), solo donde se siembra
 BOOTSTRAP_COMPANY_NAME=... BOOTSTRAP_ADMIN_EMAIL=... BOOTSTRAP_ADMIN_NAME=...
 BOOTSTRAP_ADMIN_LAST_NAME=... BOOTSTRAP_ADMIN_PASSWORD=...
@@ -169,7 +177,8 @@ filtrarían a otra petición del pool): `app.tenant_id`, `app.user_id`, `app.use
    cuatro políticas.**
 5. `audit_logs`: lectura del propio tenant o `admin_monkey`; inserción con `tenant_id` nulo o el
    propio. **Se escribe sin `RETURNING`**: un `INSERT … RETURNING` exige que la fila nueva pase
-   también la política de lectura, y una acción de plataforma sin tenant no la pasa.
+   también la política de lectura, y una acción de plataforma sin tenant no la pasa. **Se escribe dentro de la transacción de la
+   acción** (`insertAuditLog(tx, …)`, D52): el repositorio recibe un `AuditIntent` y, si el rastro falla, la acción se revierte.
 6. `evaluations`: `REVOKE UPDATE, DELETE, TRUNCATE` y `GRANT UPDATE (confirmed_by,
    closure_observation_reason)`: inmutable salvo el cierre humano.
 
@@ -339,7 +348,7 @@ políticas (plantillas, solo el nombre) y 16 vínculos = **+236 filas, 2.305 en 
 `approval_status`, `valid_until` y `version`: son del cliente.
 
 **Catálogos de referencia** (`npm run reference:load` / `reference:verify`, datos en `prisma/seed/reference/data.ts`):
-las **18 regulaciones** (MD-75; 16 normas de protección de datos más `none` y `other`, D51), las 6 capacidades `ac_01…ac_06` (MD-83), con `provider` interno y confidencial, y los **6 marcos ofrecidos como `coming_soon`** (D50: ISO 27001, HIPAA, GDPR, PCI DSS, NIST CSF y SOC 1; SOC 2 lo carga `catalog:load`). Las
+las 18 normas de protección de datos (MD-75, D51), los 6 marcos ofrecidos sin catálogo (D50) y las 6 capacidades `ac_01…ac_06` (MD-83), con `provider` interno y confidencial. Las
 listas de opciones del Componente 1 (tamaño, industria, modelo de negocio…) **no se siembran: son enums de
 Postgres**, no tablas.
 

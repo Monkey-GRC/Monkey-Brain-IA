@@ -41,7 +41,9 @@ Lee, en este orden:
 - [ ] `*.module.ts` registrando `provide/useClass` y los casos de uso; importado en `app.module.ts`.
 - [ ] Respuestas envueltas en `ResponseDto`; errores con el `error.code` del contrato.
 - [ ] Claves i18n en `i18n/es` e `i18n/en`.
-- [ ] Acciones auditables registradas con `AuditLogWriter` (sin secretos en `after_state`).
+- [ ] Toda acción que **cambia datos** pasa su `AuditIntent` al método del repositorio, que la escribe **en la misma transacción** (SEG-36; sin secretos en `after_state`). `AuditLogWriter.write` queda solo para intentos fallidos.
+- [ ] Revisado contra `seguridad/requisitos.md` y, si cambia algo, una fila nueva `SEG-n`.
+- [ ] Prueba e2e en `Backend/test/` (aislamiento entre empresas y, si audita, que el rastro sea atómico).
 
 ## Restricciones
 

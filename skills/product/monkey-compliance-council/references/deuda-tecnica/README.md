@@ -27,8 +27,8 @@ la cierra). Los ID (`DT-n`) no se reutilizan. Si una fila depende del comité, e
 | Archivo | Qué cubre | Filas |
 |---|---|---|
 | [`control-tecnico.md`](control-tecnico.md) | Componente 3 del onboarding: conexión de activos, la sonda, el paso 3 y la nube | 20 |
-| [`onboarding.md`](onboarding.md) | Componentes 1 y 2 del onboarding y el registro de empresa | 11 |
-| [`transversal.md`](transversal.md) | Pruebas y CI, auditoría, traducciones, entorno y funcionalidad sin contrato | 10 |
+| [`onboarding.md`](onboarding.md) | Componentes 1 y 2 del onboarding y el registro de empresa | 16 |
+| [`transversal.md`](transversal.md) | Pruebas y CI, auditoría, traducciones, entorno y funcionalidad sin contrato | 11 |
 
 Una fila vive en el archivo de su **área**. Al crear una deuda nueva: siguiente `DT-n` libre, en el archivo que corresponda,
 y una línea en el índice de abajo. Los requisitos de seguridad que una deuda incumple están en
@@ -36,7 +36,7 @@ y una línea en el índice de abajo. Los requisitos de seguridad que una deuda i
 
 ## Índice de todas las deudas
 
-41 filas (incluye las cerradas, tachadas). Severidad: ✅ 1 · 🔴 5 · 🟠 20 · 🟡 15.
+47 filas (incluye las cerradas, tachadas). Severidad: ✅ 2 · 🔴 6 · 🟠 21 · 🟡 18.
 
 | ID | | Qué | Archivo |
 |---|---|---|---|
@@ -51,7 +51,7 @@ y una línea en el índice de abajo. Los requisitos de seguridad que una deuda i
 | DT-9 | 🟠 | responsible_id se acepta en la API pero no hay forma de crear cargos | [control-tecnico](control-tecnico.md) |
 | DT-10 | 🟠 | La UI promete «te avisaremos» cuando la evaluación automática esté disponible, y no existe ningún aviso | [control-tecnico](control-tecnico.md) |
 | DT-11 | 🟡 | Sin editar ni eliminar un activo | [control-tecnico](control-tecnico.md) |
-| DT-12 | 🟠 | Descripción del Sistema: el archivo se guarda pero no se procesa. | [onboarding](onboarding.md) |
+| DT-12 | 🟠 | Descripción del Sistema: el archivo se guarda (D51) pero no se procesa. | [onboarding](onboarding.md) |
 | DT-13 | ✅ | Controles clonados `manual` y sin dimensiones Cerrada: Héctor sembró `control_dimensions` (D39) y su clonado ( | [onboarding](onboarding.md) |
 | DT-14 | 🟡 | El clonado es síncrono | [onboarding](onboarding.md) |
 | DT-15 | 🟡 | El nombre único del servicio por empresa lo impone la aplicación | [onboarding](onboarding.md) |
@@ -67,7 +67,7 @@ y una línea en el índice de abajo. Los requisitos de seguridad que una deuda i
 | DT-25 | 🟠 | Ver el catálogo maestro SOC 2 en Monkey Admin y poder crear un control, riesgo o causa nuevos. | [transversal](transversal.md) |
 | DT-26 | 🟠 | Los marcos se contratan solo al registrar la empresa. | [onboarding](onboarding.md) |
 | DT-27 | 🟡 | El contrato guarda solo el marco y la fecha | [onboarding](onboarding.md) |
-| DT-28 | 🟠 | La auditoría de login, canje y registro de empresa se escribe después de la acción, no en la misma transacción | [transversal](transversal.md) |
+| DT-28 | ✅ | La auditoría de login, canje y registro de empresa se escribía después de la acción, no en la misma transacció | [transversal](transversal.md) |
 | DT-29 | 🟡 | auth.login_failed se guarda con tenant_id nulo | [transversal](transversal.md) |
 | DT-30 | 🟡 | Las pruebas de jest no corren en máquinas Windows sin el runtime de Visual C++ | [transversal](transversal.md) |
 | DT-31 | 🔴 | El formulario de «Conectar mi primer sistema» pide credenciales que el modelo real no usa. | [control-tecnico](control-tecnico.md) |
@@ -76,8 +76,14 @@ y una línea en el índice de abajo. Los requisitos de seguridad que una deuda i
 | DT-34 | 🟠 | Cobertura honesta de plataformas. | [control-tecnico](control-tecnico.md) |
 | DT-35 | 🟠 | Conexión a la nube diferida. | [control-tecnico](control-tecnico.md) |
 | DT-36 | 🟠 | El .env de pruebas usa el superusuario de la base de la sonda y un usuario de API con permisos amplios | [control-tecnico](control-tecnico.md) |
-| DT-37 | 🟡 | El freno de intentos de la clave de acceso vive en la memoria de la instancia. | [onboarding](onboarding.md) |
-| DT-38 | 🔴 | El motor de nube se probó en el mismo servidor que la sonda y con llaves estáticas del cliente guardadas allí | [control-tecnico](control-tecnico.md) |
-| DT-39 | 🟠 | check_results no guarda recurso ni región. | [control-tecnico](control-tecnico.md) |
-| DT-40 | 🟠 | El escaneo por todas las regiones infla resultados. | [control-tecnico](control-tecnico.md) |
-| DT-41 | 🟠 | El CI no bloquea el merge ni el despliegue. | [transversal](transversal.md) |
+| DT-37 | 🟠 | El límite de intentos con la clave de acceso vive en la memoria de la instancia. | [onboarding](onboarding.md) |
+| DT-38 | 🟠 | Las categorías de cada marco siguen siendo las 5 de SOC 2. | [onboarding](onboarding.md) |
+| DT-39 | 🔴 | El adaptador de almacenamiento (S3 / minio) no se ha probado contra un minio real. | [onboarding](onboarding.md) |
+| DT-40 | 🟡 | La lista de 18 normas de protección de datos la depuró desarrollo, no el comité. | [onboarding](onboarding.md) |
+| DT-41 | 🟡 | «Contactar a mercadeo» es un mock. | [onboarding](onboarding.md) |
+| DT-42 | 🟡 | Los textos «auditoría» de Inicio y de «Mis servicios» no se cambiaron a «consultoría». | [onboarding](onboarding.md) |
+| DT-43 | 🔴 | El motor de nube se probó en el mismo servidor que la sonda y con llaves estáticas del cliente guardadas allí | [control-tecnico](control-tecnico.md) |
+| DT-44 | 🟠 | check_results no guarda recurso ni región. | [control-tecnico](control-tecnico.md) |
+| DT-45 | 🟠 | El escaneo por todas las regiones infla resultados. | [control-tecnico](control-tecnico.md) |
+| DT-46 | 🟠 | El CI no bloquea el merge ni el despliegue. | [transversal](transversal.md) |
+| DT-47 | 🟡 | Los cierres automáticos de sesión no dejan rastro. | [transversal](transversal.md) |

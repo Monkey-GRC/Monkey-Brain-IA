@@ -122,11 +122,18 @@ catálogo, filtro global de excepciones, `ValidationException`, paginación, dec
   elegidos por `PROBE_MODE`: no hay conectores reales y no se finge ninguna conexión. El proveedor del motor
   **nunca** sale. Decisiones en D46; parches en `deuda-tecnica/README.md`. **El paso 3 (conectar un activo) es
   provisional:** no coincide con cómo funciona la sonda real (D48, DT-31 a DT-36, pendiente P12).
+- **Correcciones del comité (2026-10-05, D50/D51), ya en `develop` (Backend PR #16, Frontend PR #5, Frontend-Platform PR #8):** activación de cuenta en dos pasos
+  (`POST /v1/auth/redeem/lookup`; sin nombre ni apellido, `users.name/last_name` opcionales); 7 marcos ofrecidos y solo SOC 2
+  contratable (`frameworks.availability`, aviso de ventas en el servicio); se retiró la regulación por servicio
+  (`service_regulations`) y PCI DSS de las regulaciones (ahora 18); la Descripción del Sistema admite enlace y/o archivo
+  (puerto `FileStorage`, adaptador S3 / minio, **sin probar contra el minio real**, DT-39); certificación previa con 8
+  opciones; sin nombre de proveedor en el servicio; modal de la clave de Admin con padding. Migración `20261005220000_correcciones_onboarding_d50_d51`
+  (**por verificar que esté aplicada en dev**).
 - Estado del código (2026-10-02): la rama de onboarding ya está en `develop` en los tres repos (Backend PR #15,
   Frontend PR #4, Frontend-Platform PR #7). Una ráfaga de peticiones ya no falla con 500 (D49).
 - Siembra (una sola vía, la de Héctor): `npm run bootstrap:admin` crea la empresa interna de Monkey y el
   primer `admin_monkey` desde las variables `BOOTSTRAP_*` del `.env`; `npm run reference:load` carga las
-  18 regulaciones, las 6 capacidades automatizadas y los 6 marcos ofrecidos como `coming_soon` (idempotente; `reference:verify` solo compara); el
+  18 normas de protección de datos (D51), los 6 marcos ofrecidos como `coming_soon` (D50) y las 6 capacidades automatizadas (idempotente; `reference:verify` solo compara); el
   catálogo SOC 2 con `catalog:load`. Ya no existe `prisma db seed`.
 
 ## Convenciones clave
@@ -144,6 +151,9 @@ catálogo, filtro global de excepciones, `ValidationException`, paginación, dec
 - Schema en `prisma/schema/<catalog|platform|tenant|audit>/*.prisma`, un solo `prisma.config.ts`;
   migrar con `npx prisma migrate dev` (dev) o `migrate deploy` (staging/prod) — ver
   `skills/backend/add-prisma-model.md`.
+- **Auditoría atómica (D52, SEG-36):** todo método de repositorio que **cambia datos** recibe un `AuditIntent` que el caso de uso
+  construye y que el repositorio escribe con `insertAuditLog(tx, …)` en la misma transacción. Si el rastro falla, la acción se revierte.
+  `AuditLogWriter.write` queda solo para intentos fallidos.
 - Inversión de dependencias vía clases abstractas: cada `*.module.ts` registra
   `provide: XRepository, useClass: XPrismaRepository`.
 - Tipos en firmas decoradas se importan con `import type` (`isolatedModules` + `emitDecoratorMetadata`).

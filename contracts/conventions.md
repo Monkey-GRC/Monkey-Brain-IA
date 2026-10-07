@@ -155,12 +155,14 @@ convención de **todos** los módulos, no de uno. La tabla es append-only: se ag
 | `auth.login` | inicio de sesión correcto | el usuario | su empresa |
 | `auth.login_failed` | intento fallido (CC7.2); el email puede no existir | `attempted_email` | nulo |
 
-- **Los fallos también se registran**, con `result = error`: un intento rechazado es justo lo que un auditor pide ver.
+- **Los fallos también se registran**, con `result = error`: un intento rechazado es justo lo que un auditor pide ver. Como no hay
+  efecto con el que ser atómico, se escriben aparte (de mejor esfuerzo); un fallo de ese registro no tumba la respuesta.
 - **Nunca se guarda un secreto** en `before_state` ni `after_state`: ni la clave de acceso, ni la contraseña, ni un
   hash, ni un token. Se guarda el `id` del recurso, no su credencial.
 - **Se escribe sin `RETURNING`** (`createMany` o SQL directo): una acción de plataforma sin tenant no pasa la
   política de lectura (`modelo-datos.md` §5.3).
-- **Se escribe en la misma transacción** que la acción: si la acción se revierte, su fila también.
+- **Se escribe en la misma transacción** que la acción: si la acción se revierte, su fila también, **y si el rastro falla, la acción
+  se revierte** (`500`). Es la regla de D52 (SEG-36). Excepción: los cierres automáticos de sesión no se registran (DT-47).
 
 ## Progreso del onboarding
 

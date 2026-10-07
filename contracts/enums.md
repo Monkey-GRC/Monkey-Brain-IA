@@ -91,19 +91,21 @@ la fuente manda, pero el frontend la agrupa aparte.
 | `defined` | Definida |
 | `managed_certified` | Gestionada/Certificada |
 
-### `regulation` — catálogo `regulations` (tabla propia, no enum de columna) · 18 valores (D51)
+### `regulation` — catálogo `regulations` (tabla propia, no enum de columna) · 18 valores
 
-Solo **normas de protección de datos personales** (16) más las dos salidas del multi-select:
+Solo **normas de protección de datos personales** (D51; el comité pidió depurar la lista el 2026-10-05).
 
 `ley_1581_co` Ley 1581 (CO) · `lfpdppp_mx` LFPDPPP (MX) · `ley_29733_pe` Ley 29733 (PE) ·
 `ley_19628_cl` Ley 19628 (CL) · `ley_21719_cl` Ley 21719 (CL) · `ley_25326_ar` Ley 25326 (AR) ·
-`ley_18331_uy` Ley 18331 (UY) · `lopdp_ec` LOPDP (EC) · `ley_81_pa` Ley 81 (PA) · `ley_8968_cr`
-Ley 8968 (CR) · `lgpd_br` LGPD (BR) · `gdpr_eu` GDPR (UE) · `lopdgdd_es` LOPDGDD (ES) · `hipaa_us`
-HIPAA (US) · `ccpa_cpra_us` CCPA/CPRA (US) · `glba_us` GLBA (US) · `none` Ninguna · `other` Otra
+`ley_18331_uy` Ley 18331 (UY) · `lopdp_ec` LOPDP (EC) · `ley_81_pa` Ley 81 (PA) · `ley_8968_cr` Ley 8968 (CR) ·
+`lgpd_br` LGPD (BR) · `gdpr_eu` GDPR (UE) · `lopdgdd_es` LOPDGDD (ES) · `hipaa_us` HIPAA (US) ·
+`ccpa_cpra_us` CCPA/CPRA (US) · `glba_us` GLBA (US) · `none` Ninguna · `other` Otra
 
-**`pci_dss` salió del catálogo en D51**: es un estándar de la industria de tarjetas y ya es un marco
-(`framework`), no una norma de protección de datos. La migración lo borra también de las empresas que lo marcaron.
-Se declara **solo a nivel de empresa** (Componente 1); el servicio ya no tiene regulaciones (D51).
+**Qué cambió respecto a los 14 anteriores:** salió `pci_dss` (es un estándar de la industria de tarjetas, no una norma de
+protección de datos, y ya es un marco); entraron la Ley 21.719 de Chile (publicada el 13-dic-2024, **vigente desde el
+1-dic-2026**, reemplaza a la 19.628, que se conserva hasta entonces) y las leyes de Uruguay, Ecuador, Panamá y Costa Rica.
+`hipaa_us` y `glba_us` se quedan: son leyes sectoriales de EE. UU. que protegen datos de salud y financieros. **Falta que el
+comité ratifique la lista** (DT-40); sirven de fuente las leyes citadas, no el Excel, que traía las 14 originales.
 
 `regulations` no se puntúa (decisión D10): determina qué aplica, no entra al cálculo.
 
@@ -201,25 +203,24 @@ va incluido siempre.
 `aws` AWS · `azure` Azure · `gcp` GCP · `on_premise` On-premise · `hybrid` Híbrida ·
 `mobile` Mobile · `other` Otro
 
-### `framework` — catálogo `frameworks` · 7 ofrecidos, 1 contratable en el MVP (D37, D50)
+### `framework` — catálogo `frameworks` · 7 ofrecidos, 1 disponible (D37, D50)
 
-`soc2` SOC 2 (**`available`**) · `iso27001` ISO 27001 · `hipaa` HIPAA · `gdpr` GDPR · `pci_dss` PCI DSS ·
-`nist_csf` NIST CSF · `soc1` SOC 1 (los seis, **`coming_soon`**), en ese orden de oferta.
+`soc2` SOC 2 · `iso27001` ISO 27001 · `hipaa` HIPAA · `gdpr` GDPR · `pci_dss` PCI DSS · `nist_csf` NIST CSF · `soc1` SOC 1
 
-**El MVP solo permite contratar SOC 2** (D37). Los demás se **muestran** como oferta (D50) pero contratarlos responde
-`409 FRAMEWORK_NOT_AVAILABLE`. La lista que ve el cliente sale de la tabla `frameworks`, nunca de una lista fija en el
-frontend: así un marco que no esté sembrado no se puede elegir y romper la FK de `service_frameworks`. `CIS Controls` sigue
-vetado como marco ofrecido (`mvp-roadmap.md`).
-
-### `framework_availability` — `frameworks.availability` (D50)
-
-`available` Disponible (ya tiene catálogo y se puede contratar) · `coming_soon` Próximamente (solo oferta comercial)
+**Solo SOC 2 está construido (D37).** Los otros seis se **ofrecen** como gancho comercial (D50): se siembran en
+`catalog.frameworks` con `availability = coming_soon` y sin requisitos (`npm run reference:load`), y `GET /v1/catalogs/frameworks`
+trae todos con su `availability` (`available` | `coming_soon`) en el orden de arriba, que es el de demanda (Drata: ISO 27001
+es la expansión más común sobre SOC 2, 32 %; HIPAA 20 %; GDPR 19 %; ACC 2025). Monkey Admin solo deja contratar los
+`available` (`409 FRAMEWORK_NOT_AVAILABLE`) y el cliente solo elige los contratados. `CIS Controls` sigue vetado. La lista
+nunca es fija en el frontend: sale de la tabla.
 
 ### `previous_certification` — `services.previous_certification` · opcional
 
-`soc2` SOC 2 · `soc1` SOC 1 · `iso27001` ISO 27001 · `pci_dss` PCI DSS · `hipaa` HIPAA · `nist_csf` NIST CSF · `gdpr` GDPR · `none` Ninguna (8 valores, D51)
+`soc2` SOC 2 · `soc1` SOC 1 · `iso27001` ISO 27001 · `pci_dss` PCI DSS · `hipaa` HIPAA · `nist_csf` NIST CSF · `gdpr` GDPR ·
+`none` Ninguna
 
-HIPAA, NIST CSF y GDPR no se «certifican»: la pregunta es por una certificación **o evaluación** previa.
+La pantalla pregunta por una «certificación o evaluación» previa: HIPAA, NIST CSF y GDPR no se certifican como tal, pero sí
+se evalúan (D51).
 
 ⚠️ `modulos/onboarding.md` decía que este campo "no persiste en una entidad propia", pero
 `modelo-datos.md` §6.2 sí lo declara como columna. Persiste.

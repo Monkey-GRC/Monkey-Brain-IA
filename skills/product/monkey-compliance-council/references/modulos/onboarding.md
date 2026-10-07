@@ -40,8 +40,9 @@ forma exacta del request y del response está en `contracts/modules/onboarding-o
 
 ## Componente 2 — Contexto del Servicio
 
-Va a `services` y a las entidades que cuelgan de él. Dieciséis preguntas, una columna por
-servicio (un cliente puede declarar varios):
+Va a `services` y a las entidades que cuelgan de él. Quince preguntas (dieciséis en el Excel, menos la de regulaciones
+por servicio, que el comité retiró, D51), una columna por servicio (un cliente puede declarar varios). El nombre del
+proveedor de subservicios ya no se pregunta: el tipo (AWS, Azure…) lo dice:
 
 Nombres reales del modelo, en inglés (`modelo-datos.md` §6.2). La forma exacta del request y
 del response está en `contracts/modules/onboarding-service-context.md`; las listas de opciones
@@ -60,15 +61,15 @@ literales, en `contracts/enums.md`.
 | Criterios de confianza SOC aplicables | Multi-select — Seguridad siempre incluida | `N:M` → `trust_criteria`, vía `service_trust_criteria` |
 | Organizaciones de subservicios (nube/infra) | Multi-select | `1:N` → `subservice_organizations` |
 | Detalle de subservicios (proveedor, servicio, responsabilidad) | Texto — opcional | `subservice_organizations.responsibility` |
-| Framework que desea gestionar | Multi-select (solo lo contratado) | `N:M` → `frameworks`, vía `service_frameworks` |
-| ¿Ya tiene alguna certificación o evaluación? | Selección — opcional | `services.previous_certification` (8 valores, D51) |
+| Framework que desea gestionar | Multi-select — se muestran todos los que Monkey ofrece, solo se eligen los contratados (D50) | `N:M` → `frameworks`, vía `service_frameworks` |
+| ¿Ya tiene alguna certificación o evaluación? | Selección — opcional | `services.previous_certification` |
 | Disponibilidad esperada | Selección | `services.expected_availability` |
-| Descripción del Sistema | Enlace y/o archivo (PDF o `.docx`, 25 MB) | `1:1` → `system_descriptions.link_url` / `file_key` (D51) |
+| Descripción del Sistema | Enlace, archivo o los dos (al menos uno) | `1:1` → `system_descriptions.link_url` / `file_key` |
 
-> **Las regulaciones ya no se declaran por servicio** (D51; revierte D45): se declaran **una vez por empresa** en el Componente 1
-> (`organization_regulations`). El catálogo `regulations` tiene 18 filas (16 normas de protección de datos más `none` y `other`).
-> **La Descripción del Sistema** se entrega como enlace, como archivo, o las dos cosas; al menos una es obligatoria.
-> El archivo se guarda en S3/minio (no en la base) y el procesamiento de sus 10 secciones sigue pendiente (DT-12).
+> ✅ **Cerrado por el comité el 2026-10-05 (D51):** (1) la regulación **no se declara por servicio**: aplica a la empresa y
+> vive en el Componente 1 (la fila «Regulaciones que debe cumplir el servicio» del Excel se retiró; no existe
+> `service_regulations`); (2) la Descripción del Sistema se entrega con un enlace, un archivo o los dos, y el
+> endpoint del archivo es `multipart/form-data` (`contracts/modules/onboarding-service-context.md`).
 
 **La Descripción del Sistema es un entregable, no un campo de texto.** El cliente sube un
 documento con las 10 secciones de los *Description Criteria* de AICPA (tipos de servicio,
