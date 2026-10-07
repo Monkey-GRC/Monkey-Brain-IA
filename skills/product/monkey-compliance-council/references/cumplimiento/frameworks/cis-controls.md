@@ -18,7 +18,7 @@ Empresas que quieren una hoja de ruta priorizada y accionable de "qué hacer pri
 IG1 es candidato natural para ser la base del catálogo de controles atómicos "esenciales" que Monkey activa automáticamente para cualquier tenant nuevo, independientemente del framework que persiga — es la higiene mínima que subyace a SOC 2, ISO 27001 y PCI DSS por igual.
 
 ## Wazuh
-El módulo SCA (Security Configuration Assessment) de Wazuh corre benchmarks tipo CIS directamente contra los endpoints — ver `../wazuh.md`.
+El módulo SCA (Security Configuration Assessment) de Wazuh corre benchmarks tipo CIS directamente contra los endpoints — ver `../../control-tecnico/wazuh.md`.
 
 ## Fuentes
 - [CIS Critical Security Controls Implementation Groups — CIS](https://www.cisecurity.org/controls/implementation-groups)

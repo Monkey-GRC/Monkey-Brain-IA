@@ -235,7 +235,7 @@ Claves i18n: `deployment_scenario.saved`, `scope.saved`, `asset.created`, `asset
 ## Preguntas abiertas
 
 Todas las que había quedaron **cubiertas por desarrollo en D46**; lo que sigue siendo un parche está en
-`deuda-tecnica.md`. Ninguna bloquea el componente.
+`deuda-tecnica/README.md`. Ninguna bloquea el componente.
 
 | Qué | Estado |
 |---|---|

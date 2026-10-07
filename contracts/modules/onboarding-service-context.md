@@ -175,9 +175,11 @@ Como el archivo necesita que el servicio exista, con archivo el flujo es: `POST 
 
 ### `POST /v1/services/{id}/system-description` — el enlace (JSON)
 
-```json
-{ "kind": "link", "url": "https://..." }
-```
+| Endpoint | Qué hace |
+|---|---|
+| `POST /v1/services/{id}/system-description` | Guarda el enlace: `{ "kind": "link", "url": "https://..." }` (`http`/`https`) |
+| `POST /v1/services/{id}/system-description/file` | `multipart/form-data`, el binario en el campo `file`. **Máximo 25 MB, PDF o `.docx`**; se valida también la firma del archivo, no solo el tipo que declara el navegador |
+| `GET /v1/services/{id}/system-description/file` | `{ url, file_name, expires_in }`: una URL temporal (5 min) para descargar; el bucket no es público. `404 SYSTEM_DESCRIPTION_NOT_A_FILE` si solo hay enlace |
 
 ### `POST /v1/services/{id}/system-description/file` — el archivo (multipart)
 
@@ -217,6 +219,7 @@ No se puntúan ni entran al cálculo: se transcriben para el informe.
 | 409 | `SERVICE_NAME_TAKEN` | Ya existe un servicio con ese nombre en la organización |
 | 409 | `FRAMEWORK_NOT_CONTRACTED` | Se eligió un marco que Monkey Admin no contrató para la empresa (`platform.company_frameworks`, D47). La pantalla muestra todos los marcos y, ante este caso, invita a hablar con mercadeo (D50) |
 | 409 | `SERVICE_HAS_EVALUATIONS` | `DELETE` sobre un servicio ya evaluado |
+| 409 | `FRAMEWORK_NOT_AVAILABLE` | El marco existe en el catálogo pero aún no está construido (`coming_soon`, D50) |
 | 413 | `FILE_TOO_LARGE` | La Descripción del Sistema pasa de 25 MB |
 | 415 | `UNSUPPORTED_MEDIA_TYPE` | Tipo de archivo no permitido (ni extensión ni firma de PDF o .docx) |
 | 422 | `FILE_REQUIRED` | El multipart no trae el campo `file` o viene vacío |
@@ -227,8 +230,8 @@ No se puntúan ni entran al cálculo: se transcriben para el informe.
 Claves i18n: `service.created`, `service.list`, `service.updated`, `service.deleted`,
 `service.name_taken`, `service.has_evaluations`, `organization.not_declared`,
 `framework.not_contracted`, `trust_criterion.security_required`, `catalog.cloned`,
-`catalog.processing`, `system_description.uploaded`, `file.too_large`,
-`file.unsupported_type`, `validation.failed`.
+`catalog.processing`, `service.system_description_saved`, `service.system_description_file`, `file.required`, `file.too_large`,
+`file.unsupported_type`, `file.storage_unavailable`, `file.not_a_file`, `framework.not_available`, `validation.failed`.
 
 ## Notas
 
@@ -250,10 +253,10 @@ Claves i18n: `service.created`, `service.list`, `service.updated`, `service.dele
 | **`business_model` y `services.type`** | El Excel gana sobre el modelo (11 tipos de servicio, no 5). Hay que corregir el enum en `modelo-datos.md` §6.2 |
 | **Dimensiones de los controles clonados** | `control_dimensions` está vacío en el catálogo (P10): los controles se clonan sin dimensiones y como `manual` hasta que se siembren |
 
-## Estado de implementación (2026-09-30)
+## Estado de implementación (actualizado 2026-10-07)
 
 Implementado en `Backend/src/features/services` (más `catalogs` y el progreso de `auth`) y en
-`Frontend-Platform/src/app/features/services` (asistente y «Mis servicios»). Decisiones D45.
+`Frontend-Platform/src/app/features/services` (asistente y «Mis servicios»). Decisiones D45, D50 y D51.
 
 | Endpoint | Estado |
 |---|---|

@@ -60,9 +60,8 @@ condición para canjearlo (D43).
 Primer acceso del cliente. Crea su cuenta con la clave que le entregó `admin_monkey`. **Solo se pide la contraseña**: el
 correo es el administrativo que registró Monkey y no se pide ni se edita nombre ni apellido (D51).
 
-⚠️ **La forma de este request depende de la pregunta abierta (a):** si la clave es un código
-que el cliente escribe, o un link con token en la URL. Abajo va la forma de **código**, que es
-la que asume el sprint (la clave se copia de la UI de Monkey Admin, no llega por correo).
+Es un **código que el cliente escribe** (formato `MNK-XXXX-XXXX-XXXX`, con o sin guiones). La pregunta abierta P2(a) sigue sin
+respuesta explícita del comité: el flujo implementado asume el código.
 
 ```json
 {
@@ -100,7 +99,8 @@ la que asume el sprint (la clave se copia de la UI de Monkey Admin, no llega por
 ```
 
 `company.name` viene de `companies` y es lo que el Componente 1 mostrará **precargado y
-bloqueado**. `onboarding.next_step` dice al frontend dónde continuar sin que lo adivine.
+bloqueado**. `onboarding.next_step` dice al frontend dónde continuar sin que lo adivine. `user.name` y `user.last_name` son `null`
+hasta que se completen en el perfil.
 
 La contraseña debe cumplir la política de `modelo-datos.md` §5.3: **12+ caracteres con
 complejidad**. Se valida en el servidor, y el error va por campo.
@@ -149,11 +149,12 @@ llama al arrancar para saber si hay sesión y dónde continuar.
 | 422  | `VALIDATION_FAILED`       | Contraseña que no cumple la política, email inválido                                |
 | 422  | `ACCESS_KEY_EMAIL_MISMATCH` | El correo del canje no es el `admin_email` registrado para la empresa (D43). La clave sigue pendiente |
 | 429  | `RATE_LIMITED`            | Límite por IP en los endpoints de auth                                                |
+| 429  | `ACCESS_KEY_RATE_LIMITED` | 10 intentos fallidos con la clave en 15 min desde una misma dirección (`redeem` y `redeem/lookup`; D51, DT-37) |
 
 Claves i18n: `auth.account_created`, `auth.logged_in`, `auth.logged_out`,
 `auth.invalid_credentials`, `auth.session_expired`, `auth.account_locked`,
 `auth.account_inactive`, `access_key.invalid`, `access_key.already_used`,
-`access_key.expired`, `user.email_taken`, `validation.failed`.
+`access_key.expired`, `auth.access_key_found`, `auth.access_key_rate_limited`, `user.email_taken`, `validation.failed`.
 
 ## Notas
 
@@ -205,7 +206,7 @@ Decisiones de implementación, dentro de lo que el contrato ya decía:
   `404 ACCESS_KEY_INVALID`.
 - **Qué app acepta a quién:** Monkey Admin solo admite `admin_monkey`; Monkey Platform rechaza a
   `admin_monkey`. Es un control de las apps (D24), no del endpoint: el login es el mismo.
-- **Pendiente:** `429 RATE_LIMITED` (no hay rate limiting todavía) y MFA (MD-94).
+- **Pendiente:** el `429 RATE_LIMITED` general (solo existe el freno de intentos de la clave de acceso, `ACCESS_KEY_RATE_LIMITED`) y MFA (MD-94).
 - **En local**, las dos apps comparten las cookies de `localhost` (los puertos no las separan): una
   sesión en Admin (puerto 4201) y otra en Platform (4200) en el mismo navegador se pisan. En dominios
   propios no pasa.

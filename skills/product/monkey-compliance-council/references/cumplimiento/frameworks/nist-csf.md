@@ -18,7 +18,7 @@ Empresas que quieren un lenguaje común de gestión de riesgo de ciberseguridad 
 La función Govern es la más nueva y la que menos cubren SOC 2/ISO 27001 de forma explícita — representa una oportunidad de diferenciación si Monkey activa este framework: mostrar "gobernanza" como categoría propia en el readiness, no solo controles técnicos.
 
 ## Wazuh
-Wazuh tiene un caso de uso documentado específico para NIST 800-53 (framework de controles federal relacionado, no el CSF en sí, pero con fuerte solapamiento de vocabulario y estructura) — ver `../wazuh.md`.
+Wazuh tiene un caso de uso documentado específico para NIST 800-53 (framework de controles federal relacionado, no el CSF en sí, pero con fuerte solapamiento de vocabulario y estructura) — ver `../../control-tecnico/wazuh.md`.
 
 ## Fuentes
 - [What is NIST CSF 2.0 — Thales](https://cpl.thalesgroup.com/compliance/what-is-nist-csf-2)

@@ -37,9 +37,10 @@ Al enviar el formulario:
 
 ## 2. Primer acceso del cliente
 
-Con la clave recibida en su correo administrativo, el cliente entra a **Monkey
-Platform** ("Activa tu cuenta") y crea su cuenta `admin_empresa` **con ese mismo correo
-administrativo** — con otro correo el canje se rechaza (D43). La `access_keys` pasa a `used`: la
+La activación va en **dos pasos** (D51). Con la clave recibida, el cliente entra a **Monkey Platform** ("Activa tu cuenta"):
+primero escribe el código y ve de qué empresa es y con qué correo se activa (`redeem/lookup`, no gasta la clave); después fija su
+contraseña y crea su cuenta `admin_empresa` **con ese mismo correo administrativo** — con otro correo el canje se rechaza (D43).
+No se le pide nombre ni apellido: la cuenta se identifica por el correo. La `access_keys` pasa a `used`: la
 clave sirve una sola vez. A partir de aquí el cliente ya está autenticado dentro de su tenant
 (access token de 15 min, cierre a los 30 min sin actividad y a las 8 h), y las siguientes veces
 entra con correo y contraseña.

@@ -116,8 +116,8 @@ pendientes de revisión del comité: el Excel solo las trae en español (salvo `
 `incorporation_country`, `client_country`, `compliance_maturity`, `regulations`).
 
 > **No existe el campo "framework que desea gestionar" a nivel de empresa.** El Excel lo trae
-> (`framework_a_gestionar`) pero el comité lo **vetó**: los marcos se contratan por servicio.
-> No se construye.
+> (`framework_a_gestionar`) pero el comité lo **vetó**: el cliente no elige el marco en el Componente 1. Lo contrata
+> Monkey Admin al registrar la empresa (D47) y el servicio elige entre lo contratado.
 
 ## Componente 2 — `services`
 

@@ -32,14 +32,14 @@ Propósito en una línea → entidades de `modelo-datos.md` que toca → tabla d
 real** de request y response por endpoint → tabla de errores → preguntas abiertas.
 
 El contrato dice **qué**, no **por qué**. El porqué de una decisión vive en
-`skills/product/monkey-compliance-council/references/modelo-datos-decisiones.md`.
+`skills/product/monkey-compliance-council/references/datos/modelo-datos-decisiones.md`.
 
 ## Quién manda si hay conflicto
 
 1. `assets/TSC INTERGRAL SOC 2 DETALLADO VF.xlsx` — la fuente del comité. Trae `clave_json`,
    `tipo`, `opciones (pipe)` y un `fragmento_json` por campo. De ahí salen las **listas de
    opciones** y la semántica de cada campo.
-2. `references/modelo-datos.md` §4-§9 — de ahí salen los **nombres de campo y de entidad**, en
+2. `references/datos/modelo-datos.md` §4-§9 — de ahí salen los **nombres de campo y de entidad**, en
    inglés. Las `clave_json` del Excel están en español y no viajan por el cable.
 3. Este directorio — la forma HTTP concreta.
 

@@ -11,7 +11,7 @@ Programa de certificación del Departamento de Defensa de EE. UU. (DoD) para con
 - **Nivel 3**: añade 24 controles adicionales de NIST SP 800-172 para amenazas avanzadas; aplica a menos del 5% de los contratistas, los que manejan CUI de "un programa crítico o activo de alto valor".
 
 ## Quién lo necesita típicamente
-Contratistas y subcontratistas de defensa de EE. UU. — explícitamente fuera del ICP del MVP de Monkey (ver `../mvp-roadmap.md`), pero el Nivel 1-2 podría volverse relevante si aparece demanda de clientes que venden al gobierno de EE. UU. indirectamente.
+Contratistas y subcontratistas de defensa de EE. UU. — explícitamente fuera del ICP del MVP de Monkey (ver `../../producto/mvp-roadmap.md`), pero el Nivel 1-2 podría volverse relevante si aparece demanda de clientes que venden al gobierno de EE. UU. indirectamente.
 
 ## Fuentes
 - [CMMC Requirements for 2026 — Puppet](https://www.puppet.com/blog/cmmc-requirements)

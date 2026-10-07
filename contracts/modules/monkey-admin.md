@@ -23,7 +23,7 @@ El comité fija **3 campos** (`modelo-datos.md` §4.2) y **D47 añade el marco q
 | `name` | string | sí | — | `companies.name` — razón social. Se fija aquí y llega bloqueada al Componente 1 |
 | `requires_dedicated_database` | boolean | sí | — | deriva `companies.isolation_strategy` |
 | `admin_email` | string (email) | sí | — | `companies.admin_email` |
-| `framework_codes` | array&lt;string&gt; | **no** (por defecto `["soc2"]`) | `framework` (1 valor en el MVP: `soc2`) | `platform.company_frameworks` — los marcos que se contratan para la empresa (D47) |
+| `framework_codes` | array&lt;string&gt; | **no** (por defecto `["soc2"]`) | `framework` (7 ofrecidos; solo `soc2` contratable: D37, D50) | `platform.company_frameworks` — los marcos que se contratan para la empresa (D47) |
 
 Monkey Admin muestra **todos los marcos que Monkey ofrece** (D50) y solo deja contratar los `available` (hoy solo
 `soc2`, D37); el resto aparece como «próximamente». Un código que no esté en `catalog.frameworks` → `422`; uno que
@@ -149,6 +149,7 @@ a `revoked`.
 | 409 | `ADMIN_EMAIL_TAKEN` | Ese `admin_email` ya es administrativo de otra empresa |
 | 409 | `COMPANY_ALREADY_ONBOARDED` | Se intenta editar tras el canje de la clave |
 | 409 | `ACCESS_KEY_NOT_PENDING` | Se intenta regenerar una clave ya usada |
+| 409 | `FRAMEWORK_NOT_AVAILABLE` | Se eligió un marco que aún no está construido (`coming_soon`, D50) |
 | 422 | `VALIDATION_FAILED` | `name` vacío o >255, `admin_email` inválido |
 | 422 | `DEDICATED_DATABASE_NOT_AVAILABLE` | **Temporal**: `requires_dedicated_database: true` mientras el aprovisionamiento dedicado no exista (P2d). Clave i18n `company.dedicated_not_available` |
 | 503 | `PROVISIONING_FAILED` | Falló el aprovisionamiento de la base dedicada |

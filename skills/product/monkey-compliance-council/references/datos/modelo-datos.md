@@ -773,7 +773,7 @@ son únicos.**
 - Una FK no valida que el padre sea del mismo tenant (las comprobaciones de FK ignoran RLS).
   Antes de escribir una fila con FK a otra tabla de tenant, **se lee el padre con el cliente
   ya sujeto a RLS**: si no lo ve, no es suyo.
-- `audit_logs` se escribe **sin `RETURNING`** (`createMany` o SQL directo). Un `INSERT … RETURNING`
+- `audit_logs` se escribe **dentro de la transacción de la acción** (D52, SEG-36) y **sin `RETURNING`** (`createMany` o SQL directo). Un `INSERT … RETURNING`
   exige que la fila nueva también pase la política de lectura, y una acción de plataforma sin
   tenant no la pasa.
 - El `email` de `users` se guarda **en minúsculas** (hay un `CHECK`).
@@ -958,6 +958,9 @@ responsable del control *de su empresa*, no del control del catálogo maestro.
 > nombre de persona, pero el modelo de usuarios del comité lo exige (*"Email,
 > nombre, rol, empresa, controles asignados"*). Gana el documento del comité: se añaden `name`
 > y `last_name`.
+>
+> **Después, D51 (2026-10-06) los volvió opcionales:** la cuenta se identifica por el correo y el nombre se completará en el
+> perfil. La activación ya no los pide.
 
 ### 5.3 Políticas de seguridad de la plataforma
 
@@ -1346,7 +1349,7 @@ eje aparte de las dimensiones: lo que el cliente *dice* que tiene, que se compar
 
 **Honestidad: Automatizado ≠ Operativo.** Mientras no haya una sonda real, una conexión no puede declararse
 `operational`: la comprobación está `unavailable` (503, el activo sigue `pending`) o `simulated` (solo
-desarrollo y demostración, el activo queda en `warning`). Ver D46 y `deuda-tecnica.md` DT-1.
+desarrollo y demostración, el activo queda en `warning`). Ver D46 y `deuda-tecnica/README.md` DT-1.
 
 **El flujo de cada conexión es conectar → validar → activar → programar.**
 

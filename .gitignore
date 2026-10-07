@@ -50,3 +50,8 @@ graphify-out/
 assets/*.xlsx
 assets/*.docx
 assets/*.pptx
+
+# Salidas crudas de escaneos de clientes (cuentas, ARN, recursos y fallos reales de una
+# infraestructura). Son datos del cliente: no se versionan, aunque el repo sea privado.
+assets/soc2/
+assets/*.html

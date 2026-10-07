@@ -39,16 +39,22 @@ enrutar la pregunta al archivo correcto** (ver `SKILL.md` de esa skill, sección
 - `architecture.md` — los 4 motores, la estructura del modelo y el stack de
   referencia.
 - `mvp-roadmap.md` — qué es MUST/SHOULD/LATER/NO BUILD ya decidido.
-- `frameworks/*.md` — qué exige cada framework (SOC 2, ISO 27001, PCI DSS, etc.),
+- `cumplimiento/frameworks/*.md` — qué exige cada framework (SOC 2, ISO 27001, PCI DSS, etc.),
   con fuente y fecha verificada. No inventar citas ni cifras de un framework.
+- `references/README.md` (en `skills/product/monkey-compliance-council/`) — el **mapa por carpetas**: `producto/`,
+  `arquitectura/`, `datos/`, `seguridad/`, `cumplimiento/`, `control-tecnico/`, `modulos/` y `deuda-tecnica/`. Los
+  nombres de archivo de abajo viven dentro de esas carpetas.
 - `council.md` — cómo se resuelven desacuerdos de diseño entre los roles del panel.
 - `modelo-datos-pendientes.md` — las preguntas que **todavía no están cerradas** y que
-  solo el comité puede responder (hoy son 10: P2, P3, P5, P6, P7, P8, P9, P11, P12 y P13). Antes de construir algo que dependa de una,
+  solo el comité puede responder (hoy son 11: P2, P3, P5, P6, P7, P8, P9, P11, P12, P13 y P14). Antes de construir algo que dependa de una,
   consúltala: si sigue ahí, no la resuelvas por tu cuenta — pregunta.
-- `deuda-tecnica.md` — lo que está **parchado o construido a medias** por desarrollo (la sonda simulada, la
-  Descripción del Sistema solo como enlace, las pruebas fuera del repo…), con su riesgo y qué lo cierra. No son
+- `deuda-tecnica/README.md` — lo que está **parchado o construido a medias** por desarrollo (la sonda simulada, la
+  Descripción del Sistema sin procesar, el recorrido de navegador fuera del repo…), con su riesgo y qué lo cierra. No son
   preguntas del comité (esas van en `modelo-datos-pendientes.md`) ni decisiones cerradas (esas, en
   `modelo-datos-decisiones.md`). Si construyes algo con un atajo, **regístralo ahí**; si cierras uno, bórralo.
+- `seguridad/requisitos.md` — los **requisitos de seguridad** (`SEG-n`) con su fuente, su estado real y la
+  prueba automática que los verifica. Todo endpoint, tabla o flujo nuevo se revisa contra esa lista
+  antes de darse por terminado; si introduce un requisito nuevo, se añade una fila en el mismo PR.
 - `schema-implementacion.md` — el **cómo** en el Backend: Prisma 7, RLS, roles, variables de
   entorno, migraciones y despliegue. Léelo antes de tocar el schema, una migración o el `.env`.
 - `modelo-datos-decisiones.md` — el **por qué** de cada decisión ya cerrada, con su
@@ -68,7 +74,7 @@ Control Técnico, matriz de controles, desglose SOC 2, notas del conector). **No
 material de apoyo: son la fuente de verdad.** Los `.md` de `references/` solo los
 transcriben. Si un `.md` y un documento fuente se contradicen, **gana el documento**
 y el `.md` se corrige. Inventario completo, incluidas las fuentes que viven fuera de
-este repo, en `skills/product/monkey-compliance-council/references/modelo-datos.md` §0.
+este repo, en `skills/product/monkey-compliance-council/references/datos/modelo-datos.md` §0.
 
 ### El comité manda sobre lo implementado
 

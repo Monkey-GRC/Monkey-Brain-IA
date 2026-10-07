@@ -685,6 +685,8 @@ causa→control; sumar Disponibilidad agrega 6 controles.
 
 ## D41 · El audit trail es inmutable en la base de datos y se retiene 7 años (MD-92)
 
+> La exigencia de escribir el rastro **en la misma transacción** que la acción se cumplió recién con **D52**.
+
 **Decisión:**
 1. **Inmutable para todos los roles, no solo para la app.** `audit.audit_logs` y `audit.compliance_events`
    rechazan `UPDATE`, `DELETE` y `TRUNCATE` con triggers (migración `audit_append_only_triggers`), además del
@@ -828,7 +830,7 @@ schema contradecía:
    infraestructura.
 2. **`subservice_organizations.provider`, `service_provided` y `responsibility` pasan a nullable.** El
    "detalle" del Excel es opcional y solo el `type` es obligatorio (el contrato ya lo decía).
-3. **Nueva tabla `service_regulations`** (servicio ↔ regulación, con RLS por `tenant_id`). Cierra la
+3. ~~**Nueva tabla `service_regulations`**~~ **Revertida por D51** (la tabla se eliminó: la regulación se declara solo a nivel de empresa). Antes: servicio ↔ regulación, con RLS por `tenant_id`. Cerraba la
    pregunta abierta "regulación a nivel de servicio": el request del contrato ya traía
    `regulation_codes` y no tenía dónde persistir. No se puntúa (D10).
 
@@ -860,7 +862,7 @@ transacción única (puntos 8 y 9):
 
 **Resto de huecos:**
 
-10. **Descripción del Sistema: solo enlace** (`kind = link`, `http`/`https`). El archivo
+10. **Descripción del Sistema: solo enlace** — **superado por D51** (ahora enlace y/o archivo). Antes: `kind = link`, `http`/`https`. El archivo
     (`multipart`, 25 MB) no se construyó: no hay dónde guardar binarios todavía. `kind = file` responde 422.
 11. **Nombre único por empresa** sin importar mayúsculas ni espacios (`SERVICE_NAME_TAKEN`); la base no lo
     impone, la aplicación sí.
@@ -891,7 +893,7 @@ revisión.
 
 **Decisiones** (Carlos, 2026-10-01; **pendientes de ratificar con el comité**; ninguna toca cómo se
 calcula el cumplimiento). Es el registro de cada hueco que `onboarding-technical-control.md` dejaba abierto
-y cómo se cubrió. Lo que sigue siendo un parche está en **`deuda-tecnica.md`** (DT-1 a DT-36).
+y cómo se cubrió. Lo que sigue siendo un parche está en **`deuda-tecnica/README.md`** (DT-1 a DT-36).
 
 **Cambios de schema** (migración 25, `asset_provisioning_schedule_frequency`, más el seed de las 6 capacidades):
 
@@ -957,6 +959,8 @@ más honesto y seguro, y se deja aquí para revisión.
 
 ## D47 · El marco se contrata al registrar la empresa (revierte el veto de §6.1)
 
+> **Ampliada por D50:** el catálogo muestra 7 marcos y solo los `available` (hoy SOC 2) se pueden contratar.
+
 **Decisión** (Carlos, 2026-10-01; **pendiente de ratificar con el comité**). **Monkey Admin contrata el marco
 para la empresa al registrarla** —hoy solo SOC 2 (D37), fijo y bloqueado en el formulario— y, al declarar un
 servicio, el cliente solo puede elegir entre los marcos que su empresa tiene contratados (también fijo: SOC 2).
@@ -985,7 +989,7 @@ que apuntaba a esto y que D45 había dejado sin uso.
 7. **`service_frameworks` no cambia:** sigue guardando qué marco persigue cada servicio, con su versión de catálogo y su
    periodo de evaluación (A4).
 
-**Deja abierto** (en `deuda-tecnica.md`): no hay forma de contratar o cancelar un marco después del registro (DT-26) y el
+**Deja abierto** (en `deuda-tecnica/README.md`): no hay forma de contratar o cancelar un marco después del registro (DT-26) y el
 contrato no guarda condiciones comerciales (DT-27). Las empresas que existían antes de la migración no tienen contrato; en
 desarrollo no había ninguna.
 
@@ -1044,7 +1048,7 @@ límite de duración de la transacción (`timeoutMs`).
    gancho comercial (SOC 2, ISO 27001, HIPAA, GDPR, PCI DSS, NIST CSF y SOC 1, en orden de demanda), pero **solo se habilita lo
    que está construido** (hoy, SOC 2) y, en el servicio, lo que la empresa contrató. Si el cliente toca un marco que no tiene
    contratado, no se selecciona: se abre un aviso que lo invita a hablar con mercadeo (mock, DT-41).
-2. **`catalog.frameworks.availability`** (`available` | `coming_soon`, migración 27): `soc2` es `available`; los otros seis se
+2. **`catalog.frameworks.availability`** (`available` | `coming_soon`, migración `20261005220000_correcciones_onboarding_d50_d51`): `soc2` es `available`; los otros seis se
    siembran con `npm run reference:load` como `coming_soon` y **sin requisitos ni controles**. El registro de empresa rechaza un
    `coming_soon` con `409 FRAMEWORK_NOT_AVAILABLE`. `GET /v1/catalogs/frameworks` los trae todos, con `availability`.
 3. **Qué marcos y por qué esos.** Los más demandados hoy: SOC 2 es el estándar del SaaS B2B; ISO 27001 es la expansión más
@@ -1083,7 +1087,7 @@ SOC 2), ACC 2025, guías sectoriales de cumplimiento.
    código, así que tiene un freno de 10 fallos / 15 min por dirección compartido con el canje (DT-37); antes, `redeem` no tenía
    ninguno.
 2. **La regulación ya no se declara por servicio.** Las leyes de protección de datos aplican a la **empresa**, y ya se declaran
-   en el Componente 1 (`organization_regulations`). Se retira `service_regulations` (migración 27), `regulation_codes` del
+   en el Componente 1 (`organization_regulations`). Se retira `service_regulations` (misma migración `20261005220000`), `regulation_codes` del
    servicio y su pregunta. Revierte D45 (que la había añadido «por analogía»). Quedan 12 campos obligatorios.
 3. **La lista de regulaciones solo trae normas de protección de datos.** Salió PCI DSS (estándar de la industria de tarjetas,
    no una ley; ya es un marco). HIPAA y GLBA se quedan: son leyes sectoriales de EE. UU. que protegen datos de salud y
@@ -1105,5 +1109,46 @@ SOC 2), ACC 2025, guías sectoriales de cumplimiento.
 (el control sigue siendo atómico, el cumplimiento se sigue derivando).
 
 **Fuente:** correcciones del comité del 2026-10-05, pasadas por Carlos el mismo día.
+
+---
+
+## D52 · La auditoría se escribe en la misma transacción que la acción (cierra DT-28, SEG-36)
+
+**Decisión** (desarrollo, 2026-10-07; **pendiente de ratificar con el comité**; no cambia el modelo de datos). D41 y
+`contracts/conventions.md` ya exigían que el rastro se escribiera en la misma transacción que la acción. No se cumplía: los
+casos de uso llamaban al repositorio y **después** al escritor de auditoría, en otra transacción y con el error tragado. Si
+fallaba entre las dos, la acción quedaba sin rastro.
+
+**Cómo quedó:**
+
+1. **`AuditIntent<T>`** (`common/audit/audit-log.writer.ts`): una función `(resultado) => AuditEntry | AuditEntry[]` que el caso de
+   uso construye con lo que ya sabe (usuario, IP, estado anterior) y **entrega al repositorio**. El repositorio, dentro de la
+   transacción que ya abre con `withScope`, escribe el efecto, arma el resultado y llama a `insertAuditLog(tx, audit(resultado))`.
+2. **El parámetro es obligatorio** en todo método que cambia datos: servicios (crear, modificar, descripción, eliminar),
+   contexto organizacional, empresa, escenario y alcance, activos (registrar, validar, activar, programar), sesión (login y
+   logout) y canje de la clave. Un método nuevo sin él no compila.
+3. **Falla cerrado:** si el insert del rastro falla, **toda la acción se revierte** y la respuesta es un `500`. Es la lectura
+   correcta de SOC 2 (CC7.2, CC9.2): una acción sin rastro es peor que una acción rechazada.
+4. **Dónde NO aplica**, a propósito: (a) los **intentos fallidos** (`auth.login_failed`, canje fallido): no hay efecto con el que ser
+   atómico y no deben romper la respuesta, así que siguen con `AuditLogWriter.write`, de mejor esfuerzo; (b) los **cierres
+   automáticos de sesión** (inactividad, expiración, usuario inactivo): se pasa `null` explícito y hoy no se registran (**DT-47**).
+5. **Una validación fallida de un activo sí es un cambio** (pasa la conexión a `failed`): su rastro `result = error` se escribe en
+   la misma transacción.
+
+**Alternativas descartadas:**
+
+- **Transacción ambiental** (`AsyncLocalStorage` + `withScope` que se une a la abierta): menos cambios en los casos de uso, pero
+  oculta cuándo hay transacción, y el repositorio del canje atrapa un error de la base (`P2002`) para devolver `email_taken`; unido
+  a una transacción externa, el error la dejaría abortada. Se prefirió el parámetro explícito.
+- **Dejar el escritor aparte con reintento:** no da atomicidad, solo disminuye la ventana.
+
+**Qué cuesta:** una caída de `audit_logs` ahora **detiene** las acciones que cambian datos (disponibilidad a cambio de
+integridad del rastro). `audit_logs` es la misma base que los datos, así que no hay un punto de fallo nuevo en la práctica.
+
+**Cómo se comprueba:** `Backend/test/auditoria/audit-atomica.e2e-spec.ts` (19 pruebas). Fuerza que el rastro se inserte y luego
+falle, y comprueba que no queda ni el efecto ni la fila. Una mutación que escribe el rastro después de confirmar el cambio hace
+fallar la prueba correspondiente.
+
+**Fuente:** D41, `contracts/conventions.md` («Se escribe en la misma transacción que la acción»), DT-28 y MD-113.
 
 ---

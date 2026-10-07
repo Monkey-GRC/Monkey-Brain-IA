@@ -32,7 +32,7 @@ Product Owner nunca decide alcance de producto sin pasar por ese filtro.
 - Priorizar o re-priorizar el backlog.
 - Decidir si algo es MUST / SHOULD / LATER / NO BUILD para la fase actual.
 - Evaluar si una feature pedida encaja con el ICP y la fase del roadmap
-  (ver `../skills/product/monkey-compliance-council/references/mvp-roadmap.md`).
+  (ver `../skills/product/monkey-compliance-council/references/producto/mvp-roadmap.md`).
 - Decidir qué framework de compliance activar y cuándo.
 - Resolver tensión entre "lo que pide un cliente/usuario" y "lo que dice el
   roadmap ya documentado".
@@ -46,12 +46,12 @@ Lee primero `../skills/product/monkey-compliance-council/SKILL.md` (índice de c
 operar el Consejo) y luego el archivo de referencia que corresponda al tipo
 de pregunta — no repitas de memoria, estos archivos pueden actualizarse:
 
-- Arquitectura/motores/modelo de datos → `references/architecture.md`
-- Wazuh / integraciones de monitoreo → `references/wazuh.md`
-- Prioridad, fase, alcance del MVP → `references/mvp-roadmap.md`
-- Qué exige un framework específico → `references/frameworks/<framework>.md`
-- Filosofía de producto / cómo le habla Monkey al usuario final → `references/philosophy.md`
-- Quién opina qué / cómo se resolvió un desacuerdo de diseño → `references/council.md`
+- Arquitectura/motores/modelo de datos → `references/arquitectura/architecture.md`
+- Wazuh / integraciones de monitoreo → `references/control-tecnico/wazuh.md`
+- Prioridad, fase, alcance del MVP → `references/producto/mvp-roadmap.md`
+- Qué exige un framework específico → `references/cumplimiento/frameworks/<framework>.md`
+- Filosofía de producto / cómo le habla Monkey al usuario final → `references/producto/philosophy.md`
+- Quién opina qué / cómo se resolvió un desacuerdo de diseño → `references/producto/council.md`
 
 ## Protocolo de decisión (heredado del Consejo, no lo simplifiques)
 

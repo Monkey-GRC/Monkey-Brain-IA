@@ -5,13 +5,15 @@ Complementa a `modelo-datos.md` (el **qué**: tablas y relaciones) y a `modelo-d
 migraciones y despliegue. Si algo choca con `modelo-datos.md`, gana el modelo. Absorbe la bitácora
 "decisiones de la reconstrucción del schema" (septiembre de 2026), que se retiró de `assets/`.
 
-**Estado al 2026-10-02:** 28 migraciones, 58 enums, 77 tablas, todas con RLS, ninguna FK sin índice
+**Estado al 2026-10-07:** 29 migraciones, 58 enums, 76 tablas (medido en `develop`), todas con RLS, ninguna FK sin índice
 (salvo las de "quién lo hizo") y ningún `ON DELETE CASCADE`. Probado desde cero en Postgres 17.
 (La 24, `service_context_optional_fields_and_regulations`, es la del Componente 2: D45. La 25,
 `asset_provisioning_schedule_frequency`, la del Componente 3: D46. La 28, `company_frameworks`, el contrato
-de marcos por empresa: D47. Las 26 y 27 son de Héctor: D39 y D41.)
-**Las 28 están aplicadas en la base de dev** (`135.148.138.36`), sembrada con la empresa interna, el
-primer `admin_monkey`, las 14 regulaciones, las 6 capacidades y el catálogo de SOC 2 (§9 y §11).
+de marcos por empresa: D47. Las 26 y 27 son de Héctor: D39 y D41. La 29, `correcciones_onboarding_d50_d51`, las
+correcciones del comité: D50 y D51; elimina `service_regulations`: de ahí 76 tablas en lugar de 77.)
+**Al 2026-10-02 las 28 primeras estaban aplicadas en la base de dev** (`135.148.138.36`), sembrada con la empresa interna, el
+primer `admin_monkey`, las regulaciones, las 6 capacidades y el catálogo de SOC 2 (§9 y §11). **No verifiqué** que la 29 esté
+aplicada en dev: la base compartida solo se migra desde `develop` (§7).
 
 ---
 
@@ -175,7 +177,8 @@ filtrarían a otra petición del pool): `app.tenant_id`, `app.user_id`, `app.use
    cuatro políticas.**
 5. `audit_logs`: lectura del propio tenant o `admin_monkey`; inserción con `tenant_id` nulo o el
    propio. **Se escribe sin `RETURNING`**: un `INSERT … RETURNING` exige que la fila nueva pase
-   también la política de lectura, y una acción de plataforma sin tenant no la pasa.
+   también la política de lectura, y una acción de plataforma sin tenant no la pasa. **Se escribe dentro de la transacción de la
+   acción** (`insertAuditLog(tx, …)`, D52): el repositorio recibe un `AuditIntent` y, si el rastro falla, la acción se revierte.
 6. `evaluations`: `REVOKE UPDATE, DELETE, TRUNCATE` y `GRANT UPDATE (confirmed_by,
    closure_observation_reason)`: inmutable salvo el cierre humano.
 
@@ -267,13 +270,19 @@ desechable, ver §13):
   puertos**: solo lo alcanzan otros contenedores por `postgres-staging`. La carpeta `monkey-dev` de la
   VPS cumple hoy el rol de staging: es el destino del deploy automático. No se montó en otro servidor
   ni en un servicio administrado, por simplicidad y costo.
-- **CI/CD** (`deploy-dev.yml`, push a `develop`): `scp-action` copia el código y `ssh-action`
+- **CI** (`ci.yml`, PR #17 del Backend): en cada PR a `develop`/`main` levanta un Postgres vacío y corre lint, build, pruebas
+  unitarias, migraciones desde cero, carga de catálogos, los verificadores (`catalog`, `reference`, `clone`, `audit`) y las pruebas
+  de aislamiento (`npm run test:e2e`, ver `seguridad/requisitos.md`). **No bloquea el merge ni el despliegue** mientras la
+  organización no tenga el plan GitHub Team (DT-41).
+- **CD** (`deploy-dev.yml`, push a `develop`): `scp-action` copia el código y `ssh-action`
   (con `script_stop: true`) escribe el `.env` y corre `docker compose build backend && up -d`. El
   `.env` viaja como secret `ENV_FILE` **en base64, en una sola línea** (`base64 -w0`): con
   `script_stop`, `drone-ssh` inyecta un chequeo de salida entre las líneas de un heredoc y lo
   corrompería.
 - **El `.env` de runtime** solo lleva `APP_DATABASE_URL` (no `DATABASE_URL`), más JWT, Wazuh, S3 y
-  CORS cuando `auth` y los conectores lo usen.
+  CORS cuando `auth` y los conectores lo usen. Para la Descripción del Sistema como archivo (D51): `S3_ENDPOINT`, `S3_REGION`,
+  `S3_BUCKET`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY` y `S3_FORCE_PATH_STYLE` (con minio, `true`); sin bucket la app arranca y
+  subir un archivo responde `503`.
 - **El deploy migra solo** (MD-91, D42): antes de levantar el backend nuevo, `backend/scripts/deploy/migrate.sh`
   construye la etapa `build` del Dockerfile (trae el CLI de Prisma y tsx; la imagen de runtime no), **respalda** la
   base con `pg_dump` y corre `prisma migrate deploy` en un contenedor desechable con el rol dueño. Ese rol llega por el
@@ -313,7 +322,7 @@ desechable, ver §13):
 `last_activity_at` en `sessions`, para la política de 30 min / 8 h) · 22 `catalog_seed_and_client_controls`
 (D35, D36, D38) · 23 `rls_catalog_seed_and_client_controls` (D36) ·
 24 `service_context_optional_fields_and_regulations` (D45) · 25 `asset_provisioning_schedule_frequency` (D46) ·
-26 `catalog_policies_as_templates` (D39) · 27 `audit_append_only_triggers` (D41) · 28 `company_frameworks` (D47).
+26 `catalog_policies_as_templates` (D39) · 27 `audit_append_only_triggers` (D41) · 28 `company_frameworks` (D47) · 29 `correcciones_onboarding_d50_d51` (D50, D51).
 
 > **Orden por fecha, no por número:** la 25 (`20261001120000`) quedó **antes** de la 26 y la 27 (`20261001180000` y
 > `20261001190000`) aunque se escribió en paralelo; ninguna depende de la otra. Prisma las aplica por nombre. Se
@@ -361,8 +370,9 @@ llamarse en la misma transacción que crea la fila de `service_frameworks`, con 
 endpoint del Componente 2 (MD-77) lo llama; hoy no hay controlador.
 
 `npm run clone:verify` lo comprueba contra la base real con el catálogo sembrado, **dentro de una transacción que se
-revierte** (incluye una corrida con `SET LOCAL ROLE monkey_app` bajo RLS). No es una prueba de jest: el cliente de
-Prisma 7 es ESM y el jest del repo es CommonJS.
+revierte** (incluye una corrida con `SET LOCAL ROLE monkey_app` bajo RLS). No es una prueba de jest. (Las pruebas de
+`Backend/test/` sí cargan el cliente de Prisma 7 con jest: el cliente generado carga su motor con `import()` dinámico y por eso
+`npm run test:e2e` corre con `node --experimental-vm-modules`.)
 
 > ⚠️ Prisma 7 con `@map`: el enum `ExpectedAvailability` tiene el miembro `h24x7` con valor `24x7`; el tipo generado
 > pide `"24x7"` pero el cliente en runtime espera el nombre del miembro (`h24x7`). Tenerlo presente al construir MD-77.

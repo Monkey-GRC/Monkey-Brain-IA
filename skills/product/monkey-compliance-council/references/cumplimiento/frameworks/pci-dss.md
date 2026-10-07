@@ -15,10 +15,10 @@ Permite cumplir los objetivos de PCI DSS mediante controles alternativos en vez 
 Cualquier organización que almacene, procese o transmita datos de tarjetas de pago — procesadores de pagos, e-commerce, fintechs. El nivel de validación exigido (autoevaluación vs. auditoría por QSA) depende del volumen de transacciones anuales.
 
 ## Mapeo a controles atómicos de Monkey
-El requisito 8.4 (MFA para acceso administrativo al CDE) es el ejemplo de control atómico compartido con SOC 2 CC6.1 e ISO 27001 8.5 — ya documentado como caso canónico en `../architecture.md`.
+El requisito 8.4 (MFA para acceso administrativo al CDE) es el ejemplo de control atómico compartido con SOC 2 CC6.1 e ISO 27001 8.5 — ya documentado como caso canónico en `../../arquitectura/architecture.md`.
 
 ## Wazuh
-Ruleset pre-etiquetado para PCI DSS de fábrica — ver `../wazuh.md`.
+Ruleset pre-etiquetado para PCI DSS de fábrica — ver `../../control-tecnico/wazuh.md`.
 
 ## Fuentes
 - [Guide to the PCI-DSS v4.0.1 regulations — Specops Software](https://specopssoft.com/blog/pci-dss-v4-0/)
