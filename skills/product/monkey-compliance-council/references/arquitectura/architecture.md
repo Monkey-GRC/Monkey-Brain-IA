@@ -21,7 +21,7 @@ CAPA DE DATOS Y ACTIVOS
   nubes, documentación) · Responsables · Configuraciones · Logs
 ```
 
-Los cuatro motores son **independientes del framework**: ninguno "sabe" nativamente qué es SOC 2 o ISO 27001. Una capa de mapeo traduce **controles atómicos** (p. ej. "MFA obligatorio para administradores") a los requisitos de cada framework soportado (ver `frameworks/`). Este es el "pecado original" que Monkey evita: modelar el producto alrededor de un solo framework y parchear los demás encima, que es lo que hace ilegibles a las herramientas GRC clásicas.
+Los cuatro motores son **independientes del framework**: ninguno "sabe" nativamente qué es SOC 2 o ISO 27001. Una capa de mapeo traduce **controles atómicos** (p. ej. "MFA obligatorio para administradores") a los requisitos de cada framework soportado (ver `cumplimiento/frameworks/`). Este es el "pecado original" que Monkey evita: modelar el producto alrededor de un solo framework y parchear los demás encima, que es lo que hace ilegibles a las herramientas GRC clásicas.
 
 ## Modelo de datos — entidades núcleo
 

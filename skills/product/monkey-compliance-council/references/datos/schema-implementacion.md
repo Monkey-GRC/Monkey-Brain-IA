@@ -5,13 +5,15 @@ Complementa a `modelo-datos.md` (el **qué**: tablas y relaciones) y a `modelo-d
 migraciones y despliegue. Si algo choca con `modelo-datos.md`, gana el modelo. Absorbe la bitácora
 "decisiones de la reconstrucción del schema" (septiembre de 2026), que se retiró de `assets/`.
 
-**Estado al 2026-10-02:** 28 migraciones, 58 enums, 77 tablas, todas con RLS, ninguna FK sin índice
+**Estado al 2026-10-07:** 29 migraciones, 58 enums, 76 tablas (medido en `develop`), todas con RLS, ninguna FK sin índice
 (salvo las de "quién lo hizo") y ningún `ON DELETE CASCADE`. Probado desde cero en Postgres 17.
 (La 24, `service_context_optional_fields_and_regulations`, es la del Componente 2: D45. La 25,
 `asset_provisioning_schedule_frequency`, la del Componente 3: D46. La 28, `company_frameworks`, el contrato
-de marcos por empresa: D47. Las 26 y 27 son de Héctor: D39 y D41.)
-**Las 28 están aplicadas en la base de dev** (`135.148.138.36`), sembrada con la empresa interna, el
-primer `admin_monkey`, las 14 regulaciones, las 6 capacidades y el catálogo de SOC 2 (§9 y §11).
+de marcos por empresa: D47. Las 26 y 27 son de Héctor: D39 y D41. La 29, `correcciones_onboarding_d50_d51`, las
+correcciones del comité: D50 y D51; elimina `service_regulations`: de ahí 76 tablas en lugar de 77.)
+**Al 2026-10-02 las 28 primeras estaban aplicadas en la base de dev** (`135.148.138.36`), sembrada con la empresa interna, el
+primer `admin_monkey`, las regulaciones, las 6 capacidades y el catálogo de SOC 2 (§9 y §11). **No verifiqué** que la 29 esté
+aplicada en dev: la base compartida solo se migra desde `develop` (§7).
 
 ---
 
@@ -259,13 +261,19 @@ desechable, ver §13):
   puertos**: solo lo alcanzan otros contenedores por `postgres-staging`. La carpeta `monkey-dev` de la
   VPS cumple hoy el rol de staging: es el destino del deploy automático. No se montó en otro servidor
   ni en un servicio administrado, por simplicidad y costo.
-- **CI/CD** (`deploy-dev.yml`, push a `develop`): `scp-action` copia el código y `ssh-action`
+- **CI** (`ci.yml`, PR #17 del Backend): en cada PR a `develop`/`main` levanta un Postgres vacío y corre lint, build, pruebas
+  unitarias, migraciones desde cero, carga de catálogos, los verificadores (`catalog`, `reference`, `clone`, `audit`) y las pruebas
+  de aislamiento (`npm run test:e2e`, ver `seguridad/requisitos.md`). **No bloquea el merge ni el despliegue** mientras la
+  organización no tenga el plan GitHub Team (DT-41).
+- **CD** (`deploy-dev.yml`, push a `develop`): `scp-action` copia el código y `ssh-action`
   (con `script_stop: true`) escribe el `.env` y corre `docker compose build backend && up -d`. El
   `.env` viaja como secret `ENV_FILE` **en base64, en una sola línea** (`base64 -w0`): con
   `script_stop`, `drone-ssh` inyecta un chequeo de salida entre las líneas de un heredoc y lo
   corrompería.
 - **El `.env` de runtime** solo lleva `APP_DATABASE_URL` (no `DATABASE_URL`), más JWT, Wazuh, S3 y
-  CORS cuando `auth` y los conectores lo usen.
+  CORS cuando `auth` y los conectores lo usen. Para la Descripción del Sistema como archivo (D51): `S3_ENDPOINT`, `S3_REGION`,
+  `S3_BUCKET`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY` y `S3_FORCE_PATH_STYLE` (con minio, `true`); sin bucket la app arranca y
+  subir un archivo responde `503`.
 - **El deploy migra solo** (MD-91, D42): antes de levantar el backend nuevo, `backend/scripts/deploy/migrate.sh`
   construye la etapa `build` del Dockerfile (trae el CLI de Prisma y tsx; la imagen de runtime no), **respalda** la
   base con `pg_dump` y corre `prisma migrate deploy` en un contenedor desechable con el rol dueño. Ese rol llega por el
@@ -305,7 +313,7 @@ desechable, ver §13):
 `last_activity_at` en `sessions`, para la política de 30 min / 8 h) · 22 `catalog_seed_and_client_controls`
 (D35, D36, D38) · 23 `rls_catalog_seed_and_client_controls` (D36) ·
 24 `service_context_optional_fields_and_regulations` (D45) · 25 `asset_provisioning_schedule_frequency` (D46) ·
-26 `catalog_policies_as_templates` (D39) · 27 `audit_append_only_triggers` (D41) · 28 `company_frameworks` (D47).
+26 `catalog_policies_as_templates` (D39) · 27 `audit_append_only_triggers` (D41) · 28 `company_frameworks` (D47) · 29 `correcciones_onboarding_d50_d51` (D50, D51).
 
 > **Orden por fecha, no por número:** la 25 (`20261001120000`) quedó **antes** de la 26 y la 27 (`20261001180000` y
 > `20261001190000`) aunque se escribió en paralelo; ninguna depende de la otra. Prisma las aplica por nombre. Se
@@ -331,7 +339,7 @@ políticas (plantillas, solo el nombre) y 16 vínculos = **+236 filas, 2.305 en 
 `approval_status`, `valid_until` y `version`: son del cliente.
 
 **Catálogos de referencia** (`npm run reference:load` / `reference:verify`, datos en `prisma/seed/reference/data.ts`):
-las 14 regulaciones (MD-75) y las 6 capacidades `ac_01…ac_06` (MD-83), con `provider` interno y confidencial. Las
+las **18 regulaciones** (MD-75; 16 normas de protección de datos más `none` y `other`, D51), las 6 capacidades `ac_01…ac_06` (MD-83), con `provider` interno y confidencial, y los **6 marcos ofrecidos como `coming_soon`** (D50: ISO 27001, HIPAA, GDPR, PCI DSS, NIST CSF y SOC 1; SOC 2 lo carga `catalog:load`). Las
 listas de opciones del Componente 1 (tamaño, industria, modelo de negocio…) **no se siembran: son enums de
 Postgres**, no tablas.
 
@@ -353,8 +361,9 @@ llamarse en la misma transacción que crea la fila de `service_frameworks`, con 
 endpoint del Componente 2 (MD-77) lo llama; hoy no hay controlador.
 
 `npm run clone:verify` lo comprueba contra la base real con el catálogo sembrado, **dentro de una transacción que se
-revierte** (incluye una corrida con `SET LOCAL ROLE monkey_app` bajo RLS). No es una prueba de jest: el cliente de
-Prisma 7 es ESM y el jest del repo es CommonJS.
+revierte** (incluye una corrida con `SET LOCAL ROLE monkey_app` bajo RLS). No es una prueba de jest. (Las pruebas de
+`Backend/test/` sí cargan el cliente de Prisma 7 con jest: el cliente generado carga su motor con `import()` dinámico y por eso
+`npm run test:e2e` corre con `node --experimental-vm-modules`.)
 
 > ⚠️ Prisma 7 con `@map`: el enum `ExpectedAvailability` tiene el miembro `h24x7` con valor `24x7`; el tipo generado
 > pide `"24x7"` pero el cliente en runtime espera el nombre del miembro (`h24x7`). Tenerlo presente al construir MD-77.

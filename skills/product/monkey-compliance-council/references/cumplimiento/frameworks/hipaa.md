@@ -18,7 +18,7 @@ Hay una propuesta de actualización de la Security Rule ("HIPAA Security Rule To
 Las salvaguardas técnicas (control de acceso, controles de auditoría, integridad, autenticación) se solapan fuertemente con los mismos controles atómicos de acceso/autenticación usados para SOC 2 y PCI DSS.
 
 ## Wazuh
-Ruleset pre-etiquetado para HIPAA de fábrica, con dashboard dedicado — ver `../wazuh.md`.
+Ruleset pre-etiquetado para HIPAA de fábrica, con dashboard dedicado — ver `../../control-tecnico/wazuh.md`.
 
 ## Fuentes
 - [Summary of the HIPAA Security Rule — HHS.gov](https://www.hhs.gov/hipaa/for-professionals/security/laws-regulations/index.html)

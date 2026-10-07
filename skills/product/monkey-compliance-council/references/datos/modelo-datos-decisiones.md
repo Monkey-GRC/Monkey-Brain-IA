@@ -822,7 +822,7 @@ schema contradecía:
    infraestructura.
 2. **`subservice_organizations.provider`, `service_provided` y `responsibility` pasan a nullable.** El
    "detalle" del Excel es opcional y solo el `type` es obligatorio (el contrato ya lo decía).
-3. **Nueva tabla `service_regulations`** (servicio ↔ regulación, con RLS por `tenant_id`). Cierra la
+3. ~~**Nueva tabla `service_regulations`**~~ **Revertida por D51** (la tabla se eliminó: la regulación se declara solo a nivel de empresa). Antes: servicio ↔ regulación, con RLS por `tenant_id`. Cerraba la
    pregunta abierta "regulación a nivel de servicio": el request del contrato ya traía
    `regulation_codes` y no tenía dónde persistir. No se puntúa (D10).
 
@@ -854,7 +854,7 @@ transacción única (puntos 8 y 9):
 
 **Resto de huecos:**
 
-10. **Descripción del Sistema: solo enlace** (`kind = link`, `http`/`https`). El archivo
+10. **Descripción del Sistema: solo enlace** — **superado por D51** (ahora enlace y/o archivo). Antes: `kind = link`, `http`/`https`. El archivo
     (`multipart`, 25 MB) no se construyó: no hay dónde guardar binarios todavía. `kind = file` responde 422.
 11. **Nombre único por empresa** sin importar mayúsculas ni espacios (`SERVICE_NAME_TAKEN`); la base no lo
     impone, la aplicación sí.
@@ -885,7 +885,7 @@ revisión.
 
 **Decisiones** (Carlos, 2026-10-01; **pendientes de ratificar con el comité**; ninguna toca cómo se
 calcula el cumplimiento). Es el registro de cada hueco que `onboarding-technical-control.md` dejaba abierto
-y cómo se cubrió. Lo que sigue siendo un parche está en **`deuda-tecnica.md`** (DT-1 a DT-36).
+y cómo se cubrió. Lo que sigue siendo un parche está en **`deuda-tecnica/README.md`** (DT-1 a DT-36).
 
 **Cambios de schema** (migración 25, `asset_provisioning_schedule_frequency`, más el seed de las 6 capacidades):
 
@@ -951,6 +951,8 @@ más honesto y seguro, y se deja aquí para revisión.
 
 ## D47 · El marco se contrata al registrar la empresa (revierte el veto de §6.1)
 
+> **Ampliada por D50:** el catálogo muestra 7 marcos y solo los `available` (hoy SOC 2) se pueden contratar.
+
 **Decisión** (Carlos, 2026-10-01; **pendiente de ratificar con el comité**). **Monkey Admin contrata el marco
 para la empresa al registrarla** —hoy solo SOC 2 (D37), fijo y bloqueado en el formulario— y, al declarar un
 servicio, el cliente solo puede elegir entre los marcos que su empresa tiene contratados (también fijo: SOC 2).
@@ -979,7 +981,7 @@ que apuntaba a esto y que D45 había dejado sin uso.
 7. **`service_frameworks` no cambia:** sigue guardando qué marco persigue cada servicio, con su versión de catálogo y su
    periodo de evaluación (A4).
 
-**Deja abierto** (en `deuda-tecnica.md`): no hay forma de contratar o cancelar un marco después del registro (DT-26) y el
+**Deja abierto** (en `deuda-tecnica/README.md`): no hay forma de contratar o cancelar un marco después del registro (DT-26) y el
 contrato no guarda condiciones comerciales (DT-27). Las empresas que existían antes de la migración no tienen contrato; en
 desarrollo no había ninguna.
 
@@ -1027,5 +1029,71 @@ given time») aunque la base estuviera sana; ocurría hasta en los endpoints pú
 límite de duración de la transacción (`timeoutMs`).
 
 **Fuente:** hallazgo de las pruebas de navegador, 2026-10-02.
+
+---
+
+## D50 · El catálogo ofrece varios marcos, pero solo se contrata el que ya está construido
+
+**Decisión** (correcciones del comité, entregadas el 2026-10-05; implementadas por Carlos en el commit `f26ecf0`, 2026-10-06).
+Monkey **muestra** varios marcos como oferta comercial, pero **solo se puede contratar el que ya tiene catálogo**. Hoy es SOC 2
+(D37 sigue en pie: el MVP contempla solo SOC 2).
+
+**Cómo quedó:**
+
+1. **`catalog.frameworks.availability`**: enum `framework_availability` (`available` | `coming_soon`), por defecto `coming_soon`.
+   La migración marca `soc2` como `available`.
+2. **Seis marcos sembrados como `coming_soon`, sin requisitos ni controles:** ISO 27001 (2022), HIPAA (Security Rule), GDPR
+   (Reglamento (UE) 2016/679), PCI DSS (4.0.1), NIST CSF (2.0) y SOC 1 (SSAE 18). Los siembra `npm run reference:load`
+   (`FRAMEWORK_OFFERS`); SOC 2 no va ahí, lo carga `catalog:load` con su catálogo completo. Versiones y alcance, según
+   `cumplimiento/frameworks/*.md`.
+3. **Orden de oferta:** SOC 2, ISO 27001, HIPAA, GDPR, PCI DSS, NIST CSF, SOC 1 (`FRAMEWORK_DISPLAY_ORDER`). El código cita como
+   fuente del orden a Drata (ISO 27001 es la expansión más común sobre SOC 2) y a ACC 2025; **no verifiqué esas cifras**.
+4. **Contratar un marco `coming_soon` → `409 FRAMEWORK_NOT_AVAILABLE`** (con `framework_codes` en el detalle). Un código que no
+   existe en el catálogo sigue siendo `422 enum.invalid`.
+5. **Lo que ve cada app:** Monkey Admin muestra los 7 marcos con solo SOC 2 contratable (Frontend PR #5); el cliente ve, vía
+   `GET /v1/catalogs/contracted-frameworks`, solo lo que su empresa contrató.
+
+**Pendiente de ratificar con el comité:** el orden de oferta y qué texto se le muestra al cliente de un marco que aún no existe.
+
+**Fuente:** commit `f26ecf0` del Backend y migración `20261005220000_correcciones_onboarding_d50_d51`. El documento del comité con las
+correcciones no está en el repo.
+
+---
+
+## D51 · Correcciones del comité al onboarding: activación, regulaciones, certificación previa y Descripción del Sistema
+
+**Decisión** (misma fuente que D50). Seis correcciones, todas en la migración `20261005220000_correcciones_onboarding_d50_d51`:
+
+1. **El administrador se identifica por su correo.** `users.name` y `users.last_name` pasan a ser **opcionales**; la activación
+   solo pide la contraseña (el correo debe coincidir con el `admin_email` que fijó Monkey Admin, D43). El nombre se podrá completar
+   en el perfil. *Revierte lo que `contracts/modules/auth.md` pedía en el canje.*
+2. **La activación va en dos pasos.** `POST /v1/auth/redeem/lookup` recibe solo el código y devuelve la empresa y el correo ya fijados
+   por Monkey Admin y `expires_at`; no crea nada ni gasta la clave. Después, `POST /v1/auth/redeem` con código, correo y contraseña.
+   Los errores son los del canje y una clave usada, vencida o de una empresa suspendida no revela datos. Un freno limita a **10
+   intentos fallidos cada 15 minutos por dirección** (`429 ACCESS_KEY_RATE_LIMITED`); vive en memoria (**DT-37**).
+3. **Sin regulación por servicio** (revierte D45.3). La tabla `tenant.service_regulations` se elimina y el servicio deja de recibir
+   `regulation_codes`: la regulación aplica a la **empresa** (`organization_regulations`). Enviarlo hoy da `422 field.not_allowed`.
+4. **El catálogo de regulaciones queda solo con normas de protección de datos personales:** PCI DSS sale (es un estándar de la
+   industria de tarjetas y ya es un marco); HIPAA y GLBA se quedan (leyes sectoriales de EE. UU.). Se añaden Ley 21719 (CL),
+   Ley 18331 (UY), LOPDP (EC), Ley 81 (PA) y Ley 8968 (CR). Quedan **18 filas: 16 normas más `none` y `other`**. La migración borra
+   PCI DSS de las empresas que lo habían marcado. *El comentario del código dice que la ley chilena reemplaza a la 19.628 desde el
+   1 de diciembre de 2026; **no lo verifiqué**.*
+5. **Certificación previa: de 4 a 8 valores.** `soc2`, `soc1`, `iso27001`, `pci_dss`, `hipaa`, `nist_csf`, `gdpr`, `none`. HIPAA,
+   NIST CSF y GDPR no se «certifican»: la pregunta es por una certificación **o evaluación** previa y así se le muestra.
+6. **Descripción del Sistema: enlace y/o archivo** (revierte D45.10; cierra la mitad de **DT-12**). `system_descriptions.file_path` se
+   reemplaza por `link_url` y `file_key`, con un `CHECK` de que al menos una exista. Endpoints: `POST /v1/services/{id}/system-description`
+   (enlace), `POST …/system-description/file` (multipart, campo `file`) y `GET …/system-description/file` (URL temporal de 5 min).
+   Archivo: **PDF o `.docx`, máximo 25 MB**; se comprueba también la firma del archivo, no solo el tipo que declara el navegador.
+   Se guarda en S3 o compatible (minio) con la llave `<empresa>/services/<servicio>/system-description/<uuid>/<nombre>` (la empresa
+   va primero para poder aplicar una política de bucket por tenant). Sin bucket configurado la app arranca, pero subir un archivo
+   responde `503 STORAGE_UNAVAILABLE`. Variables: `S3_ENDPOINT`, `S3_REGION`, `S3_BUCKET`, `S3_ACCESS_KEY_ID`,
+   `S3_SECRET_ACCESS_KEY`, `S3_FORCE_PATH_STYLE`.
+
+**Lo que NO cambia:** el procesamiento del documento (las 10 secciones AICPA y `csocs`/`cuecs`) sigue pendiente (**DT-12**).
+
+**Pendiente de ratificar con el comité:** la lista de 5 leyes añadidas (el código no cita fuente legal) y el texto de la certificación previa.
+
+**Fuente:** commit `f26ecf0` del Backend (2026-10-06) y migración `20261005220000`; el Frontend-Platform PR #8 implementó la activación
+en dos pasos. El documento del comité con las correcciones no está en el repo.
 
 ---

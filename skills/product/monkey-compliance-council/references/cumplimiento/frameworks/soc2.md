@@ -18,7 +18,7 @@ Empresas SaaS B2B que venden a otras empresas; casi siempre el primer framework 
 Los Common Criteria (CC1-CC9) son el núcleo de solapamiento más grande con ISO 27001 Annex A, PCI DSS y NIST CSF — la mayoría de controles atómicos del catálogo de Monkey deben nacer pensando primero en cubrir CC6 (acceso lógico y físico) y CC7 (operaciones de sistema), porque son los que más frameworks comparten.
 
 ## Wazuh
-Wazuh incluye una guía dedicada "Using Wazuh for TSC 2017 requirements" y ruleset pre-etiquetado para TSC — ver `../wazuh.md`.
+Wazuh incluye una guía dedicada "Using Wazuh for TSC 2017 requirements" y ruleset pre-etiquetado para TSC — ver `../../control-tecnico/wazuh.md`.
 
 ## Fuentes
 - [2025 Trust Services Criteria for SOC 2 — Secureframe](https://secureframe.com/hub/soc-2/trust-services-criteria)
@@ -29,7 +29,7 @@ Wazuh incluye una guía dedicada "Using Wazuh for TSC 2017 requirements" y rules
 
 El comité produjo un desglose real de controles SOC 2 para un cliente
 (`SOC2_TSC_Controles_Detallados_Monkey2.xlsx`, que no se encuentra en disco — ver
-`../modelo-datos.md` §0).
+`../../datos/modelo-datos.md` §0).
 De ahí sale la anatomía que el modelo usa: **código TSC + criterio + punto de
 enfoque** por requisito, más el **control del cliente** (código propio y su
 interpretación con herramientas y cargos reales), el **plan de testeo** con
@@ -38,4 +38,4 @@ dimensión (requiere sonda / requiere IA / confirmación de cumplimiento).
 
 Ese archivo es un desglose de ejemplo con dos requisitos (CC6.1 y CC6.3), no el
 catálogo completo: la carga del catálogo de requisitos TSC sigue pendiente. Ver
-`../modelo-datos.md` §3.1 y §3.2.
+`../../datos/modelo-datos.md` §3.1 y §3.2.

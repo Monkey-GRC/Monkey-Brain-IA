@@ -8,7 +8,7 @@ applies_to: backend
 
 # Skill: Agregar o editar un modelo Prisma
 
-> Qué entidades deben existir lo dice `skills/product/monkey-compliance-council/references/modelo-datos.md`
+> Qué entidades deben existir lo dice `skills/product/monkey-compliance-council/references/datos/modelo-datos.md`
 > (el plan vigente, ver `CLAUDE.md`). **Cómo** se implementan —Prisma 7, RLS, roles, migraciones—
 > lo dice `schema-implementacion.md`, que hay que leer antes de tocar el schema.
 
@@ -42,7 +42,8 @@ Los antiguos `prisma/central/` y `prisma/tenant/` (una base por cliente) **ya no
 4. **RLS, funciones y CHECK van en una migración aparte**, escrita a mano (`--create-only` vacía):
    nunca se mezclan con el cambio de schema en la misma migración (la validación contra la shadow
    falla). Toda tabla nueva de `tenant`/`platform` necesita su política RLS; toda tabla nueva de
-   `catalog`, las cuatro políticas de lectura/escritura (`schema-implementacion.md` §5).
+   `catalog`, las cuatro políticas de lectura/escritura (`schema-implementacion.md` §5). `npm run test:e2e` (`Backend/test/aislamiento/rls-cobertura`) **falla** si una tabla de cliente queda sin RLS, sin `FORCE`, sin política
+   o sin `tenant_id`/`company_id`: corre en el CI (`seguridad/requisitos.md`, SEG-05).
 5. `npm run prisma:generate` si el paso anterior no regeneró el cliente (`generated/prisma`).
 6. Datos iniciales: `prisma/seed/seed-reference.ts` (`npm run reference:load`) para catálogos de referencia y `bootstrap-admin.ts` para el primer administrador, con los valores sensibles desde
    el `.env`, nunca en git.

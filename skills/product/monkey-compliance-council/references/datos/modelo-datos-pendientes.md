@@ -24,7 +24,7 @@ sprint de onboarding**:
 
 | # | Pregunta |
 |---|---|
-| a | ¿La clave es un código que el cliente escribe a mano, o un link con token en la URL? Cambia qué pantalla hay que construir |
+| a | ¿La clave es un código que el cliente escribe a mano, o un link con token en la URL? Cambia qué pantalla hay que construir. *Hoy se implementó como código escrito a mano, en dos pasos (D51); no es una respuesta explícita del comité a esta pregunta* |
 | b | ¿Cuánto dura antes de expirar, y puede `admin_monkey` regenerarla o reenviarla si el correo se perdió? |
 | c | Si `admin_monkey` se equivoca escribiendo el nombre de la empresa o el correo, ¿se puede corregir desde Monkey Admin antes de que el cliente entre? Importa porque ese nombre queda **bloqueado** en el Componente 1 |
 | d | Si se marca "base de datos dedicada", ¿aprovisionarla es instantáneo o toma tiempo? Si toma tiempo, ¿se manda la clave de una vez o se espera? |
@@ -103,6 +103,9 @@ ojo porque no se puede saber a qué se refieren.
   869 no corresponde a ningún subconjunto identificable. ¿De qué plataforma o política sale?
 - `manifest.json` dice ruleset Wazuh **v4.14.7**; `infraestructura.md` dice despliegue
   **4.12**. Puede ser ruleset vs versión instalada, pero nadie lo escribió.
+  **Dato nuevo (2026-10-07):** el manager de pruebas responde **v4.14.6** y sus agentes también.
+  No coincide con ninguna de las dos cifras. Esta mitad sigue abierta: falta saber cuál es la
+  versión de referencia del proyecto. La cifra de 869 checks sigue sin universo.
 
 ---
 
@@ -115,9 +118,52 @@ Preguntas para Nelson, Bryan y el comité:
 1. **¿Quién instala los agentes?** ¿El cliente con un comando que entrega Monkey, o el equipo de la sonda?
 2. **¿Cómo se asigna cada cliente a su grupo** y quién impide que un agente se declare de otra empresa? (la clave de inscripción es global)
 3. **¿Cómo lee Monkey los resultados?** ¿Base de la sonda, API o ambas? ¿Con un usuario de solo lectura por grupo?
-4. **¿Quién configura la nube** (AWS/GCP/Azure) y con qué modelo (rol entre cuentas / federación de identidad)? Las integraciones de la sonda son de registros.
+4. **¿Quién configura la nube** (AWS/GCP/Azure) y con qué modelo (rol entre cuentas / federación de identidad)? Las integraciones de la sonda son de registros, no de configuración. **Actualización 2026-10-07:** se probó un escaneo de configuración de AWS con un usuario IAM de solo lectura y llaves estáticas (método de prueba, no el definitivo). Qué motor lo ejecuta y cómo se conecta en producción es **P13**.
 5. **¿Qué se promete a un cliente con un sistema que no sea Ubuntu 22.04, Ubuntu 14.04 o Windows 11?** Hoy no hay pruebas para él.
 6. **¿Se autoriza la IP de desarrollo** en la API de la sonda para poder probar un adaptador real?
+
+---
+
+## P13 · Motores de evaluación: rol de cada uno y cómo se relacionan con el modelo
+
+**Estado:** abierto desde 2026-10-07. Nace de una prueba real: un escaneo de configuración de una cuenta de AWS
+(292 hallazgos, 70 checks, 8 servicios, 17 regiones) hecho con una herramienta distinta de la sonda. Choca con la
+decisión de «validador único» (D13, `wazuh.md`): **no se cierra D13 hasta que el comité responda A1**. Bloquea el
+adaptador de nube y el cálculo de cobertura en nube; no bloquea el módulo de Cumplimiento.
+
+**Propuesta de desarrollo (no decidida):** el catálogo, los checks y su mapeo a controles son de Monkey; los motores
+son adaptadores intercambiables que solo entregan resultados crudos en un formato único (`check_results`). La sonda
+cubriría servidores, BD y endpoints; un motor de configuración, la nube.
+
+**A. Rol de los motores**
+1. ¿Se acepta que un motor distinto cubra la nube y se cierra D13? ¿La sonda queda solo con servidores, BD y endpoints?
+2. ¿Cómo se llama ese motor frente al cliente? La regla de confidencialidad aplica igual.
+3. ¿Hay un tercer motor previsto (Azure, GCP, SaaS)?
+
+**B. Unidad de evaluación**
+1. En la nube, ¿el activo es la **cuenta** (propuesta: `scopes.cloud_count` cuenta nubes, no recursos) o cada recurso?
+2. Una instancia en la nube es también un servidor (`ac_02`). ¿Se enlaza el recurso hallado con el activo del servidor, o son cosas separadas?
+3. Un check de cuenta se repite por cada región (17 veces). ¿Cuenta como 1 evaluación o como 17? Propuesta: escanear solo las regiones que el cliente declare.
+4. Un check que falla en 3 de 5 discos, ¿es 1 evaluación fallida o 3?
+
+**C. Conexión y credenciales**
+1. ¿Rol entre cuentas sin llaves guardadas en producción (propuesta), en vez de usuario con llaves estáticas?
+2. Permisos mínimos que se piden al cliente y quién los crea.
+3. ¿Dónde corre el motor? Hoy en el mismo servidor que la sonda y con llaves del cliente guardadas allí.
+4. Frecuencia, duración y coste en llamadas a la API (`ac_01` fija 6-24 h).
+5. ¿Azure y GCP producen el mismo formato de salida y alguien los probó?
+
+**D. Catálogo y mapeo**
+1. ¿Se cargan al catálogo los 70 checks, o solo los que el comité elija, y con qué `origin`?
+2. El motor trae su propio mapeo a SOC 2. Si no coincide con el del comité, gana el del comité (regla del brain); ¿se guarda el otro como mapeo con procedencia?
+3. Los `T-CLD-*` nombran a la sonda como herramienta (ver P11). ¿Se reescriben?
+4. Estados del motor que no existen en el modelo: `MANUAL` (2 casos) y silenciado. Propuesta: `not_run` y un silencio con justificación aprobada.
+
+**E. Producto y legal**
+1. Licencia y forma de uso del motor (redistribuir o ofrecer como servicio). No verificado.
+2. Quién revisa el texto de IA antes de que llegue al cliente y quién responde por un falso positivo.
+
+**Qué depende:** columnas nuevas de `check_results` (recurso, región, detalle), carga de checks, `Evaluation` en nube y el paso 3 del onboarding para nube (DT-35).
 
 ---
 

@@ -1,0 +1,23 @@
+# Deuda técnica — Transversal
+
+Lo que no pertenece a un solo módulo (pruebas, CI, auditoría, traducciones, entorno) y la funcionalidad que el brain menciona sin contrato. Contexto: [`README.md`](README.md).
+
+## Transversal
+
+| ID | | Qué está parchado | Por qué | Qué lo cierra |
+|---|---|---|---|---|
+| **DT-20** | 🟠 | **Las pruebas automáticas están a medias en los repositorios.** *Hecho (2026-10-07, PR #17 del Backend):* CI en GitHub (`ci.yml`: lint, build, unitarias, migraciones desde cero, verificadores de catálogo/clonado/audit) y 18 pruebas de aislamiento entre empresas a nivel de base de datos (`Backend/test/aislamiento/`). *Hecho (rama `test/aislamiento-http`, pendiente de PR):* 20 pruebas por **HTTP con supertest** que levantan la app real contra Postgres y comprueban que una empresa no lee, modifica ni enlaza nada de otra, y que `admin_monkey` y `admin_empresa` no se cruzan. *Falta:* el recorrido por **navegador (Playwright en `Frontend-Platform`)** sigue fuera del repo y sin CI; y las demás rutas (evidencias, riesgos, usuarios) cuando existan | Velocidad del sprint | Llevar el recorrido de navegador a `Frontend-Platform` y correrlo en CI; ampliar el HTTP con cada módulo nuevo |
+| **DT-41** | 🟠 | **El CI no bloquea el merge ni el despliegue.** La protección de rama exige el plan GitHub Team (la organización es privada y no lo tiene): un PR en rojo se puede mergear, y `deploy-dev.yml` corre en paralelo al CI, no después | Coste de la suscripción | Plan Team + marcar `verificar` como check obligatorio; o, sin pagar, hacer que el deploy dependa del CI (`needs`). Acuerdo de equipo: no mergear con el check en rojo |
+| **DT-21** | 🟠 | **Traducciones al inglés hechas por desarrollo** y sin revisar; Monkey Platform no tiene i18n (todo en español) | El Excel solo trae español | Revisión del comité; instalar i18n en Platform |
+| **DT-22** | 🟠 | **Base de datos dedicada → «no disponible»**; sin regenerar clave ni editar empresa | P2(b)(c)(d) | Respuestas del comité y el aprovisionamiento |
+| **DT-23** | 🟠 | **Sin MFA** (MD-94) | Fuera del alcance de MD-64 | Su propio ticket |
+| **DT-28** | 🟠 | **La auditoría de login, canje y registro de empresa se escribe después de la acción, no en la misma transacción** (regla de D41 / convención del audit). Si falla entre ambas, la acción queda sin rastro | Los casos de uso llaman al repositorio y luego al `AuditLogWriter` | Pasar el escritor de auditoría dentro de la transacción del repositorio (login, canje, registro, servicios, activos) |
+| **DT-29** | 🟡 | **`auth.login_failed` se guarda con `tenant_id` nulo** (no se sabe de qué empresa es un intento fallido hasta autenticar) y los nombres de acción siguen `<recurso>.<verbo>` salvo este | El email inexistente no identifica empresa | Decidir con Héctor si se resuelve el tenant por email cuando existe |
+| **DT-30** | 🟡 | **Las pruebas de jest no corren en máquinas Windows sin el runtime de Visual C++** (jest 30 carga un resolvedor nativo; da «Module ts-jest … was not found»). Se validaron con un runner mínimo | Dependencia del entorno | Documentar el requisito (VC++ Redistributable) o fijar un resolvedor sin binario nativo |
+| **DT-24** | 🟡 | Tailwind avisa de clases canónicas (`dark:bg-white/[0.03]` → `dark:bg-white/3`) en Platform | Solo estético | Una pasada de limpieza |
+
+## Funcionalidad que el brain menciona y aún no tiene contrato
+
+| ID | | Qué | Nota |
+|---|---|---|---|
+| **DT-25** | 🟠 | **Ver el catálogo maestro SOC 2 en Monkey Admin y poder crear un control, riesgo o causa nuevos.** El principio está en `modelo-datos.md` §3 y D9/D31, pero no hay contrato, pantallas ni épico | Primero un contrato en `contracts/modules/` (qué campos, cómo se vincula un control nuevo, cuándo se publica la versión, A4) |

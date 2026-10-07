@@ -37,11 +37,14 @@ ninguno se pierde.
 | `data_types` | array&lt;enum&gt; | sí | `data_type` (8) | `services.data_types` (json) |
 | `trust_criteria` | array&lt;enum&gt; | sí | `trust_criterion` (5) | `N:M` vía `service_trust_criteria` |
 | `subservice_organizations` | array&lt;objeto&gt; | sí | `subservice_type` (7) | `1:N` → `subservice_organizations` |
-| `framework_codes` | array&lt;enum&gt; | sí | `framework` (1 en el MVP: `soc2`) | `N:M` vía `service_frameworks` |
-| `regulation_codes` | array&lt;enum&gt; | sí | `regulation` | ⚠️ **sin tabla puente** — ver abajo |
-| `previous_certification` | enum | **no** | `previous_certification` | `services.previous_certification` |
+| `framework_codes` | array&lt;enum&gt; | sí | `framework` (7 ofrecidos, solo `soc2` contratable: D50) | `N:M` vía `service_frameworks` |
+| `previous_certification` | enum | **no** | `previous_certification` (8) | `services.previous_certification` |
 | `expected_availability` | enum | sí | `expected_availability` | `services.expected_availability` |
-| `system_description` | objeto | sí | — | `1:1` → `system_descriptions` |
+| `system_description` | objeto | no en el `POST` (ver abajo) | — | `1:1` → `system_descriptions` (`link_url` y/o `file_key`) |
+
+> **D51 retiró `regulation_codes` de este request.** La regulación aplica a la **empresa**, no al servicio: se declara en el
+> Componente 1 (`organization_regulations`). Mandarlo hoy responde `422 field.not_allowed`. El recuento «16 campos / 15 claves» del
+> Excel incluye ese campo; **el request lleva hoy 14 claves**.
 
 `subservice_organizations[]` desglosa en un array lo que el Excel pide como dos campos
 (`subservicios_nube` multi-select + `subservicios_detalle` texto opcional), porque el modelo lo
@@ -76,7 +79,6 @@ valor**: el request lleva los cinco explícitos.
     { "type": "on_premise", "provider": null, "service_provided": "Centro de datos propio", "responsibility": null }
   ],
   "framework_codes": ["soc2"],
-  "regulation_codes": ["ley_1581_co", "lfpdppp_mx"],
   "previous_certification": "none",
   "expected_availability": "24x7",
   "system_description": { "kind": "link", "url": "https://docs.ejemplo.com/system-description-v2.pdf" }
@@ -109,7 +111,7 @@ valor**: el request lleva los cinco explícitos.
       { "id": "a7f3...", "type": "azure", "provider": "Microsoft Azure", "service_provided": "Hosting de la plataforma", "responsibility": "Disponibilidad de infraestructura" },
       { "id": "b2e9...", "type": "on_premise", "provider": null, "service_provided": "Centro de datos propio", "responsibility": null }
     ],
-    "system_description": { "id": "d4c1...", "kind": "link", "url": "https://docs.ejemplo.com/system-description-v2.pdf", "sections": [] },
+    "system_description": { "id": "d4c1...", "url": "https://docs.ejemplo.com/system-description-v2.pdf", "file_name": null, "sections": [] },
     "catalog": {
       "status": "ready",
       "applicable_requirements": 33,
@@ -154,18 +156,20 @@ requisitos aplicables**; quitar un marco ya contratado no borra `client_controls
 `DELETE` devuelve `409 SERVICE_HAS_EVALUATIONS` si el servicio ya tiene evaluaciones: el
 histórico es inmutable.
 
-## `POST /v1/services/{id}/system-description` — cargar el documento
+## Descripción del Sistema: enlace y/o archivo (D51)
 
-⚠️ **Forma pendiente** — el Excel pide "enlace o ruta" y `system_descriptions.file_path` es un
-`string`, pero `modulos/onboarding.md` decía "adjunto". El contrato soporta las dos y lo marca
-con `kind`:
+El cliente puede dar **un enlace, un archivo, o las dos cosas**; al menos una es obligatoria (`CHECK` en la base). En el JSON del
+`POST /v1/services` solo viaja el enlace; el archivo se sube aparte.
 
-```json
-{ "kind": "link", "url": "https://..." }
-```
+| Endpoint | Qué hace |
+|---|---|
+| `POST /v1/services/{id}/system-description` | Guarda el enlace: `{ "kind": "link", "url": "https://..." }` (`http`/`https`) |
+| `POST /v1/services/{id}/system-description/file` | `multipart/form-data`, el binario en el campo `file`. **Máximo 25 MB, PDF o `.docx`**; se valida también la firma del archivo, no solo el tipo que declara el navegador |
+| `GET /v1/services/{id}/system-description/file` | `{ url, file_name, expires_in }`: una URL temporal (5 min) para descargar; el bucket no es público. `404 SYSTEM_DESCRIPTION_NOT_A_FILE` si solo hay enlace |
 
-Para archivo, `multipart/form-data` con `kind=file` y el binario en `file`. Máximo 25 MB,
-`application/pdf` o `.docx`.
+El archivo se guarda en S3 o compatible (minio). Si la instalación no tiene almacenamiento configurado, subirlo responde
+`503 STORAGE_UNAVAILABLE`. El response del servicio trae `system_description: { id, url, file_name, sections }`; la llave del objeto
+**no sale**.
 
 `system_descriptions.sections` es un json con las **10 secciones AICPA**; hay **una Descripción
 del Sistema por servicio**. El response devuelve `sections` como array de las detectadas (vacío
@@ -193,16 +197,20 @@ No se puntúan ni entran al cálculo: se transcriben para el informe.
 | 409 | `SERVICE_NAME_TAKEN` | Ya existe un servicio con ese nombre en la organización |
 | 409 | `FRAMEWORK_NOT_CONTRACTED` | Se eligió un marco que Monkey Admin no contrató para la empresa (`platform.company_frameworks`, D47) |
 | 409 | `SERVICE_HAS_EVALUATIONS` | `DELETE` sobre un servicio ya evaluado |
+| 409 | `FRAMEWORK_NOT_AVAILABLE` | El marco existe en el catálogo pero aún no está construido (`coming_soon`, D50) |
 | 413 | `FILE_TOO_LARGE` | La Descripción del Sistema pasa de 25 MB |
-| 415 | `UNSUPPORTED_MEDIA_TYPE` | Tipo de archivo no permitido |
+| 415 | `UNSUPPORTED_MEDIA_TYPE` | Tipo de archivo no permitido (solo PDF y `.docx`) |
+| 422 | `FILE_REQUIRED` | Se llamó al endpoint del archivo sin archivo (o vacío) |
+| 404 | `SYSTEM_DESCRIPTION_NOT_A_FILE` | Se pidió el archivo de una Descripción del Sistema que solo tiene enlace |
+| 503 | `STORAGE_UNAVAILABLE` | La instalación no tiene dónde guardar archivos (no es un fallo del cliente) |
 | 422 | `VALIDATION_FAILED` | Enum inválido, multi-select obligatorio vacío, `subservice_organizations` sin `type` |
 | 422 | `TRUST_CRITERION_REQUIRED` | Se intentó quitar `security` |
 
 Claves i18n: `service.created`, `service.list`, `service.updated`, `service.deleted`,
 `service.name_taken`, `service.has_evaluations`, `organization.not_declared`,
 `framework.not_contracted`, `trust_criterion.security_required`, `catalog.cloned`,
-`catalog.processing`, `system_description.uploaded`, `file.too_large`,
-`file.unsupported_type`, `validation.failed`.
+`catalog.processing`, `service.system_description_saved`, `service.system_description_file`, `file.required`, `file.too_large`,
+`file.unsupported_type`, `file.storage_unavailable`, `file.not_a_file`, `framework.not_available`, `validation.failed`.
 
 ## Notas
 
@@ -218,15 +226,15 @@ Claves i18n: `service.created`, `service.list`, `service.updated`, `service.dele
 
 | Qué | Estado |
 |---|---|
-| **Regulación a nivel de servicio** | ✅ Resuelta por desarrollo (D45): tabla `service_regulations`. Pendiente de ratificar con el comité |
-| **Descripción del Sistema: enlace o archivo** | ◐ Se construyó **solo el enlace** (D45). El archivo queda pendiente: no hay dónde guardar binarios todavía |
+| **Regulación a nivel de servicio** | ✅ Resuelta por el comité (D51): **no existe**; la regulación es de la empresa. Revierte D45 |
+| **Descripción del Sistema: enlace o archivo** | ✅ Enlace y/o archivo (D51). Falta **procesar** el documento (las 10 secciones; DT-12) |
 | **`business_model` y `services.type`** | El Excel gana sobre el modelo (11 tipos de servicio, no 5). Hay que corregir el enum en `modelo-datos.md` §6.2 |
 | **Dimensiones de los controles clonados** | `control_dimensions` está vacío en el catálogo (P10): los controles se clonan sin dimensiones y como `manual` hasta que se siembren |
 
-## Estado de implementación (2026-09-30)
+## Estado de implementación (actualizado 2026-10-07)
 
 Implementado en `Backend/src/features/services` (más `catalogs` y el progreso de `auth`) y en
-`Frontend-Platform/src/app/features/services` (asistente y «Mis servicios»). Decisiones D45.
+`Frontend-Platform/src/app/features/services` (asistente y «Mis servicios»). Decisiones D45, D50 y D51.
 
 | Endpoint | Estado |
 |---|---|
@@ -235,7 +243,8 @@ Implementado en `Backend/src/features/services` (más `catalogs` y el progreso d
 | `GET /v1/services/{id}` | ✅ Todos los campos declarados (el response del `201` los trae igual, para que la pantalla de edición no pida dos veces) |
 | `PATCH /v1/services/{id}` | ✅ Solo las claves presentes (`null` borra un opcional). Ampliar `trust_criteria` o `framework_codes` recalcula y clona lo que falte; no borra ni pisa nada |
 | `DELETE /v1/services/{id}` | ✅ `409 SERVICE_HAS_EVALUATIONS` con evaluaciones, evidencias entregadas o planes de acción; si no, borra todo lo del servicio |
-| `POST /v1/services/{id}/system-description` | ◐ Solo `kind = link` (`http`/`https`). `kind = file` → 422 |
+| `POST /v1/services/{id}/system-description` | ✅ Enlace (`http`/`https`) |
+| `POST` y `GET /v1/services/{id}/system-description/file` | ✅ Archivo PDF o `.docx` de hasta 25 MB en S3/minio (D51); sin almacenamiento → `503` |
 | `PUT .../csocs` y `PUT .../cuecs` | ❌ No se construyeron (salen de las secciones 7 y 8 de la Descripción del Sistema, que aún no se procesa) |
 | `GET /v1/catalogs/{name}` | ✅ Nuevos: `service_type`, `served_industry`, `active_client_count`, `service_country`, `data_type`, `trust_criterion`, `subservice_type`, `expected_availability`, `previous_certification` y `frameworks` (sale de `catalog.frameworks`: hoy solo `soc2`) |
 
@@ -245,7 +254,7 @@ Implementado en `Backend/src/features/services` (más `catalogs` y el progreso d
 - **Qué se clona y cómo:** ver D45 (puntos 4 a 9). Con `security + availability + confidentiality`:
   38 requisitos y 86 controles; con los 5 criterios: 61 y 118. Más 10 riesgos, 56 causas y sus relaciones.
 - **Validación** (todos los errores a la vez): valores fuera de catálogo (`enum.invalid`), listas vacías
-  (`array.min`) o repetidas (`array.unique`), «Ninguna» con otras (`regulation.none_exclusive`), enlace
+  (`array.min`) o repetidas (`array.unique`), enlace
   inválido (`url.invalid`), marco que no existe (`framework_codes: enum.invalid`).
   `ORGANIZATION_NOT_DECLARED` si falta el Componente 1; `SERVICE_NAME_TAKEN` por nombre repetido en la
   empresa (sin importar mayúsculas). `FRAMEWORK_NOT_CONTRACTED` **sí se usa desde D47**: el marco debe estar

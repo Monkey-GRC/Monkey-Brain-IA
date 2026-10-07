@@ -76,7 +76,7 @@ Monkey-Brain-IA/
     │   ├── add-feature.md
     │   ├── add-prisma-model.md
     │   ├── add-i18n-error.md
-    │   ├── add-wazuh-integration.md   # feature NestJS que consume la API de Wazuh
+    │   ├── add-wazuh-integration.md   # adaptador real de la sonda (puerto ConnectionProbe)
     │   ├── feature-builder.md
     │   └── architecture-guardian.md
     ├── frontend/                  # skills técnicas de implementación (Angular)
@@ -87,9 +87,15 @@ Monkey-Brain-IA/
     ├── product/                   # skills de producto/estrategia/compliance
     │   └── monkey-compliance-council/  # "el Consejo": cerebro de producto/compliance de Monkey
     │       ├── SKILL.md
-    │       └── references/        # modelo-datos (+decisiones, +pendientes), flujo-end-to-end,
-    │           │                    #   philosophy, architecture, wazuh, mvp-roadmap, council, frameworks/*
-    │           └── modulos/           # onboarding.md
+    │       └── references/        # README = mapa; una carpeta por parte de la aplicación:
+    │           ├── producto/            #   philosophy, mvp-roadmap, council, flujo-end-to-end, sprint-onboarding
+    │           ├── arquitectura/        #   architecture
+    │           ├── datos/               #   modelo-datos, schema-implementacion, decisiones (D-n), pendientes (P-n)
+    │           ├── seguridad/           #   requisitos (SEG-n)
+    │           ├── cumplimiento/        #   frameworks/* (14 marcos)
+    │           ├── control-tecnico/     #   wazuh (la sonda)
+    │           ├── modulos/             #   onboarding.md
+    │           └── deuda-tecnica/       #   índice + por área (DT-n)
     └── integrations/               # skills de integraciones externas
         └── wazuh/                    # Wazuh completo: producto (API, infra, TODAS las normativas que evalúa) + caso aplicado del SOC de Bryan
             ├── SKILL.md

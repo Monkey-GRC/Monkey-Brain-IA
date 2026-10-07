@@ -23,10 +23,10 @@ El comité fija **3 campos** (`modelo-datos.md` §4.2) y **D47 añade el marco q
 | `name` | string | sí | — | `companies.name` — razón social. Se fija aquí y llega bloqueada al Componente 1 |
 | `requires_dedicated_database` | boolean | sí | — | deriva `companies.isolation_strategy` |
 | `admin_email` | string (email) | sí | — | `companies.admin_email` |
-| `framework_codes` | array&lt;string&gt; | **no** (por defecto `["soc2"]`) | `framework` (1 valor en el MVP: `soc2`) | `platform.company_frameworks` — los marcos que se contratan para la empresa (D47) |
+| `framework_codes` | array&lt;string&gt; | **no** (por defecto `["soc2"]`) | `framework` (7 ofrecidos; solo `soc2` contratable: D37, D50) | `platform.company_frameworks` — los marcos que se contratan para la empresa (D47) |
 
-`framework_codes` va fijo en `soc2` por ahora (D37): Monkey Admin lo muestra bloqueado. Un código que no esté
-en `catalog.frameworks` → `422`. Al declarar un servicio, el cliente solo puede elegir entre los marcos que su
+Monkey Admin **muestra los 7 marcos** del catálogo pero solo `soc2` se puede contratar (D37, D50). Un código que no esté
+en `catalog.frameworks` → `422`; uno que exista pero sea `coming_soon` → `409 FRAMEWORK_NOT_AVAILABLE`. Al declarar un servicio, el cliente solo puede elegir entre los marcos que su
 empresa tiene contratados (`409 FRAMEWORK_NOT_CONTRACTED`, ver `onboarding-service-context.md`).
 
 `requires_dedicated_database: true` → `isolation_strategy: "dedicated"`; `false` → `"shared"`.
@@ -148,6 +148,7 @@ a `revoked`.
 | 409 | `ADMIN_EMAIL_TAKEN` | Ese `admin_email` ya es administrativo de otra empresa |
 | 409 | `COMPANY_ALREADY_ONBOARDED` | Se intenta editar tras el canje de la clave |
 | 409 | `ACCESS_KEY_NOT_PENDING` | Se intenta regenerar una clave ya usada |
+| 409 | `FRAMEWORK_NOT_AVAILABLE` | Se eligió un marco que aún no está construido (`coming_soon`, D50) |
 | 422 | `VALIDATION_FAILED` | `name` vacío o >255, `admin_email` inválido |
 | 422 | `DEDICATED_DATABASE_NOT_AVAILABLE` | **Temporal**: `requires_dedicated_database: true` mientras el aprovisionamiento dedicado no exista (P2d). Clave i18n `company.dedicated_not_available` |
 | 503 | `PROVISIONING_FAILED` | Falló el aprovisionamiento de la base dedicada |

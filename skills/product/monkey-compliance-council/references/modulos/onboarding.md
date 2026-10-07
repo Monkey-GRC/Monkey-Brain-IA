@@ -61,18 +61,14 @@ literales, en `contracts/enums.md`.
 | Organizaciones de subservicios (nube/infra) | Multi-select | `1:N` → `subservice_organizations` |
 | Detalle de subservicios (proveedor, servicio, responsabilidad) | Texto — opcional | `subservice_organizations.responsibility` |
 | Framework que desea gestionar | Multi-select (solo lo contratado) | `N:M` → `frameworks`, vía `service_frameworks` |
-| Regulaciones que debe cumplir el servicio | Multi-select | ⚠️ **sin tabla puente en el modelo** — ver nota |
-| ¿Ya tiene alguna certificación? | Selección — opcional | `services.previous_certification` |
+| ¿Ya tiene alguna certificación o evaluación? | Selección — opcional | `services.previous_certification` (8 valores, D51) |
 | Disponibilidad esperada | Selección | `services.expected_availability` |
-| Descripción del Sistema | Enlace o archivo | `1:1` → `system_descriptions.file_path` |
+| Descripción del Sistema | Enlace y/o archivo (PDF o `.docx`, 25 MB) | `1:1` → `system_descriptions.link_url` / `file_key` (D51) |
 
-> ⚠️ **Dos huecos de este componente, pendientes de cerrar antes de construirlo:**
-> 1. La regulación **a nivel de servicio** no tiene tabla puente: el modelo solo define
->    `organization_regulations` (§6.1). Falta decidir si se añade `service_regulations` o si
->    la regulación se declara solo a nivel de empresa.
-> 2. La Descripción del Sistema: el XLSX del comité pide "enlace o ruta" y
->    `system_descriptions.file_path` es un `string`, pero este documento decía "adjunto".
->    Define si el endpoint es `multipart/form-data` o JSON con URL.
+> **Las regulaciones ya no se declaran por servicio** (D51; revierte D45): se declaran **una vez por empresa** en el Componente 1
+> (`organization_regulations`). El catálogo `regulations` tiene 18 filas (16 normas de protección de datos más `none` y `other`).
+> **La Descripción del Sistema** se entrega como enlace, como archivo, o las dos cosas; al menos una es obligatoria.
+> El archivo se guarda en S3/minio (no en la base) y el procesamiento de sus 10 secciones sigue pendiente (DT-12).
 
 **La Descripción del Sistema es un entregable, no un campo de texto.** El cliente sube un
 documento con las 10 secciones de los *Description Criteria* de AICPA (tipos de servicio,

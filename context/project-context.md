@@ -8,8 +8,8 @@ type: context
 # Monkey Backend
 
 > ⚠️ **Este archivo describe el código tal como está hoy, no el diseño objetivo.** El plan
-> vigente es `skills/product/monkey-compliance-council/references/modelo-datos.md` (ver `CLAUDE.md`).
-> Actualizado el 2026-09-30.
+> vigente es `skills/product/monkey-compliance-council/references/datos/modelo-datos.md` (ver `CLAUDE.md`).
+> Actualizado el 2026-10-07 (incluye D50 y D51).
 
 > **Convención de rutas**: este folder (`Monkey-Brain-IA`) vive como repo
 > independiente, separado del código de producto. Todas las rutas de código
@@ -33,7 +33,7 @@ Wazuh es el motor de monitoreo/evidencia técnica.
 
 El modelo de dominio completo (entidades, relaciones, cardinalidades,
 dimensiones, tests, evidencias, exclusiones y cálculo del cumplimiento) está
-en `skills/product/monkey-compliance-council/references/modelo-datos.md`.
+en `skills/product/monkey-compliance-council/references/datos/modelo-datos.md`.
 Leerlo antes de tocar el schema. Cómo está implementado (Prisma 7, RLS, roles, migraciones, `.env`)
 está en `schema-implementacion.md`.
 
@@ -44,7 +44,7 @@ fija el tenant por transacción. La base dedicada (`isolation_strategy = dedicat
 una opción del modelo, pero su aprovisionamiento **no está construido**: hoy el registro la rechaza
 con `DEDICATED_DATABASE_NOT_AVAILABLE` hasta que se cierre P2(d).
 
-El schema ya implementa el modelo relacional completo (75 tablas, 23 migraciones aplicadas en dev).
+El schema ya implementa el modelo relacional completo (76 tablas y 29 migraciones, medido en `develop` el 2026-10-07).
 El modelo viejo (`Client`, `Template → Risk → Reason → Control`, una base por cliente,
 `prisma/central/` + `prisma/tenant/`) **ya no existe**.
 
@@ -56,9 +56,13 @@ El modelo viejo (`Client`, `Template → Risk → Reason → Control`, una base 
   cookies httpOnly (`mnk_access`, `mnk_refresh`); contraseñas con `bcrypt` (costo 12)
 - **Validación/Docs:** `class-validator`, `class-transformer`, `@nestjs/swagger` (`/v1/docs`)
 - **i18n:** `nestjs-i18n`, locales en `/i18n/en` y `/i18n/es`
-- **Tests:** Jest + ts-jest + supertest instalados, pero **sin `*.spec.ts`** todavía
+- **Tests:** Jest + ts-jest + supertest. Pruebas unitarias (`*.spec.ts`), verificadores contra la base (`catalog:verify`,
+  `clone:verify`, `audit:verify`) y pruebas de aislamiento entre empresas en `Backend/test/` (`npm run test:e2e`: base de datos
+  y, cuando se mergee su rama, API por HTTP). Detalle y estado en `skills/product/monkey-compliance-council/references/seguridad/requisitos.md`
 - **Lint/Format:** ESLint 9 (flat config) + Prettier (`singleQuote`, `trailingComma: all`)
-- **CI/CD:** GitHub Actions — build de imagen Docker y despliegue al VPS de dev (sin paso de migración)
+- **CI/CD:** GitHub Actions — `ci.yml` (lint, build, pruebas y verificadores sobre un Postgres vacío, en cada PR) y
+  `deploy-dev.yml` (build de la imagen y despliegue al VPS de dev; **migra solo** antes de levantar el backend, con respaldo previo,
+  D42). El CI **no bloquea** el merge ni el despliegue sin el plan GitHub Team (DT-41)
 
 ## Arquitectura
 
@@ -89,23 +93,25 @@ catálogo, filtro global de excepciones, `ValidationException`, paginación, dec
 - `auth`: **feature de referencia**, 4 capas completas. Login, refresh (rotado), logout y `me`
   (`contracts/modules/auth.md`); bloqueo a 5 intentos por 15 min; sesión con cierre a los 30 min sin
   actividad y a las 8 h; `SessionAuthGuard` global que verifica sesión y usuario contra la base en
-  cada request. Incluye el canje de la clave (`POST /v1/auth/redeem`, D43: una sola vez y solo con
-  el `admin_email`), que crea el `admin_empresa` y abre sesión; login y canje comparten
+  cada request. Incluye la activación en **dos pasos** (D51): `POST /v1/auth/redeem/lookup` (muestra empresa y correo, no gasta la clave) y
+  `POST /v1/auth/redeem` (D43: una sola vez y solo con el `admin_email`; solo pide contraseña, el nombre es opcional), que crea el
+  `admin_empresa` y abre sesión, con un freno de 10 intentos fallidos cada 15 min por dirección (DT-37); login y canje comparten
   `SessionIssuer`. Falta el bloque `onboarding` de `me` (llega con MD-74).
 - `companies`: registro de empresas de Monkey Admin (`contracts/modules/monkey-admin.md`),
-  solo `admin_monkey`. `POST /v1/companies` (empresa + **marcos contratados**, hoy SOC 2 fijo, D47 + clave `MNK-XXXX-XXXX-XXXX` de un solo uso,
+  solo `admin_monkey`. `POST /v1/companies` (empresa + **marcos contratados**: el catálogo ofrece 7 y solo SOC 2 es contratable, D47 y D50; + clave `MNK-XXXX-XXXX-XXXX` de un solo uso,
   guardada como HMAC), `GET /v1/companies` (paginado, sin la empresa interna de Monkey) y
   `GET /v1/companies/{id}`. `PATCH` y la regeneración de clave esperan a P2(b)/(c).
 - `catalogs`: `GET /v1/catalogs/{name}` sirve las opciones de los formularios (con la etiqueta según
   `Accept-Language`). Los valores están en `src/common/catalogs/onboarding-catalogs.ts` (fuente:
-  `contracts/enums.md`) y las etiquetas en `i18n/{es,en}/catalogs.json`; solo las regulaciones salen
-  de la base (`catalog.regulations`).
+  `contracts/enums.md`) y las etiquetas en `i18n/{es,en}/catalogs.json`; solo las regulaciones (`catalog.regulations`) y los marcos
+  (`catalog.frameworks`, con su `availability`) salen de la base.
 - `onboarding`: Componente 1 (contexto organizacional): `GET` y `PUT
   /v1/onboarding/organizational-context`, solo `admin_empresa`, con auditoría antes/después. El
   avance de cada paso lo deriva `auth` (`GetOnboardingProgressUseCase`) para el bloque `onboarding`
   de `me`. Decisiones en D44.
 - `services`: Componente 2 (contexto del servicio): `POST/GET/PATCH/DELETE /v1/services` y
-  `POST /v1/services/{id}/system-description` (solo enlace), solo `admin_empresa`. **Crear o ampliar un
+  `POST /v1/services/{id}/system-description` (enlace) y `…/system-description/file` (archivo PDF o `.docx` de hasta 25 MB en
+  S3/minio, D51), solo `admin_empresa`. La regulación ya no se declara por servicio sino por empresa (D51). **Crear o ampliar un
   servicio clona el catálogo del marco en la misma transacción** (`CloneCatalogService` en `features/onboarding`,
   D40 de Héctor): controles con dimensiones, evidencias y vínculo a tests, y el set base de riesgos y causas;
   requisitos, puntos de enfoque y tests se referencian. Cada servicio tiene su propia copia. Decisiones en D45.
@@ -114,13 +120,13 @@ catálogo, filtro global de excepciones, `ValidationException`, paginación, dec
   `schedule`, solo `admin_empresa`. Credenciales cifradas (AES-256-GCM); la **sonda** es un puerto
   (`ConnectionProbe`) con adaptadores `simulated` (solo dev/demostración) y `unavailable` (por defecto),
   elegidos por `PROBE_MODE`: no hay conectores reales y no se finge ninguna conexión. El proveedor del motor
-  **nunca** sale. Decisiones en D46; parches en `deuda-tecnica.md`. **El paso 3 (conectar un activo) es
+  **nunca** sale. Decisiones en D46; parches en `deuda-tecnica/README.md`. **El paso 3 (conectar un activo) es
   provisional:** no coincide con cómo funciona la sonda real (D48, DT-31 a DT-36, pendiente P12).
 - Estado del código (2026-10-02): la rama de onboarding ya está en `develop` en los tres repos (Backend PR #15,
   Frontend PR #4, Frontend-Platform PR #7). Una ráfaga de peticiones ya no falla con 500 (D49).
 - Siembra (una sola vía, la de Héctor): `npm run bootstrap:admin` crea la empresa interna de Monkey y el
   primer `admin_monkey` desde las variables `BOOTSTRAP_*` del `.env`; `npm run reference:load` carga las
-  14 regulaciones y las 6 capacidades automatizadas (idempotente; `reference:verify` solo compara); el
+  18 regulaciones, las 6 capacidades automatizadas y los 6 marcos ofrecidos como `coming_soon` (idempotente; `reference:verify` solo compara); el
   catálogo SOC 2 con `catalog:load`. Ya no existe `prisma db seed`.
 
 ## Convenciones clave
@@ -182,8 +188,8 @@ su empresa, sus servicios, su scope y los activos que entran en la evaluación, 
 marcos que contrata por servicio. Es la puerta de entrada de los datos que alimentan todo el
 modelo — ver `references/modulos/onboarding.md` y `contracts/modules/`.
 
-⚠️ **Esa feature no existe hoy**: se eliminó con el modelo viejo y se reconstruye en los
-épicos MD-59 a MD-61.
+Los Componentes 1, 2 y 3 ya están construidos (ver «Estado actual de features»); el **paso 3 del Componente 3 es
+provisional** (D48).
 
 ## Dominio
 
@@ -230,8 +236,8 @@ Ver la tabla de "Las dos plataformas" arriba para qué feature vive en cuál rep
   `errorHandlerInterceptor` en `app.config.ts` para recibir el `HttpErrorResponse` crudo).
 - `Frontend` · `users`: **del modelo viejo** (`username`, `MONKEY_ADMIN`, `client_id`) y sin
   endpoint en el backend; se rehace con el módulo de Usuarios.
-- `Frontend-Platform` · `auth`: "Activa tu cuenta" (`/register`, canje de la clave con el correo
-  administrativo, nombre, apellido y contraseña) e inicio de sesión (`/signin`, por email). Rechaza
+- `Frontend-Platform` · `auth`: "Activa tu cuenta" (`/register`, en dos pasos: primero el código, que muestra
+  empresa y correo; luego la contraseña, sin nombre ni apellido, D51) e inicio de sesión (`/signin`, por email). Rechaza
   `admin_monkey`. El `credentialsInterceptor` renueva la sesión ante un 401 y reintenta; el usuario y
   la empresa en sesión viven en `core/domain/services/session.service.ts`. Se retiraron los headers
   `mnk-client-*` y sus servicios (modelo viejo).
@@ -252,7 +258,7 @@ Ver la tabla de "Las dos plataformas" arriba para qué feature vive en cuál rep
   de conexión con credenciales de solo lectura y avisos honestos de «modo demostración» o «aún no
   disponible».
 - Tras entrar (login o canje), Platform manda a `/onboarding` a quien aún no lo ha llenado. El
-  `dashboard` se reconstruye en los épicos MD-59 a MD-61 (`philosophy.md`: readiness cualitativo primero,
+  `dashboard` se reconstruye con el módulo de Cumplimiento, épico 9 de `producto/mvp-roadmap.md` (`philosophy.md`: readiness cualitativo primero,
   el % nunca solo).
 - **Puertos en local:** Monkey Platform `4200`, Monkey Admin `4201` (fijado en su `angular.json`).
   Comparten las cookies de `localhost`: dos sesiones en el mismo navegador se pisan.

@@ -46,46 +46,25 @@ sudo sqlite3 /var/ossec/queue/db/003.db "SELECT * FROM sys_osinfo;"
 
 `vulnerability.cve`, `vulnerability.severity` (Critical/High/Medium/Low), `vulnerability.package.name`, `vulnerability.package.version`, `vulnerability.status` (Active/Solved/Mitigated), `vulnerability.cvss.cvss3.base_score`.
 
-## Arquitectura MONKEY (Compliance Engine) — ⚠️ OBSOLETA
+## Patrones aprendidos de un conector anterior
 
-> **No es el stack de este proyecto y no se copia.** El real es **NestJS 11 + Prisma 7** en el
-> backend y **dos apps Angular 20 standalone** (`Frontend` admin y `Frontend-Platform`) — ver
-> `context/project-context.md`. Lo que sigue se conserva solo por los **patrones aprendidos**
-> (cachear SCA, cifrar credenciales, convertir UTC a hora local, JWT con roles por tenant), no
-> como plantilla de arquitectura.
+Antes del backend actual existió un prototipo de conector (otra tecnología, ya descartada). Se conservan **solo las lecciones
+operativas**, no su arquitectura:
 
-Stack de aquella referencia: **FastAPI + Python** backend, **PostgreSQL** (cache de checks y credenciales cifradas), frontend **Streamlit** (MVP) → React + Recharts (producción), hosting en el mismo VPS Contabo.
+- Wazuh reporta timestamps en UTC → se guardan en UTC y se convierten a la hora local solo para mostrar.
+- Una consulta SCA de ~500 checks tarda segundos → **cachear siempre**, nunca consultarla en cada petición del usuario.
+- Las credenciales de la API de Wazuh van cifradas o en variables de entorno, nunca en código ni en repos.
+- El prototipo agrupaba por cliente con un grupo de agentes; **cómo se asigna hoy cada empresa a su grupo no está decidido**
+  (P12 y DT-33 en `product/monkey-compliance-council/references/`).
 
-Flujo de datos:
-
-```
-1. Cron cada hora → extrae alertas/checks por tenant vía API Wazuh
-2. Procesa y calcula scores → guarda en PostgreSQL
-3. Dashboard consulta la API propia (no Wazuh directamente)
-4. Cliente ve: score global, score por control, top alertas, tendencia 30 días
-```
-
-Endpoints propios:
-
-```
-/api/v1/agents                    → agentes del cliente (tenant_id)
-/api/v1/agents/{id}/compliance    → score ISO/SOC2
-/api/v1/agents/{id}/alerts        → alertas recientes
-/api/v1/dashboard/summary         → resumen ejecutivo
-```
-
-Consideraciones aprendidas:
-- Wazuh reporta timestamps en UTC → MONKEY convierte a hora Colombia (UTC-5) para mostrar.
-- Consultas SCA de ~500 checks tardan segundos → cachear siempre.
-- Credenciales de la API de Wazuh cifradas en PostgreSQL, nunca en código ni repos.
-- Auth de clientes con JWT + roles por tenant.
+El stack real del proyecto es NestJS 11 + Prisma 7 en el backend y dos apps Angular (ver `context/project-context.md`).
 
 ## Reglas del conector real de Monkey
 
 Fuente: `conexion_api_wazuh_monkey.txt` (en `Monkey/`, fuera de este repo —
 **contiene credenciales en texto plano, no copiarlo aquí**) y el código de
 `monkey-cis-sync`. Inventario de fuentes en
-`../../../product/monkey-compliance-council/references/modelo-datos.md` §0.
+`../../../product/monkey-compliance-council/references/datos/modelo-datos.md` §0.
 
 - **Clave compuesta obligatoria de tres partes: `platform` + `policy_id` + `check_id`**
   (decisión D6, ver `modelo-datos.md` §3.3). Nunca solo `check_id`: el mismo ID significa
@@ -98,13 +77,9 @@ Fuente: `conexion_api_wazuh_monkey.txt` (en `Monkey/`, fuera de este repo —
   vivía en el catálogo y dos agentes con la misma política se pisaban.
   **Pendiente:** esa tabla hace UPSERT sin timestamp, así que no guarda histórico.
 - **`result` vacío = `not applicable`.** No es un fallo ni un error. Y `invalid` es
-  un estado real y distinto — ver `../../../product/monkey-compliance-council/references/modelo-datos.md` §3.3.
+  un estado real y distinto — ver `../../../product/monkey-compliance-council/references/datos/modelo-datos.md` §3.3.
 - **El mapeo a SOC 2 lo pone Monkey.** Las políticas Linux no traen la clave
   `soc_2`; hay scripts propios que lo rellenan con procedencia y confianza.
 - **Usa el certificado, no `verify=False`.** El documento entrega `root-ca.pem`.
 - **El token JWT vive ~900 s.** Manejar el 401 y re-autenticar.
 
-> **Nota de obsolescencia:** ver el aviso en la sección "Arquitectura MONKEY" — ese stack no es
-> el del proyecto.
-> Esa sección se conserva solo por las consideraciones operativas (UTC→Colombia,
-> cachear consultas SCA, credenciales cifradas), que siguen vigentes.

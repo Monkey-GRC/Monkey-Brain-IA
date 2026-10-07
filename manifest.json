@@ -12,7 +12,7 @@
   "entrypoint": "CLAUDE.md",
   "sources": {
     "note": "Fuente maestra del comite. NO es material de apoyo: es la fuente de verdad funcional. Las demas fuentes que el comite entrego ya estan transcritas en references/ y sus archivos se retiraron el 2026-09-26 para no tener dos versiones de la misma verdad: donde quedo cada una esta en modelo-datos.md seccion 0.",
-    "index": "skills/product/monkey-compliance-council/references/modelo-datos.md#0-fuentes",
+    "index": "skills/product/monkey-compliance-council/references/datos/modelo-datos.md#0-fuentes",
     "files": [
       {
         "id": "tsc-integral-soc2",
@@ -20,10 +20,10 @@
         "primary": true,
         "description": "FUENTE MAESTRA. 17 hojas: modelo RBAC (4 roles, matriz de permisos, 12 politicas de seguridad), contexto de empresa y de servicio, activos del scope + catálogo de conexiones AC-01..AC-06, 10 riesgos (metodología 5x5), 56 causas con 92 relaciones riesgo-causa, 119 controles de catálogo (118 asignados; CPL-1 es la Descripcion del Sistema) sobre 302 puntos de enfoque (729 relaciones), 61 requisitos TSC, 61 TEST de 23 campos con 228 asignaciones control-TEST, y 11.352 checks de 77 politicas SCA sobre 18 plataformas con 20 referencias de mapeo. IMPORTANTE: estas cifras salen de los datos crudos de las hojas, NO de la hoja Resumen, que quedo desactualizada (declara 658 relaciones).",
         "consumedBy": [
-          "skills/product/monkey-compliance-council/references/modelo-datos.md",
+          "skills/product/monkey-compliance-council/references/datos/modelo-datos.md",
           "skills/product/monkey-compliance-council/references/modulos/onboarding.md",
-          "skills/product/monkey-compliance-council/references/philosophy.md",
-          "skills/product/monkey-compliance-council/references/frameworks/soc2.md"
+          "skills/product/monkey-compliance-council/references/producto/philosophy.md",
+          "skills/product/monkey-compliance-council/references/cumplimiento/frameworks/soc2.md"
         ]
       },
       {
@@ -33,8 +33,8 @@
         "external": true,
         "description": "Anatomía real de requisito, control del cliente, plan de testeo con muestreo y las tres banderas por test.",
         "consumedBy": [
-          "skills/product/monkey-compliance-council/references/modelo-datos.md",
-          "skills/product/monkey-compliance-council/references/frameworks/soc2.md"
+          "skills/product/monkey-compliance-council/references/datos/modelo-datos.md",
+          "skills/product/monkey-compliance-council/references/cumplimiento/frameworks/soc2.md"
         ]
       },
       {
@@ -43,8 +43,8 @@
         "external": true,
         "description": "Lógica bool_and, tercer veredicto REVISAR, frescura de escaneos y los tres tags de compliance (tsc/soc_2/nelson).",
         "consumedBy": [
-          "skills/product/monkey-compliance-council/references/modelo-datos.md",
-          "skills/product/monkey-compliance-council/references/wazuh.md"
+          "skills/product/monkey-compliance-council/references/datos/modelo-datos.md",
+          "skills/product/monkey-compliance-council/references/control-tecnico/wazuh.md"
         ]
       },
       {
@@ -55,7 +55,7 @@
         "description": "Endpoints, flujo del conector, clave compuesta policy_id+check_id, estados de resultado y confidencialidad de la sonda.",
         "consumedBy": [
           "skills/integrations/wazuh/references/api-integracion.md",
-          "skills/product/monkey-compliance-council/references/wazuh.md"
+          "skills/product/monkey-compliance-council/references/control-tecnico/wazuh.md"
         ]
       },
       {
@@ -64,7 +64,7 @@
         "external": true,
         "description": "Alcance comercial de junio 2026 (vulnerabilidades, gestión documental, políticas, notificaciones). Parcialmente superado.",
         "consumedBy": [
-          "skills/product/monkey-compliance-council/references/mvp-roadmap.md"
+          "skills/product/monkey-compliance-council/references/producto/mvp-roadmap.md"
         ]
       }
     ]
@@ -173,17 +173,17 @@
       "references": [
         {
           "id": "modelo-datos",
-          "path": "skills/product/monkey-compliance-council/references/modelo-datos.md",
+          "path": "skills/product/monkey-compliance-council/references/datos/modelo-datos.md",
           "description": "El modelo relacional del dominio, ordenado por módulos (catálogo maestro, Monkey Admin, Usuarios, Onboarding ×3, Cumplimiento, Control Técnico): 66 tablas con sus PK/FK en nomenclatura inglesa snake_case, los dos ejes de dimensión, y la fórmula de cumplimiento del comité. Es el plan de construcción vigente (el proyecto está en reconstrucción: si el código difiere, gana el comité). Obligado antes de tocar el schema o el cálculo."
         },
         {
           "id": "modelo-datos-decisiones",
-          "path": "skills/product/monkey-compliance-council/references/modelo-datos-decisiones.md",
+          "path": "skills/product/monkey-compliance-council/references/datos/modelo-datos-decisiones.md",
           "description": "Registro de las decisiones que cerraron el modelo relacional, con la fuente y el razonamiento de cada una. Se consulta para no reabrir debates, no para construir."
         },
         {
           "id": "modelo-datos-pendientes",
-          "path": "skills/product/monkey-compliance-council/references/modelo-datos-pendientes.md",
+          "path": "skills/product/monkey-compliance-council/references/datos/modelo-datos-pendientes.md",
           "description": "Las decisiones del modelo que solo el comité puede cerrar (hoy, 4: P2 a P5; P1 la cerró el comite el 2026-09-26). Si sigue ahí, no se resuelve por cuenta propia."
         },
         {
@@ -193,42 +193,42 @@
         },
         {
           "id": "flujo-end-to-end",
-          "path": "skills/product/monkey-compliance-council/references/flujo-end-to-end.md",
+          "path": "skills/product/monkey-compliance-council/references/producto/flujo-end-to-end.md",
           "description": "El recorrido completo de una empresa cliente, en orden: registro del tenant en Monkey Admin, primer acceso con clave, los 3 componentes del onboarding, el clonado del catálogo, los módulos de Cumplimiento y Usuarios, y la medición. Es el mapa de cómo se encadenan los módulos entre sí."
         },
         {
           "id": "philosophy",
-          "path": "skills/product/monkey-compliance-council/references/philosophy.md",
+          "path": "skills/product/monkey-compliance-council/references/producto/philosophy.md",
           "description": "Constitución de producto: lenguaje al usuario final, readiness cualitativo, cobertura vs cumplimiento, confidencialidad de la sonda, human-in-the-loop."
         },
         {
           "id": "architecture",
-          "path": "skills/product/monkey-compliance-council/references/architecture.md",
+          "path": "skills/product/monkey-compliance-council/references/arquitectura/architecture.md",
           "description": "Los 4 motores, capas funcionales y stack de referencia."
         },
         {
           "id": "mvp-roadmap",
-          "path": "skills/product/monkey-compliance-council/references/mvp-roadmap.md",
+          "path": "skills/product/monkey-compliance-council/references/producto/mvp-roadmap.md",
           "description": "MUST/SHOULD/LATER/NO BUILD y fases."
         },
         {
           "id": "sprint-onboarding",
-          "path": "skills/product/monkey-compliance-council/references/sprint-onboarding.md",
+          "path": "skills/product/monkey-compliance-council/references/producto/sprint-onboarding.md",
           "description": "Alcance aprobado del sprint de onboarding (7 dias habiles, 2026-09-28 a 2026-10-06): que entra, que queda fuera, cronograma, prioridad de lo que se cae, dependencias y criterios de aceptacion."
         },
         {
           "id": "wazuh",
-          "path": "skills/product/monkey-compliance-council/references/wazuh.md",
+          "path": "skills/product/monkey-compliance-council/references/control-tecnico/wazuh.md",
           "description": "Wazuh como motor de monitoreo/evidencia + reglas del conector real."
         },
         {
           "id": "council",
-          "path": "skills/product/monkey-compliance-council/references/council.md",
+          "path": "skills/product/monkey-compliance-council/references/producto/council.md",
           "description": "Roster del Consejo y cómo se resuelven desacuerdos de diseño."
         },
         {
           "id": "frameworks",
-          "path": "skills/product/monkey-compliance-council/references/frameworks/",
+          "path": "skills/product/monkey-compliance-council/references/cumplimiento/frameworks/",
           "description": "14 frameworks con fuente y fecha verificada."
         }
       ]

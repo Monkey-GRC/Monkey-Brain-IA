@@ -70,7 +70,7 @@ Esta es la plantilla que Monkey usa para explicarle un hallazgo a un usuario fin
 
 ## Explicabilidad como principio de veracidad, no solo de UX
 
-Toda respuesta de la IA de Monkey debe poder desplegarse en "ver el razonamiento": qué controles, qué evidencia, qué framework consultó. Este mismo principio rige esta skill — cuando cites qué exige un framework o qué hace un competidor, la fuente debe ser rastreable (ver los archivos en `frameworks/`, que incluyen citas verificadas con fecha).
+Toda respuesta de la IA de Monkey debe poder desplegarse en "ver el razonamiento": qué controles, qué evidencia, qué framework consultó. Este mismo principio rige esta skill — cuando cites qué exige un framework o qué hace un competidor, la fuente debe ser rastreable (ver los archivos en `cumplimiento/frameworks/`, que incluyen citas verificadas con fecha).
 
 ## La sonda no se nombra
 

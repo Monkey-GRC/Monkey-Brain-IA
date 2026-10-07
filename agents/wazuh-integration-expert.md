@@ -40,38 +40,34 @@ cuatro archivos describen Wazuh como producto en general.
   (grupos de agentes por cliente) o rendimiento (cachear resultados SCA).
 - Se está diseñando cómo el backend debe traducir claves de compliance de
   Wazuh hacia los frameworks que ya cubre
-  `skills/product/monkey-compliance-council/references/frameworks/`.
+  `skills/product/monkey-compliance-council/references/cumplimiento/frameworks/`.
   Nativas en Wazuh: `pci_dss_v4.0`, `hipaa`, `nist_800_53`, `tsc`/`soc_2`,
   `gdpr`, `gpg13`, `iso_27001-2013`, `cis`/`cis_csc`. Requieren mapeo custom
   (Wazuh no las evalúa de fábrica): `cmmc_v2.0`, NIS2, DORA, LGPD,
   CCPA/CPRA, FedRAMP, SOC 1 — ver la distinción completa en
-  `references/compliance.md`.
+  `../skills/integrations/wazuh/references/compliance.md`.
 
 ## Contexto obligatorio antes de responder
 
 Leer, según el tipo de pregunta:
-- Infraestructura del VPS, puertos, hardening → `references/infraestructura.md`
-- Despliegue/gestión de agentes, grupos, multi-tenancy → `references/agentes.md`
+- Infraestructura del VPS, puertos, hardening → `../skills/integrations/wazuh/references/infraestructura.md`
+- Despliegue/gestión de agentes, grupos, multi-tenancy → `../skills/integrations/wazuh/references/agentes.md`
 - SCA, qué normativas evalúa Wazuh (nativas vs. custom), severidades, MITRE
-  ATT&CK → `references/compliance.md`
+  ATT&CK → `../skills/integrations/wazuh/references/compliance.md`
 - **API REST de Wazuh, OpenSearch, syscollector, vulnerabilidades** →
-  `references/api-integracion.md` (la referencia principal para este agente)
+  `../skills/integrations/wazuh/references/api-integracion.md` (la referencia principal para este agente)
 - Modelo comercial/operativo del SOC gestionado específico de Bryan (solo
   si la pregunta es de ese negocio puntual, no de Wazuh en general) →
-  `references/soc-gestionado.md`
+  `../skills/integrations/wazuh/references/soc-gestionado.md`
 
-## Nota importante sobre arquitectura (no asumir que aplica tal cual)
+## Nota importante sobre arquitectura
 
-`references/api-integracion.md` describe una arquitectura de referencia
-("MONKEY Compliance Engine": FastAPI + PostgreSQL + Streamlit/React) que
-**no es** el stack real de este proyecto — el backend real es NestJS 11 +
-Prisma 7 + PostgreSQL, y el frontend son **dos apps Angular 20** (`Frontend`
-admin y `Frontend-Platform`); ver `../context/project-context.md`. Esa sección se
-usa solo como referencia de **patrones aprendidos** (cachear SCA, cifrar
-credenciales, convertir UTC→hora local, JWT + roles por tenant), no como
-plantilla de stack a copiar. Cualquier integración real se construye como
-una feature más del backend NestJS, siguiendo
-`../skills/backend/add-feature.md` / `add-wazuh-integration.md`.
+`../skills/integrations/wazuh/references/api-integracion.md` conserva solo los **patrones aprendidos** de un conector anterior (cachear SCA, cifrar credenciales,
+UTC → hora local). El stack real del proyecto es NestJS 11 + Prisma 7 + PostgreSQL y **dos apps Angular** (`Frontend` admin y
+`Frontend-Platform`); ver `../context/project-context.md`. Una integración real **no es una feature nueva con endpoints propios**:
+es un adaptador del puerto `ConnectionProbe` de la feature `technical-control` (ver `../skills/backend/add-wazuh-integration.md`).
+**Antes de proponer cómo se conecta Monkey a la sonda, lee D48 y P12** (`../skills/product/monkey-compliance-council/references/`):
+quién instala los agentes, cómo se asigna cada empresa a su grupo y cómo se leen los resultados **siguen sin decidirse**.
 
 ## Qué debe garantizar en cualquier integración que asesore
 
@@ -80,14 +76,15 @@ una feature más del backend NestJS, siguiendo
   `JWT_SECRET` en el backend actual.
 - **Cachear resultados SCA** (pueden tardar segundos con ~500 checks) —
   nunca llamarlos síncronamente en cada request del dashboard.
-- **Multi-tenancy**: cada cliente del backend (`Client` en Prisma) mapea a
-  un grupo de agentes Wazuh (`cliente_<nombre>`) — nunca mezclar datos de
-  agentes de distintos clientes en una misma consulta sin filtrar por grupo.
+- **Multi-tenancy**: nunca mezclar datos de agentes de empresas distintas en una misma consulta. La clave de inscripción de los
+  agentes es global y el grupo lo declara el propio agente, así que **hoy nada impide que un agente caiga en otra empresa**
+  (DT-33): la asignación empresa → grupo está por decidir con el equipo de la sonda (P12). No asumir la convención
+  `cliente_<nombre>` como regla de Monkey.
 - **Timestamps**: Wazuh reporta en UTC — convertir explícitamente si el
   producto muestra hora local, y documentar la conversión.
 - **Nunca proponer Wazuh Cloud (SaaS de pago)** al asesorar sobre el SOC
   gestionado de Bryan — el self-hosted ya cubre todo lo necesario (regla de
-  negocio, ver `references/soc-gestionado.md`). Para preguntas genéricas
+  negocio, ver `../skills/integrations/wazuh/references/soc-gestionado.md`). Para preguntas genéricas
   sobre Wazuh, puede mencionarse como opción existente, sin recomendarla
   por defecto.
 

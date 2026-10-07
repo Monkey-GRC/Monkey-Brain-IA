@@ -287,11 +287,12 @@ catálogo y lo particulariza. Y como el catálogo cambia con el tiempo, se versi
 erDiagram
     frameworks {
         uuid id PK
-        string code "soc2 (MVP: solo este)"
+        string code "soc2 (el único available en el MVP)"
         string name
         string version
         enum type
         string scope_description
+        enum availability "available|coming_soon (D50)"
     }
     requirements {
         uuid id PK
@@ -858,8 +859,8 @@ erDiagram
         uuid company_id FK
         uuid custom_role_id FK "nullable"
         string email "unico global, en minusculas"
-        string name
-        string last_name
+        string name "nullable (D51)"
+        string last_name "nullable (D51)"
         string password_hash "bcrypt+salt"
         enum role "admin_monkey|admin_empresa|funcional|auditor"
         enum status "active|inactive|suspended"
@@ -957,6 +958,9 @@ responsable del control *de su empresa*, no del control del catálogo maestro.
 > nombre de persona, pero el modelo de usuarios del comité lo exige (*"Email,
 > nombre, rol, empresa, controles asignados"*). Gana el documento del comité: se añaden `name`
 > y `last_name`.
+>
+> **Después, D51 (2026-10-06) los volvió opcionales:** la cuenta se identifica por el correo y el nombre se completará en el
+> perfil. La activación ya no los pide.
 
 ### 5.3 Políticas de seguridad de la plataforma
 
@@ -1157,11 +1161,6 @@ erDiagram
         uuid service_id FK
         uuid trust_criterion_id FK
     }
-    service_regulations {
-        uuid id PK
-        uuid service_id FK
-        uuid regulation_id FK
-    }
     service_frameworks {
         uuid id PK
         uuid framework_id FK
@@ -1192,14 +1191,13 @@ erDiagram
     system_descriptions {
         uuid id PK
         uuid service_id FK
-        string file_path
+        string link_url "nullable (D51)"
+        string file_key "nullable (D51): llave del archivo en S3/minio"
         json sections "10 secciones AICPA"
     }
     organizations ||--o{ services : "presta"
     services ||--o{ service_trust_criteria : "contrata"
     trust_criteria ||--o{ service_trust_criteria : "contratado por"
-    services ||--o{ service_regulations : "sujeto a"
-    regulations ||--o{ service_regulations : "aplica a"
     services ||--o{ service_frameworks : "contrata marco"
     frameworks ||--o{ service_frameworks : "contratado en"
     services ||--o{ subservice_organizations : "depende de"
@@ -1227,9 +1225,12 @@ también **contra qué versión del catálogo** (`catalog_version_id`) y **desde
 (`evaluation_period`) aplica, que es lo que evita que un control nuevo mueva el número a
 mitad de periodo.
 
-**La regulación también se declara por servicio** (decisión D45). `organization_regulations` dice
-a qué leyes está sujeta la empresa; `service_regulations` dice cuáles aplican a *este* servicio,
-porque dos servicios de una misma empresa pueden tratar datos distintos. Tampoco se puntúa (D10).
+**La regulación se declara solo a nivel de empresa** (D51; revierte D45). `organization_regulations` dice a qué leyes está
+sujeta la empresa; **no existe `service_regulations`** (la tabla se eliminó). Tampoco se puntúa (D10). El catálogo `regulations`
+tiene 18 filas: 16 normas de protección de datos más `none` y `other`; PCI DSS ya no es una regulación sino un marco.
+
+**La Descripción del Sistema se entrega como enlace y/o archivo** (D51): `link_url` y `file_key`, con un `CHECK` de que al menos
+una exista. El archivo vive en S3/minio, no en la base.
 
 **`deployment_scenario` y el detalle del subservicio son opcionales al declarar el servicio** (D45):
 el escenario de despliegue se captura en el Componente 3, así que no puede ser obligatorio al
@@ -1344,7 +1345,7 @@ eje aparte de las dimensiones: lo que el cliente *dice* que tiene, que se compar
 
 **Honestidad: Automatizado ≠ Operativo.** Mientras no haya una sonda real, una conexión no puede declararse
 `operational`: la comprobación está `unavailable` (503, el activo sigue `pending`) o `simulated` (solo
-desarrollo y demostración, el activo queda en `warning`). Ver D46 y `deuda-tecnica.md` DT-1.
+desarrollo y demostración, el activo queda en `warning`). Ver D46 y `deuda-tecnica/README.md` DT-1.
 
 **El flujo de cada conexión es conectar → validar → activar → programar.**
 
