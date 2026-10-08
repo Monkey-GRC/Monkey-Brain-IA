@@ -97,6 +97,10 @@ Lo que aporta este componente al onboarding, específicamente:
   → activar → programar (`modelo-datos.md` §6.3 y §8).
 - El resultado de este componente es lo que llena `scopes` (declarado) e `assets`
   (descubierto) del servicio que se está configurando.
+- **La conexión de la nube (AWS) es parte de este componente**, no un módulo aparte (D58): el cliente elige canal (rol de solo
+  lectura o llaves), Monkey le entrega lo que debe hacer y valida la conexión. Diagramas: `control-tecnico/flujo-conexion-nube.md`;
+  contrato: `contracts/modules/onboarding-technical-control.md`. Lo que ocurre *después* de conectar (ejecuciones, estado de preparación,
+  hallazgos) es el módulo de operación continua (`modelo-datos.md` §8; contrato `control-tecnico-operacion.md`).
 
 ## Cumplimiento no es un 4º componente
 

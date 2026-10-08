@@ -1318,6 +1318,10 @@ erDiagram
         enum connection_status
         datetime last_validated_at
         string technical_coverage
+        enum connection_method "readonly_role|access_keys|agent, nulo hasta elegir"
+        string regions "las que el cliente declara; solo esas se evaluan"
+        string external_id "lo genera Monkey, no es secreto"
+        string role_arn "lo entrega el cliente, no es secreto"
         text encrypted_credentials "cifrado AES-256-GCM, nunca se devuelve"
         boolean is_active
         enum schedule_frequency "nullable: continuous|every_6h|every_24h"
@@ -1749,6 +1753,7 @@ erDiagram
         enum status
         int progress_percentage
         enum origin "scheduled|manual"
+        enum kind "assessment|validation"
         string failure_reason "nullable, clave i18n"
         string engine_version "nullable, solo nube"
         string regions "solo nube: las declaradas"
@@ -1818,6 +1823,9 @@ erDiagram
 `monitoring_domain_requirements` y `monitoring_domain_capabilities` son las dos tablas puente de
 las `N:M` (`id`, las dos FK y un único sobre el par), nombradas según la convención. Un dominio se
 apoya en varias capacidades y una capacidad puede servir a varios dominios (D32).
+
+**Dos tipos de ejecución (D58):** una `validation` comprueba que se puede acceder a la cuenta del cliente (segundos, el cliente espera en pantalla) y una
+`assessment` corre el motor (minutos). Corren en carriles distintos y el historial de evaluaciones solo muestra las segundas.
 
 **Ciclo de vida de una ejecución (D57).** `queued` → `running` → `completed` | `failed`. «Evaluar ahora» la deja en cola; el trabajador la reclama
 (una función SQL angosta busca entre empresas y la pasa a `running`) y la cierra con el resultado, o como `failed` con su `failure_reason`: un
