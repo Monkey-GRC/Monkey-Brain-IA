@@ -93,6 +93,8 @@ Las de HTTP de aislamiento ya están en `develop` (PR #18 y #19). **Las de `test
 | **SEG-32** | Los prompts a la IA nunca llevan credenciales ni secretos; el plano de datos del cliente está separado del de inferencia | `architecture.md` | — | Aún no hay IA | ⚪ |
 | **SEG-43** | Un archivo subido por el cliente solo se acepta si es PDF o `.docx`, pesa ≤ 25 MB y su **contenido** coincide con lo que declara (firma, no solo extensión); el nombre no puede salirse de la ruta | D51, `contracts/modules/onboarding-service-context.md` | `system-description-file.ts` | `system-description-file.spec.ts` (unitaria, corre en el CI) | ✅ |
 | **SEG-44** | Los archivos del cliente viven en un bucket **no público**, con la llave prefijada por empresa y descarga por URL temporal (5 min) | D51 | `FileStorage` (S3/minio), `<empresa>/services/<servicio>/…` | La llave y la unicidad, sí (`system-description-file.spec.ts`). **Que el bucket sea privado y la política por tenant no se verifican desde el repo** | ⚪ |
+| **SEG-46** | El motor de nube nunca recibe llaves de larga vida: solo credenciales **temporales** de un rol asumido (1 h), y el contenedor se elimina al terminar | `P14` C1/C3, DT-43, D57 | El trabajador asume el rol y pasa las credenciales por la entrada estándar; `docker rm` al terminar | Verificado a mano el 2026-10-09 (escaneo con `assumed-role/MonkeyReadOnly`); sin prueba automática | 🟡 `DT-43` |
+| **SEG-47** | La API interna del trabajador solo acepta su token, no está publicada fuera de la red interna y nunca devuelve ni registra secretos | D57, `contracts/modules/control-tecnico.md` | Guard propio con comparación en tiempo constante; sin ruta pública en el proxy | Sin construir | 🔴 D57 |
 
 ## E. Auditoría y trazabilidad
 

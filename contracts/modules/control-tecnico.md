@@ -295,3 +295,50 @@ Acciones nuevas (`<recurso>.<verbo>`): `asset.connection_set` (rol o llaves entr
 | **Las áreas** (`identity_access`, `data_network`, `logging_backup`) y su mapeo a las pruebas | ◐ Propuesta de desarrollo; falta ratificar con el comité |
 | **Azure y GCP** (`platform`, otro formato de `external_account_id`, otro modelo de rol) | ❌ Fuera de esta propuesta; sin cuentas de prueba |
 | **Hallazgos para checks sin prueba asignada** | ✅ No cuentan hasta que el comité responda (`P15`) |
+
+## API interna del trabajador (no es para el frontend)
+
+La usa **solo** el trabajador que ejecuta el motor (D57). **No está publicada** fuera de la red interna y no usa la cookie del cliente: va con
+`Authorization: Bearer <RUNNER_TOKEN>` (un secreto de servicio, comparado en tiempo constante; SEG-47). Misma forma de sobre y de error que el
+resto (`conventions.md`). Nunca devuelve ni registra una credencial más allá de lo estrictamente necesario para esa corrida.
+
+| Método y ruta | Qué hace |
+|---|---|
+| `POST /internal/runner/claim` | Reclama la próxima ejecución `queued` de **cualquier** empresa y la pasa a `running`. `204` si no hay |
+| `POST /internal/runner/executions/{id}/results` | Entrega el resultado crudo del motor; el backend lo interpreta y lo guarda; la ejecución pasa a `completed` |
+| `POST /internal/runner/executions/{id}/fail` | Informa que la corrida no pudo conectar; pasa a `failed` con su razón |
+
+`claim` → `200`:
+
+```json
+{
+  "statusCode": 200,
+  "message": "runner.claimed",
+  "data": {
+    "execution_id": "c41f…",
+    "tenant_id": "a1b2…",
+    "asset_id": "7e5b…",
+    "origin": "manual",
+    "platform": "aws",
+    "external_account_id": "123456789012",
+    "regions": ["us-east-1", "us-east-2"],
+    "connection": { "method": "readonly_role", "role_arn": "arn:aws:iam::123456789012:role/MonkeyReadOnly", "external_id": "mk-3f9a1c7e2b" }
+  }
+}
+```
+
+En `access_keys`, `connection` lleva además las llaves descifradas **solo en esta respuesta** (red interna, nunca se registran). En `agent` no
+hay corrida del trabajador: lee la sonda (otro adaptador).
+
+`results` — body: `{ "tenant_id": "a1b2…", "engine_version": "5.44.0", "started_at": "…Z", "finished_at": "…Z", "findings": [ …salida del motor, sin tocar… ] }`.
+`422 ENGINE_OUTPUT_INVALID` si una fila está mal formada (se indica cuál); no se guarda nada. `409 EXECUTION_NOT_RUNNING` si no está en curso
+(o no es de esa empresa: no se distingue). Una conexión que no sirve al reclamar (sin regiones, sin rol, proveedor no soportado) **no se entrega**: se
+cierra sola como `failed` con su razón y el reclamo sigue con la siguiente.
+
+`fail` — body: `{ "tenant_id": "a1b2…", "reason": "connection.role_not_found" }` (clave de la tabla de errores de `validate`).
+
+`tenant_id` es el que el trabajador recibió al reclamar: con él el backend abre la transacción de esa empresa. **Si el trabajador lo falsea, RLS no
+encuentra la ejecución y responde `409 EXECUTION_NOT_RUNNING`**: no puede escribir en otra empresa.
+
+**Una ejecución que se queda en `running` más de 30 minutos** (el trabajador murió) pasa a `failed` con `execution.timed_out`; lo hace el propio
+`claim` al barrer. Tampoco mueve la preparación.
