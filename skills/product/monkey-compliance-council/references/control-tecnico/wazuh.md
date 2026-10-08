@@ -8,20 +8,12 @@ Wazuh es un SIEM/XDR open source que **ya trae, de fábrica, ruleset pre-etiquet
 
 **Implicación de diseño directa**: Monkey no debe reconstruir un motor de correlación de eventos de seguridad ni un ruleset de compliance desde cero para todo lo que Wazuh ya cubre. El trabajo de Monkey es **consumir la salida ya etiquetada de Wazuh y traducirla al modelo de controles atómicos propio** (`architecture.md`) y luego al lenguaje de negocio (`philosophy.md`) — no reinventar la correlación. Esto acelera drásticamente el camino a valor y reduce superficie de mantenimiento.
 
-## Arquitectura de Wazuh (lo que hay que integrar)
+## Qué hay que saber de Wazuh
 
-Wazuh tiene un agente multiplataforma y tres componentes centrales:
-
-- **Agente**: se despliega en cada endpoint (servidor, workstation, VM) y recolecta/reenvía datos de seguridad al servidor Wazuh.
-- **Servidor (manager)**: analiza los datos de los agentes vía decoders y reglas, usa inteligencia de amenazas para buscar indicadores de compromiso.
-- **Indexer**: motor de búsqueda y analítica (basado en OpenSearch) que indexa y almacena las alertas generadas por el servidor.
-- **Dashboard**: interfaz web de visualización.
-
-Modelo de flujo: agente → servidor (análisis) → indexer (almacenamiento/búsqueda) → dashboard (visualización). Despliegue "todo en uno" para entornos pequeños, o multi-nodo (servidor y indexer en clúster) para alto volumen o alta disponibilidad.
-
-## Módulo SCA (Security Configuration Assessment)
-
-El módulo SCA corre benchmarks tipo CIS contra los endpoints y reporta gaps de hardening — es directamente relevante para CIS Controls y para cualquier control de "configuración segura" en el catálogo atómico de Monkey (p. ej. hardening de SO, políticas de contraseña, servicios innecesarios deshabilitados). Wazuh mantiene al administrador consciente de malas prácticas de configuración y su impacto en compliance.
+Un **agente** en cada equipo, un **manager** que analiza lo que reportan y (en una instalación completa) un **indexador** y un **dashboard**.
+**Monkey solo lee la API del manager**: no necesita ni el indexador ni el dashboard (`wazuh-operacion.md`). Las pruebas de configuración
+(SCA, benchmarks CIS) corren **en el agente**, y el manager guarda el resultado. Qué marcos trae etiquetados y cuáles no: `wazuh-compliance.md`.
+La API y sus límites: `wazuh-api.md`.
 
 ## Cómo se integra en Monkey (recomendación del Consejo)
 
@@ -41,7 +33,7 @@ El módulo SCA corre benchmarks tipo CIS contra los endpoints y reporta gaps de 
 | Dashboard de compliance nativo de Wazuh (TSC, PCI, HIPAA, GDPR, NIST 800-53) como sustituto del dashboard de Monkey | **NO BUILD como reemplazo** | Sigue existiendo el "pecado original": el dashboard nativo de Wazuh es técnico, por framework, y no traduce a lenguaje de negocio — Monkey debe consumir los datos, no exponer esa UI directamente al usuario final |
 | Módulo SCA como fuente de hallazgos de hardening/CIS | **SHOULD**, temprano en el roadmap on-prem | Alto valor para CIS Controls y para cualquier cliente con servidores propios |
 
-## Fuentes
+## Fuentes de Wazuh
 
 - [Architecture — Getting started with Wazuh · Wazuh documentation](https://documentation.wazuh.com/current/getting-started/architecture.html)
 - [Components — Getting started with Wazuh · Wazuh documentation](https://documentation.wazuh.com/current/getting-started/components/index.html)
@@ -70,9 +62,9 @@ Las reglas que hay que respetar y que no son negociables:
 |---|---|
 | **Clave compuesta de tres partes: `platform` + `policy_id` + `check_id`** | *"Nunca solo check_id: el mismo ID significa cosas distintas entre Windows y Ubuntu"*. Y los `policy_id` **no son homogéneos entre agentes**, así que usar el SO como discriminante no alcanza. **Cerrado en D6** (`modelo-datos.md` §3.3): la forma de dos partes no basta porque el mismo `policy_id` aparece en plataformas distintas. |
 | **Cinco estados del check, no dos** | `passed`, `failed`, `invalid`, `not applicable` (llega como `result` vacío) y `not run`. `invalid` es real y frecuente (el idioma del sistema tumba reglas en Windows), y **no** puede colapsarse con "no aplica" — ver el tercer estado en `modelo-datos.md` §7. |
-| **El mapeo a SOC 2 lo pone Monkey, no Wazuh** | Las políticas Linux no traen la clave `soc_2`. Del catálogo real: 869 checks, 646 con mapeo nativo, 223 inferidos por Monkey, con procedencia y confianza (`wazuh_native` vs `ai_inferred_final`, `high`/`medium`/`low`). Un mapeo inferido nunca se presenta como dato de la sonda. |
+| **El mapeo a SOC 2 lo pone Monkey, no Wazuh** | Las políticas Linux no traen la clave `soc_2`. Cada mapeo lleva procedencia y confianza (`wazuh_native` vs `ai_inferred_final`, `high`/`medium`/`low`; en el modelo, `mapping_provenance`, D56). Un mapeo inferido nunca se presenta como dato de la sonda. |
 | **Tres orígenes de check conviven** | `tsc` (benchmark CIS de fábrica), `soc_2` (política propia de Monkey, `monkey_soc2_win11.yml`) y `nelson` (umbrales del auditor, más estrictos que CIS). El origen es un atributo del check. |
-| **Validador único: no hay segunda sonda** | El comité **evaluó** usar otro proveedor (Prowler) para la dimensión Nube y **decidió lo contrario**: *"Wazuh SCA/Cloud Security como validador único"*, barriendo todas las menciones a Prowler del catálogo. Wazuh cubre servidores, BD **y nube**. El modelo mantiene `proveedor` como atributo por extensibilidad, no porque hoy haya dos. |
+| **Validador único: decisión del comité (D13), reabierta por P14** | El comité **evaluó** usar otro proveedor (Prowler) para la dimensión Nube y **decidió lo contrario**: *"Wazuh SCA/Cloud Security como validador único"*, barriendo todas las menciones a Prowler del catálogo. **Sigue vigente hasta que el comité responda `P14` A1.** El 2026-10-07 desarrollo corrió Prowler contra una cuenta de AWS (292 hallazgos) y las integraciones de la sonda con AWS/Azure son solo de registros (D48), así que la afirmación «la sonda cubre la nube» no está demostrada. Mientras tanto la nube se reporta como cobertura pendiente (D13) y el modelo mantiene `proveedor` por extensibilidad. |
 | **La nube todavía no tiene checks** | De los 61 TEST del catálogo, los **11 de nube no tienen ni un check asociado** (igual que los 26 documentales). Es decir: la decisión de que Wazuh cubra nube está tomada, pero la cobertura no está construida — ver la decisión D13. |
 | **Seis categorías de conexión, no dos** | El catálogo del comité (AC-01…AC-06) incluye servicios cloud gestionados por API/OAuth, servidores y BD en nube y on-prem, y **endpoints/estaciones de trabajo**. Las plataformas reales de los checks van mucho más allá de Ubuntu y Windows: AlmaLinux, Oracle Linux, macOS, HP-UX, AIX, Solaris, PostgreSQL, MySQL, SQL Server, Oracle, MongoDB, Apache, NGINX, IIS, PHP. |
 | **OpenSearch no sirve para el inventario puntual** | El puerto 9200 solo tiene el flujo de cambios. Para el estado actual completo, la API 55000. Por eso el histórico hay que construirlo nosotros. |

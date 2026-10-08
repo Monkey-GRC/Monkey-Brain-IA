@@ -28,7 +28,7 @@ la cierra). Los ID (`DT-n`) no se reutilizan. Si una fila depende del comité, e
 |---|---|---|
 | [`control-tecnico.md`](control-tecnico.md) | Componente 3 del onboarding: conexión de activos, la sonda, el paso 3 y la nube | 20 |
 | [`onboarding.md`](onboarding.md) | Componentes 1 y 2 del onboarding y el registro de empresa | 16 |
-| [`transversal.md`](transversal.md) | Pruebas y CI, auditoría, traducciones, entorno y funcionalidad sin contrato | 11 |
+| [`transversal.md`](transversal.md) | Pruebas y CI, auditoría, traducciones, entorno y funcionalidad sin contrato | 14 |
 
 Una fila vive en el archivo de su **área**. Al crear una deuda nueva: siguiente `DT-n` libre, en el archivo que corresponda,
 y una línea en el índice de abajo. Los requisitos de seguridad que una deuda incumple están en
@@ -36,7 +36,7 @@ y una línea en el índice de abajo. Los requisitos de seguridad que una deuda i
 
 ## Índice de todas las deudas
 
-47 filas (incluye las cerradas, tachadas). Severidad: ✅ 2 · 🔴 6 · 🟠 21 · 🟡 18.
+50 filas (incluye las cerradas, tachadas). Severidad: ✅ 2 · 🔴 6 · 🟠 24 · 🟡 18.
 
 | ID | | Qué | Archivo |
 |---|---|---|---|
@@ -87,3 +87,6 @@ y una línea en el índice de abajo. Los requisitos de seguridad que una deuda i
 | DT-45 | 🟠 | El escaneo por todas las regiones infla resultados. | [control-tecnico](control-tecnico.md) |
 | DT-46 | 🟠 | El CI no bloquea el merge ni el despliegue. | [transversal](transversal.md) |
 | DT-47 | 🟡 | Los cierres automáticos de sesión no dejan rastro. | [transversal](transversal.md) |
+| DT-48 | 🟠 | `check_results` sin política de retención ni partición. | [transversal](transversal.md) |
+| DT-49 | 🟠 | La operación continua (§8) no tiene contrato. | [transversal](transversal.md) |
+| DT-50 | 🟠 | El intérprete `check_results → evaluations` no está especificado. | [transversal](transversal.md) |

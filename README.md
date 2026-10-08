@@ -93,13 +93,9 @@ Monkey-Brain-IA/
     │           ├── datos/               #   modelo-datos, schema-implementacion, decisiones (D-n), pendientes (P-n)
     │           ├── seguridad/           #   requisitos (SEG-n)
     │           ├── cumplimiento/        #   frameworks/* (14 marcos)
-    │           ├── control-tecnico/     #   wazuh (la sonda)
+    │           ├── control-tecnico/     #   la sonda (wazuh*), el motor de nube y su cruce con el catálogo
     │           ├── modulos/             #   onboarding.md
     │           └── deuda-tecnica/       #   índice + por área (DT-n)
-    └── integrations/               # skills de integraciones externas
-        └── wazuh/                    # Wazuh completo: producto (API, infra, TODAS las normativas que evalúa) + caso aplicado del SOC de Bryan
-            ├── SKILL.md
-            └── references/        # infraestructura, agentes, compliance (normativas nativas vs. custom), api-integracion, soc-gestionado
 ```
 
 ## Equipo de agentes (jerarquía fija)
@@ -147,10 +143,9 @@ Monkey-Brain-IA/
 
 - **wazuh-integration-expert**: no recibe tareas del tech-lead ni entrega
   reportes de avance — es consultado puntualmente por `tech-lead` o
-  `backend-senior` cuando el backend necesita comunicarse con el SOC
-  gestionado sobre Wazuh (API REST, SCA, syscollector, vulnerabilidades,
-  multi-tenancy). Responde con hechos de
-  `skills/integrations/wazuh/`, nunca escribe código de producción — la
+  `backend-senior` cuando el backend necesita comunicarse con la sonda
+  (API REST, SCA, syscollector, vulnerabilidades, grupos por cliente).
+  Responde con hechos de `references/control-tecnico/`, nunca escribe código de producción — la
   implementación la sigue haciendo `backend-senior` con
   `skills/backend/add-wazuh-integration.md`. Cualquier cambio de
   firewall/puertos del VPS o de dónde se guardan las credenciales de la API
@@ -189,14 +184,6 @@ minimizar tokens.
   y reescribirlo habría arriesgado perder matices. Cualquier herramienta
   puede leer igual el Markdown de sus `references/`; solo el `SKILL.md` en
   sí usa la convención de Claude Code.
-- **Excepción explícita**: `skills/integrations/wazuh/` se importó
-  íntegro con el mismo criterio (formato Claude Code Skill original). Nota
-  de sensibilidad: contiene datos operativos reales (IP y puerto SSH de un
-  VPS de producción, nombre de la persona/empresa que opera el SOC, precios)
-  — es contexto de negocio legítimo del proyecto, pero cualquier agente que
-  lo use debe tratarlo como información operativa real, no como ejemplo
-  genérico, y nunca debe filtrarse hacia documentos o superficies públicas
-  del producto Monkey.
 
 ## Las fuentes funcionales están en `assets/`
 

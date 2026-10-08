@@ -54,7 +54,7 @@
         "warning": "Contiene credenciales en texto plano. No copiar a ningún repo; rotar la password.",
         "description": "Endpoints, flujo del conector, clave compuesta policy_id+check_id, estados de resultado y confidencialidad de la sonda.",
         "consumedBy": [
-          "skills/integrations/wazuh/references/api-integracion.md",
+          "skills/product/monkey-compliance-council/references/control-tecnico/wazuh-api.md",
           "skills/product/monkey-compliance-council/references/control-tecnico/wazuh.md"
         ]
       },
@@ -127,9 +127,9 @@
     {
       "id": "wazuh-integration-expert",
       "path": "agents/wazuh-integration-expert.md",
-      "description": "Especialista consultado (no ejecutor) en la API, infraestructura y modelo de compliance de Wazuh. Responde a tech-lead/backend-senior cuando el backend necesita integrarse con el SOC gestionado sobre Wazuh.",
+      "description": "Especialista consultado (no ejecutor) en la sonda (Wazuh): API, agentes, grupos por cliente y marcos que trae etiquetados. Responde a tech-lead/backend-senior cuando el backend necesita integrarse con ella.",
       "model": "sonnet",
-      "consults": "skills/integrations/wazuh",
+      "consults": "skills/product/monkey-compliance-council/references/control-tecnico",
       "reports_to": "tech-lead",
       "consulted_by": [
         "tech-lead",
@@ -184,7 +184,7 @@
         {
           "id": "modelo-datos-pendientes",
           "path": "skills/product/monkey-compliance-council/references/datos/modelo-datos-pendientes.md",
-          "description": "Las decisiones del modelo que solo el comité puede cerrar (hoy, 4: P2 a P5; P1 la cerró el comite el 2026-09-26). Si sigue ahí, no se resuelve por cuenta propia."
+          "description": "Las decisiones del modelo que solo el comité puede cerrar (la lista vive en ese archivo). Si sigue ahí, no se resuelve por cuenta propia."
         },
         {
           "id": "onboarding",
@@ -217,9 +217,9 @@
           "description": "Alcance aprobado del sprint de onboarding (7 dias habiles, 2026-09-28 a 2026-10-06): que entra, que queda fuera, cronograma, prioridad de lo que se cae, dependencias y criterios de aceptacion."
         },
         {
-          "id": "wazuh",
-          "path": "skills/product/monkey-compliance-council/references/control-tecnico/wazuh.md",
-          "description": "Wazuh como motor de monitoreo/evidencia + reglas del conector real."
+          "id": "control-tecnico",
+          "path": "skills/product/monkey-compliance-council/references/control-tecnico/README.md",
+          "description": "Los motores que miden: la sonda (wazuh.md, wazuh-operacion.md, wazuh-api.md, wazuh-compliance.md) y el motor de nube (cruce-nube-aws.md). El índice enruta por pregunta."
         },
         {
           "id": "council",
@@ -252,14 +252,6 @@
       "id": "architecture-guardian-frontend",
       "path": "skills/frontend/architecture-guardian.md",
       "description": "Checklist para revisar código contra las reglas de capas core/shared/features (frontend)."
-    },
-    {
-      "id": "wazuh",
-      "path": "skills/integrations/wazuh/SKILL.md",
-      "description": "Wazuh como plataforma SIEM/XDR completa: arquitectura, API REST (puerto 55000), OpenSearch, agentes, SCA, syscollector, vulnerabilidades, FIM, MITRE ATT&CK, y TODAS las normativas que evalúa — nativas (PCI DSS, HIPAA, NIST 800-53, TSC/SOC 2, GDPR, GPG13, ISO 27001, CIS) y las que requieren mapeo custom (CMMC 2.0, NIS2, DORA, LGPD, CCPA/CPRA, FedRAMP, SOC 1). Incluye como caso aplicado el SOC gestionado de Bryan Tejeda sobre un VPS Contabo. Referencias en skills/integrations/wazuh/references/.",
-      "usedBy": [
-        "wazuh-integration-expert"
-      ]
     },
     {
       "id": "add-wazuh-integration",

@@ -8,7 +8,7 @@ construir. Este archivo existe para responder *"¿por qué se decidió así?"* s
 discutirlo, y para que si alguna decisión resulta equivocada se pueda revisar sabiendo en
 qué se apoyaba.
 
-Lo que sigue abierto está en **`modelo-datos-pendientes.md`** (hoy, 9 preguntas: P2, P3, P5, P6, P7, P8, P9, P10 y P11).
+Lo que sigue abierto está en **`modelo-datos-pendientes.md`**.
 
 > Este contenido estuvo hasta el 16 de septiembre de 2026 en una sección "§8" de
 > `modelo-datos.md`. Si un ticket de Jira o un comentario viejo apunta a "§8", se refiere
@@ -1152,3 +1152,73 @@ fallar la prueba correspondiente.
 **Fuente:** D41, `contracts/conventions.md` («Se escribe en la misma transacción que la acción»), DT-28 y MD-113.
 
 ---
+
+## D53 · Conexión con la nube: alcance, activo, regiones, canales y retención (2026-10-07)
+
+**Decisión** (Héctor, desarrollo, 2026-10-07; **pendiente de ratificar con el comité**). No cierra `P14` A1 (el rol de cada motor sigue
+abierto) ni D13; fija lo que desarrollo puede construir y probar sin esperar esa respuesta.
+
+1. **Alcance de esta etapa: AWS, GCP y Azure.** Las integraciones con GitHub, Okta, M365 y demás SaaS quedan fuera hasta nuevo aviso.
+2. **El activo en la nube es la cuenta** (AWS), la suscripción (Azure) o el proyecto (GCP). Los recursos hallados (instancias, volúmenes,
+   grupos de seguridad, trails…) son **hijos** del activo y llevan su identificador del proveedor. Responde `P14` B1.
+3. **Solo se evalúan las regiones que el cliente declare.** Un check de cuenta repetido por región cuenta como **una** evaluación;
+   un check por recurso, una por recurso. Responde `P14` B3 y cierra la parte de DT-45 sobre regiones.
+4. **El cliente elige el canal de conexión por activo** entre los que existen para esa categoría (rol de solo lectura, agente,
+   claves), y Monkey lo guía; no se impone solo el más seguro. Se guarda como dato (`connection_method`). Un canal donde el cliente
+   *empuja* datos de sistemas propios no existe en el catálogo del comité (`ac_01` a `ac_06`): queda **LATER** y se pregunta al comité.
+5. **Retención de `check_results` en dos niveles** (propuesta que cierra la decisión de DT-48): corridas completas por un periodo corto
+   (90 días por defecto) y, para el histórico largo (7 años), solo las **transiciones de estado** más un resumen diario.
+   **Se pregunta al comité** si un auditor exigiría corridas completas más allá del periodo corto.
+
+**Fuente:** conversación de desarrollo del 2026-10-07; `P12`, `P14`, DT-44, DT-45, DT-48.
+
+## D54 · La sonda de servidores: un manager, un grupo por cliente, agente pre-registrado por Monkey (responde P12.2; 2026-10-07)
+
+**Decisión** (Héctor, 2026-10-07; **pendiente de ratificar con el comité**; no cambia el modelo). El aislamiento entre clientes
+(`DT-33`, `SEG-45`) se logra con **un solo manager y un grupo por cliente**, no con un manager por cliente (costoso en recursos).
+Monkey **pre-registra** cada agente por la API del manager, le asigna el grupo del cliente y entrega la clave en el comando de
+instalación; el agente no se inscribe por su cuenta ni declara su grupo. Al sincronizar, Monkey solo acepta resultados de agentes cuyo
+grupo corresponda al `tenant_id`. **A verificar contra la documentación de la versión vigente** que la API soporta ese flujo.
+
+**En desarrollo,** el motor de nube y el manager corren en contenedores en la VPS de desarrollo (7,6 GB de RAM; un manager sin
+indexador ni dashboard cabe). `MANUAL → not_run` ya lo maneja el modelo y no requiere cambios.
+
+## D55 · Entorno de desarrollo del control técnico: motor de nube y manager en la VPS (2026-10-08)
+
+**Decisión** (Héctor, 2026-10-08; desarrollo; **pendiente de ratificar**; no cambia el modelo de datos). Lo verificado:
+
+1. **Motor de nube:** contenedor efímero (`toniblyx/prowler:5.44.0`) en la VPS de desarrollo, con 2 GB de memoria y 2 CPU. Un escaneo
+   completo de AWS (655 checks, 2 regiones) tardó unos 2 minutos. Las llaves se pasan por la entrada estándar (`--env-file /dev/stdin`),
+   no se escriben en disco ni en el repo, y el contenedor se elimina al terminar (el `docker inspect` las conserva).
+2. **Manager de la sonda:** `wazuh/wazuh-manager:4.14.6` (la versión de la sonda de pruebas), **sin indexador ni dashboard**, con ~0,5 GB
+   de memoria en reposo y límite de 2 GB. La API (55000) escucha solo en `127.0.0.1`; solo el puerto de agentes (1514) está publicado.
+   La contraseña de la API se generó en el servidor (`~/wazuh-manager/.env`, modo 600).
+3. **D54 verificado:** la API pre-registra un agente (`POST /agents/insert` devuelve `id` y `key`) y se le asigna un grupo
+   (`PUT /agents/{id}/group/{grupo}`). El enrolamiento abierto (1515) **no se publica**: no hace falta si Monkey entrega la clave.
+4. **Lo que NO está resuelto:** el firewall de la VPS está inactivo y el SSH acepta contraseña; MinIO está publicado a todo internet.
+
+**Fuente:** conversación de desarrollo del 2026-10-08; D53, D54, P12, P14, DT-33, DT-43.
+
+## D56 · El control técnico de la nube en el modelo: recurso hijo, procedencia del mapeo y checks sin filas (2026-10-08)
+
+**Decisión** (Héctor, 2026-10-08; desarrollo; **pendiente de ratificar con el comité**). Concreta D53 en el schema y fija cómo entra
+el motor de nube al modelo sin romper el control atómico (el control no cuelga de un motor ni de un marco).
+
+1. **`asset_resources`** (nueva, `tenant`, con RLS): el recurso hallado dentro de un activo de nube, único por `(asset_id, resource_uid)`.
+   `check_results` lo referencia (`asset_resource_id`) y gana `region`, `status_detail` y `engine_severity`. Es la variante **normalizada** de
+   lo que DT-44 proponía (columnas de recurso en `check_results`): el recurso no se repite en cada resultado.
+2. **`executions`** gana `engine_version`, `regions` y `checks_executed`. **Un check que el motor no devuelve es `not_applicable`** (la cuenta
+   no tiene esos recursos), no «no ejecutado»: el conjunto ejecutado es el catálogo de esa versión. Una corrida de AWS ejecutó 655 checks y
+   solo 139 devolvieron filas.
+3. **Procedencia del mapeo** (`mapping_provenance`: `engine_native` · `monkey_proposed` · `committee_ratified`) en `check_mappings` y `test_checks`.
+   `test_checks` gana también `confidence` y `rationale`. **Gana siempre el comité**; el seed no pisa una asignación ratificada.
+4. **El mapeo a SOC 2 va por la prueba**, no check → requisito: check → prueba → control → punto de enfoque → requisito. Se cargan 662 checks,
+   3.413 mapeos del motor a los 6 marcos ofrecidos (D50) y 569 asignaciones propuestas a las pruebas `T-CLD`. De los 171 checks que el
+   marco SOC 2 del motor lista, 165 reciben una prueba; 133 de las 569 asignaciones están corroboradas por ese mapeo. **104 checks no
+   encajan en ninguna prueba de nube y quedan como cobertura no alcanzada**; no se fuerzan.
+5. **`checks`**: `engine_native` es un origen nuevo; `title_es` y `verification_rule` pasan a anulables (el motor solo trae inglés y no tiene
+   regla propia: no se inventa). `assets.external_account_id` guarda la cuenta de AWS, suscripción de Azure o proyecto de GCP.
+6. **Los textos del motor son internos** (P11, P14 D3): nombran al proveedor en algunos casos y no salen al cliente.
+
+**Fuente:** D53, D13, P14, DT-44, DT-50; escaneo del 2026-10-08 (`control-tecnico/cruce-nube-aws.md`). **Migraciones:**
+`20261008120000_cloud_technical_control_model` y `20261008120100_rls_asset_resources`. **Seed:** `npm run cloud:extract|load|verify`.

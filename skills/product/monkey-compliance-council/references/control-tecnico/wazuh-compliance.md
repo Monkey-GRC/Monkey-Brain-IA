@@ -1,8 +1,10 @@
-# Compliance — qué normativas evalúa Wazuh, SCA, severidades, MITRE ATT&CK
+# Qué marcos evalúa la sonda de forma nativa, SCA, severidades y MITRE ATT&CK
+
+Qué exige cada marco está en [`../cumplimiento/frameworks/`](../cumplimiento/frameworks/); aquí solo **qué trae la sonda de fábrica** y qué hay que construir.
 
 ## Regla de oro: tsc == soc_2
 
-En los checks de Wazuh, la clave `tsc` (Trust Services Criteria) y `soc_2` son **el mismo marco**. Origen del problema conocido en el despliegue de Bryan:
+En los checks de Wazuh, la clave `tsc` (Trust Services Criteria) y `soc_2` son **el mismo marco**. Origen de un problema conocido en datos históricos:
 
 - Checks de **Windows** llegan con clave `soc_2`
 - Checks de **Ubuntu** llegan con clave `tsc`
@@ -84,52 +86,10 @@ allá del compliance normativo puro.
 - Cada check SCA puede traer metadata `compliance` con múltiples claves a
   la vez (`pci_dss`, `tsc`, `cis_csc`, `cis`, etc.) — un check = evidencia
   para varios marcos simultáneamente.
-- Referencias de demo real (caso Bryan): agente Linux (Ubuntu 14.04
-  "Mr-Robot") con 40% score / 86 failed; agente Windows "CIBER" con 23% /
-  360 failed — material típico para demostrar valor del servicio.
 - Exportar con **Export formatted** (CSV/PDF) desde el dashboard.
 - Consultas SCA con ~500 checks vía API pueden tardar segundos → cachear
   siempre en la base de datos propia del backend, nunca consultarlas
   síncronamente en cada request (patrón usado por MONKEY).
-
-## Mapeo propio ISO/SOC 2 (patrón de referencia para dashboards tipo MONKEY)
-
-```python
-COMPLIANCE_MAP = {
-    "iso_27001": {
-        "A.9 - Control de acceso": {
-            "rule_groups": ["authentication_failed", "authentication_success", "sudo"],
-            "sca_checks": ["login_policy", "password_policy"]},
-        "A.12.4 - Registro de eventos": {"rule_groups": ["audit", "syslog", "fim"]},
-        "A.12.6 - Gestión de vulnerabilidades": {"rule_groups": ["vulnerability-detector"]},
-    },
-    "soc2": {
-        "CC6.1 - Control lógico de acceso": {},
-        "CC7.1 - Detección de malware": {},
-        "CC7.2 - Monitoreo de amenazas": {},
-    },
-}
-```
-
-Score por dominio = checks/alertas cumplidas vs. total aplicable. El mismo
-patrón se extiende a cualquier marco de la primera tabla (nativo); para los
-de la segunda tabla (sin mapeo nativo) hay que definir primero qué
-`rule_groups`/`sca_checks` corresponden a cada control antes de poder
-calcular un score.
-
-## Metodología de auditoría de Nelson (NexT Audit) — caso aplicado
-
-Tabla de auditoría por control SOC 2 con columnas: Riesgo mitigado, Código
-TSC, Criterio TSC, Control del cliente, Plan de testeo, Pruebas por capa
-(Aplicación / Servidor / BD / Nube), **Requiere sonda (SI/NO)**, Requiere
-IA, Conclusión.
-
-Donde "Requiere sonda = SI", la sonda es **Wazuh/MONKEY**: suministra el
-hallazgo con el código TSC correspondiente (ej. CC6.1 → validación
-automática de políticas de contraseñas en servidores). La correlación
-Nelson ↔ MONKEY es el núcleo del servicio de auditoría automatizada — esto
-es específico del caso aplicado de Bryan, no una capacidad genérica de
-Wazuh.
 
 ## Fuentes (verificado en documentation.wazuh.com, julio 2026)
 

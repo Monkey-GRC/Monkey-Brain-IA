@@ -15,7 +15,7 @@ actual del backend es el punto de partida que se está rehaciendo. Dos consecuen
 |---|---|
 | **este** | Qué tablas hay, cómo se relacionan y cómo se calcula el cumplimiento |
 | `modelo-datos-decisiones.md` | Por qué se decidió cada cosa, con su fuente |
-| `modelo-datos-pendientes.md` | Las preguntas que solo el comité puede responder (hoy, 9: P2, P3, P5, P6, P7, P8, P9, P10 y P11) |
+| `modelo-datos-pendientes.md` | Las preguntas que solo el comité puede responder |
 | `flujo-end-to-end.md` | El recorrido de un cliente, módulo por módulo, en orden |
 | `modulos/onboarding.md` | El detalle campo por campo de los 3 componentes del onboarding |
 
@@ -470,15 +470,22 @@ erDiagram
         text condition
         text remediation
         text verification_rule
-        enum origin "cis_native|monkey_policy|auditor_criterion"
+        enum origin "cis_native|monkey_policy|auditor_criterion|engine_native"
         string mapping_provenance
         enum mapping_confidence
         uuid sca_policy_id FK "nullable, la política SCA que lo contiene"
+        string service_name "solo nube"
+        string resource_type "solo nube"
+        string engine_severity "solo nube"
+        json categories "solo nube"
     }
     test_checks {
         uuid id PK
         uuid test_id FK
         uuid check_id FK
+        enum provenance "engine_native|monkey_proposed|committee_ratified"
+        enum confidence "nullable"
+        text rationale
     }
     check_mappings {
         uuid id PK
@@ -486,6 +493,7 @@ erDiagram
         string framework_code
         string framework_version
         string requirement_code
+        enum provenance "engine_native|monkey_proposed|committee_ratified"
     }
     sca_policies {
         uuid id PK
@@ -519,6 +527,15 @@ ninguno de esos textos sale tal cual a la UI, a un reporte ni a un texto generad
 `population_size` y `suggested_sample_size` son **texto** porque en el Excel son frases ("Por determinar con
 base en el inventario de proveedores"; "N<5 → 100%; si no, 10% de la población (mín. 5, máx. 25)"), no
 enteros: el muestreo se guarda como dato y su cálculo se construye después (D8).
+
+**Checks del motor de nube (D56).** El catálogo del motor de AWS (662 checks) se carga con `origin = engine_native`,
+`platform = aws` y `policy_id = cloud_configuration` (el motor no agrupa en «políticas»; una constante conserva la clave de tres
+partes). **El mapeo a SOC 2 no es check → requisito**: es check → **prueba** → control → punto de enfoque → requisito. El motor aporta
+su propio check → requisito (`check_mappings`, `engine_native`, con el id normalizado: `cc_6_6` → `CC6.6`), que **no decide**. El
+eslabón check → prueba (`test_checks`) lo asigna el comité; hasta que lo ratifique, Monkey lo **propone** (`monkey_proposed`) desde las
+categorías del motor y los atributos de cada prueba T-CLD, y la confianza sube a `high` solo si el requisito SOC 2 que cita el motor
+es alcanzable desde la prueba propuesta (dos fuentes independientes coinciden). **Un check sin prueba no se inventa: queda como
+cobertura no alcanzada.** Gana siempre `committee_ratified`.
 
 **La clave natural del check es de tres partes** (`platform` + `policy_id` + `check_id`) y el
 catálogo es grande: **77 políticas, 11.352 checks, 18 plataformas** (Windows 8 políticas de
@@ -1731,6 +1748,9 @@ erDiagram
         enum status
         int progress_percentage
         enum origin "scheduled|manual"
+        string engine_version "nullable, solo nube"
+        string regions "solo nube: las declaradas"
+        int checks_executed "nullable, solo nube"
     }
     check_results {
         uuid id PK
@@ -1741,6 +1761,20 @@ erDiagram
         string raw_check_id
         enum result "passed|failed|invalid|not_applicable|not_run"
         datetime evaluated_at
+        uuid asset_resource_id FK "nullable, solo nube"
+        string region "nullable, solo nube"
+        text status_detail "nullable, solo nube"
+        string engine_severity "nullable, solo nube"
+    }
+    asset_resources {
+        uuid id PK
+        uuid asset_id FK
+        string resource_uid "ARN en AWS, único por activo"
+        string resource_type
+        string name
+        string region
+        datetime first_seen_at
+        datetime last_seen_at
     }
     execution_logs {
         uuid id PK
@@ -1759,6 +1793,8 @@ erDiagram
     schedule_rules ||--o{ executions : "programa"
     assets ||--o{ executions : "se corre sobre"
     executions ||--o{ check_results : "produce"
+    assets ||--o{ asset_resources : "contiene (nube)"
+    asset_resources ||--o{ check_results : "evaluado como"
     executions ||--o{ execution_logs : "registra"
     checks ||--o{ check_results : "evaluado como"
     monitoring_domain_requirements {
@@ -1781,6 +1817,12 @@ erDiagram
 las `N:M` (`id`, las dos FK y un único sobre el par), nombradas según la convención. Un dominio se
 apoya en varias capacidades y una capacidad puede servir a varios dominios (D32).
 
+**La nube (D53, D56).** El activo es la **cuenta** (o suscripción, o proyecto); sus recursos cuelgan de él en `asset_resources` y cada
+`check_results` apunta al recurso evaluado, no lo repite. Las regiones que se evalúan son las que el cliente declara
+(`asset_provisionings.regions`), y el canal de conexión se guarda en `asset_provisionings.connection_method`. **Lo que el motor no
+devuelve para un check de una corrida es `not_applicable`, no «no ejecutado»**: el motor omite los checks sin recursos, así que el
+conjunto ejecutado es el catálogo de esa `engine_version` (DT-50).
+
 **Tres reglas:**
 
 - **`executions` ≠ `evaluations`.** Una es "corrió la sonda"; la otra, "se midió el
@@ -1797,8 +1839,10 @@ conexión (self-service / aprovisionar agente) · recolección (estado "Conectad
 real) · análisis (hallazgos en lenguaje de negocio / reglas y SCA) · evidencia continua ·
 cumplimiento por marco.
 
-**Validador único:** se evaluó un segundo proveedor para nube (Prowler) y **se descartó**.
-`automated_capabilities.provider` queda por extensibilidad, no porque hoy haya dos.
+**Validador único (D13), reabierto por P14:** el comité evaluó un segundo proveedor para nube (Prowler) y **lo descartó**; eso
+sigue vigente hasta que responda `P14` A1. Una prueba de desarrollo del 2026-10-07 con ese motor sobre AWS (292 hallazgos) y la
+verificación de D48 (la sonda solo ingiere registros de la nube) hacen que la decisión **no esté demostrada**, no que esté
+revocada. `automated_capabilities.provider` queda por extensibilidad.
 
 ---
 
