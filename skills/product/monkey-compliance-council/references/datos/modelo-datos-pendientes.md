@@ -177,6 +177,24 @@ Del catálogo de 662 checks de AWS, lo que no llega a un control:
 
 ---
 
+## P16 · Cuándo un activo está «Preparado», «Casi listo» o «Requiere trabajo»
+
+**Estado:** abierto desde 2026-10-09. No bloquea la demo: el cálculo corre con umbrales **provisionales** y lo dice en pantalla.
+
+El modelo fija el estado binario de un control (R-05: una falla aplicable ⇒ no cumple) y que el porcentaje es secundario, pero **no define
+cuándo algo es «Casi listo»**. Desarrollo propuso, sin autoridad para cerrarlo (`Backend/.../domain/scan/readiness.ts`):
+
+- `Requiere trabajo`: hay al menos un fallo de severidad alta o crítica.
+- `Casi listo`: solo hay fallos leves (baja o media) o comprobaciones sin medir.
+- `Preparado`: nada falla y todo lo esperado se midió.
+- `Sin medir`: no hay nada medido (hueco de cobertura, no un fallo).
+
+**Preguntas:** ¿son esos los umbrales? ¿La severidad la fija el motor o el comité (hoy es la del motor)? ¿Cuántos fallos leves siguen siendo «Casi listo»?
+
+**Qué depende:** el estado de preparación de la pantalla y de `GET /v1/assets/{id}/readiness`.
+
+---
+
 ## Cómo se cierra un pendiente
 
 1. El comité responde.
