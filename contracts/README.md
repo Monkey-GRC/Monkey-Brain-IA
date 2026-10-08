@@ -25,6 +25,7 @@ te toca. Si lo que vas a construir no está aquí, el contrato se acuerda primer
 | `modules/onboarding-organizational-context.md` | Componente 1 — 10 campos |
 | `modules/onboarding-service-context.md` | Componente 2 — 16 campos, repetible por servicio |
 | `modules/onboarding-technical-control.md` | Componente 3 — scope, activos y conexiones |
+| `modules/control-tecnico.md` | Conexión de nube (rol, llaves, agente) y resultados: estado de preparación, hallazgos y modo auditor. **Propuesta**, sin acordar |
 
 ## Formato de cada módulo
 

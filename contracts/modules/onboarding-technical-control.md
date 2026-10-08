@@ -87,6 +87,8 @@ Pendiente de reconciliar.
 
 ## Paso 3 — El flujo de conexión de un activo
 
+> **⚠ Reemplazado en parte por `control-tecnico.md` (propuesta 2026-10-08): `credentials` y `validate` cambian.**
+>
 > **⚠ Provisional (D48).** Lo que sigue describe lo que está construido, hecho antes de verificar cómo funciona la sonda real.
 > El modelo real no entrega credenciales a Monkey (agente instalado por el cliente; Monkey lee la base/API del manager), de modo
 > que la forma de `credentials` y de `validate` va a cambiar. Ver D48, DT-31 a DT-36 y P12.
