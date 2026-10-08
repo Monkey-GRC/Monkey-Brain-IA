@@ -7,7 +7,7 @@ type: contract
 
 # Control Técnico — conexión y resultados
 
-**Estado: PROPUESTA (2026-10-08), sin acordar con frontend. Nada de esto está construido.** Ver `conventions.md` y `enums.md`.
+**Estado: PROPUESTA (2026-10-08), acordada en lo general; ver «Estado de implementación» al final para lo construido.** Ver `conventions.md` y `enums.md`.
 
 **Qué reemplaza.** El paso 3 de `onboarding-technical-control.md` pedía credenciales por conexión (rol, usuario de base, llave SSH) que el
 modelo real no usa (D48, DT-31). Esta propuesta sustituye `credentials` en `POST /v1/assets` y añade la lectura de resultados (DT-49). El
@@ -208,7 +208,8 @@ Lo que ve el cliente por defecto. **Cualitativo primero; el número es secundari
       { "area": "data_network", "readiness": "almost_ready", "open_findings": 1, "not_measured": 0 },
       { "area": "logging_backup", "readiness": "needs_work", "open_findings": 4, "not_measured": 3 }
     ],
-    "needs_manual_review": 6
+    "needs_manual_review": 6,
+    "includes_proposed_mappings": true
   }
 }
 ```
@@ -220,6 +221,9 @@ Lo que ve el cliente por defecto. **Cualitativo primero; el número es secundari
 - `areas`: agrupa las pruebas del comité en lenguaje de negocio (`identity_access`, `data_network`, `logging_backup`; las claves y
   etiquetas, en `enums.md`). El mapeo área ← prueba no es del contrato.
 - `needs_manual_review`: lo que la sonda no puede decidir (`MANUAL` → `not_run`). Se cierra con evidencia que sube el cliente.
+- `includes_proposed_mappings`: `true` si parte de lo medido se apoya en vínculos check→prueba que el comité **aún no ratificó** (desarrollo y demostración).
+  En producción es `false` y solo cuenta lo ratificado; la pantalla debe decirlo cuando sea `true`. Antes de la primera corrida, `readiness` es
+  `not_measured` con todo en cero (no un `404`).
 - Un cálculo **no** se declara `ready` si hay algo `not_compliant` aplicable (R-05: una falla aplicable ⇒ no cumple).
 
 ### `GET /v1/assets/{id}/findings` — hallazgos, en la plantilla de 7 campos
@@ -342,3 +346,14 @@ encuentra la ejecución y responde `409 EXECUTION_NOT_RUNNING`**: no puede escri
 
 **Una ejecución que se queda en `running` más de 30 minutos** (el trabajador murió) pasa a `failed` con `execution.timed_out`; lo hace el propio
 `claim` al barrer. Tampoco mueve la preparación.
+
+## Estado de implementación (2026-10-09)
+
+| Endpoint | Estado |
+|---|---|
+| `POST /v1/assets/{id}/executions` (202), `GET …/executions` (paginado), `GET …/readiness` | ✅ Construidos y probados por HTTP (cookie, rol, 404 entre empresas, 409) |
+| `POST /internal/runner/claim` · `…/executions/{id}/results` · `…/fail` | ✅ Construidos y probados: token de servicio, fuera del prefijo `/v1`, rechazo de lo que llega por el proxy, cuerpo de hasta 25 MB solo en `results` |
+| `GET …/findings`, `GET …/results?view=technical` | ❌ Sin construir (necesitan la redacción de los siete campos, `P14` E2) |
+| `POST /v1/assets` con `connection_method`, `PATCH …/connection`, `validate` real, `connection_setup` | ❌ Sin construir: hoy sigue el formulario provisional del paso 3 (`credentials`), que el trabajador sabe leer (INTERINO) |
+
+**Configuración:** `RUNNER_TOKEN` (sin él, `/internal/runner` no existe) y `READINESS_INCLUDE_PROPOSED` (`true` solo en desarrollo y demostración).
