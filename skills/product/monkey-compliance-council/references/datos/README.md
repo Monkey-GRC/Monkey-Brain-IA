@@ -113,3 +113,7 @@ D1 a D22 están agrupadas en bloques (A estructura, B y C el cálculo, D lo que 
 - D50 · Todos los marcos se ofrecen, solo SOC 2 se contrata; cada marco con sus categorías
 - D51 · Correcciones al Componente 2 y a la activación de cuenta (2026-10-05)
 - D52 · La auditoría se escribe en la misma transacción que la acción (cierra DT-28, SEG-36)
+- D53 · Conexión con la nube: alcance, activo, regiones, canales y retención
+- D54 · La sonda de servidores: un manager, un grupo por cliente, agente pre-registrado
+- D55 · Entorno de desarrollo del control técnico: motor de nube y manager en la VPS
+- D56 · El control técnico de la nube en el modelo: recurso hijo, procedencia del mapeo y checks sin filas

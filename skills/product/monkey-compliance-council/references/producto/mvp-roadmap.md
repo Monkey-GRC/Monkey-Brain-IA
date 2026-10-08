@@ -124,7 +124,7 @@ decisiones de modelo sino de roadmap:
 
 **Checks de nube — SHOULD, y urgente.** De los 61 TEST del catálogo, los **11 de nube
 (`T-CLD-*`) no tienen ni un check automático**, pese a que el comité decidió que el
-validador único cubre *"servidores, BD y nube"*. Consecuencia directa: un cliente con
+validador único cubre *"servidores, BD y nube"* (decisión puesta en duda por `P14`: la sonda no ingiere hoy configuración de nube). Consecuencia directa: un cliente con
 escenario **"Solo nube (gestionada)"** —que es un perfil de cliente normal, no un caso
 borde— verá su cobertura técnica en 0% y su cumplimiento casi enteramente documental. El
 modelo ya lo reporta con honestidad (cobertura pendiente), pero el hueco es real y

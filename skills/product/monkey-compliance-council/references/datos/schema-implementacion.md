@@ -322,7 +322,7 @@ desechable, ver §13):
 `last_activity_at` en `sessions`, para la política de 30 min / 8 h) · 22 `catalog_seed_and_client_controls`
 (D35, D36, D38) · 23 `rls_catalog_seed_and_client_controls` (D36) ·
 24 `service_context_optional_fields_and_regulations` (D45) · 25 `asset_provisioning_schedule_frequency` (D46) ·
-26 `catalog_policies_as_templates` (D39) · 27 `audit_append_only_triggers` (D41) · 28 `company_frameworks` (D47) · 29 `correcciones_onboarding_d50_d51` (D50, D51).
+26 `catalog_policies_as_templates` (D39) · 27 `audit_append_only_triggers` (D41) · 28 `company_frameworks` (D47) · 29 `correcciones_onboarding_d50_d51` (D50, D51) · 30 `cloud_technical_control_model` (D53, D56) · 31 `rls_asset_resources` (D56).
 
 > **Orden por fecha, no por número:** la 25 (`20261001120000`) quedó **antes** de la 26 y la 27 (`20261001180000` y
 > `20261001190000`) aunque se escribió en paralelo; ninguna depende de la otra. Prisma las aplica por nombre. Se

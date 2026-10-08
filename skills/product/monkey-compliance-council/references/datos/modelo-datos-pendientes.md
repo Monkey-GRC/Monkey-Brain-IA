@@ -14,6 +14,7 @@ Cerradas hasta hoy:
 |---|---|---|
 | **P1** | Cumplimiento fuera del onboarding | 2026-09-26 — el comité confirmó D23: el onboarding se queda en 3 componentes |
 | **P10** | Origen de `control_dimensions` y qué es `policies` | 2026-10-01 — cerrada por desarrollo en D39: la dimensión aplica si el control tiene una prueba de ella; `policies` es una plantilla. **Falta ratificar con el comité el tipo y las banderas derivados**; no bloquea nada |
+| **P5** | Dos cifras de la documentación de la sonda | 2026-10-08 — las cifras («869 checks, 646 nativos, 223 inferidos») no tenían universo y se quitaron de `wazuh.md`; la versión de referencia es la del manager que corre en desarrollo, 4.14.6 (D55) |
 | **P4** | `responsible_id` sin catálogo de cargos | 2026-09-29 — cerrada por desarrollo en D30: el cargo es `organization_responsibles`. **Falta ratificarla con el comité**; no bloquea nada |
 
 ## P2 · El flujo de la clave de acceso — 5 detalles sin definir
@@ -93,20 +94,6 @@ de confidencialidad frente al cliente final. Se guardan tal cual (son la fuente)
 la UI, a un reporte ni a la IA**. Falta decidir qué ve el cliente de una prueba: ¿solo su resultado y un nombre
 neutro? ¿el comité entrega una versión sin el nombre del proveedor?
 
-## P5 · Dos cifras de la documentación de Wazuh sin universo definido
-
-**Estado:** detectadas al medir el Excel contra el repo el 2026-09-26. No se corrigieron a
-ojo porque no se puede saber a qué se refieren.
-
-- `wazuh.md` dice *"869 checks, 646 con mapeo nativo, 223 inferidos por Monkey"*. El catálogo
-  del archivo maestro tiene **11.352 checks**, de los que 6.479 traen `SOC 2` no vacío.
-  869 no corresponde a ningún subconjunto identificable. ¿De qué plataforma o política sale?
-- `manifest.json` dice ruleset Wazuh **v4.14.7**; `infraestructura.md` dice despliegue
-  **4.12**. Puede ser ruleset vs versión instalada, pero nadie lo escribió.
-  **Dato nuevo (2026-10-07):** el manager de pruebas responde **v4.14.6** y sus agentes también.
-  No coincide con ninguna de las dos cifras. Esta mitad sigue abierta: falta saber cuál es la
-  versión de referencia del proyecto. La cifra de 869 checks sigue sin universo.
-
 ---
 
 ## P12 · Cómo se conecta Monkey a la sonda (paso 3 del control técnico)
@@ -115,8 +102,8 @@ ojo porque no se puede saber a qué se refieren.
 
 Preguntas para Nelson, Bryan y el comité:
 
-1. **¿Quién instala los agentes?** ¿El cliente con un comando que entrega Monkey, o el equipo de la sonda?
-2. **¿Cómo se asigna cada cliente a su grupo** y quién impide que un agente se declare de otra empresa? (la clave de inscripción es global)
+*Respondidas: quién instala y qué canales ofrece (D53 punto 4) y cómo se aísla cada cliente (D54).*
+
 3. **¿Cómo lee Monkey los resultados?** ¿Base de la sonda, API o ambas? ¿Con un usuario de solo lectura por grupo?
 4. **¿Quién configura la nube** (AWS/GCP/Azure) y con qué modelo (rol entre cuentas / federación de identidad)? Las integraciones de la sonda son de registros, no de configuración. **Actualización 2026-10-07:** se probó un escaneo de configuración de AWS con un usuario IAM de solo lectura y llaves estáticas (método de prueba, no el definitivo). Qué motor lo ejecuta y cómo se conecta en producción es **P14**.
 5. **¿Qué se promete a un cliente con un sistema que no sea Ubuntu 22.04, Ubuntu 14.04 o Windows 11?** Hoy no hay pruebas para él.
@@ -140,10 +127,8 @@ cubriría servidores, BD y endpoints; un motor de configuración, la nube.
 2. ¿Cómo se llama ese motor frente al cliente? La regla de confidencialidad aplica igual.
 3. ¿Hay un tercer motor previsto (Azure, GCP, SaaS)?
 
-**B. Unidad de evaluación**
-1. En la nube, ¿el activo es la **cuenta** (propuesta: `scopes.cloud_count` cuenta nubes, no recursos) o cada recurso?
+**B. Unidad de evaluación** *(B1 y B3 respondidas en D53: el activo es la cuenta y se evalúan solo las regiones declaradas)*
 2. Una instancia en la nube es también un servidor (`ac_02`). ¿Se enlaza el recurso hallado con el activo del servidor, o son cosas separadas?
-3. Un check de cuenta se repite por cada región (17 veces). ¿Cuenta como 1 evaluación o como 17? Propuesta: escanear solo las regiones que el cliente declare.
 4. Un check que falla en 3 de 5 discos, ¿es 1 evaluación fallida o 3?
 
 **C. Conexión y credenciales**
@@ -157,7 +142,7 @@ cubriría servidores, BD y endpoints; un motor de configuración, la nube.
 1. ¿Se cargan al catálogo los 70 checks, o solo los que el comité elija, y con qué `origin`?
 2. El motor trae su propio mapeo a SOC 2. Si no coincide con el del comité, gana el del comité (regla del brain); ¿se guarda el otro como mapeo con procedencia?
 3. Los `T-CLD-*` nombran a la sonda como herramienta (ver P11). ¿Se reescriben?
-4. Estados del motor que no existen en el modelo: `MANUAL` (2 casos) y silenciado. Propuesta: `not_run` y un silencio con justificación aprobada.
+4. Estados del motor que no existen en el modelo: `MANUAL` ya se trata como `not_run` (confirmado). Falta el **silenciado**: propuesta, un silencio con justificación aprobada.
 
 **E. Producto y legal**
 1. Licencia y forma de uso del motor (redistribuir o ofrecer como servicio). No verificado.
@@ -174,6 +159,21 @@ cubriría servidores, BD y endpoints; un motor de configuración, la nube.
 4. **Contacto de ventas** (DT-41): ¿qué canal real recibe el interés cuando un cliente toca un marco que no contrató?
 5. **Textos «auditoría» → «consultoría»** (DT-42): ¿se cambian también en Inicio y «Mis servicios»?
 6. **Certificación previa:** ¿las 8 opciones son las correctas para una «certificación o evaluación» previa?
+
+---
+
+## P15 · Cómo se mapean los checks de nube que quedan fuera
+
+**Estado:** abierto desde 2026-10-08 (D56). No bloquea nada: lo que no tiene la cadena completa **no cuenta** hasta que el comité responda.
+
+Del catálogo de 662 checks de AWS, lo que no llega a un control:
+
+1. **104 checks sin prueba**: no encajan en ninguna `T-CLD`. ¿A qué prueba van, o se descartan? (Lista: los que no aparecen en `test_checks` tras `npm run cloud:load`.)
+2. **Las pruebas `T-CLD-004` a `007` no tienen ningún check.** ¿Se cubren con checks que aún no se han buscado o quedan manuales por activo?
+3. **Seis requisitos que el motor cita** no los alcanza ninguna prueba de nube: CC1.3, CC3.1, CC3.2, CC5.2, CC7.3 y CC7.5. ¿Se añade el vínculo o quedan como cobertura no alcanzada?
+4. **Ratificar las 569 asignaciones propuestas** (`monkey_proposed`): se pide por prueba (11 `T-CLD`), no check por check.
+
+**Qué depende:** que esos checks cuenten para el cumplimiento (§9) y la cobertura técnica real de la nube.
 
 ---
 
