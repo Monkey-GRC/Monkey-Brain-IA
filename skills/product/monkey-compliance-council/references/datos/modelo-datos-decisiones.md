@@ -1222,3 +1222,23 @@ el motor de nube al modelo sin romper el control atómico (el control no cuelga 
 
 **Fuente:** D53, D13, P14, DT-44, DT-50; escaneo del 2026-10-08 (`control-tecnico/cruce-nube-aws.md`). **Migraciones:**
 `20261008120000_cloud_technical_control_model` y `20261008120100_rls_asset_resources`. **Seed:** `npm run cloud:extract|load|verify`.
+
+## D57 · Quién ejecuta el motor de nube: un trabajador aislado (2026-10-09)
+
+**Decisión** (Héctor, 2026-10-09; desarrollo; **pendiente de ratificar con el comité**; no cambia el modelo de datos). «Evaluar ahora» y las
+corridas programadas las ejecuta un **trabajador separado del backend** (opción A de las tres consideradas):
+
+1. El backend **no toca Docker**. Descartado montar el socket de Docker en el backend (le daría control del servidor).
+2. «Evaluar ahora» crea una ejecución `queued`. El trabajador la **reclama**, asume el rol del cliente, lanza el motor en un contenedor
+   efímero por cliente y por corrida con **credenciales temporales** (SEG-46), y entrega el resultado al backend por una API **interna**
+   (SEG-47). El backend lo interpreta y lo guarda (la persistencia de D56). Una corrida que no conecta queda `failed`: es un problema de
+   conexión, no un incumplimiento.
+3. **Reclamar sin tenant** necesita buscar entre empresas, y RLS lo impide por diseño: se hace con una función `SECURITY DEFINER`
+   angosta y con `search_path` fijo, el mismo patrón de las búsquedas previas al tenant (SEG-08).
+4. **Dev:** el trabajador corre en la VPS de desarrollo y asume el rol con las llaves de una cuenta de pruebas, que hace de «Monkey».
+   **Producción:** una identidad propia de Monkey, sin llaves guardadas (DT-43).
+
+**Alternativas descartadas:** el backend lanzando el contenedor (B) y solo importar un escaneo ya hecho (C), que sirve para una demo pero
+no es «evaluar ahora».
+
+**Fuente:** `P14` C, D53, D56, DT-43, SEG-46, SEG-47.

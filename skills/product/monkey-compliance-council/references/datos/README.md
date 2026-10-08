@@ -117,3 +117,4 @@ D1 a D22 están agrupadas en bloques (A estructura, B y C el cálculo, D lo que 
 - D54 · La sonda de servidores: un manager, un grupo por cliente, agente pre-registrado
 - D55 · Entorno de desarrollo del control técnico: motor de nube y manager en la VPS
 - D56 · El control técnico de la nube en el modelo: recurso hijo, procedencia del mapeo y checks sin filas
+- D57 · Quién ejecuta el motor de nube: un trabajador aislado
