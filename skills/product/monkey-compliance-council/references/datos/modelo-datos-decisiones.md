@@ -1238,6 +1238,10 @@ corridas programadas las ejecuta un **trabajador separado del backend** (opción
 4. **Dev:** el trabajador corre en la VPS de desarrollo y asume el rol con las llaves de una cuenta de pruebas, que hace de «Monkey».
    **Producción:** una identidad propia de Monkey, sin llaves guardadas (DT-43).
 
+5. **Un activo no puede tener dos ejecuciones abiertas**, impuesto por un índice único parcial en la base. El reclamo y el barrido por
+   timeout **no dejan rastro** (los hace la función SQL; son frecuentes y no son una acción de usuario, igual que DT-47); sí lo dejan «evaluar
+   ahora», el cierre completado y el cierre fallido, en la misma transacción que su efecto (SEG-36).
+
 **Alternativas descartadas:** el backend lanzando el contenedor (B) y solo importar un escaneo ya hecho (C), que sirve para una demo pero
 no es «evaluar ahora».
 

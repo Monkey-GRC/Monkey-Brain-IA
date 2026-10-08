@@ -330,10 +330,15 @@ resto (`conventions.md`). Nunca devuelve ni registra una credencial más allá d
 En `access_keys`, `connection` lleva además las llaves descifradas **solo en esta respuesta** (red interna, nunca se registran). En `agent` no
 hay corrida del trabajador: lee la sonda (otro adaptador).
 
-`results` — body: `{ "engine_version": "5.44.0", "started_at": "…Z", "finished_at": "…Z", "findings": [ …salida del motor, sin tocar… ] }`.
-`422 ENGINE_OUTPUT_INVALID` si una fila está mal formada (se indica cuál); no se guarda nada. `409 EXECUTION_NOT_RUNNING` si no está en curso.
+`results` — body: `{ "tenant_id": "a1b2…", "engine_version": "5.44.0", "started_at": "…Z", "finished_at": "…Z", "findings": [ …salida del motor, sin tocar… ] }`.
+`422 ENGINE_OUTPUT_INVALID` si una fila está mal formada (se indica cuál); no se guarda nada. `409 EXECUTION_NOT_RUNNING` si no está en curso
+(o no es de esa empresa: no se distingue). Una conexión que no sirve al reclamar (sin regiones, sin rol, proveedor no soportado) **no se entrega**: se
+cierra sola como `failed` con su razón y el reclamo sigue con la siguiente.
 
-`fail` — body: `{ "reason": "connection.role_not_found" }` (clave de la tabla de errores de `validate`).
+`fail` — body: `{ "tenant_id": "a1b2…", "reason": "connection.role_not_found" }` (clave de la tabla de errores de `validate`).
+
+`tenant_id` es el que el trabajador recibió al reclamar: con él el backend abre la transacción de esa empresa. **Si el trabajador lo falsea, RLS no
+encuentra la ejecución y responde `409 EXECUTION_NOT_RUNNING`**: no puede escribir en otra empresa.
 
 **Una ejecución que se queda en `running` más de 30 minutos** (el trabajador murió) pasa a `failed` con `execution.timed_out`; lo hace el propio
 `claim` al barrer. Tampoco mueve la preparación.
