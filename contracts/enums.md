@@ -357,6 +357,20 @@ El tipo **se deduce de la conexión** al registrar el activo (D46): `ac_01` → 
 
 Flujo: conectar → validar → activar → programar. Una conexión que falla no es un incumplimiento.
 
+### `connection_method` — `asset_provisionings.connection_method` (D53)
+`readonly_role` Rol de solo lectura (recomendado en nube) · `access_keys` Usuario con llaves (menos seguro) · `agent` Agente instalado.
+Qué canales existen por categoría: `modules/control-tecnico.md`. Nulo hasta que se elige.
+
+### `cloud_platform` — `assets.platform` cuando `connection_category = ac_01`
+`aws` Amazon Web Services · `azure` Microsoft Azure · `gcp` Google Cloud. *(Propuesta; hoy solo AWS tiene cuenta de prueba.)*
+
+### `readiness` — nivel de preparación (`modules/control-tecnico.md`)
+`ready` Preparado · `almost_ready` Casi listo · `needs_work` Requiere trabajo · `not_measured` Sin medir. **Cualitativo primero**
+(`philosophy.md`); `not_measured` es un hueco de cobertura, no un fallo.
+
+### `readiness_area` — agrupación en lenguaje de negocio de las pruebas de nube *(propuesta de desarrollo)*
+`identity_access` Acceso e identidades · `data_network` Protección de datos y red · `logging_backup` Registros y respaldos.
+
 ### `schedule_frequency` — `asset_provisionings.schedule_frequency` (D46)
 `continuous` Continua · `every_6h` Cada 6 horas · `every_24h` Cada 24 horas. Nulo hasta el paso
 «programar». `ac_01` admite `every_6h` y `every_24h`; `ac_02` a `ac_06`, solo `continuous`.
