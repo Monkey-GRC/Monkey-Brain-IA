@@ -26,9 +26,9 @@ la cierra). Los ID (`DT-n`) no se reutilizan. Si una fila depende del comité, e
 
 | Archivo | Qué cubre | Filas |
 |---|---|---|
-| [`control-tecnico.md`](control-tecnico.md) | Componente 3 del onboarding: conexión de activos, la sonda, el paso 3 y la nube | 20 |
+| [`control-tecnico.md`](control-tecnico.md) | Componente 3 del onboarding: conexión de activos, la sonda, el paso 3, la nube y su ejecución | 23 |
 | [`onboarding.md`](onboarding.md) | Componentes 1 y 2 del onboarding y el registro de empresa | 16 |
-| [`transversal.md`](transversal.md) | Pruebas y CI, auditoría, traducciones, entorno y funcionalidad sin contrato | 14 |
+| [`transversal.md`](transversal.md) | Pruebas y CI, auditoría, traducciones, entorno y funcionalidad sin contrato | 15 |
 
 Una fila vive en el archivo de su **área**. Al crear una deuda nueva: siguiente `DT-n` libre, en el archivo que corresponda,
 y una línea en el índice de abajo. Los requisitos de seguridad que una deuda incumple están en
@@ -36,7 +36,7 @@ y una línea en el índice de abajo. Los requisitos de seguridad que una deuda i
 
 ## Índice de todas las deudas
 
-50 filas (incluye las cerradas, tachadas). Severidad: ✅ 2 · 🔴 6 · 🟠 24 · 🟡 18.
+54 filas (incluye las cerradas, tachadas). Severidad: ✅ 2 · 🔴 6 · 🟠 26 · 🟡 20.
 
 | ID | | Qué | Archivo |
 |---|---|---|---|
@@ -87,6 +87,10 @@ y una línea en el índice de abajo. Los requisitos de seguridad que una deuda i
 | DT-45 | 🟠 | El escaneo por todas las regiones infla resultados. | [control-tecnico](control-tecnico.md) |
 | DT-46 | 🟠 | El CI no bloquea el merge ni el despliegue. | [transversal](transversal.md) |
 | DT-47 | 🟡 | Los cierres automáticos de sesión no dejan rastro. | [transversal](transversal.md) |
+| DT-54 | 🟠 | El Backend, el CI y el Dockerfile corren en Node 20 (sin actualizaciones de seguridad desde abril de 2026). | [transversal](transversal.md) |
 | DT-48 | 🟠 | `check_results` sin política de retención ni partición. | [transversal](transversal.md) |
 | DT-49 | 🟠 | La operación continua (§8) no tiene contrato. | [transversal](transversal.md) |
 | DT-50 | 🟠 | El intérprete `check_results → evaluations` no está especificado. | [transversal](transversal.md) |
+| DT-51 | 🟠 | El trabajador usa un proxy de Docker que filtra por ruta, no por contenido. | [control-tecnico](control-tecnico.md) |
+| DT-52 | 🟡 | El trabajador solo conoce AWS, una corrida a la vez por réplica, y el canal de llaves entrega llaves de larga vida. | [control-tecnico](control-tecnico.md) |
+| DT-53 | 🟡 | La imagen del motor pesa 3,3 GB y un redespliegue a mitad de una corrida la pierde. | [control-tecnico](control-tecnico.md) |
