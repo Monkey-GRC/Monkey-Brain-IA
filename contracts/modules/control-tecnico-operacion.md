@@ -1,0 +1,217 @@
+---
+id: contracts-control-tecnico-operacion
+name: Contrato — Control Técnico, operación continua
+description: Ejecuciones, estado de preparación, hallazgos y API interna del trabajador sobre activos ya conectados en el Componente 3 del onboarding.
+type: contract
+---
+
+# Control Técnico — operación continua
+
+**Estado: PROPUESTA (2026-10-08), parcialmente construida; ver «Estado de implementación».** Ver `conventions.md` y `enums.md`.
+
+**Dónde encaja.** Conectar un activo es el **Componente 3 del Onboarding** y vive en `onboarding-technical-control.md` (escenario, scope,
+conexión, validación, activación, programación). Este contrato es **otro módulo del comité** (`modelo-datos.md` §8, «Control Técnico — la
+operación continua»): empieza cuando un activo ya está conectado y validado. Lo que no está aquí: cómo se conecta un activo.
+
+**Entidades:** `executions`, `check_results`, `evaluations`, `findings`, `asset_resources` (`modelo-datos.md` §7.4, §8, §9). **Rol:** `admin_empresa`.
+**App:** Monkey Platform.
+
+
+> ⚠️ **Confidencialidad.** Ningún campo, valor, mensaje ni ejemplo nombra al proveedor de ningún motor. Se habla de «sonda», «evaluación
+> automática» o «capacidad automática». Los textos que traen los motores (descripciones, remediaciones) **no salen tal cual**: pueden nombrar
+> al proveedor (`P11`, `P14` D3).
+>
+> ⚠️ **Lenguaje de la superficie** (`philosophy.md`). Nada de lo que ve el cliente por defecto lleva códigos de control ni de requisito.
+> Los códigos técnicos viajan solo en el objeto `technical` y solo si se pide `view=technical` («modo auditor»).
+
+## Operación continua
+
+### `POST /v1/assets/{id}/executions` — «evaluar ahora»
+
+Requiere `connection_status` `validated` o `active`. Responde `202` sin esperar:
+
+```json
+{ "statusCode": 202, "message": "execution.queued", "data": { "id": "c41f…", "status": "queued", "origin": "manual", "started_at": null } }
+```
+
+`409 EXECUTION_IN_PROGRESS` si ya hay una en curso para ese activo. Una ejecución fallida es un problema de **conexión**, no un
+incumplimiento (§8): `status = failed` con `failure_reason` (clave i18n), y **no mueve** el estado de preparación.
+
+### `GET /v1/assets/{id}/executions` — historial
+
+Paginado. Cada ítem: `id`, `status` (`queued` · `running` · `completed` · `failed`), `origin` (`scheduled` · `manual`), `started_at`,
+`finished_at`, `progress` (0–100, **solo mientras corre**, nunca como métrica de cumplimiento) y `narration` (clave i18n de lo que está
+haciendo: la IA narra, nunca un spinner mudo).
+
+### `GET /v1/assets/{id}/readiness` — el estado de preparación
+
+Lo que ve el cliente por defecto. **Cualitativo primero; el número es secundario** (`philosophy.md`):
+
+```json
+{
+  "statusCode": 200,
+  "message": "readiness.read",
+  "data": {
+    "asset_id": "7e5b…",
+    "readiness": "needs_work",
+    "measured_at": "2026-10-09T09:20:11Z",
+    "coverage": { "measured": 38, "expected": 55 },
+    "of_measured": { "compliant": 31, "not_compliant": 7 },
+    "areas": [
+      { "area": "identity_access", "readiness": "needs_work", "open_findings": 2, "not_measured": 4 },
+      { "area": "data_network", "readiness": "almost_ready", "open_findings": 1, "not_measured": 0 },
+      { "area": "logging_backup", "readiness": "needs_work", "open_findings": 4, "not_measured": 3 }
+    ],
+    "needs_manual_review": 6,
+    "includes_proposed_mappings": true
+  }
+}
+```
+
+- `readiness`: `ready` · `almost_ready` · `needs_work` · `not_measured`. **`not_measured` no es un fallo**: es un hueco de cobertura (R-06, `pending` ≠
+  `non_compliant`).
+- `coverage` y `of_measured` son **dos números separados** (los dos son verdad): cuánto se midió y, de lo medido, cuánto cumple.
+  **No existe un porcentaje consolidado**; si la pantalla lo calcula para mostrarlo, va **debajo** y nunca como métrica principal.
+- `areas`: agrupa las pruebas del comité en lenguaje de negocio (`identity_access`, `data_network`, `logging_backup`; las claves y
+  etiquetas, en `enums.md`). El mapeo área ← prueba no es del contrato.
+- `needs_manual_review`: lo que la sonda no puede decidir (`MANUAL` → `not_run`). Se cierra con evidencia que sube el cliente.
+- `includes_proposed_mappings`: `true` si parte de lo medido se apoya en vínculos check→prueba que el comité **aún no ratificó** (desarrollo y demostración).
+  En producción es `false` y solo cuenta lo ratificado; la pantalla debe decirlo cuando sea `true`. Antes de la primera corrida, `readiness` es
+  `not_measured` con todo en cero (no un `404`).
+- Un cálculo **no** se declara `ready` si hay algo `not_compliant` aplicable (R-05: una falla aplicable ⇒ no cumple).
+
+### `GET /v1/assets/{id}/findings` — hallazgos, en la plantilla de 7 campos
+
+Paginado; filtros `area`, `severity`, `status`. Cada ítem:
+
+```json
+{
+  "id": "9b0e…",
+  "area": "identity_access",
+  "severity": "high",
+  "status": "open",
+  "resource": { "type": "access_policy", "name": "AdministratorAccess", "region": null },
+  "what_happened": "finding.mfa_missing.what",
+  "why_it_matters": "finding.mfa_missing.why",
+  "how_to_fix": "finding.mfa_missing.how",
+  "who": "finding.mfa_missing.who",
+  "time_estimate": "finding.mfa_missing.time",
+  "evidence_needed": "finding.mfa_missing.evidence",
+  "impact": "finding.mfa_missing.impact",
+  "is_ai_generated": false,
+  "detected_at": "2026-10-09"
+}
+```
+
+Los siete textos son **claves i18n** que el backend resuelve con `Accept-Language`. Si un hallazgo aún no tiene redacción propia, los campos
+vienen `null` y `how_to_fix` cae a un texto neutro: **nunca se muestra el texto crudo del motor**. Cuando un texto lo redacta la IA,
+`is_ai_generated: true` (y `ai_confidence`), siempre.
+
+### `GET /v1/assets/{id}/results?view=technical` — modo auditor
+
+Secundario, paginado, para el auditor o el usuario avanzado. Ítems por check y recurso:
+
+```json
+{
+  "check": "iam_root_mfa_enabled",
+  "result": "passed",
+  "resource": { "type": "AwsIamUser", "name": "root", "uid": "arn:aws:iam::123456789012:root", "region": "us-east-1" },
+  "technical": { "test_code": "T-CLD-001", "requirement_codes": ["CC6.1"], "mapping_provenance": "monkey_proposed" },
+  "evaluated_at": "2026-10-09T09:20:11Z"
+}
+```
+
+`result`: `passed` · `failed` · `invalid` · `not_applicable` · `not_run`. `mapping_provenance` deja ver si el vínculo con el requisito lo
+ratificó el comité o es una propuesta (`D56`). Nunca se presenta una propuesta como validada.
+
+
+## Errores
+
+| HTTP | `error.code` | Cuándo |
+|---|---|---|
+| 409 | `EXECUTION_IN_PROGRESS` | Ya hay una ejecución en curso para el activo |
+| 409 | `ASSET_NOT_VALIDATED` | Evaluar un activo sin conexión validada |
+
+Claves i18n: `execution.queued`, `readiness.read`, `finding.*`.
+
+## Auditoría
+
+`execution.queue`, en la misma transacción que el efecto (D52).
+
+## Preguntas abiertas
+
+| Qué | Estado |
+|---|---|
+| **Qué texto redacta cada hallazgo** (`finding.*`) y quién lo revisa antes de llegar al cliente | ❌ `P14` E2. Mientras tanto, los campos pueden venir `null` |
+| **Las áreas** (`identity_access`, `data_network`, `logging_backup`) y su mapeo a las pruebas | ◐ Propuesta de desarrollo; falta ratificar con el comité (`P16`) |
+| **Hallazgos para checks sin prueba asignada** | ✅ No cuentan hasta que el comité responda (`P15`) |
+
+
+## API interna del trabajador (no es para el frontend)
+
+La usa **solo** el trabajador que ejecuta el motor (D57). **No está publicada** fuera de la red interna y no usa la cookie del cliente: va con
+`Authorization: Bearer <RUNNER_TOKEN>` (un secreto de servicio, comparado en tiempo constante; SEG-47). Misma forma de sobre y de error que el
+resto (`conventions.md`). Nunca devuelve ni registra una credencial más allá de lo estrictamente necesario para esa corrida.
+
+| Método y ruta | Qué hace |
+|---|---|
+| `POST /internal/runner/claim` | Reclama la próxima ejecución `queued` de **cualquier** empresa y la pasa a `running`. Cuerpo opcional `{ "kind": "validation" \| "assessment" }`: cada carril del trabajador pide solo el suyo (una validación no espera a una evaluación de minutos). `204` si no hay |
+| `POST /internal/runner/executions/{id}/validated` | Cierra una **validación**: el rol se asumió y la cuenta es la declarada. Body `{ "tenant_id": "…" }` |
+| `POST /internal/runner/executions/{id}/results` | Entrega el resultado crudo del motor; el backend lo interpreta y lo guarda; la ejecución pasa a `completed` |
+| `POST /internal/runner/executions/{id}/fail` | Informa que la corrida no pudo conectar; pasa a `failed` con su razón |
+
+`claim` → `200`:
+
+```json
+{
+  "statusCode": 200,
+  "message": "runner.claimed",
+  "data": {
+    "execution_id": "c41f…",
+    "kind": "assessment",
+    "tenant_id": "a1b2…",
+    "asset_id": "7e5b…",
+    "origin": "manual",
+    "platform": "aws",
+    "external_account_id": "123456789012",
+    "regions": ["us-east-1", "us-east-2"],
+    "connection": { "method": "readonly_role", "role_arn": "arn:aws:iam::123456789012:role/MonkeyReadOnly", "external_id": "mk-3f9a1c7e2b" }
+  }
+}
+```
+
+En `access_keys`, `connection` lleva además las llaves descifradas **solo en esta respuesta** (red interna, nunca se registran). En `agent` no
+hay corrida del trabajador: lee la sonda (otro adaptador).
+
+`results` — body: `{ "tenant_id": "a1b2…", "engine_version": "5.44.0", "started_at": "…Z", "finished_at": "…Z", "findings": [ …salida del motor, sin tocar… ] }`.
+`422 ENGINE_OUTPUT_INVALID` si una fila está mal formada (se indica cuál); no se guarda nada. `409 EXECUTION_NOT_RUNNING` si no está en curso
+(o no es de esa empresa: no se distingue). Una conexión que no sirve al reclamar (sin regiones, sin rol, proveedor no soportado) **no se entrega**: se
+cierra sola como `failed` con su razón y el reclamo sigue con la siguiente.
+
+`fail` — body: `{ "tenant_id": "a1b2…", "reason": "connection.role_not_found" }` (clave de la tabla de errores de `validate`).
+
+`tenant_id` es el que el trabajador recibió al reclamar: con él el backend abre la transacción de esa empresa. **Si el trabajador lo falsea, RLS no
+encuentra la ejecución y responde `409 EXECUTION_NOT_RUNNING`**: no puede escribir en otra empresa.
+
+**Razones de fallo** (`reason` en `fail`, y `failure_reason` en el historial): `connection.role_not_found`, `connection.account_mismatch`,
+`connection.credentials_invalid`, `connection.regions_missing`, `connection.not_configured`, `connection.provider_not_supported`,
+`connection.method_not_supported_by_runner`, `execution.engine_failed`, `execution.engine_timeout`, `execution.output_invalid` y
+`execution.timed_out`. Son claves i18n con texto en `es` y `en`; el cliente nunca ve el mensaje del motor.
+
+**Una ejecución que se queda en `running` más de 30 minutos** (el trabajador murió) pasa a `failed` con `execution.timed_out`; lo hace el propio
+`claim` al barrer. Tampoco mueve la preparación.
+
+
+## Estado de implementación (2026-10-09)
+
+| Endpoint | Estado |
+|---|---|
+| `POST /v1/assets/{id}/executions` (202), `GET …/executions` (paginado, con `failure_message`), `GET …/readiness` | ✅ |
+| API interna del trabajador: `claim` (con `kind`), `results`, `validated`, `fail` | ✅ Probada contra el backend real, Docker real y AWS real (D57, D58) |
+| `GET …/findings`, `GET …/results?view=technical` | ❌ Sin construir (necesitan la redacción de los siete campos, `P14` E2) |
+
+- El historial de evaluaciones **no incluye las validaciones** (las de conexión, ver `onboarding-technical-control.md`); cada ítem trae `failure_reason` y `failure_message`.
+- Un claim del trabajador acepta `{ "kind": "validation" | "assessment" }` y devuelve `kind`; `POST /internal/runner/executions/{id}/validated` cierra una validación.
+
+**Configuración:** `RUNNER_TOKEN` (sin él, `/internal/runner` no existe) y `READINESS_INCLUDE_PROPOSED` (solo desarrollo y demostración).
+

@@ -87,34 +87,38 @@ Pendiente de reconciliar.
 
 ## Paso 3 — El flujo de conexión de un activo
 
-> **⚠ Reemplazado en parte por `control-tecnico.md` (propuesta 2026-10-08): `credentials` y `validate` cambian.**
->
-> **⚠ Provisional (D48).** Lo que sigue describe lo que está construido, hecho antes de verificar cómo funciona la sonda real.
-> El modelo real no entrega credenciales a Monkey (agente instalado por el cliente; Monkey lee la base/API del manager), de modo
-> que la forma de `credentials` y de `validate` va a cambiar. Ver D48, DT-31 a DT-36 y P12.
+Cuatro pasos: **conectar → validar → activar → programar**. El cliente **no entrega secretos** salvo en el canal alternativo de llaves; el
+resto lo entrega Monkey (D53, D58). Al menos uno completo de punta a punta es criterio de aceptación.
 
-Cuatro pasos: **conectar → validar → activar → programar**. Al menos uno completo de punta a
-punta es criterio de aceptación del sprint.
+### Cómo se conecta cada cosa
 
-### `POST /v1/assets` — registrar y conectar
+| Qué se conecta | `connection_category` | Canales (`connection_method`) |
+|---|---|---|
+| Cuenta de nube (AWS; Azure y GCP, pendientes) | `ac_01` | `readonly_role` (recomendado) · `access_keys` |
+| Servidor en nube, servidor on-premise o equipo | `ac_02`, `ac_04`, `ac_06` | `agent` (solo diseño, `DT-57`) |
+| Base de datos | `ac_03`, `ac_05` | `agent` (solo diseño, `DT-57`) |
+
+El cliente **elige** el canal entre los de su categoría. `GET /v1/catalogs/connection_method` y `GET /v1/catalogs/aws_region` dan las opciones;
+`GET /v1/catalogs/automated-capabilities` añade `connection_methods` (el primero es el recomendado). Un activo de nube es **una cuenta**
+(D53) y sus `regions` (≥ 1) son **las únicas que se evalúan**.
+
+### `POST /v1/assets` — cuenta de nube con rol de solo lectura
 
 ```json
 {
-  "name": "srv-app-prod-01",
-  "connection_category": "ac_02",
-  "type": "server",
-  "platform": "Ubuntu 22.04",
-  "ip_address": "10.20.3.14",
-  "location": "Azure East US",
+  "name": "AWS producción",
+  "connection_category": "ac_01",
+  "connection_method": "readonly_role",
+  "platform": "aws",
+  "external_account_id": "123456789012",
+  "regions": ["us-east-1", "us-east-2"],
   "criticality": "high",
-  "tags": ["produccion", "core"],
-  "service_ids": ["5c2e8a41-7b9d-4e03-a1f6-8d40c2b7e915"],
-  "responsible_id": "9a1c...",
-  "credentials": { "ssh_user": "monkeyagent", "ssh_private_key": "-----BEGIN OPENSSH PRIVATE KEY-----..." }
+  "tags": ["produccion"],
+  "service_ids": ["5c2e8a41-7b9d-4e03-a1f6-8d40c2b7e915"]
 }
 ```
 
-`201`:
+`201`: el activo nace `pending` y **Monkey le entrega lo que el cliente debe hacer**:
 
 ```json
 {
@@ -123,35 +127,63 @@ punta es criterio de aceptación del sprint.
   "data": {
     "id": "7e5b2c90-3a14-4f8d-b062-1c9e7a3f5d28",
     "code": "AST-0042",
-    "name": "srv-app-prod-01",
-    "connection_category": "ac_02",
-    "type": "server",
-    "platform": "Ubuntu 22.04",
-    "ip_address": "10.20.3.14",
-    "criticality": "high",
-    "origin": "declared",
-    "status": "active",
+    "name": "AWS producción",
+    "connection_category": "ac_01",
+    "type": "cloud_service",
+    "platform": "aws",
+    "external_account_id": "123456789012",
+    "regions": ["us-east-1", "us-east-2"],
     "operational_status": "not_monitored",
-    "technical_coverage": "0/18",
-    "services": [{ "id": "5c2e8a41-7b9d-4e03-a1f6-8d40c2b7e915", "name": "Mesa de servicio gestionada" }],
-    "provisioning": {
-      "id": "f3a8...",
-      "automated_capability_code": "ac_02",
-      "connection_status": "pending",
-      "last_validated_at": null,
-      "is_active": false
+    "provisioning": { "connection_method": "readonly_role", "connection_status": "pending", "is_active": false, "last_validated_at": null },
+    "connection_setup": {
+      "method": "readonly_role",
+      "external_id": "mk-3f9a1c7e2b",
+      "monkey_principal_arn": "arn:aws:iam::210987654321:root",
+      "role_name": "MonkeyReadOnly",
+      "role_arn": null,
+      "template_path": "/v1/connection-templates/aws-readonly-role",
+      "steps": ["…texto ya traducido…", "…", "…"]
     }
   }
 }
 ```
 
-`credentials` **nunca se devuelve**: se cifra en `asset_provisionings.encrypted_credentials`.
-El activo cuelga de la **organización**, no del servicio (decisión A2); `service_ids` crea las
-filas de `service_assets`.
+- `external_id` lo genera Monkey, es único por activo y evita que otro cliente use el rol del tuyo; **no es un secreto del cliente**.
+- El cliente descarga la plantilla (`template_path`, `GET /v1/connection-templates/aws-readonly-role`), crea el rol en su cuenta y devuelve su ARN.
+  El «un clic» con enlace directo está pendiente (`DT-55`).
+- `steps` son **textos ya traducidos**, no claves (la plataforma no tiene i18n propio, `DT-21`).
+- `external_account_id` es obligatorio en `readonly_role` y `access_keys`.
+
+### `PATCH /v1/assets/{id}/connection` — el cliente entrega el rol creado
+
+```json
+{ "role_arn": "arn:aws:iam::123456789012:role/MonkeyReadOnly" }
+```
+
+`200` con el mismo `provisioning` (sigue `pending`). **Un `role_arn` no es un secreto.** `422 VALIDATION_FAILED` si no tiene forma de ARN o la
+cuenta del ARN no coincide con `external_account_id`.
+
+### `POST /v1/assets` — cuenta de nube con llaves (canal alternativo)
+
+Igual que arriba, con `"connection_method": "access_keys"` y:
+
+```json
+{ "credentials": { "access_key_id": "AKIA…", "secret_access_key": "…" } }
+```
+
+`credentials` **nunca se devuelve**: se cifra (`SEG-24`). La respuesta lleva `connection_setup.method = "access_keys"` con un `warning`
+(menos seguro: llaves de larga vida) y los pasos para crear un usuario de solo lectura. La pantalla debe decirlo y ofrecer el rol primero.
+
+### `POST /v1/assets` — servidor, base de datos o equipo con agente *(solo diseño)*
+
+Mismo cuerpo sin `external_account_id` ni `regions`, con `"connection_method": "agent"`. El comando de instalación lo generará Monkey
+(pre-registra al agente en el grupo de la empresa, D54) y su `<token>` es de un solo uso. **No está construido**: `validate` responde `503`
+(`DT-57`; instalador y hospedaje, `P12`).
 
 ### `POST /v1/assets/{id}/validate` — validar la conexión
 
-`200` si conecta:
+Comprobación real y de **solo lectura**, hecha por el trabajador aislado (D57, D58): en `readonly_role` asume el rol y confirma que la cuenta es
+la declarada; en `access_keys` confirma la identidad de las llaves. Es síncrono: espera hasta `VALIDATION_WAIT_SECONDS`. `200`:
 
 ```json
 {
@@ -159,30 +191,31 @@ filas de `service_assets`.
   "message": "asset.validated",
   "data": {
     "connection_status": "validated",
-    "last_validated_at": "2026-10-06T09:14:33Z",
-    "technical_coverage": "18/18",
-    "checks_available": 402
+    "last_validated_at": "2026-10-09T09:14:33Z",
+    "technical_coverage": "…",
+    "checks_available": 662,
+    "mode": "real",
+    "probe_mode": "runner"
   }
 }
 ```
 
-`422 CONNECTION_FAILED` si no, con `error.fields` apuntando a lo que falta:
+`checks_available` son los checks del catálogo de nube (deja de ser la constante 402, `DT-2`). `probe_mode`: `runner` (comprobación real),
+`simulated` o `unavailable` (honestidad: «Automatizado ≠ Operativo»).
 
-```json
-{
-  "statusCode": 422,
-  "message": "asset.connection_failed",
-  "data": null,
-  "error": {
-    "code": "CONNECTION_FAILED",
-    "fields": [
-      { "field": "credentials.ssh_user", "code": "connection.permission_denied", "message": "El usuario no tiene permisos suficientes para la evaluación automática." }
-    ]
-  }
-}
-```
+Errores de validación (`422 CONNECTION_FAILED`, con `error.fields`; `code` = razón, `message` ya traducido):
 
-El mensaje habla de "evaluación automática", nunca del proveedor.
+| `field` | `code` | Qué pasó |
+|---|---|---|
+| `role_arn` | `connection.role_not_found` | El rol no existe o Monkey no puede asumirlo (revisa el `external_id`) |
+| `role_arn` | `connection.account_mismatch` | El rol es de otra cuenta que la declarada |
+| `credentials` | `connection.credentials_invalid` | Las llaves no son válidas o están desactivadas |
+| `regions` | `connection.regions_missing` | No hay regiones declaradas |
+| `platform` | `connection.provider_not_supported` | Proveedor aún no soportado |
+
+Las razones que no son del cliente (trabajador caído, llaves base vencidas) dan `503 CONNECTION_UNAVAILABLE`. El mensaje habla de
+«evaluación automática», nunca del proveedor. Lo que ocurre **después** de validar (evaluar, estado de preparación, hallazgos) es otro módulo:
+`control-tecnico-operacion.md`.
 
 ### `POST /v1/assets/{id}/activate` — activar
 
@@ -204,6 +237,7 @@ Paginado, con filtros `service_id`, `connection_category`, `operational_status`.
 trae `code`, `name`, `connection_category`, `operational_status`, `technical_coverage` y
 `provisioning.connection_status`.
 
+
 ## Errores
 
 | HTTP | `error.code` | Cuándo |
@@ -214,9 +248,10 @@ trae `code`, `name`, `connection_category`, `operational_status`, `technical_cov
 | 409 | `ASSET_ALREADY_ACTIVE` | Se activa o se valida un activo ya activo |
 | 409 | `ASSET_NOT_ACTIVE` | Se programa un activo que aún no está activo *(añadido, D46)* |
 | 503 | `CONNECTION_UNAVAILABLE` | Esta instalación aún no puede comprobar conexiones (sin sonda); el activo sigue `pending` *(añadido, D46)* |
-| 422 | `CONNECTION_FAILED` | La validación no pudo conectar |
+| 409 | `CONNECTION_METHOD_NOT_APPLICABLE` | El canal no existe para esa categoría (p. ej. `agent` en `ac_01`) |
+| 422 | `CONNECTION_FAILED` | La validación no pudo conectar (tabla del paso 3) |
 | 422 | `FREQUENCY_NOT_SUPPORTED` | Frecuencia que la capacidad no admite |
-| 422 | `VALIDATION_FAILED` | Enum inválido, `ip_address` mal formada, sin `service_ids` |
+| 422 | `VALIDATION_FAILED` | Enum inválido, `regions` vacío o fuera del catálogo, `external_account_id` o `role_arn` mal formados, sin `service_ids` |
 
 Claves i18n: `deployment_scenario.saved`, `scope.saved`, `asset.created`, `asset.list`,
 `asset.validated`, `asset.activated`, `asset.scheduled`, `asset.connection_failed`,
@@ -246,11 +281,11 @@ Todas las que había quedaron **cubiertas por desarrollo en D46**; lo que sigue 
 | **Valores de `assets.type`, `criticality`, `origin` y `status`** | ✅ Cerrados en `enums.md` (D34). El tipo ahora se **deduce de la conexión** (D46) |
 | **¿Qué es «híbrido»?** | ✅ Las seis conexiones (D46, DT-7) |
 | **Dónde guardar la frecuencia de `schedule`** | ✅ `asset_provisionings.schedule_frequency` (D46) |
-| **Qué credenciales pide cada conexión** | ❌ **Provisional y probablemente incorrecto** (D48, DT-31): en la sonda real Monkey no recibe credenciales del cliente, sino que lee lo que el agente ya reportó. Se rediseña cuando el comité responda **P12** (quién instala los agentes, cómo se asigna cada empresa a su grupo, cómo se conecta la nube) |
-| **Vínculo del activo con su agente, aislamiento entre empresas, cobertura de plataformas, nube** | ❌ Sin definir (DT-32 a DT-35, P12): hoy el activo no sabe qué agente es y solo hay pruebas para Ubuntu 22.04, Ubuntu 14.04 y Windows 11 |
+| **Qué pide cada conexión** | ✅ Nube: rol de solo lectura o llaves (D53, D58). ❌ Servidores y bases: canal de agente, solo diseño (`P12`, `DT-57`) |
+| **Azure y GCP** | ❌ Sin cuentas de prueba; el comité debe entregarlas |
 | **Las 18 capacidades de `technical_coverage`** | ❌ Sin definir (DT-2): hoy es una constante |
 
-## Estado de implementación (2026-10-01)
+## Estado de implementación (2026-10-09)
 
 Implementado en `Backend/src/features/technical-control` (más `catalogs` y el progreso de `auth`) y en
 `Frontend-Platform/src/app/features/technical-control`. Decisiones D46.
@@ -263,14 +298,12 @@ Implementado en `Backend/src/features/technical-control` (más `catalogs` y el p
 | `GET /v1/catalogs/automated-capabilities` | ✅ Las 6, sin `provider` |
 | `POST /v1/assets` | ✅ Tipo deducido de la conexión; código `AST-0001` por empresa; credenciales validadas por conexión y **cifradas** |
 | `GET /v1/assets` · `GET /v1/assets/{id}` | ✅ Paginado con filtros `service_id`, `connection_category`, `operational_status`. El detalle es **adición** (DT-11) |
-| `POST /v1/assets/{id}/validate` | ◐ Según `PROBE_MODE`: `simulated` → `200` con `mode: demo`; `unavailable` (por defecto) → `503 CONNECTION_UNAVAILABLE`. Credenciales con el marcador `permission-denied` simulan `422 CONNECTION_FAILED` |
+| `PATCH /v1/assets/{id}/connection`, `GET /v1/connection-templates/aws-readonly-role`, `GET /v1/catalogs/connection_method`, `GET /v1/catalogs/aws_region` | ✅ Nube (D58) |
+| `POST /v1/assets/{id}/validate` | ✅ Nube: **real** vía trabajador (`PROBE_MODE=runner`), verificada contra AWS real. Otros modos: `simulated` → `200` con `mode: demo`; `unavailable` (por defecto) → `503`. Canal `agent`: `503` (`DT-57`) |
 | `POST /v1/assets/{id}/activate` | ✅ Con la sonda simulada deja `operational_status = warning`, **no** `operational` («Automatizado ≠ Operativo») |
 | `PUT /v1/assets/{id}/schedule` | ✅ Valida la frecuencia por conexión; `409 ASSET_NOT_ACTIVE` si no está activo |
 
-- **Credenciales por conexión:** `ac_01` → `account_id` + `read_only_role` (opcional `external_id`);
-  `ac_03`/`ac_05` → `db_user` + `db_password` (opcional `db_port`); `ac_02`/`ac_04` →
-  `connection_method` = `agent` (por defecto, sin credenciales) o `ssh` (`ssh_user` + `ssh_private_key`);
-  `ac_06` → solo agente. Error por campo con la notación `credentials.<campo>`.
+- **Credenciales:** en nube solo el canal `access_keys` las pide (`access_key_id` + `secret_access_key`, cifradas). El canal de rol no entrega secretos. Los formularios de contraseña por conexión de servidores/bases (SSH, DB) son el modelo anterior (`DT-56`).
 - **Seguridad:** las credenciales no vuelven en ningún response, no se escriben en logs ni en `audit_logs`.
   La comprobación corre fuera de la transacción de base de datos.
 - **Auditoría:** `service.deployment_scenario`, `service.scope`, `asset.create`, `asset.validate`
@@ -280,8 +313,7 @@ Implementado en `Backend/src/features/technical-control` (más `catalogs` y el p
   (`deployment_scenario`, `has_scope`, `is_complete`).
 - **Confidencialidad:** el tipo `Capability` del backend no tiene `provider`; el catálogo y las respuestas lo
   omiten, y una prueba revisa respuestas, i18n, `src/`, logs y el bundle de la aplicación en cada recorrido.
-- **Variables de entorno nuevas:** `CREDENTIALS_ENCRYPTION_KEY` (obligatoria) y `PROBE_MODE`
-  (`simulated` | `unavailable`; `simulated` no arranca en producción).
+- **Variables de entorno:** `CREDENTIALS_ENCRYPTION_KEY` (obligatoria), `PROBE_MODE` (`runner` | `simulated` | `unavailable`; `simulated` no arranca en producción), `MONKEY_AWS_PRINCIPAL_ARN` y `VALIDATION_WAIT_SECONDS`.
 - **Pantalla (Platform):** `/services/{id}/technical-control`, tres pasos cortos (dónde vive · cuánto tienes ·
   conectar). Los dos primeros dan el paso por hecho. Avisos honestos: «modo demostración» o «aún no está
   disponible». «Mis servicios» marca lo que falta.

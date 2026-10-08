@@ -1246,3 +1246,57 @@ corridas programadas las ejecuta un **trabajador separado del backend** (opción
 no es «evaluar ahora».
 
 **Fuente:** `P14` C, D53, D56, DT-43, SEG-46, SEG-47.
+
+**Cómo quedó construido (2026-10-09, `Backend/src/runner/`):**
+
+1. **Un entrypoint más de la misma base de código y de la misma imagen del backend** (`node dist/src/runner/main.js`): sin segundo lenguaje, sin
+   `Dockerfile` ni pipeline nuevos. Capas propias: dominio (tipos y puertos `RunnerApi`, `CredentialBroker`, `ScanEngine`), un caso de uso
+   (reclamar → credenciales → motor → entregar) y adaptadores (HTTP hacia `/internal/runner`, STS de AWS, Docker). No importa nada de
+   `src/features`: habla con el backend solo por HTTP, y **no tiene acceso a la base de datos**. Escalar es subir réplicas (el reclamo usa
+   `FOR UPDATE SKIP LOCKED`); correr el motor en la nube es escribir otro `ScanEngine`.
+2. **El motor es una caja negra** en una imagen fijada por versión o digest (el trabajador se niega a arrancar con `latest`). Cada corrida: un
+   contenedor efímero, sin capacidades, sin escalada de privilegios, sin montajes del servidor, memoria/CPU/procesos acotados, en la red por
+   defecto de Docker (no la del backend: sin acceso a la API ni a la base) y **siempre eliminado**. El resultado se lee del propio contenedor.
+3. **Credenciales:** el trabajador asume el rol del cliente con su `ExternalId` y entrega al motor credenciales **temporales** (1 hora). Rechaza un
+   rol de otra cuenta que la declarada. Las regiones se validan con una expresión estricta antes de llegar a la línea de comandos del motor.
+4. **Infraestructura** (`Backend/deploy/`): `docker-compose.dev.yml` versionado, con dos servicios nuevos (`docker-proxy` y `runner`), solo en la red
+   `default` y sin puertos publicados. El trabajador recibe un entorno **aparte** (`runner.env`, secreto `RUNNER_ENV_FILE`) con solo lo suyo. El
+   workflow solo lo levanta si el compose de la VPS ya lo define.
+5. **Verificado:** pruebas automáticas contra Docker real, contra el backend real y contra AWS real (una corrida completa con el motor real el
+   2026-10-09: credenciales `ASIA…`, 429 filas, sin contenedores sobrantes, mismo resultado que el escaneo con llaves).
+
+**Razones de fallo** (claves i18n que guarda `executions.failure_reason` y verá el cliente): `connection.role_not_found`, `connection.account_mismatch`,
+`connection.credentials_invalid`, `connection.regions_missing`, `connection.not_configured`, `connection.provider_not_supported`,
+`connection.method_not_supported_by_runner`, `execution.engine_failed`, `execution.engine_timeout`, `execution.output_invalid`, `execution.timed_out`.
+Una prueba exige su texto en español e inglés y que ninguno nombre a un proveedor.
+
+## D58 · El flujo de conexión de una cuenta de nube: validación real a través del trabajador (2026-10-09)
+
+**Decisión** (Héctor, 2026-10-09; desarrollo; **pendiente de ratificar con el comité**). Concreta D53 y D57 para lo que el cliente hace en pantalla:
+registrar su cuenta de AWS, darle a Monkey acceso de solo lectura y comprobar que funciona.
+
+1. **El backend nunca toca la cuenta del cliente ni guarda llaves de AWS.** «Comprobar conexión» encola una **validación** y el trabajador (el único
+   componente con identidad en AWS) asume el rol y comprueba que la cuenta es la declarada. El backend espera el resultado unos segundos, así que la
+   pantalla recibe una respuesta síncrona (`PROBE_MODE=runner`). Si nadie atiende: `503` «no disponible», la validación se cancela y el activo no queda
+   bloqueado; no es culpa del cliente y la conexión no cambia de estado.
+2. **Dos tipos de ejecución, dos carriles** (`executions.kind`: `validation` y `assessment`). Una validación (segundos, con un cliente esperando) no
+   puede quedar detrás de una evaluación de minutos: el trabajador corre un bucle por tipo. Una validación abierta más de 2 minutos se da por perdida;
+   una evaluación, a los 30.
+3. **Dos canales de conexión reales para AWS:** *rol de solo lectura* (recomendado: el cliente no comparte secretos, crea en su cuenta un rol con una
+   plantilla y entrega su ARN) y *llaves de acceso* (menos seguro, con aviso, cifradas y nunca devueltas). El tercero, el *agente*, solo existe como
+   diseño: no se afirma que verifique nada.
+4. **ExternalId generado por Monkey, por activo** (`mk-…`), guardado en `asset_provisionings.external_id`. No es un secreto del cliente: evita que otro
+   cliente de Monkey use el rol de este. El cliente lo pega como parámetro de la plantilla junto con la identidad de Monkey
+   (`MONKEY_AWS_PRINCIPAL_ARN`, configuración).
+5. **La plantilla se descarga** (`GET /v1/connection-templates/aws-readonly-role`, el código es su única fuente) y se crea en CloudFormation a mano. El
+   enlace de «un clic» exige alojarla en S3 y queda para después (`DT-55`).
+6. **Nada se hardcodea en la pantalla:** las regiones (`aws_region`) y los canales (`connection_method`) salen de los catálogos del backend; el alta solo
+   acepta las regiones ofrecidas; los pasos de instrucciones y los motivos de fallo llegan ya traducidos (la plataforma no tiene i18n propio, `DT-21`).
+7. **El formulario provisional del paso 3 sigue aceptándose** en la API (sin `connection_method`) hasta retirarlo (`DT-31`, `DT-56`); la pantalla ya no lo usa
+   para la nube.
+
+**Verificado** (2026-10-09): pruebas automáticas (31 de conexión, por HTTP) y una corrida real de punta a punta con **navegador, backend, trabajador y
+AWS reales**: alta → instrucciones → plantilla descargada → fallo con identificador equivocado (mensaje claro) → validación correcta → activación →
+evaluación (429 filas, ~3 min) → «Evaluación completada»; y el canal de llaves, validado sin que la llave aparezca en la página ni en ninguna respuesta.
+
+**Fuente:** D53, D56, D57, `contracts/modules/control-tecnico-operacion.md`, SEG-46, SEG-47, SEG-50.

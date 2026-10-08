@@ -291,6 +291,12 @@ desechable, ver §13):
 - **`Dockerfile`:** `prisma.config.ts` exige `DATABASE_URL` al cargarse (con cualquier comando), así
   que el build define un placeholder antes de `prisma generate`. `SHADOW_DATABASE_URL` no hace falta.
 - **Staging aplica con `prisma migrate deploy`**, nunca `migrate dev`.
+- **El trabajador del motor de nube** (D57, `Backend/src/runner/`): dos servicios más en el compose, `docker-proxy` (el único que toca el socket de
+  Docker, de solo lectura y filtrado por ruta) y `runner` (la misma imagen del backend con otro comando), ambos solo en la red `default` y sin
+  puertos publicados. El compose vive versionado en `Backend/deploy/docker-compose.dev.yml` y se copia a `~/monkey-dev/docker-compose.yml`. El
+  trabajador recibe un entorno **aparte** (`runner.env`, del secreto `RUNNER_ENV_FILE`; ejemplo en `Backend/deploy/runner.env.example`), nunca el
+  `.env` del backend. El workflow solo lo levanta si el compose ya lo define. Los contenedores del motor corren en la red por defecto de Docker, no
+  en la de `monkey-dev`.
 
 ## 9. Lo que sigue pendiente (operativo, no del modelo)
 
@@ -322,7 +328,7 @@ desechable, ver §13):
 `last_activity_at` en `sessions`, para la política de 30 min / 8 h) · 22 `catalog_seed_and_client_controls`
 (D35, D36, D38) · 23 `rls_catalog_seed_and_client_controls` (D36) ·
 24 `service_context_optional_fields_and_regulations` (D45) · 25 `asset_provisioning_schedule_frequency` (D46) ·
-26 `catalog_policies_as_templates` (D39) · 27 `audit_append_only_triggers` (D41) · 28 `company_frameworks` (D47) · 29 `correcciones_onboarding_d50_d51` (D50, D51) · 30 `cloud_technical_control_model` (D53, D56) · 31 `rls_asset_resources` (D56) · 32 `execution_queue_lifecycle` y 33 `claim_next_execution` (D57).
+26 `catalog_policies_as_templates` (D39) · 27 `audit_append_only_triggers` (D41) · 28 `company_frameworks` (D47) · 29 `correcciones_onboarding_d50_d51` (D50, D51) · 30 `cloud_technical_control_model` (D53, D56) · 31 `rls_asset_resources` (D56) · 32 `execution_queue_lifecycle` y 33 `claim_next_execution` (D57) · 34 `cloud_connection_flow` y 35 `claim_execution_by_kind` (D58).
 
 > **Orden por fecha, no por número:** la 25 (`20261001120000`) quedó **antes** de la 26 y la 27 (`20261001180000` y
 > `20261001190000`) aunque se escribió en paralelo; ninguna depende de la otra. Prisma las aplica por nombre. Se

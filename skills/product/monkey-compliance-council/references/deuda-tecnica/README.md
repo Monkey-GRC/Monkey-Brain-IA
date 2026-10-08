@@ -26,7 +26,7 @@ la cierra). Los ID (`DT-n`) no se reutilizan. Si una fila depende del comité, e
 
 | Archivo | Qué cubre | Filas |
 |---|---|---|
-| [`control-tecnico.md`](control-tecnico.md) | Componente 3 del onboarding: conexión de activos, la sonda, el paso 3, la nube y su ejecución | 23 |
+| [`control-tecnico.md`](control-tecnico.md) | Componente 3 del onboarding: conexión de activos, la sonda, el paso 3, la nube y su ejecución | 27 |
 | [`onboarding.md`](onboarding.md) | Componentes 1 y 2 del onboarding y el registro de empresa | 16 |
 | [`transversal.md`](transversal.md) | Pruebas y CI, auditoría, traducciones, entorno y funcionalidad sin contrato | 15 |
 
@@ -36,7 +36,7 @@ y una línea en el índice de abajo. Los requisitos de seguridad que una deuda i
 
 ## Índice de todas las deudas
 
-54 filas (incluye las cerradas, tachadas). Severidad: ✅ 2 · 🔴 6 · 🟠 26 · 🟡 20.
+58 filas (incluye las cerradas, tachadas). Severidad: ✅ 2 · 🔴 6 · 🟠 28 · 🟡 22.
 
 | ID | | Qué | Archivo |
 |---|---|---|---|
@@ -88,6 +88,10 @@ y una línea en el índice de abajo. Los requisitos de seguridad que una deuda i
 | DT-46 | 🟠 | El CI no bloquea el merge ni el despliegue. | [transversal](transversal.md) |
 | DT-47 | 🟡 | Los cierres automáticos de sesión no dejan rastro. | [transversal](transversal.md) |
 | DT-54 | 🟠 | El Backend, el CI y el Dockerfile corren en Node 20 (sin actualizaciones de seguridad desde abril de 2026). | [transversal](transversal.md) |
+| DT-55 | 🟡 | La plantilla del rol se descarga y se crea a mano (sin enlace de «un clic»). | [control-tecnico](control-tecnico.md) |
+| DT-56 | 🟠 | La API aún acepta el formulario provisional del paso 3, único camino para servidores y bases de datos. | [control-tecnico](control-tecnico.md) |
+| DT-57 | 🟠 | El canal de agente solo existe como diseño. | [control-tecnico](control-tecnico.md) |
+| DT-58 | 🟡 | `Frontend-Platform` no tiene pruebas automáticas. | [control-tecnico](control-tecnico.md) |
 | DT-48 | 🟠 | `check_results` sin política de retención ni partición. | [transversal](transversal.md) |
 | DT-49 | 🟠 | La operación continua (§8) no tiene contrato. | [transversal](transversal.md) |
 | DT-50 | 🟠 | El intérprete `check_results → evaluations` no está especificado. | [transversal](transversal.md) |

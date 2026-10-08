@@ -359,12 +359,12 @@ Flujo: conectar → validar → activar → programar. Una conexión que falla n
 
 ### `connection_method` — `asset_provisionings.connection_method` (D53)
 `readonly_role` Rol de solo lectura (recomendado en nube) · `access_keys` Usuario con llaves (menos seguro) · `agent` Agente instalado.
-Qué canales existen por categoría: `modules/control-tecnico.md`. Nulo hasta que se elige.
+Qué canales existen por categoría: `modules/onboarding-technical-control.md`. Nulo hasta que se elige.
 
 ### `cloud_platform` — `assets.platform` cuando `connection_category = ac_01`
 `aws` Amazon Web Services · `azure` Microsoft Azure · `gcp` Google Cloud. *(Propuesta; hoy solo AWS tiene cuenta de prueba.)*
 
-### `readiness` — nivel de preparación (`modules/control-tecnico.md`)
+### `readiness` — nivel de preparación (`modules/control-tecnico-operacion.md`)
 `ready` Preparado · `almost_ready` Casi listo · `needs_work` Requiere trabajo · `not_measured` Sin medir. **Cualitativo primero**
 (`philosophy.md`); `not_measured` es un hueco de cobertura, no un fallo.
 

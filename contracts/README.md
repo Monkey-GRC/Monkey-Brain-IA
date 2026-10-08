@@ -24,8 +24,8 @@ te toca. Si lo que vas a construir no está aquí, el contrato se acuerda primer
 | `modules/auth.md` | Canje de la clave, login, refresh |
 | `modules/onboarding-organizational-context.md` | Componente 1 — 10 campos |
 | `modules/onboarding-service-context.md` | Componente 2 — 16 campos, repetible por servicio |
-| `modules/onboarding-technical-control.md` | Componente 3 — scope, activos y conexiones |
-| `modules/control-tecnico.md` | Conexión de nube (rol, llaves, agente) y resultados: estado de preparación, hallazgos y modo auditor. **Propuesta**, sin acordar |
+| `modules/onboarding-technical-control.md` | Componente 3 del onboarding — escenario, scope, conexión de activos (rol, llaves, agente), validación, activación |
+| `modules/control-tecnico-operacion.md` | Módulo de operación continua (§8): ejecuciones, estado de preparación, hallazgos, modo auditor y API interna del trabajador. Empieza donde acaba el Componente 3 |
 
 ## Formato de cada módulo
 
