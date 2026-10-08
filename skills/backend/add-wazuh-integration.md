@@ -28,8 +28,8 @@ de la respuesta y las restricciones de seguridad/rendimiento.
    negocio (`check`, activo, resultado), no con la forma cruda de la respuesta de Wazuh.
 2. **Adaptador** — `technical-control/infrastructure/probes/<nombre>.probe.ts`, **solo lectura**. Auth contra la API de Wazuh
    (`POST /security/user/authenticate`); el JWT dura ~900 s: se cachea y se re-autentica ante un `401`. Usa el certificado
-   (`root-ca.pem`), **nunca `verify=False`**. URL y credenciales por variables de entorno (hoy reservadas: `WAZUH_*` en
-   `.env.example`), **nunca hardcodeadas**. Pide un usuario de API y de base **de solo lectura** (DT-36).
+   (`root-ca.pem`), **nunca `verify=False`**. URL y credenciales por variables de entorno (se añaden a `.env.example` cuando exista el adaptador; hoy el Backend no lee
+   ninguna), **nunca hardcodeadas**. Pide un usuario de API y de base **de solo lectura** (DT-36).
 3. **Dónde se guardan los resultados** — en las tablas de `modelo-datos.md` §8: `executions` (qué corrió sobre qué activo; un fallo
    de ejecución es un problema de **conexión**, no un incumplimiento), `check_results` (el dato crudo) y `execution_logs`. La
    interpretación (`evaluations`) la hace el motor de cumplimiento, no el adaptador.
