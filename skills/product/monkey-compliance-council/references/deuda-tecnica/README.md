@@ -45,12 +45,11 @@ y una línea en el índice de abajo. Los requisitos de seguridad que una deuda i
 | DT-3 | 🟠 | ac_04 a ac_06 se completaron por analogía | [control-tecnico](control-tecnico.md) |
 | DT-4 | 🟠 | Credenciales por conexión definidas por desarrollo | [control-tecnico](control-tecnico.md) |
 | DT-5 | 🟠 | Llave de cifrado en el .env. | [control-tecnico](control-tecnico.md) |
-| DT-6 | 🟡 | Scope declarado frente a dimensiones. | [control-tecnico](control-tecnico.md) |
 | DT-7 | 🟡 | «Híbrido» ofrece las 6 conexiones | [control-tecnico](control-tecnico.md) |
 | DT-8 | 🟡 | El tipo del activo se deduce de la conexión. | [control-tecnico](control-tecnico.md) |
 | DT-9 | 🟠 | responsible_id se acepta en la API pero no hay forma de crear cargos | [control-tecnico](control-tecnico.md) |
 | DT-10 | 🟠 | La UI promete «te avisaremos» cuando la evaluación automática esté disponible, y no existe ningún aviso | [control-tecnico](control-tecnico.md) |
-| DT-11 | 🟡 | Sin editar ni eliminar un activo | [control-tecnico](control-tecnico.md) |
+| DT-11 | 🟡 | Un activo dado de baja no se puede ver ni restaurar | [control-tecnico](control-tecnico.md) |
 | DT-12 | 🟠 | Descripción del Sistema: el archivo se guarda (D51) pero no se procesa. | [onboarding](onboarding.md) |
 | DT-13 | ✅ | Controles clonados `manual` y sin dimensiones Cerrada: Héctor sembró `control_dimensions` (D39) y su clonado ( | [onboarding](onboarding.md) |
 | DT-14 | 🟡 | El clonado es síncrono | [onboarding](onboarding.md) |
@@ -92,6 +91,7 @@ y una línea en el índice de abajo. Los requisitos de seguridad que una deuda i
 | DT-56 | 🟠 | La API aún acepta el formulario provisional del paso 3, único camino para servidores y bases de datos. | [control-tecnico](control-tecnico.md) |
 | DT-57 | 🟠 | El canal de agente solo existe como diseño. | [control-tecnico](control-tecnico.md) |
 | DT-58 | 🟡 | `Frontend-Platform` no tiene pruebas automáticas. | [control-tecnico](control-tecnico.md) |
+| DT-59 | 🟠 | El sistema operativo del servidor es una inferencia de su imagen; el inventario cubre 4 servicios y solo se refresca al volver a comprobar. | [control-tecnico](control-tecnico.md) |
 | DT-48 | 🟠 | `check_results` sin política de retención ni partición. | [transversal](transversal.md) |
 | DT-49 | 🟠 | La operación continua (§8) no tiene contrato. | [transversal](transversal.md) |
 | DT-50 | 🟠 | El intérprete `check_results → evaluations` no está especificado. | [transversal](transversal.md) |

@@ -1300,3 +1300,46 @@ AWS reales**: alta → instrucciones → plantilla descargada → fallo con iden
 evaluación (429 filas, ~3 min) → «Evaluación completada»; y el canal de llaves, validado sin que la llave aparezca en la página ni en ninguna respuesta.
 
 **Fuente:** D53, D56, D57, `contracts/modules/control-tecnico-operacion.md`, SEG-46, SEG-47, SEG-50.
+
+## D59 · La conexión descubre los activos de la cuenta y los muestra al cliente (2026-10-10)
+
+**Decisión.** El comité aprobó que, al conectar, el cliente **vea los activos que la conexión reconoció** (no solo «la conexión funciona»). Se
+evalúa cumplimiento sobre activos, no sobre conexiones.
+
+1. **Cuándo.** Dentro de la **validación** (D58): el trabajador, ya con el rol asumido, lee el inventario de la cuenta y lo entrega junto con el cierre
+   de la validación. Son lecturas de segundos, no el motor de minutos. Volver a comprobar la conexión **refresca** el inventario.
+2. **Qué lee.** Servidores (EC2), bases de datos (RDS), almacenamiento (S3) y funciones (Lambda), **solo en las regiones declaradas** (D53). No necesita
+   permisos nuevos: `SecurityAudit` y `ViewOnlyAccess` ya los cubren. Un servicio que no se puede leer **no tumba la validación**: se anota como
+   «inventario incompleto» (no «vacío»).
+3. **Dónde vive.** El activo sigue siendo la **cuenta** (D53); lo encontrado cuelga de él en `asset_resources`, que gana `kind` (`server`, `database`,
+   `storage`, `function`, `other`; catálogo `resource_kind`) y `attributes` (JSON con lo que se pudo leer). `asset_provisionings.inventory_at` marca el
+   último descubrimiento: **solo se muestra lo visto en él**, y solo de las regiones declaradas. Lo que ya no aparece no se borra (sus resultados
+   siguen siendo evidencia). `kind = other` son recursos que solo conoce la evaluación (usuarios, políticas…) y **no** se muestran como activos.
+4. **El sistema operativo es una inferencia.** AWS no dice el sistema operativo de una máquina; dice la **imagen** con la que se lanzó. Se infiere
+   (`Ubuntu 22.04`, `Amazon Linux 2023`…) y se guarda con `os_source = image`; si la imagen no se puede leer o no se reconoce, queda **sin decir**
+   (`DT-59`). La versión exacta llega con el canal de agente (`DT-57`).
+5. **Seguridad.** Solo lectura; el error del proveedor nunca se registra ni se devuelve (puede traer datos de la cuenta); los atributos que entrega el
+   trabajador se limpian (valores simples y cortos) antes de guardarse; máx. 500 recursos.
+
+**Migración:** `20261010120000_resource_inventory`. **Contrato:** `GET /v1/assets/{id}/resources` en `contracts/modules/onboarding-technical-control.md`.
+**Fuente:** D53, D56, D58, SEG-51.
+
+## D60 · Se retira el scope declarado («cuántos tienes») y el servicio muestra sus conexiones (2026-10-10)
+
+**Decisión (producto).** Se elimina por completo el paso «¿Cuánto tienes?» del Componente 3: **no aportaba nada**. El cliente ya no declara cuántos
+servidores, nubes, aplicaciones, bases de datos o equipos tiene; lo que tiene lo **ve al conectar** (D59). Por eso se retira del modelo y de la pantalla:
+
+1. **Modelo:** se elimina la tabla `scopes` (migración `20261010130000_drop_declared_scope`) y sus relaciones con `services` y `companies`. Se retiran
+   `PUT /v1/services/{id}/scope`, la acción de auditoría `service.scope` y el cálculo «declaraste X, conectaste Y». **DT-6 queda cerrada** (ya no hay
+   contadores que reconciliar con las dimensiones).
+2. **El paso 3 del onboarding** se da por hecho con el **escenario de despliegue** del servicio (antes: escenario *y* scope). `GET /v1/services` pasa de
+   `technical_control.has_scope` a `technical_control.connection_count` (cuántas conexiones activas tiene el servicio).
+3. **Pantallas.** Se retira el asistente de tres pasos. El **servicio** tiene su detalle (`/services/{id}`): su información ordenada, «dónde vive» y la
+   **lista de conexiones**; las conexiones se crean en `/services/{id}/connections/new` (donde se proponen los métodos) y cada conexión tiene su detalle
+   (`/services/{id}/connections/{id}`) con los **activos que encontró**. La edición del servicio pasa a `/services/{id}/edit`.
+
+**Nota.** `scopes` figuraba en el modelo del comité (§6.3, C3). Se retiró por **decisión de producto del equipo (2026-10-10)**; conviene que el comité
+la conozca, pero **no bloquea** nada. **Migración destructiva:** borra los contadores ya capturados; en dev se aplica con el deploy (el backend anterior
+todavía lee la tabla).
+**Fuente:** D46, D59.
+

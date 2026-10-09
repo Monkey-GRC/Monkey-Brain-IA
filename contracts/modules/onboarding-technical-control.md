@@ -1,7 +1,7 @@
 ---
 id: contracts-onboarding-c3
 name: Contrato — Onboarding Componente 3 (Control Técnico)
-description: Escenario de despliegue, scope declarado y flujo de conexión de activos sobre el catálogo ac_01 a ac_06.
+description: Escenario de despliegue y flujo de conexión de activos (conexiones) sobre el catálogo ac_01 a ac_06.
 type: contract
 ---
 
@@ -9,7 +9,7 @@ type: contract
 
 El cliente conecta su infraestructura real. Ver `conventions.md` y `enums.md`.
 
-**Entidades:** `scopes`, `assets`, `service_assets`, `automated_capabilities`,
+**Entidades:** `assets`, `service_assets`, `automated_capabilities`,
 `asset_provisionings` (`modelo-datos.md` §6.3, §8).
 **Rol:** `admin_empresa`. **App:** Monkey Platform.
 
@@ -57,35 +57,7 @@ El cliente conecta su infraestructura real. Ver `conventions.md` y `enums.md`.
 `base_frequency`, `generated_evidence`). **`provider` no aparece en ninguna de las dos
 respuestas**: es la única columna de `automated_capabilities` que nunca sale.
 
-## Paso 2 — Scope declarado
-
-Lo que el cliente **dice** que tiene, antes de conectar nada. Sirve para comparar declarado vs
-descubierto.
-
-### `PUT /v1/services/{id}/scope`
-
-```json
-{ "server_count": 12, "cloud_count": 2, "app_count": 3, "database_count": 4, "endpoint_count": 45 }
-```
-
-```json
-{
-  "statusCode": 200,
-  "message": "scope.saved",
-  "data": {
-    "id": "e1b4...",
-    "server_count": 12, "cloud_count": 2, "app_count": 3, "database_count": 4, "endpoint_count": 45,
-    "declared_total": 66,
-    "connected_total": 0
-  }
-}
-```
-
-⚠️ Estos cinco contadores **no corresponden a las cinco dimensiones** del modelo
-(`policy|server|database|app|cloud`): `endpoint` no es dimensión y `policy` no se cuenta.
-Pendiente de reconciliar.
-
-## Paso 3 — El flujo de conexión de un activo
+## Paso 2 — El flujo de conexión de un activo
 
 Cuatro pasos: **conectar → validar → activar → programar**. El cliente **no entrega secretos** salvo en el canal alternativo de llaves; el
 resto lo entrega Monkey (D53, D58). Al menos uno completo de punta a punta es criterio de aceptación.
@@ -213,9 +185,60 @@ Errores de validación (`422 CONNECTION_FAILED`, con `error.fields`; `code` = ra
 | `regions` | `connection.regions_missing` | No hay regiones declaradas |
 | `platform` | `connection.provider_not_supported` | Proveedor aún no soportado |
 
-Las razones que no son del cliente (trabajador caído, llaves base vencidas) dan `503 CONNECTION_UNAVAILABLE`. El mensaje habla de
+Las razones que no son del cliente (trabajador caído, llaves base vencidas) dan `503 CONNECTION_UNAVAILABLE`.
+
+Una conexión **activa o programada también se puede volver a comprobar**: refresca los activos encontrados (`GET …/resources`) y la fecha de la última validación, pero **su estado no cambia**, ni con éxito ni con fallo. El mensaje habla de
 «evaluación automática», nunca del proveedor. Lo que ocurre **después** de validar (evaluar, estado de preparación, hallazgos) es otro módulo:
 `control-tecnico-operacion.md`.
+
+### `GET /v1/assets/{id}/resources` — los activos que la conexión reconoció
+
+Lo que el cliente necesita ver tras conectar: **qué encontró Monkey en su cuenta**, en las regiones que declaró (D59). Se llena al validar la
+conexión y se refresca al volver a comprobarla. Paginado; filtro `kind`. `404` si el activo no existe, es de otra empresa o está dado de baja.
+
+```json
+{
+  "statusCode": 200,
+  "message": "Estos son los activos que encontramos en tu cuenta.",
+  "data": {
+    "discovered_at": "2026-10-10T14:02:11Z",
+    "regions": ["us-east-1", "us-east-2"],
+    "incomplete_services": [],
+    "summary": [{ "kind": "server", "count": 2 }, { "kind": "database", "count": 1 }],
+    "items": [
+      { "id": "…", "kind": "server", "type": "AwsEc2Instance", "name": "api-prod", "region": "us-east-1",
+        "attributes": { "os": "Ubuntu 22.04", "os_source": "image", "state": "running", "instance_type": "t3.micro", "platform": "Linux/UNIX" } },
+      { "id": "…", "kind": "database", "type": "AwsRdsDbInstance", "name": "main", "region": "us-east-1",
+        "attributes": { "engine": "postgres", "engine_version": "16.3", "status": "available" } }
+    ],
+    "page": 1, "page_size": 50, "total": 3, "total_pages": 1
+  }
+}
+```
+
+- `discovered_at` es `null` mientras la cuenta no se haya descubierto (conexión sin comprobar): **no es un error**, la lista viene vacía.
+- `summary` cuenta por clase (`resource_kind`, `enums.md`) y **no depende del filtro**.
+- `attributes` trae solo lo que se pudo leer. **`os` es una inferencia** a partir de la imagen (`os_source: "image"`); si no se pudo, es `null`. La pantalla
+  debe decir «según su imagen» y nunca presentarlo como verificado.
+- Solo `server`, `database`, `storage` y `function`: los recursos que solo conoce la evaluación (`other`) no son activos del cliente y no salen.
+
+### `PATCH /v1/assets/{id}` — editar un sistema
+
+Todo opcional: `name`, `criticality`, `tags` y, **solo en una cuenta de nube**, `external_account_id`, `regions`, `role_arn` (canal de rol) y
+`credentials` (canal de llaves, reemplaza las guardadas y **nunca se devuelve**). `200` con el mismo cuerpo que el detalle.
+
+- Nombre, criticidad y etiquetas **no tocan la conexión**.
+- Cambiar cuenta, regiones, rol o llaves **invalida lo comprobado**: `connection_status` vuelve a `pending`, se pierde la activación y la
+  programación, y el activo pasa a `not_monitored`. El historial de evaluaciones **se conserva**.
+- Cambiar de cuenta además **renueva el `external_id`** (el anterior se entregó para otra cuenta) y descarta el `role_arn`, salvo que llegue uno nuevo.
+- Un `role_arn` de otra cuenta que la declarada es `422` (`connection.account_mismatch`); regiones fuera del catálogo, `422`.
+- Cambios de conexión en un activo que no es de nube con rol o llaves: `422` (`field.not_allowed`). `409 EXECUTION_IN_PROGRESS` si hay una comprobación o evaluación en curso. Auditoría: `asset.update`.
+
+### `DELETE /v1/assets/{id}` — quitar un sistema
+
+Es una **baja, no un borrado**: `assets.status = inactive`, la conexión se desactiva y el activo deja de listarse (`GET` responde `404`) y de evaluarse.
+Ejecuciones, resultados y hallazgos **se conservan** (son evidencia). `200` con `data: null`. `409 EXECUTION_IN_PROGRESS` si hay algo en curso;
+un segundo `DELETE` es `404`. Auditoría: `asset.retire`.
 
 ### `POST /v1/assets/{id}/activate` — activar
 
@@ -253,7 +276,7 @@ trae `code`, `name`, `connection_category`, `operational_status`, `technical_cov
 | 422 | `FREQUENCY_NOT_SUPPORTED` | Frecuencia que la capacidad no admite |
 | 422 | `VALIDATION_FAILED` | Enum inválido, `regions` vacío o fuera del catálogo, `external_account_id` o `role_arn` mal formados, sin `service_ids` |
 
-Claves i18n: `deployment_scenario.saved`, `scope.saved`, `asset.created`, `asset.list`,
+Claves i18n: `deployment_scenario.saved`, `asset.created`, `asset.list`,
 `asset.validated`, `asset.activated`, `asset.scheduled`, `asset.connection_failed`,
 `asset.not_validated`, `asset.already_active`, `capability.not_applicable`,
 `connection.permission_denied`, `frequency.not_supported`, `validation.failed`.
@@ -267,7 +290,7 @@ Claves i18n: `deployment_scenario.saved`, `scope.saved`, `asset.created`, `asset
 - Los conectores productivos reales quedan **fuera del alcance** del sprint: se entrega el flujo
   de conexión y su UI, no la integración en producción.
 - `origin` distingue `declared` (lo que el cliente dijo) de `discovered` (lo que apareció al
-  conectar). La diferencia entre scope declarado y activos conectados es un hallazgo, no un error.
+  conectar).
 
 ## Preguntas abiertas
 
@@ -276,7 +299,6 @@ Todas las que había quedaron **cubiertas por desarrollo en D46**; lo que sigue 
 
 | Qué | Estado |
 |---|---|
-| **Los cinco contadores de `scopes` vs las cinco dimensiones** | ✅ Son **dos ejes distintos** (D46, DT-6): el scope es lo que el cliente *dice* que tiene y se compara con lo conectado por tipo de activo |
 | **`assets.responsible_id`** | ◐ Opcional y aceptado por la API; **no hay forma de crear cargos todavía** (DT-9) y la pantalla lo oculta |
 | **Valores de `assets.type`, `criticality`, `origin` y `status`** | ✅ Cerrados en `enums.md` (D34). El tipo ahora se **deduce de la conexión** (D46) |
 | **¿Qué es «híbrido»?** | ✅ Las seis conexiones (D46, DT-7) |
@@ -293,11 +315,12 @@ Implementado en `Backend/src/features/technical-control` (más `catalogs` y el p
 | Endpoint | Estado |
 |---|---|
 | `PUT /v1/services/{id}/deployment-scenario` | ✅ Devuelve las conexiones que aplican. `409 CAPABILITY_NOT_APPLICABLE` si dejaría fuera un activo ya registrado |
-| `PUT /v1/services/{id}/scope` | ✅ Cinco contadores `>= 0`; devuelve `declared_total`, `connected_total` y `connected` por tipo |
-| `GET /v1/services/{id}/technical-control` | ➕ **No está en el contrato original.** Escenario, conexiones aplicables, scope, `is_complete` y `probe_mode` en una sola lectura |
+| `GET /v1/services/{id}/technical-control` | ➕ **No está en el contrato original.** Escenario, conexiones aplicables, `is_complete` y `probe_mode` en una sola lectura |
 | `GET /v1/catalogs/automated-capabilities` | ✅ Las 6, sin `provider` |
 | `POST /v1/assets` | ✅ Tipo deducido de la conexión; código `AST-0001` por empresa; credenciales validadas por conexión y **cifradas** |
 | `GET /v1/assets` · `GET /v1/assets/{id}` | ✅ Paginado con filtros `service_id`, `connection_category`, `operational_status`. El detalle es **adición** (DT-11) |
+| `GET /v1/assets/{id}/resources` (activos descubiertos al validar) | ✅ Construido y probado (D59) |
+| `PATCH /v1/assets/{id}` (editar) y `DELETE /v1/assets/{id}` (baja) | ✅ Construidos y probados (2026-10-09) |
 | `PATCH /v1/assets/{id}/connection`, `GET /v1/connection-templates/aws-readonly-role`, `GET /v1/catalogs/connection_method`, `GET /v1/catalogs/aws_region` | ✅ Nube (D58) |
 | `POST /v1/assets/{id}/validate` | ✅ Nube: **real** vía trabajador (`PROBE_MODE=runner`), verificada contra AWS real. Otros modos: `simulated` → `200` con `mode: demo`; `unavailable` (por defecto) → `503`. Canal `agent`: `503` (`DT-57`) |
 | `POST /v1/assets/{id}/activate` | ✅ Con la sonda simulada deja `operational_status = warning`, **no** `operational` («Automatizado ≠ Operativo») |
@@ -306,14 +329,13 @@ Implementado en `Backend/src/features/technical-control` (más `catalogs` y el p
 - **Credenciales:** en nube solo el canal `access_keys` las pide (`access_key_id` + `secret_access_key`, cifradas). El canal de rol no entrega secretos. Los formularios de contraseña por conexión de servidores/bases (SSH, DB) son el modelo anterior (`DT-56`).
 - **Seguridad:** las credenciales no vuelven en ningún response, no se escriben en logs ni en `audit_logs`.
   La comprobación corre fuera de la transacción de base de datos.
-- **Auditoría:** `service.deployment_scenario`, `service.scope`, `asset.create`, `asset.validate`
+- **Auditoría:** `service.deployment_scenario`, `asset.create`, `asset.validate`
   (también el fallo, con `result = error`), `asset.activate` y `asset.schedule`, con el estado antes y después.
 - **Progreso:** `GET /v1/auth/me` añade `technical_control` a `onboarding.completed_steps` cuando algún servicio
-  tiene escenario **y** scope; entonces `next_step` es `null`. El servicio trae `technical_control`
-  (`deployment_scenario`, `has_scope`, `is_complete`).
+  tiene escenario (D60: el scope declarado se retiró); entonces `next_step` es `null`. El servicio trae `technical_control`
+  (`deployment_scenario`, `is_complete`, `connection_count`).
 - **Confidencialidad:** el tipo `Capability` del backend no tiene `provider`; el catálogo y las respuestas lo
   omiten, y una prueba revisa respuestas, i18n, `src/`, logs y el bundle de la aplicación en cada recorrido.
 - **Variables de entorno:** `CREDENTIALS_ENCRYPTION_KEY` (obligatoria), `PROBE_MODE` (`runner` | `simulated` | `unavailable`; `simulated` no arranca en producción), `MONKEY_AWS_PRINCIPAL_ARN` y `VALIDATION_WAIT_SECONDS`.
-- **Pantalla (Platform):** `/services/{id}/technical-control`, tres pasos cortos (dónde vive · cuánto tienes ·
-  conectar). Los dos primeros dan el paso por hecho. Avisos honestos: «modo demostración» o «aún no está
-  disponible». «Mis servicios» marca lo que falta.
+- **Pantallas (Platform, D60):** `/services/{id}` es el servicio (su información, «dónde vive» y la lista de conexiones); `/services/{id}/connections/new` propone los métodos
+  de conexión; `/services/{id}/connections/{id}` muestra la conexión y los **activos que encontró** (D59). «Mis servicios» lista los servicios con su número de conexiones.
