@@ -115,8 +115,8 @@ catálogo, filtro global de excepciones, `ValidationException`, paginación, dec
   servicio clona el catálogo del marco en la misma transacción** (`CloneCatalogService` en `features/onboarding`,
   D40 de Héctor): controles con dimensiones, evidencias y vínculo a tests, y el set base de riesgos y causas;
   requisitos, puntos de enfoque y tests se referencian. Cada servicio tiene su propia copia. Decisiones en D45.
-- `technical-control`: Componente 3 (control técnico): `PUT /v1/services/{id}/deployment-scenario` y
-  `/scope`, `GET /v1/services/{id}/technical-control`, y `POST/GET /v1/assets` con `validate`, `activate` y
+- `technical-control`: Componente 3 (control técnico): `PUT /v1/services/{id}/deployment-scenario`,
+  `GET /v1/services/{id}/technical-control`, y `POST/GET /v1/assets` con `validate`, `activate` y
   `schedule`, solo `admin_empresa`. Credenciales cifradas (AES-256-GCM); la **sonda** es un puerto
   (`ConnectionProbe`) con adaptadores `simulated` (solo dev/demostración) y `unavailable` (por defecto),
   elegidos por `PROBE_MODE`: no hay conectores reales y no se finge ninguna conexión. El proveedor del motor

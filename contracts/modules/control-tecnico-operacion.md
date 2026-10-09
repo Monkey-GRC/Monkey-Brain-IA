@@ -188,6 +188,10 @@ hay corrida del trabajador: lee la sonda (otro adaptador).
 (o no es de esa empresa: no se distingue). Una conexión que no sirve al reclamar (sin regiones, sin rol, proveedor no soportado) **no se entrega**: se
 cierra sola como `failed` con su razón y el reclamo sigue con la siguiente.
 
+`validated` — body: `{ "tenant_id": "a1b2…", "inventory": { "resources": [ { "uid": "<arn>", "type": "AwsEc2Instance", "kind": "server", "name": "api", "region": "us-east-1", "attributes": { … } } ], "warnings": ["rds"] } }`.
+`inventory` es **opcional** (una validación sin descubrimiento sigue siendo válida); máx. 500 recursos, `kind` del catálogo `resource_kind`. El backend lo guarda en la
+misma transacción que cierra la validación (D59, SEG-51); `warnings` son servicios que no se pudieron leer.
+
 `fail` — body: `{ "tenant_id": "a1b2…", "reason": "connection.role_not_found" }` (clave de la tabla de errores de `validate`).
 
 `tenant_id` es el que el trabajador recibió al reclamar: con él el backend abre la transacción de esa empresa. **Si el trabajador lo falsea, RLS no

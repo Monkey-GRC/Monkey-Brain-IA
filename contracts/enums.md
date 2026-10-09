@@ -268,9 +268,6 @@ falta, se añade un valor al enum.
 `policy` Política / Documental · `server` Servidor · `database` Base de datos · `app`
 Aplicación · `cloud` Nube
 
-⚠️ `scopes` tiene cinco contadores (`server_count`, `cloud_count`, `app_count`,
-`database_count`, `endpoint_count`) que **no corresponden a estas cinco dimensiones**:
-`endpoint` no es dimensión y `policy` no se cuenta. Pendiente de reconciliar.
 
 ## Plataforma
 
@@ -360,6 +357,9 @@ Flujo: conectar → validar → activar → programar. Una conexión que falla n
 ### `connection_method` — `asset_provisionings.connection_method` (D53)
 `readonly_role` Rol de solo lectura (recomendado en nube) · `access_keys` Usuario con llaves (menos seguro) · `agent` Agente instalado.
 Qué canales existen por categoría: `modules/onboarding-technical-control.md`. Nulo hasta que se elige.
+
+### `resource_kind` — `asset_resources.kind` (D59)
+`server` Servidor · `database` Base de datos · `storage` Almacenamiento · `function` Función · `other` Otro (solo lo conoce la evaluación; **no** se muestra como activo).
 
 ### `cloud_platform` — `assets.platform` cuando `connection_category = ac_01`
 `aws` Amazon Web Services · `azure` Microsoft Azure · `gcp` Google Cloud. *(Propuesta; hoy solo AWS tiene cuenta de prueba.)*

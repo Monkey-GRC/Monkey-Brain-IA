@@ -159,8 +159,7 @@ que les corresponde.
 |---|---|---|
 | **Organización** | `organizations` | La empresa cliente. Es el contenido de negocio que el cliente declara; el *tenant* como registro técnico es `companies` (§4) |
 | **Servicio** | `services` | Lo que se certifica. **Es la unidad de evaluación**: el cumplimiento se mide por servicio, nunca consolidado de empresa |
-| **Scope** | `scopes` | Lo **declarado** en el discovery: cuántos servidores, nubes, apps, BD |
-| **Insumo de revisión** (activo) | `assets` | Lo **descubierto**: cuáles son exactamente. Puede servir a varios servicios sin duplicarse |
+| **Insumo de revisión** (activo) | `assets` | Lo que Monkey **encuentra** al conectar: cuáles son exactamente. Puede servir a varios servicios sin duplicarse |
 | **Organización de subservicio** | `subservice_organizations` | El proveedor del que depende el servicio (AWS, Azure, un data center) |
 | **CSOC** / **CUEC** | `csocs` / `cuecs` | Control complementario que se espera del proveedor (CSOC) o del cliente usuario (CUEC). **Monkey no los mide** |
 | **Descripción del Sistema** | `system_descriptions` | Documento con las 10 secciones de los *Description Criteria* de AICPA. Lo sube el cliente |
@@ -1078,7 +1077,7 @@ a un criterio que el auditor va a pedir.
 **Qué es:** los 3 componentes que capturan el contexto del cliente antes de que exista ningún
 cálculo de cumplimiento. Detalle campo por campo en `modulos/onboarding.md`.
 
-**Qué resuelve:** sin organización, servicio y scope declarados no hay nada que medir. Es el
+**Qué resuelve:** sin organización y servicio declarados no hay nada que medir. Es el
 único flujo del producto que es secuencial y obligatorio.
 
 **Cumplimiento no es un 4º componente** (decisión D23, confirmada por el comité el
@@ -1268,15 +1267,6 @@ monitoreo**: se le habla de "sonda" o "capacidad automática".
 
 ```mermaid
 erDiagram
-    scopes {
-        uuid id PK
-        uuid service_id FK
-        int server_count
-        int cloud_count
-        int app_count
-        int database_count
-        int endpoint_count
-    }
     assets {
         uuid id PK
         uuid organization_id FK
@@ -1322,11 +1312,11 @@ erDiagram
         string regions "las que el cliente declara; solo esas se evaluan"
         string external_id "lo genera Monkey, no es secreto"
         string role_arn "lo entrega el cliente, no es secreto"
+        datetime inventory_at "último descubrimiento de activos (D59)"
         text encrypted_credentials "cifrado AES-256-GCM, nunca se devuelve"
         boolean is_active
         enum schedule_frequency "nullable: continuous|every_6h|every_24h"
     }
-    services ||--|| scopes : "declara"
     services ||--o{ service_assets : "usa"
     assets ||--o{ service_assets : "da soporte a"
     organizations ||--o{ assets : "inventaria"
@@ -1334,9 +1324,8 @@ erDiagram
     automated_capabilities ||--o{ asset_provisionings : "habilita"
 ```
 
-**`scopes` es lo declarado; `assets` lo descubierto.** Un activo declarado y no inventariado
-es un hueco visible, no un dato ausente. Esa diferencia es lo que permite decir "declaraste
-12 servidores, tengo 9 conectados".
+**`assets` es lo que Monkey encuentra al conectar.** El cliente no declara cuántos activos tiene: los registra conectando
+y ve lo que la conexión reconoció (D59). Se retiró el scope declarado (`scopes`, D60).
 
 **El activo cuelga de la organización, no del servicio** (decisión A2). Un servidor puede dar
 soporte a varios servicios y **no se duplica**: por eso existe el puente `service_assets`. Se
@@ -1364,9 +1353,8 @@ Solo nube → `ac_01` · nube con servidores → `ac_01`+`ac_02`+`ac_03` · on-p
 `ac_04`+`ac_05`+`ac_06` · híbrido → **las seis** (el cliente usa las que le sirvan, D46).
 
 **El tipo del activo se deduce de la conexión** con que se registra (D46): `ac_01` servicio en nube ·
-`ac_02`/`ac_04` servidor · `ac_03`/`ac_05` base de datos · `ac_06` endpoint. **El scope declarado** (`scopes`) es un
-eje aparte de las dimensiones: lo que el cliente *dice* que tiene, que se compara con lo conectado por tipo
-(servidor, nube, aplicación, base de datos, endpoint). «Conectado» significa que la conexión ya se comprobó.
+`ac_02`/`ac_04` servidor · `ac_03`/`ac_05` base de datos · `ac_06` endpoint. El cliente ya no declara cuántos
+activos tiene (D60): los ve al conectar.
 
 **Honestidad: Automatizado ≠ Operativo.** Mientras no haya una sonda real, una conexión no puede declararse
 `operational`: la comprobación está `unavailable` (503, el activo sigue `pending`) o `simulated` (solo
@@ -1778,6 +1766,8 @@ erDiagram
         uuid asset_id FK
         string resource_uid "ARN en AWS, único por activo"
         string resource_type
+        enum kind "server|database|storage|function|other (D59)"
+        json attributes "lo que se pudo leer: SO inferido, versión, estado…"
         string name
         string region
         datetime first_seen_at
@@ -1977,7 +1967,6 @@ erDiagram
     organizations }o--o{ regulations : "sujeta a"
     organizations ||--o{ organization_responsibles : "designa"
 
-    services ||--|| scopes : "declara"
     services }o--o{ assets : "usa"
     services ||--o{ service_trust_criteria : "contrata"
     trust_criteria ||--o{ service_trust_criteria : "contratado por"

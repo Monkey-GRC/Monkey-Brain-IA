@@ -100,7 +100,7 @@ El paso se da por hecho con el **escenario y el scope**; conectar sistemas se re
 para después (D46). Hoy no hay conectores reales: la comprobación es `unavailable` o `simulated` y **nunca se
 finge una conexión** (Automatizado ≠ Operativo).
 
-**Entidades:** `scopes`, `assets`, `automated_capabilities`.
+**Entidades:** `assets`, `automated_capabilities`.
 **Fuente:** `modulos/onboarding.md`, Componente 3; `wazuh.md`.
 
 ## 7. Módulo de Cumplimiento *(no completo)*
@@ -160,7 +160,7 @@ Onboarding Componente 2 ──► services + service_frameworks
         │                         ▼
         │                 Clonado de catálogo (risks, causes, client_controls)
         ▼
-Onboarding Componente 3 ──► scopes, assets, automated_capabilities
+Onboarding Componente 3 ──► assets, automated_capabilities
         │
         ▼
    (a partir de aquí, sin orden obligado, y sin bloquear nada)
