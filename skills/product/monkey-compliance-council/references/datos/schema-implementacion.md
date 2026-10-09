@@ -275,10 +275,12 @@ desechable, ver §13):
   de aislamiento (`npm run test:e2e`, ver `seguridad/requisitos.md`). **No bloquea el merge ni el despliegue** mientras la
   organización no tenga el plan GitHub Team (DT-41).
 - **CD** (`deploy-dev.yml`, push a `develop`): `scp-action` copia el código y `ssh-action`
-  (con `script_stop: true`) escribe el `.env` y corre `docker compose build backend && up -d`. El
-  `.env` viaja como secret `ENV_FILE` **en base64, en una sola línea** (`base64 -w0`): con
-  `script_stop`, `drone-ssh` inyecta un chequeo de salida entre las líneas de un heredoc y lo
-  corrompería.
+  (con `script_stop: true`) comprueba el entorno, migra y corre `docker compose build backend && up -d`. **Los archivos de entorno (`.env` del backend y
+  `runner.env` del trabajador) viven en el servidor** (`~/monkey-dev/`): el despliegue **no los escribe**, así que no hay secretos en base64 que reconvertir al
+  añadir una variable (antes, `ENV_FILE`/`RUNNER_ENV_FILE`; los secretos de GitHub ya no se usan). Se editan desde tu máquina con **`npm run env:vps -- backend|runner CLAVE=valor`**
+  (`scripts/deploy/vps-env.sh`: cambia la clave por SSH con `set-env.sh`, sin tocar lo demás, y reinicia el servicio) y `Backend/scripts/deploy/check-env.sh` (primer paso del despliegue) detiene el despliegue, **antes de tocar nada**,
+  si falta algo: dice qué archivo y qué clave. Con `PROBE_MODE=runner` exige además `RUNNER_TOKEN` igual en los dos archivos, `MONKEY_AWS_PRINCIPAL_ARN` y las llaves del
+  trabajador, y rechaza un `runner.env` que traiga secretos del backend (SEG-49).
 - **El `.env` de runtime** solo lleva `APP_DATABASE_URL` (no `DATABASE_URL`), más JWT, Wazuh, S3 y
   CORS cuando `auth` y los conectores lo usen. Para la Descripción del Sistema como archivo (D51): `S3_ENDPOINT`, `S3_REGION`,
   `S3_BUCKET`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY` y `S3_FORCE_PATH_STYLE` (con minio, `true`); sin bucket la app arranca y
@@ -294,7 +296,7 @@ desechable, ver §13):
 - **El trabajador del motor de nube** (D57, `Backend/src/runner/`): dos servicios más en el compose, `docker-proxy` (el único que toca el socket de
   Docker, de solo lectura y filtrado por ruta) y `runner` (la misma imagen del backend con otro comando), ambos solo en la red `default` y sin
   puertos publicados. El compose vive versionado en `Backend/deploy/docker-compose.dev.yml` y se copia a `~/monkey-dev/docker-compose.yml`. El
-  trabajador recibe un entorno **aparte** (`runner.env`, del secreto `RUNNER_ENV_FILE`; ejemplo en `Backend/deploy/runner.env.example`), nunca el
+  trabajador recibe un entorno **aparte** (`runner.env`, en el servidor; ejemplo en `Backend/deploy/runner.env.example`), nunca el
   `.env` del backend. El workflow solo lo levanta si el compose ya lo define. Los contenedores del motor corren en la red por defecto de Docker, no
   en la de `monkey-dev`.
 
@@ -328,7 +330,7 @@ desechable, ver §13):
 `last_activity_at` en `sessions`, para la política de 30 min / 8 h) · 22 `catalog_seed_and_client_controls`
 (D35, D36, D38) · 23 `rls_catalog_seed_and_client_controls` (D36) ·
 24 `service_context_optional_fields_and_regulations` (D45) · 25 `asset_provisioning_schedule_frequency` (D46) ·
-26 `catalog_policies_as_templates` (D39) · 27 `audit_append_only_triggers` (D41) · 28 `company_frameworks` (D47) · 29 `correcciones_onboarding_d50_d51` (D50, D51) · 30 `cloud_technical_control_model` (D53, D56) · 31 `rls_asset_resources` (D56) · 32 `execution_queue_lifecycle` y 33 `claim_next_execution` (D57) · 34 `cloud_connection_flow` y 35 `claim_execution_by_kind` (D58) · 36 `resource_inventory` y 37 `resource_inventory_warnings` (D59) · 38 `drop_declared_scope` (D60).
+26 `catalog_policies_as_templates` (D39) · 27 `audit_append_only_triggers` (D41) · 28 `company_frameworks` (D47) · 29 `correcciones_onboarding_d50_d51` (D50, D51) · 30 `cloud_technical_control_model` (D53, D56) · 31 `rls_asset_resources` (D56) · 32 `execution_queue_lifecycle` y 33 `claim_next_execution` (D57) · 34 `cloud_connection_flow` y 35 `claim_execution_by_kind` (D58) · 36 `resource_inventory` y 37 `resource_inventory_warnings` (D59) · 38 `drop_declared_scope` (D60) · 39 `discovered_assets` (D61).
 
 > **Orden por fecha, no por número:** la 25 (`20261001120000`) quedó **antes** de la 26 y la 27 (`20261001180000` y
 > `20261001190000`) aunque se escribió en paralelo; ninguna depende de la otra. Prisma las aplica por nombre. Se
@@ -406,7 +408,7 @@ se escriben en el historial):
 3. **`bash scripts/deploy/bootstrap-staging.sh`** en la VPS (desde `~/monkey-dev/backend`), **una sola vez**. Pide las
    claves sin mostrarlas y hace: contraseña de `monkey_app`, catálogo de SOC 2 y de referencia, primer `admin_monkey` y
    verificación con `monkey_app`. Las claves solo pueden llevar letras, números y `. _ ~ -`. Es repetible. Probado contra
-   un Postgres desechable. Al final imprime la línea `APP_DATABASE_URL` que debe ir en el secret `ENV_FILE`.
-4. **Actualizar `ENV_FILE`** (base64, en una sola línea) con esa `APP_DATABASE_URL` y **redesplegar el backend**.
+   un Postgres desechable. Al final imprime la línea `APP_DATABASE_URL` que debe ir en el `.env` del servidor.
+4. **Poner esa `APP_DATABASE_URL`** con `set-env.sh` y **redesplegar el backend**.
 
 Desde ahí, cada push a `develop` migra solo. Los respaldos previos quedan en `~/backups/monkey/` (últimos 14).

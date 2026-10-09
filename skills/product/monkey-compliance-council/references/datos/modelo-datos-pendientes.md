@@ -195,6 +195,20 @@ cuándo algo es «Casi listo»**. Desarrollo propuso, sin autoridad para cerrarl
 
 ---
 
+## P17 · ¿El paso 3 del onboarding exige al menos una conexión comprobada?
+
+**Estado:** abierto desde 2026-10-10. No bloquea: hoy el paso se da por hecho con solo definir **dónde vive** el servicio (D60).
+
+Al retirar el «cuánto tienes» (D60), lo único que completa el Componente 3 es el escenario de despliegue. Un cliente puede terminar el onboarding **sin
+conectar nada**, y el producto no tendría qué medir.
+
+**Preguntas:** ¿el paso 3 se completa al definir el escenario, o solo cuando hay **al menos una conexión comprobada**? ¿Y puede un cliente con solo
+políticas (sin activos técnicos) darlo por hecho?
+
+**Qué depende:** `onboarding.completed_steps` y `next_step` de `GET /v1/auth/me`, y el mensaje de «Inicio».
+
+---
+
 ## Cómo se cierra un pendiente
 
 1. El comité responde.

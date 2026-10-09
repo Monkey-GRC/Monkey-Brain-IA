@@ -45,6 +45,9 @@ haciendo: la IA narra, nunca un spinner mudo).
 
 ### `GET /v1/assets/{id}/readiness` — el estado de preparación
 
+Con **`?service_id=`** mide solo lo que es de ese servicio (D61): se dejan fuera los resultados de activos de la conexión que **no** son suyos; lo que es de toda la cuenta
+(usuarios, políticas, registro de actividad) cuenta para todos. `404` si el servicio no existe para la empresa.
+
 Lo que ve el cliente por defecto. **Cualitativo primero; el número es secundario** (`philosophy.md`):
 
 ```json

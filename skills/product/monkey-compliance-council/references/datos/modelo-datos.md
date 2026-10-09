@@ -1284,6 +1284,8 @@ erDiagram
         enum status
         enum operational_status "operational|warning|error|not_monitored"
         string technical_coverage "18/18"
+        uuid parent_asset_id FK "la conexión de nube que lo descubrió (D61)"
+        uuid resource_id FK "su recurso técnico, 1:1 (D61)"
     }
     service_assets {
         uuid id PK
@@ -1325,7 +1327,8 @@ erDiagram
 ```
 
 **`assets` es lo que Monkey encuentra al conectar.** El cliente no declara cuántos activos tiene: los registra conectando
-y ve lo que la conexión reconoció (D59). Se retiró el scope declarado (`scopes`, D60).
+y ve lo que la conexión reconoció (D59). Se retiró el scope declarado (`scopes`, D60). **Cada recurso descubierto es un `asset` propio**, hijo de su
+conexión de nube (`parent_asset_id`) y respaldado por su recurso técnico (`resource_id`); el servicio elige cuáles son suyos con `service_assets` (D61).
 
 **El activo cuelga de la organización, no del servicio** (decisión A2). Un servidor puede dar
 soporte a varios servicios y **no se duplica**: por eso existe el puente `service_assets`. Se

@@ -92,6 +92,11 @@ y una línea en el índice de abajo. Los requisitos de seguridad que una deuda i
 | DT-57 | 🟠 | El canal de agente solo existe como diseño. | [control-tecnico](control-tecnico.md) |
 | DT-58 | 🟡 | `Frontend-Platform` no tiene pruebas automáticas. | [control-tecnico](control-tecnico.md) |
 | DT-59 | 🟠 | El sistema operativo del servidor es una inferencia de su imagen; el inventario cubre 4 servicios y solo se refresca al volver a comprobar. | [control-tecnico](control-tecnico.md) |
+| DT-60 | 🟠 | Sin límite de uso ni cola justa entre empresas en la comprobación y la evaluación. | [control-tecnico](control-tecnico.md) |
+| DT-61 | 🟠 | Las llaves base de AWS son de larga vida, viven en varios sitios y se compartieron: rotarlas. | [control-tecnico](control-tecnico.md) |
+| DT-62 | 🟡 | Sin verificar que el id de un recurso descubierto coincide con el de la evaluación. | [control-tecnico](control-tecnico.md) |
+| DT-63 | 🟠 | Un activo descubierto no se puede editar (criticidad, responsable). | [control-tecnico](control-tecnico.md) |
+| DT-64 | 🟡 | La preparación por servicio no tiene pantalla; sin etiquetas de S3/Lambda; activos de regiones retiradas siguen activos. | [control-tecnico](control-tecnico.md) |
 | DT-48 | 🟠 | `check_results` sin política de retención ni partición. | [transversal](transversal.md) |
 | DT-49 | 🟠 | La operación continua (§8) no tiene contrato. | [transversal](transversal.md) |
 | DT-50 | 🟠 | El intérprete `check_results → evaluations` no está especificado. | [transversal](transversal.md) |

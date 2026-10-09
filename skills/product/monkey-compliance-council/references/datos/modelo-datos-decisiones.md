@@ -1260,7 +1260,7 @@ no es «evaluar ahora».
 3. **Credenciales:** el trabajador asume el rol del cliente con su `ExternalId` y entrega al motor credenciales **temporales** (1 hora). Rechaza un
    rol de otra cuenta que la declarada. Las regiones se validan con una expresión estricta antes de llegar a la línea de comandos del motor.
 4. **Infraestructura** (`Backend/deploy/`): `docker-compose.dev.yml` versionado, con dos servicios nuevos (`docker-proxy` y `runner`), solo en la red
-   `default` y sin puertos publicados. El trabajador recibe un entorno **aparte** (`runner.env`, secreto `RUNNER_ENV_FILE`) con solo lo suyo. El
+   `default` y sin puertos publicados. El trabajador recibe un entorno **aparte** (`runner.env`, en el servidor; antes, secreto `RUNNER_ENV_FILE`) con solo lo suyo. El
    workflow solo lo levanta si el compose de la VPS ya lo define.
 5. **Verificado:** pruebas automáticas contra Docker real, contra el backend real y contra AWS real (una corrida completa con el motor real el
    2026-10-09: credenciales `ASIA…`, 429 filas, sin contenedores sobrantes, mismo resultado que el escaneo con llaves).
@@ -1342,4 +1342,28 @@ servidores, nubes, aplicaciones, bases de datos o equipos tiene; lo que tiene lo
 la conozca, pero **no bloquea** nada. **Migración destructiva:** borra los contadores ya capturados; en dev se aplica con el deploy (el backend anterior
 todavía lee la tabla).
 **Fuente:** D46, D59.
+
+## D61 · Cada recurso descubierto es un activo del cliente, y el servicio elige cuáles son suyos (2026-10-10)
+
+**Problema.** D53 dejó la **cuenta** como único activo, y D59 mostraba todo lo que había dentro. Pero una cuenta puede tener recursos que no son del servicio que el cliente
+quiere evaluar, o ser de varios servicios, y al cliente no le servía una lista de «Ubuntu 24.04» repetidos para distinguirlos.
+
+**Decisión (producto, la opción más fiel al modelo del comité).**
+1. **La conexión sigue siendo la cuenta** (`ac_01`): lleva el rol o las llaves, las regiones y el ExternalId.
+2. **Cada recurso que descubre es un `asset` propio** (`origin = discovered`): servidor `ac_02`, base de datos `ac_03`, almacenamiento y funciones `ac_01`. Lleva su
+   código `AST-####`, su IP (`ip_address`), su zona (`location`), sus etiquetas (`tags`), su `platform` (sistema operativo o motor) y su criticidad. Se enlaza a su
+   conexión con `assets.parent_asset_id`, y a su recurso técnico con `assets.resource_id` (1:1). `asset_resources` **se queda** como el registro técnico que
+   referencian los resultados de la evaluación (D56): no se toca.
+3. **El servicio elige sus activos:** `service_assets` (el puente que el comité ya definió) enlaza cada activo descubierto a los servicios a los que da soporte, sin
+   duplicarlo. **Por defecto no hay ninguno enlazado**: el cliente decide. Lo que no se enlaza queda visible como «no incluido».
+4. **Lo que desaparece de AWS** pasa a `inactive` y **se desenlaza** de los servicios; no se borra (sus resultados son evidencia). Si un servicio de AWS no se pudo leer en ese
+   descubrimiento, sus activos **no** se dan por desaparecidos. Volver a descubrir **no pisa** la criticidad ni el responsable que fijó el cliente.
+5. **La evaluación sigue corriendo por cuenta** (así trabaja el motor), pero **el estado de preparación de un servicio mide solo sus activos**
+   (`GET /v1/assets/{id}/readiness?service_id=`): se dejan fuera los resultados de activos de la conexión que **no** son del servicio. Lo que no tiene activo propio
+   (usuarios, políticas, el registro de actividad: lo de toda la cuenta) **cuenta para todos los servicios que usan esa cuenta**.
+6. **Los activos descubiertos no son conexiones:** no salen en `GET /v1/assets` (solo conexiones), no cuentan en `connection_count`, y no se validan, activan, programan
+   ni editan por su cuenta (404).
+
+**Migración:** `20261010140000_discovered_assets`. **Contrato:** `onboarding-technical-control.md` (`GET …/resources`, `PUT /v1/services/{id}/connections/{id}/assets`).
+**Fuente:** D53, D56, D59, `modelo-datos.md` §6.3 (`assets`, `service_assets`), SEG-53.
 
