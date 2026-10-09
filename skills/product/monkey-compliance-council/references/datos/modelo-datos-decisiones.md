@@ -1361,7 +1361,8 @@ quiere evaluar, o ser de varios servicios, y al cliente no le servía una lista 
 5. **La evaluación sigue corriendo por cuenta** (así trabaja el motor), pero **el estado de preparación de un servicio mide solo sus activos**
    (`GET /v1/assets/{id}/readiness?service_id=`): se dejan fuera los resultados de activos de la conexión que **no** son del servicio. Lo que no tiene activo propio
    (usuarios, políticas, el registro de actividad: lo de toda la cuenta) **cuenta para todos los servicios que usan esa cuenta**.
-6. **Los activos descubiertos no son conexiones:** no salen en `GET /v1/assets` (solo conexiones), no cuentan en `connection_count`, y no se validan, activan, programan
+6. **Dar de baja una conexión da de baja a sus activos** (`inactive`) y los desenlaza de los servicios; su historial se conserva.
+7. **Los activos descubiertos no son conexiones:** no salen en `GET /v1/assets` (solo conexiones), no cuentan en `connection_count`, y no se validan, activan, programan
    ni editan por su cuenta (404).
 
 **Migración:** `20261010140000_discovered_assets`. **Contrato:** `onboarding-technical-control.md` (`GET …/resources`, `PUT /v1/services/{id}/connections/{id}/assets`).

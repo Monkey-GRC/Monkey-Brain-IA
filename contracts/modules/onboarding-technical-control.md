@@ -249,7 +249,7 @@ Todo opcional: `name`, `criticality`, `tags` y, **solo en una cuenta de nube**, 
 ### `DELETE /v1/assets/{id}` — quitar un sistema
 
 Es una **baja, no un borrado**: `assets.status = inactive`, la conexión se desactiva y el activo deja de listarse (`GET` responde `404`) y de evaluarse.
-Ejecuciones, resultados y hallazgos **se conservan** (son evidencia). `200` con `data: null`. `409 EXECUTION_IN_PROGRESS` si hay algo en curso;
+Ejecuciones, resultados y hallazgos **se conservan** (son evidencia). **Los activos que la conexión descubrió se dan de baja con ella** y se desenlazan de los servicios. `200` con `data: null`. `409 EXECUTION_IN_PROGRESS` si hay algo en curso;
 un segundo `DELETE` es `404`. Auditoría: `asset.retire`.
 
 ### `POST /v1/assets/{id}/activate` — activar
