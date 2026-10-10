@@ -4,27 +4,133 @@ Lo que no pertenece a un solo módulo (pruebas, CI, auditoría, traducciones, en
 
 ## Transversal
 
-| ID | | Qué está parchado | Por qué | Qué lo cierra |
-|---|---|---|---|---|
-| **DT-20** | 🟠 | **Las pruebas automáticas están a medias en los repositorios.** *Hecho (2026-10-07, PR #17 del Backend):* CI en GitHub (`ci.yml`: lint, build, unitarias, migraciones desde cero, verificadores de catálogo/clonado/audit) y 18 pruebas de aislamiento entre empresas a nivel de base de datos (`Backend/test/aislamiento/`). *Hecho (en `develop`, PR #18 y #19):* 20 pruebas por **HTTP con supertest** que levantan la app real contra Postgres y comprueban que una empresa no lee, modifica ni enlaza nada de otra, y que `admin_monkey` y `admin_empresa` no se cruzan. *Hecho además (rama `feat/audit-in-same-transaction`):* auditoría atómica (19 pruebas) y autenticación (12), con mutaciones que prueban que fallan cuando el requisito se rompe. *Falta:* el recorrido por **navegador (Playwright en `Frontend-Platform`)** sigue fuera del repo y sin CI; y las demás rutas (evidencias, riesgos, usuarios) cuando existan | Velocidad del sprint | Llevar el recorrido de navegador a `Frontend-Platform` y correrlo en CI; ampliar el HTTP con cada módulo nuevo |
-| **DT-46** | 🟠 | **El CI no bloquea el merge ni el despliegue.** La protección de rama exige el plan GitHub Team (la organización es privada y no lo tiene): un PR en rojo se puede mergear, y `deploy-dev.yml` corre en paralelo al CI, no después | Coste de la suscripción | Plan Team + marcar `verificar` como check obligatorio; o, sin pagar, hacer que el deploy dependa del CI (`needs`). Acuerdo de equipo: no mergear con el check en rojo |
-| **DT-48** | 🟠 | **`check_results` no tiene política de retención ni de partición.** Es la tabla de mayor volumen (11.352 checks posibles × activos × corrida cada 6 h) y D41 fija 7 años solo para la auditoría. Sin decidir qué se conserva (¿toda corrida, o solo cambios de estado?), RLS y los índices se degradan y el almacenamiento crece sin tope | Se omitió al diseñar §8 | Decidir retención (propuesta: cada corrida un periodo corto y, para el histórico largo, solo transiciones de estado + la última foto) y particionar por mes. Registrarlo como decisión `D-n` |
-| **DT-49** | 🟠 | *2026-10-08: propuesta escrita en `contracts/modules/control-tecnico-operacion.md` (la conexión quedó en `onboarding-technical-control.md`); falta acordarla con frontend.* **El módulo de operación continua no tiene contrato.** `contracts/modules/` solo cubre el onboarding C3. No hay forma acordada de listar ejecuciones, resultados, reglas de programación ni el Centro de Control Técnico (§8) | Se construyó primero el alta de activos | Acordar `contracts/modules/control-tecnico-operacion.md` con frontend **antes** de construir endpoints |
-| **DT-50** | 🟠 | *2026-10-09: construido el intérprete puro, el calculador de preparación por activo y la persistencia de una corrida (`executions`, `check_results`, `asset_resources`, en una transacción con su rastro; 8 pruebas contra Postgres). Falta quien ejecute el motor y el paso a `evaluations`, que depende del módulo de Cumplimiento. Los umbrales del activo son los de D62 (DT-66).* **El intérprete `check_results → evaluations` no está especificado.** R-04 dice que «Monkey interpreta el criterio», pero no está escrito dónde vive el criterio (`tests.compliance_criterion` es texto libre), cómo se determinan los activos aplicables de un control (R-02), qué pasa con un resultado sin check conocido (hoy se descartaría en silencio) ni cómo se registran las exclusiones | §9 especifica el cálculo, no la interpretación | Especificar en `modelo-datos.md` §9 el intérprete y sus reglas, con el ejemplo resuelto como prueba |
-| **DT-54** | 🟠 | **El Backend, el CI y el `Dockerfile` corren en Node 20**, que según el calendario de Node dejó de recibir actualizaciones de seguridad en abril de 2026. El SDK de AWS ya avisa en el registro del trabajador (2026-10-09) de que exigirá Node ≥ 22 desde enero de 2027 | Se heredó; subir de versión mezclado con otro cambio habría ensuciado el lock y el despliegue | Un PR aparte: Node 22 en `Dockerfile`, `ci.yml` y `.nvmrc`, regenerando el lock con esa versión. Probar las pruebas de aislamiento y el trabajador antes de mergear |
-| **DT-65** | 🟠 | **El calculador de cumplimiento del Backend (`compliance.calculator.ts`) promedia porcentajes** y no cuenta cumplidos contra totales por nivel como pide `modelo-datos.md` §9. El Excel del comité (`MONKEY_Ejemplo_Formula_Cumplimiento.xlsx`, hojas 07 a 09 y 11) tampoco refleja §9 | Se construyó antes de D62 | Escribir el motor como función pura probada con los ejemplos de §9 (MD-138, MD-139); que el comité actualice o retire el Excel |
-| **DT-67** | 🟠 | **El Backend conserva `custom_roles`** (y `users.custom_role_id`), que el modelo no contempla (D64); su enum de roles no tiene `consultor`; y su tabla `auditor_assignments` debe volverse `consultant_assignments` (asignada por `admin_monkey`, suspendible por la empresa). La vista técnica (`view=technical`) no está restringida a `auditor` y `consultor` (SEG-54) y no existe la elección de empresa del consultor (SEG-55). No hay contrato de los endpoints de observaciones (§7.6) ni de los cambios de controles (§7.1) | Se construyó antes de D63 | Migración que retire la tabla y la excepción de RLS, `@Roles('auditor')` en la vista técnica, y acordar los contratos de `audit_observations` y `client_control_changes` antes de construirlos |
-| **DT-47** | 🟡 | **Los cierres automáticos de sesión no dejan rastro.** Cuando el sistema cierra una sesión por inactividad (30 min), expiración (8 h) o usuario inactivo, no se escribe en `audit_logs`; solo se auditan el login y el logout que pide el usuario (D52). CC7.2 podría pedirlos | Son frecuentes y no son una acción del usuario; el comité no los ha pedido | Decidir con el comité si se registran (`SessionRepository.revoke` ya acepta una `AuditIntent`; hoy se pasa `null`) |
-| **DT-21** | 🟠 | **Traducciones al inglés hechas por desarrollo** y sin revisar; Monkey Platform no tiene i18n (todo en español) | El Excel solo trae español | Revisión del comité; instalar i18n en Platform |
-| **DT-22** | 🟠 | **Base de datos dedicada → «no disponible»**; sin regenerar clave ni editar empresa | P2(b)(c)(d) | Respuestas del comité y el aprovisionamiento |
-| **DT-23** | 🟠 | **Sin MFA** para ninguno de los 5 roles (MD-94, sprint de acceso y usuarios) | Fuera del alcance de MD-64 | Su propio ticket |
-| ~~DT-28~~ | ✅ | ~~La auditoría de login, canje y registro de empresa se escribía después de la acción, no en la misma transacción~~ **Cerrada (D52, 2026-10-07):** cada acción que cambia datos escribe su rastro dentro de la transacción del repositorio; si el rastro falla, la acción se revierte. Probado en `Backend/test/auditoria/` | | |
-| **DT-29** | 🟡 | **`auth.login_failed` se guarda con `tenant_id` nulo** (no se sabe de qué empresa es un intento fallido hasta autenticar) y los nombres de acción siguen `<recurso>.<verbo>` salvo este | El email inexistente no identifica empresa | Decidir con Héctor si se resuelve el tenant por email cuando existe |
-| **DT-30** | 🟡 | **Las pruebas de jest no corren en máquinas Windows sin el runtime de Visual C++** (jest 30 carga un resolvedor nativo; da «Module ts-jest … was not found»). Se validaron con un runner mínimo | Dependencia del entorno | Documentar el requisito (VC++ Redistributable) o fijar un resolvedor sin binario nativo |
-| **DT-24** | 🟡 | Tailwind avisa de clases canónicas (`dark:bg-white/[0.03]` → `dark:bg-white/3`) en Platform | Solo estético | Una pasada de limpieza |
+### DT-20 · Las pruebas automáticas están a medias en los repositorios
+
+🟠 Importante
+
+- **Qué está parchado:** *Hecho (2026-10-07, PR #17 del Backend):* CI en GitHub (`ci.yml`: lint, build, unitarias, migraciones desde cero, verificadores de catálogo/clonado/audit) y 18 pruebas de aislamiento entre empresas a nivel de base de datos (`Backend/test/aislamiento/`). *Hecho (en `develop`, PR #18 y #19):* 20 pruebas por **HTTP con supertest** que levantan la app real contra Postgres y comprueban que una empresa no lee, modifica ni enlaza nada de otra, y que `admin_monkey` y `admin_empresa` no se cruzan. *Hecho además (rama `feat/audit-in-same-transaction`):* auditoría atómica (19 pruebas) y autenticación (12), con mutaciones que prueban que fallan cuando el requisito se rompe. *Falta:* el recorrido por **navegador (Playwright en `Frontend-Platform`)** sigue fuera del repo y sin CI; y las demás rutas (evidencias, riesgos, usuarios) cuando existan
+- **Por qué:** Velocidad del sprint
+- **Qué lo cierra:** Llevar el recorrido de navegador a `Frontend-Platform` y correrlo en CI; ampliar el HTTP con cada módulo nuevo
+
+### DT-46 · El CI no bloquea el merge ni el despliegue
+
+🟠 Importante
+
+- **Qué está parchado:** La protección de rama exige el plan GitHub Team (la organización es privada y no lo tiene): un PR en rojo se puede mergear, y `deploy-dev.yml` corre en paralelo al CI, no después
+- **Por qué:** Coste de la suscripción
+- **Qué lo cierra:** Plan Team + marcar `verificar` como check obligatorio; o, sin pagar, hacer que el deploy dependa del CI (`needs`). Acuerdo de equipo: no mergear con el check en rojo
+
+### DT-48 · `check_results` no tiene política de retención ni de partición
+
+🟠 Importante
+
+- **Qué está parchado:** Es la tabla de mayor volumen (11.352 checks posibles × activos × corrida cada 6 h) y D41 fija 7 años solo para la auditoría. Sin decidir qué se conserva (¿toda corrida, o solo cambios de estado?), RLS y los índices se degradan y el almacenamiento crece sin tope
+- **Por qué:** Se omitió al diseñar §8
+- **Qué lo cierra:** Decidir retención (propuesta: cada corrida un periodo corto y, para el histórico largo, solo transiciones de estado + la última foto) y particionar por mes. Registrarlo como decisión `D-n`
+
+### DT-49 · El módulo de operación continua no tiene contrato
+
+🟠 Importante
+
+- **Qué está parchado:** *2026-10-08: propuesta escrita en `contracts/modules/control-tecnico-operacion.md` (la conexión quedó en `onboarding-technical-control.md`); falta acordarla con frontend.*  `contracts/modules/` solo cubre el onboarding C3. No hay forma acordada de listar ejecuciones, resultados, reglas de programación ni el Centro de Control Técnico (§8)
+- **Por qué:** Se construyó primero el alta de activos
+- **Qué lo cierra:** Acordar `contracts/modules/control-tecnico-operacion.md` con frontend **antes** de construir endpoints
+
+### DT-50 · El intérprete `check_results → evaluations` no está especificado
+
+🟠 Importante
+
+- **Qué está parchado:** *2026-10-09: construido el intérprete puro, el calculador de preparación por activo y la persistencia de una corrida (`executions`, `check_results`, `asset_resources`, en una transacción con su rastro; 8 pruebas contra Postgres). Falta quien ejecute el motor y el paso a `evaluations`, que depende del módulo de Cumplimiento. Los umbrales del activo son los de D62 (DT-66).*  R-04 dice que «Monkey interpreta el criterio», pero no está escrito dónde vive el criterio (`tests.compliance_criterion` es texto libre), cómo se determinan los activos aplicables de un control (R-02), qué pasa con un resultado sin check conocido (hoy se descartaría en silencio) ni cómo se registran las exclusiones
+- **Por qué:** §9 especifica el cálculo, no la interpretación
+- **Qué lo cierra:** Especificar en `modelo-datos.md` §9 el intérprete y sus reglas, con el ejemplo resuelto como prueba
+
+### DT-54 · El Backend, el CI y el `Dockerfile` corren en Node 20
+
+🟠 Importante
+
+- **Qué está parchado:** , que según el calendario de Node dejó de recibir actualizaciones de seguridad en abril de 2026. El SDK de AWS ya avisa en el registro del trabajador (2026-10-09) de que exigirá Node ≥ 22 desde enero de 2027
+- **Por qué:** Se heredó; subir de versión mezclado con otro cambio habría ensuciado el lock y el despliegue
+- **Qué lo cierra:** Un PR aparte: Node 22 en `Dockerfile`, `ci.yml` y `.nvmrc`, regenerando el lock con esa versión. Probar las pruebas de aislamiento y el trabajador antes de mergear
+
+### DT-65 · El calculador de cumplimiento del Backend (`compliance.calculator.ts`) promedia porcentajes
+
+🟠 Importante
+
+- **Qué está parchado:** y no cuenta cumplidos contra totales por nivel como pide `modelo-datos.md` §9. El Excel del comité (`MONKEY_Ejemplo_Formula_Cumplimiento.xlsx`, hojas 07 a 09 y 11) tampoco refleja §9
+- **Por qué:** Se construyó antes de D62
+- **Qué lo cierra:** Escribir el motor como función pura probada con los ejemplos de §9 (MD-138, MD-139); que el comité actualice o retire el Excel
+
+### DT-67 · El Backend conserva `custom_roles`
+
+🟠 Importante
+
+- **Qué está parchado:** (y `users.custom_role_id`), que el modelo no contempla (D64); su enum de roles no tiene `consultor`; y su tabla `auditor_assignments` debe volverse `consultant_assignments` (asignada por `admin_monkey`, suspendible por la empresa). La vista técnica (`view=technical`) no está restringida a `auditor` y `consultor` (SEG-54) y no existe la elección de empresa del consultor (SEG-55). No hay contrato de los endpoints de observaciones (§7.6) ni de los cambios de controles (§7.1)
+- **Por qué:** Se construyó antes de D63
+- **Qué lo cierra:** Migración que retire la tabla y la excepción de RLS, `@Roles('auditor')` en la vista técnica, y acordar los contratos de `audit_observations` y `client_control_changes` antes de construirlos
+
+### DT-47 · Los cierres automáticos de sesión no dejan rastro
+
+🟡 Mejora
+
+- **Qué está parchado:** Cuando el sistema cierra una sesión por inactividad (30 min), expiración (8 h) o usuario inactivo, no se escribe en `audit_logs`; solo se auditan el login y el logout que pide el usuario (D52). CC7.2 podría pedirlos
+- **Por qué:** Son frecuentes y no son una acción del usuario; el comité no los ha pedido
+- **Qué lo cierra:** Decidir con el comité si se registran (`SessionRepository.revoke` ya acepta una `AuditIntent`; hoy se pasa `null`)
+
+### DT-21 · Traducciones al inglés hechas por desarrollo
+
+🟠 Importante
+
+- **Qué está parchado:** y sin revisar; Monkey Platform no tiene i18n (todo en español)
+- **Por qué:** El Excel solo trae español
+- **Qué lo cierra:** Revisión del comité; instalar i18n en Platform
+
+### DT-22 · Base de datos dedicada → «no disponible»
+
+🟠 Importante
+
+- **Qué está parchado:** ; sin regenerar clave ni editar empresa
+- **Por qué:** P2(b)(c)(d)
+- **Qué lo cierra:** Respuestas del comité y el aprovisionamiento
+
+### DT-23 · Sin MFA
+
+🟠 Importante
+
+- **Qué está parchado:** para ninguno de los 5 roles (MD-94, sprint de acceso y usuarios)
+- **Por qué:** Fuera del alcance de MD-64
+- **Qué lo cierra:** Su propio ticket
+
+### DT-29 · `auth.login_failed` se guarda con `tenant_id` nulo
+
+🟡 Mejora
+
+- **Qué está parchado:** (no se sabe de qué empresa es un intento fallido hasta autenticar) y los nombres de acción siguen `<recurso>.<verbo>` salvo este
+- **Por qué:** El email inexistente no identifica empresa
+- **Qué lo cierra:** Decidir con Héctor si se resuelve el tenant por email cuando existe
+
+### DT-30 · Las pruebas de jest no corren en máquinas Windows sin el runtime de Visual C++
+
+🟡 Mejora
+
+- **Qué está parchado:** (jest 30 carga un resolvedor nativo; da «Module ts-jest … was not found»). Se validaron con un runner mínimo
+- **Por qué:** Dependencia del entorno
+- **Qué lo cierra:** Documentar el requisito (VC++ Redistributable) o fijar un resolvedor sin binario nativo
+
+### DT-24 · Tailwind avisa de clases canónicas (`dark:bg-white/[0.03]` → `dark:bg-white/3`) en Platfor
+
+🟡 Mejora
+
+- **Qué está parchado:** Tailwind avisa de clases canónicas (`dark:bg-white/[0.03]` → `dark:bg-white/3`) en Platform
+- **Por qué:** Solo estético
+- **Qué lo cierra:** Una pasada de limpieza
+
 
 ## Funcionalidad que el brain menciona y aún no tiene contrato
 
-| ID | | Qué | Nota |
-|---|---|---|---|
-| **DT-25** | 🟠 | **Ver el catálogo maestro SOC 2 en Monkey Admin y poder crear un control, riesgo o causa nuevos.** El principio está en `modelo-datos.md` §3 y D9/D31, pero no hay contrato, pantallas ni épico | Primero un contrato en `contracts/modules/` (qué campos, cómo se vincula un control nuevo, cuándo se publica la versión, A4) |
+### DT-25 · Ver el catálogo maestro SOC 2 en Monkey Admin y poder crear un control, riesgo o causa nuevos
+
+🟠 Importante
+
+- **Qué:** El principio está en `modelo-datos.md` §3 y D9/D31, pero no hay contrato, pantallas ni épico
+- **Nota:** Primero un contrato en `contracts/modules/` (qué campos, cómo se vincula un control nuevo, cuándo se publica la versión, A4)
+
