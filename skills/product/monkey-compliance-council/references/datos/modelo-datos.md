@@ -60,11 +60,11 @@ el nombre en inglés.
 | 2 | Las 5 dimensiones | El eje transversal que atraviesa todo el modelo |
 | 3 | Catálogo maestro | Lo que Monkey administra antes de que exista un cliente |
 | 4 | Monkey Admin | Registro del tenant y aislamiento de datos |
-| 5 | Usuarios | Los 4 roles, las tablas, las políticas de seguridad, los responsables organizacionales, la matriz de permisos y cómo el modelo de acceso sostiene SOC 2 |
+| 5 | Usuarios | Los 5 roles, las tablas, las políticas de seguridad, los responsables organizacionales, la matriz de permisos y cómo el modelo de acceso sostiene SOC 2 |
 | 6 | Onboarding | Los 3 componentes que capturan el contexto del cliente |
 | 7 | Cumplimiento | Controles del cliente, riesgos, evidencias, evaluaciones |
 | 8 | Control Técnico | La operación continua de la sonda |
-| 9 | El cálculo | Cómo se deriva el cumplimiento, con las 12 reglas |
+| 9 | El cálculo | Cómo se deriva el cumplimiento: dimensión → control → categoría → marco, y sus reglas |
 | 10 | Diagrama global | Todo junto |
 
 ---
@@ -93,8 +93,8 @@ uno:
 
 | Fuente original | Dónde está su contenido ahora |
 |---|---|
-| `MONKEY_Ejemplo_Formula_Cumplimiento.xlsx` | §9: las 12 reglas R-01…R-12 y el ejemplo resuelto. Cerró la decisión D1 |
-| `RESUMEN-MODELO-USUARIOS-MONKEY.md` | §5: los 4 roles (§5.1), las tablas (§5.2), las políticas de seguridad con su justificación normativa (§5.3), la matriz de permisos (§5.5) y el mapeo a TSC del modelo de acceso (§5.6) |
+| `MONKEY_Ejemplo_Formula_Cumplimiento.xlsx` | §9: de él salen las reglas R-01 a R-04, R-06, R-07, R-11 y R-12. La agregación (R-05, R-08 a R-10) la fijó el responsable de producto (D62) y el Excel no la refleja: no lo uses para calcular |
+| `RESUMEN-MODELO-USUARIOS-MONKEY.md` | §5: los roles (§5.1), las tablas (§5.2), las políticas de seguridad con su justificación normativa (§5.3), la matriz de permisos (§5.5) y el mapeo a TSC del modelo de acceso (§5.6) |
 | `draft-BLUEPRINT FUNCIONAL-ControlTecnico.docx` | §8: `schedule_rules`, `executions`, `check_results`, `execution_logs`, `monitoring_domains` y las tres reglas de la operación técnica |
 | `vision_controles.pptx` | Nada propio: su matriz de evaluación quedó superada por el ejemplo de fórmula |
 | `ALCANCE-ONBOARDING-MVP.md` | `sprint-onboarding.md`: alcance, cronograma, prioridades y criterios de aceptación del sprint |
@@ -181,14 +181,17 @@ que les corresponde.
 | **Control** | `controls` | La medida que ataca una causa. **Atómico**: no pertenece a ningún marco |
 | **Control del cliente** | `client_controls` | El control particularizado en el escenario: código propio (`C01`) e **interpretación** reescrita con sus herramientas reales |
 | **Riesgo** · **Causa** | `risks` · `causes` | El riesgo se origina en causas; las causas se mitigan con controles. Los tres niveles son `N:M` entre sí |
-| **Dimensión** | `control_dimensions` | Dos ejes distintos que no se confunden — ver §2 |
+| **Dimensión** | `control_dimensions` | Una de las 5 formas de evaluar un control (documental, servidores, bases de datos, aplicación, nube) — ver §2 |
+| **Categoría** | `trust_criteria` | Una de las 5 categorías de SOC 2 (Seguridad, Disponibilidad, Integridad del procesamiento, Confidencialidad, Privacidad). Agrupa controles — ver §2 y §9 |
 | **Plan de testeo** | `test_plans` | Criterio de auditor: pasos **dependientes**, población y regla de muestreo |
 | **Test** | `tests` | Procedimiento de auditoría reutilizable (22 campos propios; la hoja trae 23 columnas y una es su vínculo con los controles). Pertenece a **una** dimensión |
 | **Check** | `checks` | La verificación atómica que ejecuta la sonda. Clave natural de tres partes: `platform` + `policy_id` + `check_id` |
 | **Evaluación** | `evaluations` | Un test o check aplicado a **un activo**, con su resultado. **Inmutable** |
 | **Exclusión** | `exclusions` | Decisión de no medir un check, con justificación aprobada y vigencia |
 | **Evidencia requerida** / **entregada** | `evidence_requirements` / `evidence_submissions` | Qué se exige y quién responde / el archivo concreto, con hash de integridad |
-| **Hallazgo** | `findings` | Una falla concreta: qué falló, en qué dimensión, sobre qué insumo |
+| **Consultoría** · **Auditoría** | — | Consultoría es preparar al cliente para la auditoría (lo que hace Monkey); auditoría es el examen final que da la certificación del marco |
+| **Hallazgo** | `findings` | Una falla concreta que **detecta el sistema**: qué falló, en qué dimensión, sobre qué insumo |
+| **Observación del auditor** | `audit_observations` | Lo que escribe el rol `auditor` (observación, recomendación o solicitud de información) y que la empresa debe atender — §7.6. **No es un hallazgo** |
 | **Mitigación** · **Riesgo residual** | `mitigations` · `residual_risks` | Indicadores **separados** del cumplimiento (§9). Un 93% de cumplimiento no dice que el riesgo residual sea 7% |
 | **Cobertura técnica** | — | Cuánto del scope se puede medir automáticamente. **Número aparte** del cumplimiento |
 
@@ -220,12 +223,14 @@ rompe el cálculo.**
 
 | Eje | Valores | Para qué sirve |
 |---|---|---|
-| **Dimensión de scope** (técnica) | Documental/Política, Servidores, Bases de datos, Aplicación, Nube | Define **sobre qué activos** se evalúa |
-| **Dimensión de agrupación** (temática) | Disponibilidad, Seguridad, Confidencialidad, Integridad, Privacidad | Define **cómo se agrega el %** hacia el servicio |
+| **Dimensión** (técnica) | Documental/Política, Servidores, Bases de datos, Aplicación, Nube | Define **sobre qué activos** se evalúa un control. Un control se mide en cada dimensión que le aplica |
+| **Categoría** (criterio de confianza) | Seguridad, Disponibilidad, Integridad del procesamiento, Confidencialidad, Privacidad | Define **bajo qué grupo** se suma el control para medir el marco |
 
-Las temáticas **son los criterios de confianza del marco** (`trust_criteria`, §3.1), que el
-servicio contrata. Ejemplo del comité: `C-01` aplica a scope **Servidores + Nube**
-(5 activos) y agrupa bajo **Disponibilidad**.
+Las categorías **son los criterios de confianza del marco** (`trust_criteria`, §3.1), y el servicio
+contrata las que quiera. **Seguridad es la única obligatoria** en todo informe SOC 2 (sus criterios son los
+Common Criteria, `CC`). El vocabulario es fijo: *dimensión* es solo el eje técnico y *categoría* es solo
+el criterio de confianza.
+Ejemplo: `C-01` aplica a las dimensiones **Servidores + Nube** (5 activos) y pertenece a la categoría **Disponibilidad**.
 
 ### Las 5 de scope
 
@@ -622,7 +627,7 @@ edita, agrega o elimina. Lo que un cliente cambie **solo lo ve él**; el catálo
 clientes no se enteran (decisión D28).
 
 > "Riesgo residual" es **jerga prohibida** en la superficie del producto (`philosophy.md`).
-> Existe como cálculo interno y en modo auditor.
+> Existe como cálculo interno y en la vista técnica del auditor.
 
 ### 3.5 Versionado del catálogo y qué se clona
 
@@ -773,7 +778,7 @@ de conexión, para que no se filtren a otra petición del pool):
 | Variable | Qué es | Quién la lee |
 |---|---|---|
 | `app.tenant_id` | La empresa activa | Toda política de tenant |
-| `app.user_id` | El usuario que actúa | `auditor_assignments` (ve las suyas sin importar el tenant) |
+| `app.user_id` | El usuario que actúa | `consultant_assignments` (el consultor ve las empresas que tiene asignadas, sin importar el tenant activo) y la atribución de `audit_logs` |
 | `app.user_role` | Su rol (`admin_monkey`, …) | Escritura de `catalog`, lectura de `companies`/`access_keys`/`audit_logs` |
 
 **Las búsquedas que ocurren antes de conocer el tenant** no pueden pasar por RLS (falla
@@ -810,7 +815,7 @@ cargarlo y una regla de negocio depende de que nadie se equivoque):
 | `users` | `email` (global) |
 | `access_keys` · `api_keys` · `sessions` | `code_hash` · `key_hash` · `refresh_token_hash` |
 | `user_control_assignments` | `user_id` + `client_control_id` |
-| `auditor_assignments` | `auditor_user_id` + `company_id` (renovar es cambiar `expires_at`) |
+| `consultant_assignments` | `consultant_user_id` + `company_id` |
 | `service_frameworks` | `service_id` + `framework_id` (un servicio contrata un marco una vez) |
 | `client_controls` | `service_id` + `control_id` (se clona una vez por servicio; los propios, con `control_id` nulo, no chocan) y `service_id` + `own_code` |
 | `evidence_requirements` | `client_control_id` + `code` |
@@ -825,7 +830,7 @@ evalúa en cada consulta. **Toda FK lleva su índice** (Postgres no los crea sol
 de "quién lo hizo" (`created_by`, `approved_by`, `assigned_by`…), que no se consultan por sí solas.
 No hay ningún `ON DELETE CASCADE`: el histórico (`evaluations`, `findings`, `compliance_events`,
 `audit_logs`) no se borra nunca, y un servicio con evaluaciones no se puede eliminar. Tampoco hay
-`SET NULL` sobre quién actuó (`user_id`, `confirmed_by`, `approved_by`, `reported_by`): tocar un usuario
+`SET NULL` sobre quién actuó (`user_id`, `confirmed_by`, `approved_by`, `created_by`, `resolved_by`): tocar un usuario
 no puede borrar la atribución de un registro inmutable, así que esas FK son `RESTRICT`.
 
 **Datos de arranque:** `access_keys.created_by` es FK obligatoria a `users`, y `users.company_id`
@@ -846,21 +851,50 @@ suyo, y que la revocación de un acceso sea demostrable ante un auditor.
 Definido y cerrado por el comité en su modelo de gestión de usuarios, transcrito en esta §5
 (ver §0).
 
-### 5.1 Los 4 roles
+### 5.1 Los 5 roles
 
 | Rol | Quién es | Alcance | MFA |
 |---|---|---|---|
 | `admin_monkey` | Equipo Monkey | Global: acceso de todos los tenants **y el catálogo maestro** | Sí |
 | `admin_empresa` | CISO, Compliance Leader | Su empresa. **Único que aprueba evidencia** | Sí |
-| `funcional` | Control Owners | **Solo los controles asignados** | No |
-| `auditor` | Auditores internos/externos | Lectura + módulo de auditoría. **Único que registra hallazgos** | Sí |
+| `funcional` | Control Owners | **Solo los controles asignados** | Sí |
+| `consultor` | Consultor de Next (la empresa dueña de Monkey) que **prepara al cliente para la auditoría**. Una sola cuenta, que **crea y asigna `admin_monkey`** a las empresas que atiende | Todo el cumplimiento de **todos** los servicios de la empresa **en la que trabaja** (elige una de las asignadas), con vista técnica. **Da el veredicto de los tests documentales y manuales y aprueba los cambios de controles** | Sí |
+| `auditor` | Quien audita el cumplimiento de la empresa dentro de Monkey (suele ser una persona externa a la empresa, pero su cuenta **pertenece a la empresa**) | Lectura de **todo** el cumplimiento de **todos** los servicios de su empresa + módulo de auditoría. **Único que registra observaciones** | Sí |
 
 **Correcciones obligadas al enum actual** (`MONKEY_ADMIN`, `CLIENT_ADMIN`, `USER`, `VIEWER`):
 
-- **Falta `auditor`.** `VIEWER` no sirve: el auditor **escribe**.
+- **Falta `auditor`.** `VIEWER` no sirve: el auditor **escribe** observaciones (§7.6).
 - **`VIEWER` no existe** en el modelo del comité — decidir si se conserva.
 - `USER` ≈ `funcional`, pero **le falta la asignación de controles**, sin la cual no hay
   "control owner".
+
+### El auditor es un rol aparte (D63)
+
+`auditor` es un **rol aparte**, con sus propios permisos y su propia experiencia al entrar. Esto fija seis cosas:
+
+1. **Lo crea solo `admin_empresa`**, desde la gestión de usuarios de su empresa. `admin_monkey` no crea auditores.
+2. **Su cuenta pertenece a la empresa** (`users.company_id`). Por eso ve únicamente su empresa y no existe ninguna
+   excepción de aislamiento para él. Cuando termina su trabajo, la empresa lo desactiva (`status = inactive`, `CC6.3`).
+3. **Ve todo el cumplimiento de su empresa, en solo lectura**: todos los servicios, sus controles, tests, evidencias,
+   evaluaciones y el audit trail, con la **vista técnica** (códigos de requisito y de control, resultados por check).
+4. **La vista técnica es del auditor.** `admin_empresa` y `funcional` solo ven la vista de negocio: en qué está
+   fallando y su porcentaje.
+5. **Escribe observaciones** (§7.6), descarga evidencias y exporta reportes. No aprueba evidencia, no crea ni edita
+   controles ni riesgos, y no ejecuta tests.
+6. **MFA TOTP obligatoria** (§5.3). Entra al MVP; su ticket está aplazado de sprint, no descartado.
+
+### El consultor prepara; el auditor certifica (D64)
+
+**Consultoría** es preparar al cliente para la auditoría; **auditoría** es el examen final que da la certificación del marco. Hacen prácticamente
+lo mismo, y el consultor prepara el terreno. Por eso `consultor` y `auditor` son dos roles hermanos, con una diferencia de origen:
+
+1. **El consultor es de Next.** Es **una sola cuenta con un solo correo**, que **crea `admin_monkey` desde Monkey Admin** y asigna a las empresas que atiende (`consultant_assignments`). La asignación dura hasta que se quita. El **auditor**, en cambio, lo crea `admin_empresa` y pertenece a una sola empresa (D63).
+2. **Al iniciar sesión elige en qué empresa trabajar y ve una a la vez.** Dentro de ella ve todo el cumplimiento de todos los servicios, con la vista técnica, y puede registrar observaciones y exportar reportes igual que el auditor (§7.6). El sistema comprueba su asignación en cada petición.
+3. **La empresa puede cortarle el acceso.** `admin_empresa` ve qué consultores tiene asignados, en solo lectura, y puede suspender a uno (`CC6.3`).
+4. **Da el veredicto** (cumple / no cumple) de los tests **documentales y manuales**. La IA sugiere y nunca decide (§7.5).
+5. **Propone las exclusiones de checks**; las aprueba `admin_empresa` (§7.2).
+6. **Aprueba los cambios de controles que propone la empresa**: crear un control propio, darlo de baja y editar sus dimensiones o su interpretación (§7.1).
+7. **MFA TOTP obligatoria**, como todos los roles (§5.3).
 
 **Que `admin_monkey` no pueda crear controles no contradice que Monkey cure el catálogo**
 (decisión D9): la matriz de permisos describe el **escenario del cliente**, donde Monkey no
@@ -873,12 +907,11 @@ erDiagram
     users {
         uuid id PK
         uuid company_id FK
-        uuid custom_role_id FK "nullable"
         string email "unico global, en minusculas"
         string name "nullable (D51): la cuenta se identifica por su correo"
         string last_name "nullable (D51)"
         string password_hash "bcrypt+salt"
-        enum role "admin_monkey|admin_empresa|funcional|auditor"
+        enum role "admin_monkey|admin_empresa|funcional|consultor|auditor"
         enum status "active|inactive|suspended"
         boolean is_mfa_enabled
         datetime last_login_at "nullable"
@@ -886,13 +919,6 @@ erDiagram
         datetime locked_until "nullable, 15 min"
         datetime password_changed_at "expira a los 90 dias"
         text mfa_secret_encrypted "nullable, AES-256"
-        datetime created_at
-    }
-    custom_roles {
-        uuid id PK
-        uuid company_id FK
-        string name
-        json permissions
         datetime created_at
     }
     user_control_assignments {
@@ -903,18 +929,21 @@ erDiagram
         uuid assigned_by FK
         datetime assigned_at
     }
-    auditor_assignments {
+    consultant_assignments {
         uuid id PK
-        uuid auditor_user_id FK
-        uuid company_id FK
-        uuid assigned_by FK
+        uuid consultant_user_id FK "el consultor"
+        uuid company_id FK "la empresa que atiende"
+        uuid assigned_by FK "admin_monkey"
+        enum status "active|suspended|revoked"
+        uuid status_changed_by FK "nullable"
         datetime assigned_at
-        datetime expires_at "nullable"
+        datetime status_changed_at "nullable"
     }
     sessions {
         uuid id PK
         uuid company_id FK "denormalizado: lo pide el RLS"
         uuid user_id FK
+        uuid active_company_id FK "nullable, solo consultor: la empresa donde trabaja"
         string refresh_token_hash
         string ip_address
         string user_agent
@@ -953,16 +982,19 @@ erDiagram
         string person_name
     }
     companies ||--o{ users : "emplea"
-    companies ||--o{ custom_roles : "define"
-    custom_roles ||--o{ users : "asignado a"
     users ||--o{ user_control_assignments : "responsable de"
-    users ||--o{ auditor_assignments : "audita"
+    users ||--o{ consultant_assignments : "atiende a"
+    companies ||--o{ consultant_assignments : "es atendida por"
     users ||--o{ sessions : "abre"
     users ||--o{ audit_logs : "registra"
     companies ||--o{ api_keys : "integra con"
 ```
 
 **`sessions`:** access token de 15 min; refresh token rotado en cada uso; la sesión se cierra a los **30 min sin actividad** (`last_activity_at`) y a las **8 h de creada** (`created_at`, `expires_at`), como pide §5.3. Las dos columnas se añadieron el 2026-09-30 (migración `platform_sessions_activity_tracking`): sin ellas el servidor no podía aplicar esa política.
+
+**`consultant_assignments` es el único acceso entre empresas** (una excepción de RLS: el consultor ve las asignaciones propias sin importar el tenant activo). Su estado
+es `active` (puede entrar), `suspended` (la empresa le cortó el acceso) o `revoked` (`admin_monkey` la retiró). Una asignación suspendida por la empresa no la reactiva `admin_monkey`:
+solo la empresa. La cuenta del consultor vive en la empresa interna de Monkey (`users.company_id`), como la de `admin_monkey`. Elegir o cambiar de empresa queda en `audit_logs`.
 
 **El estado del usuario no es cosmético:** `CC6.3` (deprovisioning) se cumple pasando el
 usuario a `inactive` y cerrando su sesión. Es un control auditable, no una preferencia de UI.
@@ -989,7 +1021,7 @@ no negociable:
 | Contraseña — longitud | 12+ caracteres | NIST SP 800-63 |
 | Contraseña — complejidad | mayúscula + minúscula + número + símbolo | Encarece la fuerza bruta |
 | Contraseña — expiración | 90 días | Requisito SOC 2 |
-| MFA | TOTP obligatoria para `admin_monkey`, `admin_empresa` y `auditor` | Protege el acceso crítico |
+| MFA | TOTP obligatoria para **los 5 roles** | Protege el acceso crítico |
 | Cifrado en reposo | AES-256 (bcrypt+salt para contraseñas, secreto MFA cifrado) | Requisito NIST |
 | Cifrado en tránsito | TLS 1.3 + HSTS | Requisito PCI DSS |
 | Rotación de API keys | 90 días | Acota el daño de una key comprometida |
@@ -998,9 +1030,7 @@ no negociable:
 | IP whitelist | opcional, configurable | Control adicional de acceso |
 | Bloqueo de cuenta | 5 intentos fallidos, 15 min | Previene fuerza bruta |
 
-> **MFA es requisito vigente, pero su implementación está aplazada a MD-94** y no entra en el
-> sprint de onboarding: MD-64 entrega login con JWT y refresh, sin segundo factor. Es deuda
-> conocida, no una decisión revertida.
+> **MFA es un requisito de seguridad sin excepciones.** Su implementación va en el sprint de acceso y usuarios (MD-94), no en el de Cumplimiento, y mientras no esté es deuda conocida (DT-23).
 
 La autorización se verifica **en cada request** (*"no confiar en el frontend"*), con caché de
 5 min.
@@ -1021,35 +1051,45 @@ nivel de objeto** — activo, control, cumplimiento y riesgo (§9).
 
 ### 5.5 Matriz de permisos
 
-Lo que puede hacer cada rol. Transcrita del modelo de usuarios del comité; es el resumen, no la
-matriz exhaustiva (esa vivía en `prompt-user-management-model-monkey.md`, que no tenemos).
+Lo que puede hacer cada rol. Parte de las 13 acciones del modelo de usuarios del comité y se completó con D63 y D64. El comité entrega un Excel con los
+permisos **por pantalla**; cuando llegue, esta matriz se ajusta a él (P3).
 
-| Acción | `admin_monkey` | `admin_empresa` | `funcional` | `auditor` |
-|---|---|---|---|---|
-| Crear empresa | ✓ | | | |
-| Crear usuario | ✓ | ✓ | | |
-| Crear control | | ✓ | | |
-| Editar control | | ✓ | ✓ solo el suyo | |
-| Crear riesgo | | ✓ | | |
-| Ver riesgo | | ✓ | ✓ solo el suyo | ✓ |
-| Subir evidencia | | ✓ | ✓ | |
-| Aprobar evidencia | | ✓ | | |
-| Ver evidencia | | ✓ | ✓ solo la suya | ✓ |
-| Ejecutar test | | ✓ | ✓ solo el suyo | ✓ solo lectura |
-| Ver audit trail | ✓ | ✓ | limitado | ✓ |
-| Crear API key | | ✓ | | |
-| Módulo de auditoría | | | | ✓ |
+| Acción | `admin_monkey` | `admin_empresa` | `funcional` | `consultor` | `auditor` |
+|---|---|---|---|---|---|
+| Crear empresa | ✓ | | | | |
+| Crear usuario | ✓ | ✓ | | | |
+| Crear usuario `auditor` | | ✓ | | | |
+| Crear usuario `consultor` y asignarlo a una empresa | ✓ | | | | |
+| Ver los consultores asignados y suspender uno | | ✓ | | | |
+| Proponer un control propio, su baja o un cambio de sus dimensiones o interpretación | | ✓ | ✓ solo el suyo (cambios) | | |
+| **Aprobar** esa propuesta | | | | ✓ | |
+| Ver control | ✓ | ✓ | ✓ solo el suyo | ✓ | ✓ |
+| Crear riesgo | | ✓ | | | |
+| Ver riesgo | | ✓ | ✓ solo el suyo | ✓ | ✓ |
+| Subir evidencia | | ✓ | ✓ | | |
+| Aprobar evidencia | | ✓ | | | |
+| Ver evidencia | | ✓ | ✓ solo la suya | ✓ | ✓ |
+| Dar el veredicto de un test documental o manual | | | | ✓ | |
+| Ejecutar test | | ✓ | ✓ solo el suyo | | solo lectura |
+| Proponer una exclusión de checks | | | | ✓ | |
+| Aprobar una exclusión de checks | | ✓ | | | |
+| Vista técnica (códigos, requisitos, resultados por check) | | | | ✓ | ✓ |
+| Módulo de auditoría y registrar observaciones (§7.6) | | | | ✓ | ✓ |
+| Responder una observación | | ✓ | ✓ solo de su control | | |
+| Ver audit trail | ✓ | ✓ | limitado | ✓ | ✓ |
+| Exportar reportes (PDF y Excel) | ✓ | ✓ | | ✓ | ✓ |
+| Crear API key | | ✓ | | | |
 
-Dos cosas que se leen mal si no se dicen: **`admin_monkey` no crea controles ni riesgos de un
-cliente** — administra la plataforma y el catálogo maestro, no el escenario de nadie; y
-**`funcional` está siempre acotado a lo que tiene asignado** vía `user_control_assignments`.
+Cuatro cosas que se leen mal si no se dicen:
 
-> ⚠️ El material del comité habla de **"34 permisos"**, pero la matriz que entregó tiene 13
-> acciones. El número de 34 sale del documento técnico completo, que **no está en el repo**. No
-> repetir "34 permisos" como si estuviera documentado aquí.
+- **`admin_monkey` no crea controles ni riesgos de un cliente**: administra la plataforma y el catálogo maestro, no el escenario de nadie.
+- **`funcional` está siempre acotado a lo que tiene asignado** vía `user_control_assignments`.
+- **El `auditor` ve toda su empresa y el `consultor` toda la empresa en la que trabaja** (D63, D64), sin restricción de asignación de controles. Ninguno aprueba evidencia, y el cliente nunca ve la vista técnica.
+- **La empresa propone y el consultor decide**: ni `admin_empresa` ni `funcional` pueden aplicar por sí solos un cambio de controles ni el veredicto de un test.
 
-El detalle fino de qué permisos concretos puede llevar un `custom_role` sigue abierto — ver P3
-en `modelo-datos-pendientes.md`.
+> ⚠️ El material del comité habla de **"34 permisos"**, pero la matriz que entregó tiene 13 acciones. No repetir "34 permisos" como si estuviera documentado aquí.
+
+No hay roles personalizados: los 5 roles son fijos (D64).
 
 ### 5.6 Cómo el modelo de usuarios sostiene SOC 2
 
@@ -1284,6 +1324,8 @@ erDiagram
         enum status
         enum operational_status "operational|warning|error|not_monitored"
         string technical_coverage "18/18"
+        uuid parent_asset_id FK "la conexión de nube que lo descubrió (D61)"
+        uuid resource_id FK "su recurso técnico, 1:1 (D61)"
     }
     service_assets {
         uuid id PK
@@ -1325,7 +1367,8 @@ erDiagram
 ```
 
 **`assets` es lo que Monkey encuentra al conectar.** El cliente no declara cuántos activos tiene: los registra conectando
-y ve lo que la conexión reconoció (D59). Se retiró el scope declarado (`scopes`, D60).
+y ve lo que la conexión reconoció (D59). Se retiró el scope declarado (`scopes`, D60). **Cada recurso descubierto es un `asset` propio**, hijo de su
+conexión de nube (`parent_asset_id`) y respaldado por su recurso técnico (`resource_id`); el servicio elige cuáles son suyos con `service_assets` (D61).
 
 **El activo cuelga de la organización, no del servicio** (decisión A2). Un servidor puede dar
 soporte a varios servicios y **no se duplica**: por eso existe el puente `service_assets`. Se
@@ -1389,10 +1432,25 @@ erDiagram
         uuid control_id FK "nullable: null si lo creo el cliente"
         uuid service_id FK
         string own_code "C01"
+        enum trust_criterion "nullable: la categoria de un control propio, la elige el cliente"
         text client_interpretation
         enum type
         string source_ref
         boolean is_active "baja logica"
+    }
+    client_control_changes {
+        uuid id PK
+        uuid tenant_id FK
+        uuid service_id FK
+        uuid client_control_id FK
+        enum change_type "create|retire|edit_dimensions|edit_interpretation"
+        json proposed_values "lo que se propone"
+        enum status "pending|approved|rejected"
+        uuid requested_by FK
+        uuid decided_by FK "nullable, el consultor"
+        text decision_note "nullable"
+        datetime requested_at
+        datetime decided_at "nullable"
     }
     client_control_dimensions {
         uuid id PK
@@ -1419,6 +1477,7 @@ erDiagram
     }
     controls ||--o{ client_controls : "particularizado en"
     services ||--o{ client_controls : "aplica"
+    client_controls ||--o{ client_control_changes : "se modifica con"
     client_controls ||--o{ action_plans : "remediado con"
     client_controls ||--o{ user_control_assignments : "asignado a"
     client_controls ||--o{ client_control_dimensions : "se evalua en"
@@ -1433,16 +1492,21 @@ rastro al control del catálogo para que una actualización del catálogo sepa a
 **El mismo control puede estar cumplido en un servicio e incumplido en otro**, porque se
 evalúa sobre insumos distintos. Por eso `client_controls` cuelga del servicio.
 
-**El cliente puede crear, editar y eliminar controles** (matriz §5.5), y por eso todo lo que se mide
+**El cliente puede proponer crear, editar y dar de baja controles** (matriz §5.5), y por eso todo lo que se mide
 cuelga de `client_controls` y no del catálogo: `evaluations` (§7.4) y `evidence_requirements` (§7.3)
 apuntan a `client_control_id`. `control_id` es la plantilla de origen y es nulo en un control propio.
 **Eliminar es dar de baja** (`is_active = false`): las evaluaciones son inmutables y las FK son
 `RESTRICT`, así que un control con histórico no se borra. Lo mismo vale para `client_causes` y
 `client_risks`.
 
-**Un control propio no tiene punto de enfoque** (el puente `point_of_focus_controls` es del catálogo), así
-que no puede cerrar un requisito del marco. Si cuenta para el % del servicio y cómo se mapearía a un
-requisito es una pregunta abierta del comité: P8.
+**Un control propio es solo documental** (su única dimensión es `policy`, tipo `manual`) y **lo ubica el cliente en una categoría** (`trust_criterion`). No tiene
+punto de enfoque (el puente `point_of_focus_controls` es del catálogo): cuenta para el porcentaje de su categoría y del marco, pero no cierra ningún requisito (D65).
+
+**Los cambios de controles los decide el consultor** (D65). Crear un control propio, darlo de baja y editar las dimensiones o la interpretación de un control —del
+catálogo o propio— son **propuestas** (`client_control_changes`) que la empresa hace y el consultor aprueba o rechaza:
+
+- **Crear:** el control existe desde que se propone y **cuenta en el porcentaje mientras está pendiente**. Si el consultor lo rechaza, se da de baja y deja de contar.
+- **Dar de baja y editar:** el control sigue como estaba (y contando) hasta que el consultor aprueba; entonces se aplica el cambio.
 
 ### 7.2 Riesgos del cliente y sus indicadores
 
@@ -1597,7 +1661,7 @@ plantilla, `sequence` = su orden en el control y `validity_within_period` = el p
 **La evidencia es válida si cae dentro del periodo de evaluación** del marco (decisión C1), no
 por una fecha de caducidad fija.
 
-**La exclusión la propone el consultor y la aprueba el cliente, y vence** (decisión A3). Una
+**La exclusión la propone el consultor (rol `consultor`) y la aprueba el cliente (`admin_empresa`), y vence** (decisión A3). Una
 exclusión sin justificación aprobada no cambia el denominador — y un check que sale por
 omisión es un agujero, no una exclusión.
 
@@ -1632,12 +1696,10 @@ erDiagram
         uuid id PK
         uuid evaluation_id FK
         uuid asset_id FK
-        uuid reported_by FK "nullable, si lo abrio el auditor"
         enum dimension
         string failed_test_or_check
         enum severity
         enum status "open|remediated|excluded"
-        enum origin "system|auditor"
         date detected_at
         date closed_at "nullable"
     }
@@ -1690,8 +1752,8 @@ inequívoca.
 - **Se guarda el dato crudo junto a la interpretación.** La sonda dice `ok`/`fail`
   (`raw_probe_result`); Monkey dice `compliant`/`non_compliant` (`result`). Sobrescribir el
   crudo haría imposible auditar el veredicto.
-- **El hallazgo tiene dos orígenes, y uno es humano.** El auditor puede abrirlo a mano
-  (`origin = auditor`), y **no se cierra porque la sonda pase a verde**.
+- **El hallazgo lo detecta el sistema, nunca una persona** (D63). Lo que el auditor escribe a mano es una
+  **observación** (§7.6), que es otra tabla y otro ciclo de vida.
 
 **`compliance_events` y `audit_logs` son dos tablas distintas.** `audit_logs` (§5.2) registra
 acciones sobre la plataforma (quién cambió qué en el sistema); `compliance_events` registra
@@ -1701,12 +1763,48 @@ cambios en el estado de cumplimiento. Las dos son **append-only, 7 años, inmuta
 los controles de gestión de vulnerabilidades y parches (`CC7.1` / `A.8.8`). El módulo con
 vida propia no entra al MVP.
 
-### 7.5 La IA y el auditor
+### 7.5 La IA y el veredicto
 
-La IA evalúa evidencia, sugiere conclusión y recomendaciones; **nunca cierra un control**. El
-cierre es humano y del lado del cliente — *"solo personal de la empresa puede dar el control
-como cumplido"* — y si se cierra con observaciones abiertas, **se documenta la razón**
-(`evaluations.closure_observation_reason`).
+La IA evalúa evidencia, sugiere una conclusión y recomendaciones; **nunca da el veredicto**. El veredicto de un test documental o manual lo da el
+**consultor** (`evaluations.confirmed_by`), y si lo da con observaciones abiertas se documenta la razón (`evaluations.closure_observation_reason`).
+
+### 7.6 Las observaciones
+
+Lo que escriben el `auditor` y el `consultor` (§5.1) son **observaciones**, no hallazgos: un hallazgo lo detecta el sistema (§7.4) y una observación la redacta una
+persona. Cada una la tiene que atender la empresa, y debe quedar constancia de que lo hizo.
+
+```mermaid
+erDiagram
+    audit_observations {
+        uuid id PK
+        uuid tenant_id FK
+        uuid service_id FK
+        uuid client_control_id FK "nullable, si habla de un control"
+        uuid evidence_submission_id FK "nullable, si comenta una evidencia"
+        uuid created_by FK "el auditor o el consultor que la escribe"
+        enum type "observation|recommendation|information_request"
+        text body
+        enum status "open|answered|closed"
+        text answer_note "nullable, que hizo la empresa"
+        uuid answer_evidence_id FK "nullable, evidencia que respalda la respuesta"
+        uuid answered_by FK "nullable"
+        datetime answered_at "nullable"
+        uuid closed_by FK "nullable, siempre quien la escribio"
+        datetime closed_at "nullable"
+        datetime created_at
+    }
+    services ||--o{ audit_observations : "recibe"
+    client_controls ||--o{ audit_observations : "puede tener"
+    evidence_submissions ||--o{ audit_observations : "puede tener"
+```
+
+- **Tres tipos:** observación, recomendación y solicitud de información (pedirle más datos a la empresa).
+- **Tres estados:** `open` → `answered` → `closed`. La empresa (`admin_empresa`, o el `funcional` dueño del control) **responde** dejando su nota y, si hace falta, una evidencia;
+  **solo quien la escribió la cierra**. Si no queda conforme, la devuelve a `open`.
+- **Una observación cerrada no se reabre**: si hace falta algo más, se crea otra. Mientras no esté cerrada, su autor puede modificarla.
+- **Una observación no mueve el porcentaje.** El cumplimiento solo cambia por el camino de siempre: si la respuesta es un documento, entra como evidencia, se aprueba y
+  el consultor da el veredicto del test **documental**. Si ese veredicto es negativo, el test falla y el porcentaje baja.
+- **Se escribe en la misma transacción que la acción** (`audit_logs`, D52). La observación no se borra.
 
 ---
 
@@ -1854,85 +1952,98 @@ revocada. `automated_capabilities.provider` queda por extensibilidad.
 
 ## 9. Cómo se calcula el cumplimiento
 
-Especificado por el comité en su ejemplo de fórmula de cumplimiento, transcrito aquí (ver §0). **Ante una duda de
-cálculo, ese archivo manda.**
+Regla del responsable de producto (D62), basada en cómo se mide SOC 2. Ante una duda de cálculo, manda esta sección.
 
-### Las capas
+### Los niveles
+
+SOC 2 se compone de **5 categorías**; cada categoría, de **controles**; y cada control se evalúa con **tests** en hasta **5 dimensiones**.
 
 ```
-1. EVALUACIÓN  (un test o check, sobre UN activo)
-   → compliant · non_compliant · pending · not_applicable
-2. CONTROL     % = cumplidas / (cumplidas + fallan)
-               ESTADO = NO CUMPLE si hay ≥1 falla aplicable
-3. DIMENSIÓN   % = promedio de los % de sus controles      ← TEMÁTICA
-4. SERVICIO    % = promedio de los % de sus dimensiones
+1. TEST        se aplica a UN activo → compliant · non_compliant · pending · not_applicable
+2. DIMENSIÓN   del control: CUMPLE solo si todos sus tests con resultado, sobre todos sus activos, cumplen
+3. CONTROL     % = dimensiones que cumplen / dimensiones que le aplican        ESTADO: cumple solo al 100%
+4. CATEGORÍA   % = controles que cumplen / controles aplicables                LOGRADA: solo al 100%
+5. MARCO       % = categorías logradas / categorías contratadas                (por servicio)
 ```
 
-Las evaluaciones de un control son su **producto cartesiano**: checks o tests × activos
-aplicables. Un test manual también se evalúa **una vez por activo**.
+Cada nivel **cuenta lo cumplido contra el total**: nunca promedia los porcentajes del nivel de abajo.
+Las 5 dimensiones son documental/política, servidores, bases de datos, aplicación y nube; las 5 categorías, seguridad,
+disponibilidad, integridad del procesamiento, confidencialidad y privacidad (§2).
 
 ### El ejemplo resuelto
 
-Servicio con 10 activos (3 servidores, 2 nubes, 5 BD), 5 controles, 45 evaluaciones:
+Un control «Acceso MFA» se evalúa en las 5 dimensiones. Si falla **una**, el control está al **80%**
+(4 de 5) y **no cumple**. Una categoría con 10 controles de los que fallan 5 está al **50%**. El servicio contrata las 5
+categorías y solo 1 está al 100%: el marco está al **20%** (1 de 5). Otro caso: una categoría con 156 controles de los que
+fallan 45 está al **71,15%** ((156 − 45) / 156).
 
-| Control | Evaluaciones | Cumplen | % | Estado |
-|---|---|---|---|---|
-| `C-01` | 15 | 14 | 93,3% | **NO CUMPLE** |
-| `C-02` | 10 | 9 | 90% | **NO CUMPLE** |
-| `C-03` | 10 | 9 | 90% | **NO CUMPLE** |
-| `C-04` | 5 | 5 | 100% | CUMPLE |
-| `C-05` | 5 | 5 | 100% | CUMPLE |
-
-Disponibilidad = promedio(93,3 · 100 · 100) = **97,8%** · Seguridad = **90%** · Protección de
-la información = **90%** → **servicio = 92,6%**, con **3 controles incumplidos**.
-
-### Las 12 reglas
+### Las reglas
 
 | # | Regla |
 |---|---|
 | R-01 | Cumplimiento únicamente sobre el **scope del servicio** |
-| R-02 | Cada control define sus **elementos aplicables** |
+| R-02 | Cada control define las **dimensiones y los activos que le aplican** |
 | R-03 | Manual: la evidencia sustenta, **el consultor evalúa** |
 | R-04 | Automático: la sonda entrega el resultado, **Monkey interpreta el criterio** |
-| R-05 | **Una falla aplicable ⇒ NO CUMPLE**, aunque el % sea alto |
-| R-06 | **`pending` ≠ `non_compliant`** |
-| R-07 | **`not_applicable`** se excluye del conjunto evaluable |
-| R-08 | % control = **cumplidas / evaluables** |
-| R-09 | % dimensión = promedio de sus controles, **peso igual en MVP** |
-| R-10 | % servicio = promedio de sus dimensiones, **peso igual en MVP** |
+| R-05 | **Una dimensión cumple solo si todos sus tests con resultado, sobre todos sus activos aplicables, cumplen.** Una falla ⇒ esa dimensión no cumple, y el control con ella |
+| R-06 | **Solo se mide lo que tiene resultado.** Un test `pending` no es un fallo ni un cumplido: no afecta ningún cálculo hasta que tenga resultado. Una dimensión sin ningún resultado queda «sin medir» y no entra al control; un control sin dimensiones medidas, tampoco entra a la categoría |
+| R-07 | **`not_applicable`** se excluye igual: una dimensión que no aplica a un control no entra al denominador de ese control |
+| R-08 | **% control = dimensiones que cumplen / dimensiones aplicables.** El control **cumple solo al 100%** |
+| R-09 | **% categoría = controles que cumplen / controles aplicables.** La categoría **se logra solo al 100%**. Una categoría con controles aplicables pero ninguno medido **no está lograda** y cuenta en el denominador del marco; una sin ningún control aplicable queda **anulada** y no entra |
+| R-10 | **% del marco = categorías logradas / categorías contratadas.** Es el número final del servicio sobre cada marco que se evalúa |
 | R-11 | **Mitigación: indicador separado** |
 | R-12 | **Riesgo residual: cálculo separado.** *"No sustituir por % cumplimiento"* |
 
 ### Lo que estas reglas zanjan
 
-**Estado y porcentaje conviven.** El % es **diagnóstico** (cuánto falta y dónde); el estado es
-binario. Un control al 93,3% no está "casi cumplido": está incumplido, y se señala el activo
-y el check exactos.
+**El cumplimiento es binario en cada nivel, y el porcentaje es el diagnóstico.** Un control al 80%, una categoría al 99% y un
+marco al 80% **están fallando**: la certificación existe solo cuando todo está al 100%. Al cliente se le muestra el porcentaje
+real de cada nivel (una categoría al 99% se ve como 99%) **dejando claro que falla y qué le falta**; el 1% que falta es lo que la
+convierte en lograda. Nunca se redondea hacia arriba ni se «perdona» una falla.
 
-**`pending` no entra al denominador**, ni cuenta como cero. Igual que `not_applicable`. Se
-reporta como **cobertura pendiente**: un cliente que empieza ve *"cobertura 12%, y de lo
-medido cumple 80%"* — dos números, los dos verdad.
+**Los controles propios del cliente cuentan.** Un control propio, aunque esté pendiente de aprobación, entra a su categoría (§7.1).
 
-**El agregado no es "controles cumplidos sobre aplicables".** Es promedio de porcentajes en
-dos saltos: contando binario, el ejemplo daría 40% en vez de 92,6%.
+**Peso igual en todos los niveles.** Un control vale lo mismo que cualquier otro de su categoría, y una categoría vale lo mismo
+que cualquier otra del marco. No se pondera por nivel de riesgo ni por número de activos (B1, D2).
 
-**Las exclusiones cambian el denominador solo si están justificadas y aprobadas.** Un check
-que sale por omisión es un agujero — y es lo que hace hoy el calculador, que descarta todo
-resultado que no encuentra sin dejar rastro.
+**El denominador del marco son las categorías que el servicio contrató.** Si contrata solo Seguridad y Disponibilidad y falla
+una, el marco está al 50%. Seguridad es la única categoría obligatoria en SOC 2.
 
-**El requisito es binario, igual que el control** (decisión B2): se cumple cuando todos sus
-controles cumplen. **No se pondera por nivel de riesgo** (decisión B1): todos los controles
-valen igual, porque el peso ya está implícito en cuántas evaluaciones genera cada uno.
+**No hay porcentaje de la empresa.** La unidad de medida es el par **(servicio × marco)**: con 3 servicios con SOC 2 hay 3
+porcentajes y ninguno se promedia con otro. El mismo control puede cumplir en un servicio y fallar en otro, porque se evalúa
+sobre insumos distintos. **La interfaz nunca muestra un número único de «cumplimiento de la empresa»: no existe.**
+
+**Las exclusiones cambian el denominador solo si están justificadas y aprobadas** (`exclusions`). Un check que sale por
+omisión es un agujero.
+
+**El requisito es binario** (B2): se cumple cuando todos sus controles cumplen. Sirve para la trazabilidad y para el reporte del
+auditor (*«¿qué evidencia tengo para CC6.1?»*); **no participa del porcentaje**, que va control → categoría → marco.
+
+### El semáforo cualitativo
+
+Es lo que el usuario ve primero (`philosophy.md`); el porcentaje queda como dato secundario. Se aplica al % de una categoría, al % del marco de un servicio
+y al de un **activo** (tests con resultado cumplidos / tests con resultado):
+
+| Estado | Cuándo |
+|---|---|
+| **Preparado** | 100% y **nada pendiente** |
+| **Casi listo** | de 80% a menos de 100%; o 100% de lo medido pero con algo aún pendiente |
+| **Requiere trabajo** | menos de 80% |
+| **Sin medir** | no hay nada con resultado todavía: es un hueco de cobertura, no un fallo |
+
+**La cobertura va siempre al lado del porcentaje, como número aparte:** es qué parte de lo que debería medirse ya tiene resultado. Un 100% con cobertura de 40% se
+muestra como «100% de lo medido · cobertura 40%», nunca como Preparado.
 
 ### La trazabilidad de una falla
 
-Modelo de navegación del producto, con **responsable y tratamiento en cada nivel**:
+Modelo de navegación del producto, con **responsable y tratamiento en cada nivel**. Es lo que se le muestra a `admin_empresa`
+y `funcional` (en qué falla y su porcentaje); los códigos técnicos solo los ve el auditor (D63):
 
 | Nivel | Lleva a | Responsable | Tratamiento |
 |---|---|---|---|
-| Check → Activo | el control | Responsable del activo | Tratamiento |
-| **Control** | la dimensión | Responsable parametrizado | **Plan de acción** |
-| Dimensión → Servicio | — | Responsable de cumplimiento | Seguimiento |
+| Test → Activo | la dimensión del control | Responsable del activo | Tratamiento |
+| **Control** | la categoría | Responsable parametrizado | **Plan de acción** |
+| Categoría → Marco del servicio | — | Responsable de cumplimiento | Seguimiento |
 | **Causa → Riesgo** | el servicio | Responsable de riesgo | **Mitigación / riesgo residual** |
 
 ### Cuánto se puede automatizar hoy
@@ -1940,14 +2051,7 @@ Modelo de navegación del producto, con **responsable y tratamiento en cada nive
 De los 61 TEST: **13 tienen checks automáticos**. Los **26 documentales** no los tendrán nunca
 (son revisión con IA) y los **11 de nube no tienen ninguno** todavía (decisión D13).
 `T-SRV-001` concentra 10.909 de los 11.352 checks. **El porcentaje se lee siempre junto a la
-cobertura.**
-
-**No existe un porcentaje consolidado de la organización.** La unidad de medida es el par
-**(servicio × marco)**: si un cliente tiene 3 servicios con SOC 2, hay 3 porcentajes y
-ninguno se promedia entre sí. El mismo control puede estar cumplido en un servicio e
-incumplido en otro, porque se evalúa sobre insumos distintos. **La interfaz nunca muestra un
-número único de "cumplimiento de la empresa": no existe.** Es coherente con una certificación
-real, que se emite sobre un sistema definido.
+cobertura** (qué parte ya tiene resultado).
 
 > El cumplimiento del marco se **deriva** recorriendo requisitos → controles; nunca se
 > almacena como columna del marco.

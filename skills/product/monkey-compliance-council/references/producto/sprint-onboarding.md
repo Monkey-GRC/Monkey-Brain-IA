@@ -35,11 +35,11 @@ ellas. La forma exacta de cada endpoint está en `contracts/modules/`.
   no bloquea el onboarding. Decisión D23, confirmada por el comité el 2026-09-26.
 - **Dashboard de 4 preguntas** y el cálculo de cumplimiento — el onboarding entrega los datos
   que ese motor consumirá, pero el motor no se construye aquí.
-- **RBAC completo y roles personalizados** — el onboarding asume que ya existe un
+- **RBAC completo** — el onboarding asume que ya existe un
   `admin_empresa` autenticado.
 - **MFA TOTP** (MD-94) — MD-64 entrega login con JWT y refresh, sin segundo factor. **Es deuda
-  conocida, no una decisión revertida**: el comité la exige para `admin_monkey`,
-  `admin_empresa` y `auditor` (`modelo-datos.md` §5.3).
+  conocida, no una decisión revertida**: la exige para los 5 roles
+  (`modelo-datos.md` §5.3, D66).
 - **Envío de la clave de acceso por correo** (MD-69) — `admin_monkey` **copia la clave desde la
   UI de Monkey Admin**. El modelo no cambia: D24 sigue diciendo que el destino es el
   `admin_email`; lo que se aplaza es la automatización. Por eso el registro debe **mostrar la

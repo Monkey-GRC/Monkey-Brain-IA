@@ -283,10 +283,27 @@ Lo marca `admin_monkey` al registrar la empresa. No se revierte sin migrar datos
 `pending` Pendiente · `used` Usada · `expired` Expirada · `revoked` Revocada
 
 ### `user_role` — `users.role`
-`admin_monkey` · `admin_empresa` · `funcional` · `auditor`
+`admin_monkey` · `admin_empresa` · `funcional` · `consultor` · `auditor`
 
 ⚠️ El schema actual del Backend usa `MONKEY_ADMIN`, `CLIENT_ADMIN`, `USER`, `VIEWER`. El modelo
 nuevo manda estos cuatro en minúscula; la API expone los del modelo.
+
+### `audit_observation_type` — `audit_observations.type`
+`observation` Observación · `recommendation` Recomendación · `information_request` Solicitud de información
+
+### `audit_observation_status` — `audit_observations.status`
+`open` Abierta · `answered` Respondida · `closed` Cerrada. `admin_empresa` o el `funcional` dueño del control la pasan a `answered`; solo quien la escribió (`auditor` o `consultor`) la cierra o la devuelve a `open`.
+*(Los endpoints de observaciones no tienen contrato todavía: DT-67.)*
+
+### `control_change_type` — `client_control_changes.change_type`
+`create` Crear un control propio · `retire` Dar de baja · `edit_dimensions` Editar dimensiones · `edit_interpretation` Editar interpretación
+
+### `control_change_status` — `client_control_changes.status`
+`pending` Pendiente · `approved` Aprobado · `rejected` Rechazado. Solo el `consultor` decide.
+*(Sin contrato todavía: DT-67.)*
+
+### `consultant_assignment_status` — `consultant_assignments.status`
+`active` Activa · `suspended` Suspendida por la empresa · `revoked` Retirada por Monkey. *(Sin contrato todavía: DT-67.)*
 
 ### `user_status` — `users.status`
 `active` Activo · `inactive` Inactivo · `suspended` Suspendido
@@ -365,7 +382,7 @@ Qué canales existen por categoría: `modules/onboarding-technical-control.md`. 
 `aws` Amazon Web Services · `azure` Microsoft Azure · `gcp` Google Cloud. *(Propuesta; hoy solo AWS tiene cuenta de prueba.)*
 
 ### `readiness` — nivel de preparación (`modules/control-tecnico-operacion.md`)
-`ready` Preparado · `almost_ready` Casi listo · `needs_work` Requiere trabajo · `not_measured` Sin medir. **Cualitativo primero**
+`ready` Preparado (100%) · `almost_ready` Casi listo (de 80% a menos de 100%) · `needs_work` Requiere trabajo (menos de 80%) · `not_measured` Sin medir. **Cualitativo primero**
 (`philosophy.md`); `not_measured` es un hueco de cobertura, no un fallo.
 
 ### `readiness_area` — agrupación en lenguaje de negocio de las pruebas de nube *(propuesta de desarrollo)*

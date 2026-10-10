@@ -29,13 +29,15 @@ enrutar la pregunta al archivo correcto** (ver `SKILL.md` de esa skill, sección
 - `philosophy.md` — cómo debe hablarle Monkey a un usuario final. Contiene reglas
   ya violadas una vez en este proyecto por apurar una UI sin leerlas primero:
   - **Nunca un % desnudo como métrica principal** — el readiness es cualitativo
-    (Preparado / Casi listo / Requiere trabajo), el % es secundario.
+    (Preparado = 100%, Casi listo = 80% o más, Requiere trabajo = menos), el % es secundario.
   - **Nunca jerga técnica en la superficie** ("controles", "CC6.1", "matrices",
-    "riesgo residual") — la vista técnica/detallada existe, pero es secundaria
-    ("modo auditor"), nunca la vista por defecto.
+    "riesgo residual") — la vista técnica/detallada existe, pero **es la pantalla de los roles
+    `auditor` y `consultor`**, no un modo ni un botón: el cliente (`admin_empresa`, `funcional`) solo ve la vista
+    de negocio (en qué falla y su porcentaje). **Consultoría** prepara para la auditoría; **auditoría** certifica.
   - La IA nunca certifica cumplimiento, nunca presenta inferencia como hecho
     verificado sin mostrar evidencia, siempre etiqueta lo que ella generó.
   - Plantilla de 7 campos para explicarle un hallazgo a un usuario final.
+- `modelo-datos.md` §9 — **cómo se mide el cumplimiento**: se cuenta, no se promedia (dimensión → control → categoría → marco, y cada nivel se cumple solo al 100%). Léelo antes de tocar cualquier cálculo o pantalla de porcentaje.
 - `architecture.md` — los 4 motores, la estructura del modelo y el stack de
   referencia.
 - `mvp-roadmap.md` — qué es MUST/SHOULD/LATER/NO BUILD ya decidido.

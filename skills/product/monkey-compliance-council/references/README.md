@@ -5,7 +5,7 @@ es la versión por carpetas.
 
 | Carpeta | Qué hay | Pregunta que responde |
 |---|---|---|
-| [`producto/`](producto/) | `philosophy` · `mvp-roadmap` · `council` · `flujo-end-to-end` · `sprint-onboarding` | ¿Cómo le habla Monkey al usuario? ¿Qué se construye primero? ¿Cómo se recorre un cliente de punta a punta? |
+| [`producto/`](producto/) | `philosophy` · `mvp-roadmap` · `council` · `flujo-end-to-end` · `sprint-onboarding` · `sprint-cumplimiento` | ¿Cómo le habla Monkey al usuario? ¿Qué se construye primero? ¿Cómo se recorre un cliente de punta a punta? |
 | [`arquitectura/`](arquitectura/) | `architecture` | ¿Cuáles son los 4 motores, la estructura del modelo y el stack? |
 | [`datos/`](datos/README.md) | `modelo-datos` · `schema-implementacion` · `modelo-datos-decisiones` · `modelo-datos-pendientes` | ¿Qué tablas hay, cómo se implementan, por qué y qué falta decidir? |
 | [`seguridad/`](seguridad/README.md) | `requisitos` (`SEG-n`) | ¿Qué debe cumplir el producto en seguridad y qué está realmente comprobado? |

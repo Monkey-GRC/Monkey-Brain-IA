@@ -13,7 +13,7 @@ type: contract
 conexión, validación, activación, programación). Este contrato es **otro módulo del comité** (`modelo-datos.md` §8, «Control Técnico — la
 operación continua»): empieza cuando un activo ya está conectado y validado. Lo que no está aquí: cómo se conecta un activo.
 
-**Entidades:** `executions`, `check_results`, `evaluations`, `findings`, `asset_resources` (`modelo-datos.md` §7.4, §8, §9). **Rol:** `admin_empresa`.
+**Entidades:** `executions`, `check_results`, `evaluations`, `findings`, `asset_resources` (`modelo-datos.md` §7.4, §8, §9). **Rol:** `admin_empresa` (y `funcional` en lo suyo); la vista técnica es solo del `auditor` y del `consultor`.
 **App:** Monkey Platform.
 
 
@@ -22,7 +22,7 @@ operación continua»): empieza cuando un activo ya está conectado y validado. 
 > al proveedor (`P11`, `P14` D3).
 >
 > ⚠️ **Lenguaje de la superficie** (`philosophy.md`). Nada de lo que ve el cliente por defecto lleva códigos de control ni de requisito.
-> Los códigos técnicos viajan solo en el objeto `technical` y solo si se pide `view=technical` («modo auditor»).
+> Los códigos técnicos viajan solo en el objeto `technical` y solo si quien pide tiene el rol `auditor` o `consultor` y pide `view=technical`; para cualquier otro rol esa vista responde `403` (D63, D64, SEG-54).
 
 ## Operación continua
 
@@ -44,6 +44,9 @@ Paginado. Cada ítem: `id`, `status` (`queued` · `running` · `completed` · `f
 haciendo: la IA narra, nunca un spinner mudo).
 
 ### `GET /v1/assets/{id}/readiness` — el estado de preparación
+
+Con **`?service_id=`** mide solo lo que es de ese servicio (D61): se dejan fuera los resultados de activos de la conexión que **no** son suyos; lo que es de toda la cuenta
+(usuarios, políticas, registro de actividad) cuenta para todos. `404` si el servicio no existe para la empresa.
 
 Lo que ve el cliente por defecto. **Cualitativo primero; el número es secundario** (`philosophy.md`):
 
@@ -78,7 +81,7 @@ Lo que ve el cliente por defecto. **Cualitativo primero; el número es secundari
 - `includes_proposed_mappings`: `true` si parte de lo medido se apoya en vínculos check→prueba que el comité **aún no ratificó** (desarrollo y demostración).
   En producción es `false` y solo cuenta lo ratificado; la pantalla debe decirlo cuando sea `true`. Antes de la primera corrida, `readiness` es
   `not_measured` con todo en cero (no un `404`).
-- Un cálculo **no** se declara `ready` si hay algo `not_compliant` aplicable (R-05: una falla aplicable ⇒ no cumple).
+- Un cálculo **no** se declara `ready` si hay algo `not_compliant` aplicable (R-05: una falla aplicable ⇒ no cumple). Para la categoría y el marco de un servicio, `ready` es 100%, `almost_ready` de 80% a menos de 100%, y `needs_work` menos de 80% (`modelo-datos.md` §9); y para el activo es el mismo (tests con resultado cumplidos / tests con resultado; D62).
 
 ### `GET /v1/assets/{id}/findings` — hallazgos, en la plantilla de 7 campos
 
@@ -107,9 +110,9 @@ Los siete textos son **claves i18n** que el backend resuelve con `Accept-Languag
 vienen `null` y `how_to_fix` cae a un texto neutro: **nunca se muestra el texto crudo del motor**. Cuando un texto lo redacta la IA,
 `is_ai_generated: true` (y `ai_confidence`), siempre.
 
-### `GET /v1/assets/{id}/results?view=technical` — modo auditor
+### `GET /v1/assets/{id}/results?view=technical` — vista técnica del auditor y del consultor
 
-Secundario, paginado, para el auditor o el usuario avanzado. Ítems por check y recurso:
+Paginado, **solo para los roles `auditor` y `consultor`** (los demás reciben `403`). Ítems por check y recurso:
 
 ```json
 {
@@ -143,7 +146,7 @@ Claves i18n: `execution.queued`, `readiness.read`, `finding.*`.
 | Qué | Estado |
 |---|---|
 | **Qué texto redacta cada hallazgo** (`finding.*`) y quién lo revisa antes de llegar al cliente | ❌ `P14` E2. Mientras tanto, los campos pueden venir `null` |
-| **Las áreas** (`identity_access`, `data_network`, `logging_backup`) y su mapeo a las pruebas | ◐ Propuesta de desarrollo; falta ratificar con el comité (`P16`) |
+| **Las áreas** (`identity_access`, `data_network`, `logging_backup`) y su mapeo a las pruebas | ◐ Propuesta de desarrollo; falta ratificar con el comité |
 | **Hallazgos para checks sin prueba asignada** | ✅ No cuentan hasta que el comité responda (`P15`) |
 
 

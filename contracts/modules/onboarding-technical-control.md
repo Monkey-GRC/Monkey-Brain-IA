@@ -191,10 +191,11 @@ Una conexión **activa o programada también se puede volver a comprobar**: refr
 «evaluación automática», nunca del proveedor. Lo que ocurre **después** de validar (evaluar, estado de preparación, hallazgos) es otro módulo:
 `control-tecnico-operacion.md`.
 
-### `GET /v1/assets/{id}/resources` — los activos que la conexión reconoció
+### `GET /v1/assets/{id}/resources` — los activos de la conexión
 
-Lo que el cliente necesita ver tras conectar: **qué encontró Monkey en su cuenta**, en las regiones que declaró (D59). Se llena al validar la
-conexión y se refresca al volver a comprobarla. Paginado; filtro `kind`. `404` si el activo no existe, es de otra empresa o está dado de baja.
+Lo que la conexión reconoció dentro de la cuenta, en las regiones declaradas (D59). **Cada uno es un activo propio** (D61): con su código, su IP, su zona, sus etiquetas y su
+criticidad. Se llena al validar la conexión y se refresca al volver a comprobarla. Paginado (`page_size` máx. 100); filtro `kind`; **`service_id`** marca cuáles son de ese servicio.
+`404` si la conexión no existe, es de otra empresa, está dada de baja o es ella misma un activo descubierto.
 
 ```json
 {
@@ -202,25 +203,36 @@ conexión y se refresca al volver a comprobarla. Paginado; filtro `kind`. `404` 
   "message": "Estos son los activos que encontramos en tu cuenta.",
   "data": {
     "discovered_at": "2026-10-10T14:02:11Z",
-    "regions": ["us-east-1", "us-east-2"],
+    "regions": ["us-east-2"],
     "incomplete_services": [],
-    "summary": [{ "kind": "server", "count": 2 }, { "kind": "database", "count": 1 }],
+    "summary": [{ "kind": "server", "count": 5 }, { "kind": "storage", "count": 1 }],
+    "included_count": 3,
     "items": [
-      { "id": "…", "kind": "server", "type": "AwsEc2Instance", "name": "api-prod", "region": "us-east-1",
-        "attributes": { "os": "Ubuntu 22.04", "os_source": "image", "state": "running", "instance_type": "t3.micro", "platform": "Linux/UNIX" } },
-      { "id": "…", "kind": "database", "type": "AwsRdsDbInstance", "name": "main", "region": "us-east-1",
-        "attributes": { "engine": "postgres", "engine_version": "16.3", "status": "available" } }
+      { "id": "…", "code": "AST-0007", "kind": "server", "type": "AwsEc2Instance", "name": "Server-Proxy", "region": "us-east-2",
+        "platform": "Ubuntu 24.04", "ip_address": "69.0.1.235", "location": "us-east-2b", "criticality": "medium",
+        "tags": ["ambiente=prod"],
+        "attributes": { "instance_id": "i-0a5198f79ae9545cf", "os": "Ubuntu 24.04", "os_source": "image", "state": "stopped", "instance_type": "t3.micro", "private_ip": "69.0.1.235", "vpc_id": "vpc-…", "subnet_id": "subnet-…" },
+        "in_service": true }
     ],
-    "page": 1, "page_size": 50, "total": 3, "total_pages": 1
+    "page": 1, "page_size": 100, "total": 6, "total_pages": 1
   }
 }
 ```
 
-- `discovered_at` es `null` mientras la cuenta no se haya descubierto (conexión sin comprobar): **no es un error**, la lista viene vacía.
-- `summary` cuenta por clase (`resource_kind`, `enums.md`) y **no depende del filtro**.
-- `attributes` trae solo lo que se pudo leer. **`os` es una inferencia** a partir de la imagen (`os_source: "image"`); si no se pudo, es `null`. La pantalla
-  debe decir «según su imagen» y nunca presentarlo como verificado.
-- Solo `server`, `database`, `storage` y `function`: los recursos que solo conoce la evaluación (`other`) no son activos del cliente y no salen.
+- `discovered_at` es `null` mientras la cuenta no se haya descubierto: **no es un error**, la lista viene vacía.
+- `summary` cuenta por clase (`resource_kind`) y **no depende del filtro**. `included_count` y `in_service` solo vienen con `service_id`.
+- `attributes` trae solo lo que se pudo leer. **`os` es una inferencia** a partir de la imagen (`os_source: "image"`); si no se pudo, es `null`.
+- Solo `server`, `database`, `storage` y `function`: los recursos que solo conoce la evaluación (`other`) no son activos y no salen.
+
+### `PUT /v1/services/{id}/connections/{connectionId}/assets` — los activos que son de este servicio
+
+```json
+{ "asset_ids": ["…", "…"] }
+```
+
+Fija **exactamente** qué activos de la conexión pertenecen al servicio (D61): los que no vienen se desenlazan. Idempotente. `200`:
+`{ "included": 3, "added": 1, "removed": 0 }`. `404` si el servicio o la conexión no existen para la empresa, o la conexión no sirve a ese servicio; `422 VALIDATION_FAILED`
+(`asset_ids`, `invalid`) si algún id no es un activo activo de **esa** conexión. Auditoría: `service.assets_set`.
 
 ### `PATCH /v1/assets/{id}` — editar un sistema
 
@@ -237,7 +249,7 @@ Todo opcional: `name`, `criticality`, `tags` y, **solo en una cuenta de nube**, 
 ### `DELETE /v1/assets/{id}` — quitar un sistema
 
 Es una **baja, no un borrado**: `assets.status = inactive`, la conexión se desactiva y el activo deja de listarse (`GET` responde `404`) y de evaluarse.
-Ejecuciones, resultados y hallazgos **se conservan** (son evidencia). `200` con `data: null`. `409 EXECUTION_IN_PROGRESS` si hay algo en curso;
+Ejecuciones, resultados y hallazgos **se conservan** (son evidencia). **Los activos que la conexión descubrió se dan de baja con ella** y se desenlazan de los servicios. `200` con `data: null`. `409 EXECUTION_IN_PROGRESS` si hay algo en curso;
 un segundo `DELETE` es `404`. Auditoría: `asset.retire`.
 
 ### `POST /v1/assets/{id}/activate` — activar
@@ -256,7 +268,7 @@ la capacidad no soporta devuelve `422 FREQUENCY_NOT_SUPPORTED`.
 
 ### `GET /v1/assets` — listar
 
-Paginado, con filtros `service_id`, `connection_category`, `operational_status`. Cada elemento
+Paginado, con filtros `service_id`, `connection_category`, `operational_status`. **Solo conexiones** (y lo registrado a mano): los activos descubiertos viven dentro de su conexión (D61). Cada elemento
 trae `code`, `name`, `connection_category`, `operational_status`, `technical_coverage` y
 `provisioning.connection_status`.
 
@@ -319,7 +331,7 @@ Implementado en `Backend/src/features/technical-control` (más `catalogs` y el p
 | `GET /v1/catalogs/automated-capabilities` | ✅ Las 6, sin `provider` |
 | `POST /v1/assets` | ✅ Tipo deducido de la conexión; código `AST-0001` por empresa; credenciales validadas por conexión y **cifradas** |
 | `GET /v1/assets` · `GET /v1/assets/{id}` | ✅ Paginado con filtros `service_id`, `connection_category`, `operational_status`. El detalle es **adición** (DT-11) |
-| `GET /v1/assets/{id}/resources` (activos descubiertos al validar) | ✅ Construido y probado (D59) |
+| `GET /v1/assets/{id}/resources` (activos de la conexión, con `service_id`) y `PUT /v1/services/{id}/connections/{id}/assets` | ✅ Construidos y probados contra AWS real (D59, D61) |
 | `PATCH /v1/assets/{id}` (editar) y `DELETE /v1/assets/{id}` (baja) | ✅ Construidos y probados (2026-10-09) |
 | `PATCH /v1/assets/{id}/connection`, `GET /v1/connection-templates/aws-readonly-role`, `GET /v1/catalogs/connection_method`, `GET /v1/catalogs/aws_region` | ✅ Nube (D58) |
 | `POST /v1/assets/{id}/validate` | ✅ Nube: **real** vía trabajador (`PROBE_MODE=runner`), verificada contra AWS real. Otros modos: `simulated` → `200` con `mode: demo`; `unavailable` (por defecto) → `503`. Canal `agent`: `503` (`DT-57`) |

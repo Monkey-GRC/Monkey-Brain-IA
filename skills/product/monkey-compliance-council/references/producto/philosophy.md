@@ -49,12 +49,12 @@ Diez pasos, cada uno con una sola pregunta o acción clara, sin jerga, con la IA
 6. La IA analiza automáticamente (con progreso narrado)
 7. La IA identifica riesgos (en lenguaje de negocio desde el primer momento)
 8. La IA propone qué framework(s) perseguir primero, con una razón concreta
-9. La IA muestra el nivel de preparación (cualitativo: Preparado / Casi listo / Requiere trabajo — nunca solo un porcentaje desnudo)
+9. La IA muestra el nivel de preparación (cualitativo: Preparado = 100%, Casi listo = 80% o más, Requiere trabajo = menos — nunca solo un porcentaje desnudo)
 10. Comienza el monitoreo continuo, con la primera acción del día ya sugerida
 
 ## El dashboard responde 4 preguntas, nunca es una hoja de cálculo
 
-¿Estamos bien? ¿Qué es urgente? ¿Qué cambió? ¿Qué debemos hacer hoy? Todo lo demás (matrices, listas completas de controles) vive en una segunda capa ("modo auditor"), accesible pero no la vista por defecto.
+¿Estamos bien? ¿Qué es urgente? ¿Qué cambió? ¿Qué debemos hacer hoy? Todo lo demás (matrices, listas completas de controles, códigos técnicos) **no es una capa del cliente: es la pantalla de los roles `auditor` y `consultor`** (D63, D64). El cliente solo ve la vista de negocio, con lo que falla y su porcentaje.
 
 ## La plantilla de 7 campos para cada hallazgo
 

@@ -17,8 +17,8 @@ contraseña. En los responses `name` y `last_name` pueden venir `null`; la UI mu
 **App:** Monkey Platform (`Frontend-Platform`) y Monkey Admin (`Frontend`) comparten estos
 endpoints.
 
-> **MFA TOTP está aplazada a MD-94.** El comité la exige como obligatoria para `admin_monkey`,
-> `admin_empresa` y `auditor` (`modelo-datos.md` §5.3): es deuda conocida, no una decisión
+> **MFA TOTP está aplazada a MD-94.** La exige como obligatoria para los 5 roles
+> (`modelo-datos.md` §5.3, D66): es deuda conocida, no una decisión
 > revertida. Cuando entre, el login devolverá un paso intermedio y este contrato cambia.
 
 ## Activación de la cuenta: dos pasos (D51)
