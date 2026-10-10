@@ -43,7 +43,7 @@ El registro está partido por épocas en `decisiones/`. **Busca el ID en el índ
 | [`decisiones/02-schema-y-catalogo.md`](decisiones/02-schema-y-catalogo.md) | **D26–D42** — Revisión de migraciones, enums, RLS, siembra y clonado del catálogo, audit trail, despliegue de migraciones. |
 | [`decisiones/03-onboarding.md`](decisiones/03-onboarding.md) | **D43–D47** — Clave de acceso y los 3 componentes del onboarding; el marco se contrata al registrar. |
 | [`decisiones/04-sonda-y-correcciones.md`](decisiones/04-sonda-y-correcciones.md) | **D48–D52** — Paso 3 provisional contra la sonda real, pool de conexiones, correcciones del comité, auditoría atómica. |
-| [`decisiones/05-control-tecnico-y-nube.md`](decisiones/05-control-tecnico-y-nube.md) | **D53–D61** — Conexión con la nube, sonda de servidores, trabajador del motor de nube y descubrimiento de activos. |
+| [`decisiones/05-control-tecnico-y-nube.md`](decisiones/05-control-tecnico-y-nube.md) | **D53–D61 y D67** — Conexión con la nube, sonda de servidores, trabajador del motor de nube y descubrimiento de activos. |
 | [`decisiones/06-cumplimiento-y-roles.md`](decisiones/06-cumplimiento-y-roles.md) | **D62–D66** — Cómo se cuenta el cumplimiento, el auditor, los cinco roles, controles propios y MFA. |
 
 ### Índice
@@ -117,3 +117,4 @@ El registro está partido por épocas en `decisiones/`. **Busca el ID en el índ
 | D64 | Hay cinco roles: el consultor prepara, el auditor certifica | 06 |
 | D65 | Controles propios y cambios de controles con aprobación del consultor (cierra P8) | 06 |
 | D66 | MFA obligatoria para los 5 roles | 06 |
+| D67 | El paso 3 es un marketplace de plataformas y el catálogo de conexiones vive en la base de datos | 05 |

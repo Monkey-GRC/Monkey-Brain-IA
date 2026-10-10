@@ -93,7 +93,7 @@ Parches del Componente 3 del onboarding (conexión de activos, la sonda) y del p
 
 - **Qué está parchado:** *2026-10-09: para la **nube** ya no (D58: rol de solo lectura o llaves, validados de verdad); sigue vigente para servidores y bases de datos.*  En la sonda real el cliente instala un agente y Monkey lee la base/API del manager; no hay rol de lectura, usuario de base ni llave SSH que entregar a Monkey
 - **Por qué:** Se construyó antes de verificar la sonda (D46, DT-4)
-- **Qué lo cierra:** Rediseñar el paso 3 (P12): sin credenciales, mostrar el comando de instalación del agente y el estado «esperando al agente»
+- **Qué lo cierra:** Rediseñar el paso 3 (P12): sin credenciales, mostrar el comando de instalación del agente y el estado «esperando al agente». **D67:** mientras no exista el canal de agente, servidores y bases se muestran bloqueadas en el marketplace y el formulario deja de ofrecerse
 
 ### DT-32 · No hay vínculo activo ↔ agente
 
@@ -202,7 +202,7 @@ Parches del Componente 3 del onboarding (conexión de activos, la sonda) y del p
 
 - **Qué está parchado:** (`credentials` por categoría, sin `connection_method`), que la pantalla ya no usa para la nube. Sigue siendo la única forma de dar de alta servidores y bases de datos
 - **Por qué:** Los servidores y las bases de datos no tienen su canal real (agente) construido
-- **Qué lo cierra:** Construir el canal de agente (`DT-31`, `DT-32`, `P12`) y retirar el formulario
+- **Qué lo cierra:** Construir el canal de agente (`DT-31`, `DT-32`, `P12`) y retirar el formulario. **D67:** la API deja de aceptarlo (`connection.provider_not_supported`) cuando la plataforma está bloqueada
 
 ### DT-57 · El canal de agente solo existe como diseño:
 
@@ -210,7 +210,7 @@ Parches del Componente 3 del onboarding (conexión de activos, la sonda) y del p
 
 - **Qué está parchado:** la pantalla no ofrece servidores ni bases de datos con agente, y el backend responde «no disponible» al validarlos. Tampoco se genera el comando de instalación ni se pre-registra el agente (D54)
 - **Por qué:** Alcance de la etapa: solo AWS
-- **Qué lo cierra:** Adaptador de la sonda de servidores en el backend y el instalador de Monkey (`P12`)
+- **Qué lo cierra:** Adaptador de la sonda de servidores en el backend y el instalador de Monkey (`P12`). Hasta entonces sus plataformas están `coming_soon` (D67)
 
 ### DT-58 · `Frontend-Platform` no tiene pruebas automáticas
 

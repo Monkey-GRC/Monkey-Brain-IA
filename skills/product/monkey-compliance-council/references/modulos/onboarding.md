@@ -93,6 +93,8 @@ Lo que aporta este componente al onboarding, específicamente:
 - El cliente elige su **escenario de despliegue** (solo nube / nube con servidores /
   on-premise / híbrido), que determina qué conexiones del catálogo AC-01…AC-06 se le
   ofrecen.
+- **El cliente elige una plataforma** (AWS, un sistema operativo, un motor de base de datos…), no una categoría técnica; cada una lleva a su paso a paso y las que aún no tienen flujo se
+  muestran bloqueadas (D67). El catálogo de plataformas y las reglas de las conexiones viven en la base de datos.
 - Por cada conexión, el flujo es el de aprovisionamiento ya modelado: conectar → validar
   → activar → programar (`modelo-datos.md` §6.3 y §8).
 - El resultado de este componente es lo que llena `assets` (lo que Monkey encontró al conectar) del servicio que se está

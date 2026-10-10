@@ -21,6 +21,7 @@ Lo que sigue abierto, con lo más urgente arriba. 🚧 bloquea trabajo · ⚠️
 | [P7](#p7--dónde-se-aloja-el-postgres-de-producción) | Dónde se aloja el Postgres de producción | ⚠️ Condiciona la retención de 7 años del audit trail (D41) | — |
 | [P9](#p9--datos-del-excel-que-hay-que-corregir-o-confirmar) | Datos del Excel que hay que corregir o confirmar | ⚠️ La dimensión Aplicación del cálculo y las causas que ve el cliente | — |
 | [P11](#p11--el-nombre-del-proveedor-en-los-textos-de-las-pruebas) | El nombre del proveedor en los textos de las pruebas | ⚠️ Qué ve el cliente de una prueba (hoy ningún texto de prueba sale a la UI) | — |
+| [P21](#p21--el-uso-de-los-logos-de-marcas-de-terceros) | El uso de los logos de marcas de terceros en el marketplace | ⚠️ Publicar el marketplace con logos a clientes reales; no bloquea construirlo | 2026-10-10 |
 | [P6](#p6--la-lista-completa-de-business_model) | La lista completa de `business_model` | No bloquea (valen las 19 y `other`) | — |
 | [P13](#p13--ratificar-lo-que-desarrollo-decidió-en-las-correcciones-del-2026-10-05-d50-d51) | Ratificar lo que desarrollo decidió el 2026-10-05 (D50, D51) | No bloquea: está construido y funcionando | 2026-10-06 |
 | [P15](#p15--cómo-se-mapean-los-checks-de-nube-que-quedan-fuera) | Cómo se mapean los checks de nube que quedan fuera | No bloquea: lo no mapeado no cuenta hasta responder | 2026-10-08 |
@@ -178,6 +179,21 @@ conectar nada**, y el producto no tendría qué medir.
 políticas (sin activos técnicos) darlo por hecho?
 
 **Qué depende:** `onboarding.completed_steps` y `next_step` de `GET /v1/auth/me`, y el mensaje de «Inicio».
+
+---
+
+## P21 · El uso de los logos de marcas de terceros
+
+**Estado:** abierto desde 2026-10-10 (D67). No bloquea construir el marketplace: condiciona publicarlo con logos a clientes reales.
+
+El paso 3 muestra el logo oficial en SVG de cada plataforma (AWS, Azure, GCP, Microsoft 365, Google Workspace, Linux, Windows, PostgreSQL, Oracle…). Las marcas son de terceros y varias
+tienen guías de uso: logo oficial sin modificar, espacio libre mínimo, a veces una leyenda.
+
+1. ¿Se tiene permiso o se revisó la guía de marca de cada proveedor para mostrar su logo en la plataforma?
+2. ¿Quién entrega los SVG oficiales y dónde se guardan?
+3. ¿Basta con un aviso en la plataforma («las marcas pertenecen a sus titulares») o se necesita algo más?
+
+**Qué depende:** los logos de `Frontend-Platform` (`logo_key`, D67) y la publicación del marketplace.
 
 ---
 

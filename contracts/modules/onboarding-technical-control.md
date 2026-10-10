@@ -9,8 +9,8 @@ type: contract
 
 El cliente conecta su infraestructura real. Ver `conventions.md` y `enums.md`.
 
-**Entidades:** `assets`, `service_assets`, `automated_capabilities`,
-`asset_provisionings` (`modelo-datos.md` §6.3, §8).
+**Entidades:** `assets`, `service_assets`, `automated_capabilities`, `asset_provisionings` y, desde D67, el catálogo de plataformas:
+`capability_platforms`, `platform_connection_methods`, `platform_regions`, `capability_frequencies`, `deployment_scenario_capabilities` (`modelo-datos.md` §6.3, §8).
 **Rol:** `admin_empresa`. **App:** Monkey Platform.
 
 > ⚠️ **Confidencialidad, no negociable.** Ningún campo, valor de enum, mensaje de error ni
@@ -44,17 +44,17 @@ El cliente conecta su infraestructura real. Ver `conventions.md` y `enums.md`.
   "data": {
     "deployment_scenario": "cloud_with_servers",
     "applicable_capabilities": [
-      { "catalog_code": "ac_01", "category": "Servicios en nube (gestionados, sin servidor)", "method": "Autorización API / rol de solo lectura u OAuth", "required_permissions": ["Rol de solo lectura", "Consentimiento OAuth"], "base_frequency": "cada 6-24 h", "supported_platforms": ["AWS", "Azure", "GCP", "Microsoft 365", "Google Workspace"], "generated_evidence": "Postura de configuración y registros de actividad de la nube" },
-      { "catalog_code": "ac_02", "category": "Servidores en nube / VPS", "method": "Instalar agente ligero de Monkey (o agentless SSH/WinRM)", "required_permissions": ["sudo o administrador para la instalación"], "base_frequency": "continuo", "supported_platforms": ["Linux", "Windows", "HP-UX", "AIX", "Solaris"] },
-      { "catalog_code": "ac_03", "category": "Bases de datos en nube", "method": "Agente en host + usuario de solo lectura", "required_permissions": ["Usuario de solo lectura de auditoría"], "base_frequency": "continuo", "supported_platforms": ["PostgreSQL", "MySQL", "SQL Server", "Oracle", "MongoDB"] }
+      { "catalog_code": "ac_01", "category": "Servicios en nube (gestionados, sin servidor)", "method": "Autorización API / rol de solo lectura u OAuth", "required_permissions": ["Rol de solo lectura", "Consentimiento OAuth"], "base_frequency": "cada 6-24 h", "platforms": [{ "code": "aws", "name": "AWS", "logo_key": "aws", "availability": "available", "connection_methods": ["readonly_role", "access_keys"] }, { "code": "azure", "name": "Azure", "logo_key": "azure", "availability": "coming_soon", "connection_methods": [] }, "…"], "generated_evidence": "Postura de configuración y registros de actividad de la nube" },
+      { "catalog_code": "ac_02", "category": "Servidores en nube / VPS", "method": "Instalar agente ligero de Monkey (o agentless SSH/WinRM)", "required_permissions": ["sudo o administrador para la instalación"], "base_frequency": "continuo", "platforms": [{ "code": "linux", "name": "Linux", "logo_key": "linux", "availability": "coming_soon", "connection_methods": ["agent"] }, "…"] },
+      { "catalog_code": "ac_03", "category": "Bases de datos en nube", "method": "Agente en host + usuario de solo lectura", "required_permissions": ["Usuario de solo lectura de auditoría"], "base_frequency": "continuo", "platforms": [{ "code": "postgresql", "name": "PostgreSQL", "logo_key": "postgresql", "availability": "coming_soon", "connection_methods": ["agent"] }, "…"] }
     ]
   }
 }
 ```
 
 `GET /v1/catalogs/automated-capabilities` devuelve las 6 sin filtrar, con los mismos campos
-(`catalog_code`, `category`, `supported_platforms`, `method`, `required_permissions`,
-`base_frequency`, `generated_evidence`). **`provider` no aparece en ninguna de las dos
+(`catalog_code`, `category`, `platforms`, `method`, `required_permissions`,
+`base_frequency`, `generated_evidence`). `platforms` reemplaza al antiguo `supported_platforms` (nombres sueltos): cada plataforma trae `code`, `name` (la marca, no se traduce), `logo_key`, `availability` (`available` | `coming_soon`) y sus `connection_methods` (el primero es el recomendado; vacío si aún no tiene canal), en el orden de la hoja del comité (D67). **`provider` no aparece en ninguna de las dos
 respuestas**: es la única columna de `automated_capabilities` que nunca sale.
 
 ## Paso 2 — El flujo de conexión de un activo
@@ -62,19 +62,38 @@ respuestas**: es la única columna de `automated_capabilities` que nunca sale.
 Cuatro pasos: **conectar → validar → activar → programar**. El cliente **no entrega secretos** salvo en el canal alternativo de llaves; el
 resto lo entrega Monkey (D53, D58). Al menos uno completo de punta a punta es criterio de aceptación.
 
-### Cómo se conecta cada cosa
+### Elegir la plataforma — el marketplace (D67)
 
-| Qué se conecta | `connection_category` | Canales (`connection_method`) |
-|---|---|---|
-| Cuenta de nube (AWS; Azure y GCP, pendientes) | `ac_01` | `readonly_role` (recomendado) · `access_keys` |
-| Servidor en nube, servidor on-premise o equipo | `ac_02`, `ac_04`, `ac_06` | `agent` (solo diseño, `DT-57`) |
-| Base de datos | `ac_03`, `ac_05` | `agent` (solo diseño, `DT-57`) |
+El cliente no elige una categoría técnica: **elige una plataforma**, y eso lo lleva a su propio paso a paso. Nunca se asume una (antes, «Servicios en nube» daba por hecho AWS).
+Las plataformas y sus atributos salen de la base (`platforms` en `GET /v1/catalogs/automated-capabilities` y en `applicable_capabilities`); la pantalla no hardcodea ninguna lista.
 
-El cliente **elige** el canal entre los de su categoría. `GET /v1/catalogs/connection_method` y `GET /v1/catalogs/aws_region` dan las opciones;
-`GET /v1/catalogs/automated-capabilities` añade `connection_methods` (el primero es el recomendado). Un activo de nube es **una cuenta**
-(D53) y sus `regions` (≥ 1) son **las únicas que se evalúan**.
+| Qué se conecta | Categoría | Plataforma que elige | Canales (`connection_method`) |
+|---|---|---|---|
+| Cuenta de nube o servicio gestionado | `ac_01` | AWS · Azure · GCP · Microsoft 365 · Google Workspace | AWS: `readonly_role` (recomendado) · `access_keys`. Las demás: aún sin canal |
+| Servidor en nube, on-premise o equipo | `ac_02`, `ac_04`, `ac_06` | el **sistema operativo** | `agent` (solo diseño, `DT-57`) |
+| Base de datos | `ac_03`, `ac_05` | el **motor** | `agent` (solo diseño, `DT-57`) |
+
+**Disponibilidad.** `availability = available` solo si el flujo existe: **hoy solo AWS**. Las `coming_soon` **se muestran bloqueadas**. Dónde vive un servidor o una base (EC2, RDS, un VPS…)
+no se pregunta aquí: lo dice el escenario (paso 1).
+
+**Pantalla** (`/services/{id}/connections/new`; las plataformas disponibles llevan a `/services/{id}/connections/new/{catalog_code}/{platform}`):
+
+- **Un grupo por tipo** que aplica al escenario del servicio, con el nombre de la categoría en lenguaje de negocio (nunca `ac_01`) y, debajo, una **tarjeta por plataforma** en el orden del catálogo.
+  Título «Nueva conexión»; «Elige a qué quieres conectarte. Al terminar, Monkey te muestra los activos que encontró.»
+- **Tarjeta:** logo, nombre de la plataforma y, si está bloqueada, un candado y el texto «Próximamente». Una tarjeta disponible navega a su paso a paso; una bloqueada **no navega**.
+- **Logos:** SVG oficial, **sin recolorear ni redibujar**, desde `Frontend-Platform` (`logo_key`); se muestra con `<img>`, nunca se inyecta SVG como HTML. Uso de marcas de terceros: `P21`.
+- **Accesibilidad (WCAG 2.2 AA):** el nombre va siempre como **texto visible** y el logo es decorativo (`alt=""`); cada grupo es una sección con su encabezado y una lista; la tarjeta es un enlace o
+  botón con foco visible y área táctil de al menos 44 px; la tarjeta bloqueada se anuncia como «no disponible, próximamente» (`aria-disabled="true"`) y **no se distingue solo por opacidad**;
+  contraste de 4,5:1 para el texto y 3:1 para el logo, el icono y el borde, en tema claro y oscuro (si un logo no contrasta, va sobre una baldosa neutra).
+- Sin escenario elegido: `409 DEPLOYMENT_SCENARIO_NOT_SET` y la pantalla lleva a «dónde vive».
+
+El cliente **elige** el canal entre los de **su plataforma**. `GET /v1/catalogs/connection_method` y `GET /v1/catalogs/aws_region` dan las opciones (desde D67 se leen de
+`platform_connection_methods` y `platform_regions`; una plataforma nueva con regiones suma su propio `<code>_region`); `GET /v1/catalogs/automated-capabilities` añade `connection_methods` a cada
+plataforma (el primero es el recomendado). Un activo de nube es **una cuenta** (D53) y sus `regions` (≥ 1) son **las únicas que se evalúan**.
 
 ### `POST /v1/assets` — cuenta de nube con rol de solo lectura
+
+**`platform` (el `code` del catálogo) es obligatorio** en toda conexión (D67). `422 VALIDATION_FAILED` con `error.fields`: `platform` / `connection.provider_not_supported` si la plataforma está `coming_soon`; `platform` / `platform.not_in_category` si no pertenece a la `connection_category`; `connection_method` debe ser uno de los canales **de esa plataforma** (`409 CONNECTION_METHOD_NOT_APPLICABLE`). Las `regions` deben ser de `platform_regions` de la plataforma.
 
 ```json
 {
@@ -183,7 +202,7 @@ Errores de validación (`422 CONNECTION_FAILED`, con `error.fields`; `code` = ra
 | `role_arn` | `connection.account_mismatch` | El rol es de otra cuenta que la declarada |
 | `credentials` | `connection.credentials_invalid` | Las llaves no son válidas o están desactivadas |
 | `regions` | `connection.regions_missing` | No hay regiones declaradas |
-| `platform` | `connection.provider_not_supported` | Proveedor aún no soportado |
+| `platform` | `connection.provider_not_supported` | Plataforma bloqueada (`coming_soon`): también al crear, no solo al validar |
 
 Las razones que no son del cliente (trabajador caído, llaves base vencidas) dan `503 CONNECTION_UNAVAILABLE`.
 
@@ -263,7 +282,7 @@ Requiere `connection_status: "validated"`. Pone `is_active: true` y
 { "frequency": "continuous" }
 ```
 
-`ac_01` admite `every_6h` o `every_24h`; `ac_02` a `ac_06` son `continuous`. Una frecuencia que
+Las frecuencias que admite cada conexión salen de `capability_frequencies` (hoy: `ac_01` → `every_6h` o `every_24h`; `ac_02` a `ac_06` → `continuous`). Una frecuencia que
 la capacidad no soporta devuelve `422 FREQUENCY_NOT_SUPPORTED`.
 
 ### `GET /v1/assets` — listar
@@ -283,7 +302,7 @@ trae `code`, `name`, `connection_category`, `operational_status`, `technical_cov
 | 409 | `ASSET_ALREADY_ACTIVE` | Se activa o se valida un activo ya activo |
 | 409 | `ASSET_NOT_ACTIVE` | Se programa un activo que aún no está activo *(añadido, D46)* |
 | 503 | `CONNECTION_UNAVAILABLE` | Esta instalación aún no puede comprobar conexiones (sin sonda); el activo sigue `pending` *(añadido, D46)* |
-| 409 | `CONNECTION_METHOD_NOT_APPLICABLE` | El canal no existe para esa categoría (p. ej. `agent` en `ac_01`) |
+| 409 | `CONNECTION_METHOD_NOT_APPLICABLE` | El canal no existe para esa plataforma (p. ej. `agent` en AWS) |
 | 422 | `CONNECTION_FAILED` | La validación no pudo conectar (tabla del paso 3) |
 | 422 | `FREQUENCY_NOT_SUPPORTED` | Frecuencia que la capacidad no admite |
 | 422 | `VALIDATION_FAILED` | Enum inválido, `regions` vacío o fuera del catálogo, `external_account_id` o `role_arn` mal formados, sin `service_ids` |
@@ -316,8 +335,22 @@ Todas las que había quedaron **cubiertas por desarrollo en D46**; lo que sigue 
 | **¿Qué es «híbrido»?** | ✅ Las seis conexiones (D46, DT-7) |
 | **Dónde guardar la frecuencia de `schedule`** | ✅ `asset_provisionings.schedule_frequency` (D46) |
 | **Qué pide cada conexión** | ✅ Nube: rol de solo lectura o llaves (D53, D58). ❌ Servidores y bases: canal de agente, solo diseño (`P12`, `DT-57`) |
-| **Azure y GCP** | ❌ Sin cuentas de prueba; el comité debe entregarlas |
+| **Azure y GCP** | ❌ Sin cuentas de prueba; el comité debe entregarlas. Se muestran **bloqueadas** (D67) |
+| **Logos de las plataformas** | ❌ Falta confirmar el uso de marcas de terceros y quién entrega los SVG oficiales (`P21`) |
 | **Las 18 capacidades de `technical_coverage`** | ❌ Sin definir (DT-2): hoy es una constante |
+
+## Pendiente de construir — D67 (marketplace y catálogo en la base)
+
+Definido aquí y en `modelo-datos.md` §6.3; **aún no existe en el código** (el Backend y `Frontend-Platform` siguen con las constantes y las tarjetas por categoría).
+
+| Pieza | Estado |
+|---|---|
+| Tablas `capability_platforms`, `platform_connection_methods`, `platform_regions`, `capability_frequencies`, `deployment_scenario_capabilities`; `automated_capabilities.asset_type`; `assets.platform_id` | ⏳ Migración y carga (`reference:load`) |
+| Constantes de `technical-catalogs.ts` y `onboarding-catalogs.ts` (escenario → conexiones, frecuencias, tipo, canales, regiones) | ⏳ Se retiran; pasan a leerse de la base |
+| `platforms` en `GET /v1/catalogs/automated-capabilities` y en `applicable_capabilities` | ⏳ Reemplaza a `supported_platforms` |
+| `platform` obligatorio en `POST /v1/assets`, con `connection.provider_not_supported` y `platform.not_in_category` | ⏳ |
+| Pantalla del marketplace y los pasos a paso por plataforma; los SVG | ⏳ `Frontend-Platform` |
+| Retirar el formulario provisional de servidores y bases (DT-31, DT-56) | ⏳ Se cierran con esto |
 
 ## Estado de implementación (2026-10-09)
 
@@ -350,4 +383,4 @@ Implementado en `Backend/src/features/technical-control` (más `catalogs` y el p
   omiten, y una prueba revisa respuestas, i18n, `src/`, logs y el bundle de la aplicación en cada recorrido.
 - **Variables de entorno:** `CREDENTIALS_ENCRYPTION_KEY` (obligatoria), `PROBE_MODE` (`runner` | `simulated` | `unavailable`; `simulated` no arranca en producción), `MONKEY_AWS_PRINCIPAL_ARN` y `VALIDATION_WAIT_SECONDS`.
 - **Pantallas (Platform, D60):** `/services/{id}` es el servicio (su información, «dónde vive» y la lista de conexiones); `/services/{id}/connections/new` propone los métodos
-  de conexión; `/services/{id}/connections/{id}` muestra la conexión y los **activos que encontró** (D59). «Mis servicios» lista los servicios con su número de conexiones.
+  de conexión (hoy por categoría; pasa a ser el marketplace de plataformas, D67); `/services/{id}/connections/{id}` muestra la conexión y los **activos que encontró** (D59). «Mis servicios» lista los servicios con su número de conexiones.

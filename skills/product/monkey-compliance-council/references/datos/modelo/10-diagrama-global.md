@@ -70,6 +70,8 @@ erDiagram
 
     assets ||--o{ asset_provisionings : "se prepara con"
     automated_capabilities ||--o{ asset_provisionings : "habilita"
+    automated_capabilities ||--o{ capability_platforms : "se ofrece sobre"
+    capability_platforms ||--o{ assets : "se conecta como"
     schedule_rules ||--o{ executions : "programa"
     assets ||--o{ executions : "se corre sobre"
     executions ||--o{ check_results : "produce"

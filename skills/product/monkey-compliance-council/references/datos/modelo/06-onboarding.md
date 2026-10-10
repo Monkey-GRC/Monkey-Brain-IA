@@ -206,7 +206,8 @@ erDiagram
         enum connection_category "ac_01 ... ac_06"
         enum type
         string name
-        string platform
+        string platform "etiqueta descriptiva: en un activo descubierto, su sistema operativo o motor (D61)"
+        uuid platform_id FK "la plataforma que el cliente eligió; obligatoria en una conexión, nula en un activo descubierto (D67)"
         string ip_address
         string location
         enum criticality
@@ -227,7 +228,7 @@ erDiagram
         uuid id PK
         string catalog_code "ac_01 ... ac_06"
         string category
-        json supported_platforms
+        enum asset_type "tipo del activo que produce esta conexión (D67)"
         string method
         json required_permissions
         string provider "interno, confidencial"
@@ -250,11 +251,48 @@ erDiagram
         boolean is_active
         enum schedule_frequency "nullable: continuous|every_6h|every_24h"
     }
+    capability_platforms {
+        uuid id PK
+        uuid automated_capability_id FK
+        string code "unico por capacidad: aws, linux, postgresql..."
+        string name "nombre de la marca, no se traduce"
+        string logo_key "SVG oficial guardado en Frontend-Platform (D67)"
+        enum availability "available|coming_soon (el de los marcos, D50)"
+        int sort_order
+    }
+    platform_connection_methods {
+        uuid id PK
+        uuid platform_id FK
+        enum connection_method "readonly_role|access_keys|agent"
+        boolean is_recommended
+        int sort_order
+    }
+    platform_regions {
+        uuid id PK
+        uuid platform_id FK
+        string code "las que el cliente puede declarar; solo esas se evaluan"
+        string name
+        int sort_order
+    }
+    capability_frequencies {
+        uuid automated_capability_id PK "FK"
+        enum schedule_frequency PK "continuous|every_6h|every_24h"
+    }
+    deployment_scenario_capabilities {
+        enum deployment_scenario PK "cloud_managed_only|cloud_with_servers|on_premise|hybrid"
+        uuid automated_capability_id PK "FK"
+    }
     services ||--o{ service_assets : "usa"
     assets ||--o{ service_assets : "da soporte a"
     organizations ||--o{ assets : "inventaria"
     assets ||--o{ asset_provisionings : "se prepara con"
     automated_capabilities ||--o{ asset_provisionings : "habilita"
+    automated_capabilities ||--o{ capability_platforms : "se ofrece sobre"
+    automated_capabilities ||--o{ capability_frequencies : "corre con"
+    automated_capabilities ||--o{ deployment_scenario_capabilities : "se ofrece en"
+    capability_platforms ||--o{ platform_connection_methods : "se conecta por"
+    capability_platforms ||--o{ platform_regions : "declara"
+    capability_platforms ||--o{ assets : "se conecta como"
 ```
 
 **`assets` es lo que Monkey encuentra al conectar.** El cliente no declara cuántos activos tiene: los registra conectando
@@ -274,19 +312,28 @@ opcional porque las conexiones agentless no guardan credenciales.
 
 **El `deployment_scenario` del servicio determina qué conexiones se le ofrecen:**
 
-| Código | Categoría | Método | Frecuencia |
-|---|---|---|---|
-| `ac_01` | Servicios cloud gestionados (AWS, Azure, GCP, M365, Workspace) | API / OAuth read-only | **6-24 h** |
-| `ac_02` | Servidores en nube / VPS (Linux, Windows, HP-UX, AIX, Solaris) | Agente ligero o agentless | **Continuo** |
-| `ac_03` | BD en nube (RDS, Cloud SQL, Atlas) | Agente + usuario read-only | Continuo |
-| `ac_04` | Servidores on-premise | Agente ligero | Continuo |
-| `ac_05` | BD on-premise | Agente + usuario read-only | Continuo |
-| `ac_06` | **Endpoints / estaciones de trabajo** | Agente ligero | Continuo |
+| Código | Categoría | Plataformas que el cliente elige | Método | Frecuencia |
+|---|---|---|---|---|
+| `ac_01` | Servicios cloud gestionados | AWS, Azure, GCP, Microsoft 365, Google Workspace | API / OAuth read-only | **6-24 h** |
+| `ac_02` | Servidores en nube / VPS | Linux, Windows, HP-UX, AIX, Solaris | Agente ligero o agentless | **Continuo** |
+| `ac_03` | BD en nube | PostgreSQL, MySQL, SQL Server, Oracle, MongoDB | Agente + usuario read-only | Continuo |
+| `ac_04` | Servidores on-premise | Linux, Windows, HP-UX, AIX, Solaris | Agente ligero | Continuo |
+| `ac_05` | BD on-premise | PostgreSQL, MySQL/MariaDB, SQL Server, Oracle, MongoDB | Agente + usuario read-only | Continuo |
+| `ac_06` | **Endpoints / estaciones de trabajo** | Windows, macOS, Linux | Agente ligero | Continuo |
 
-Solo nube → `ac_01` · nube con servidores → `ac_01`+`ac_02`+`ac_03` · on-premise →
-`ac_04`+`ac_05`+`ac_06` · híbrido → **las seis** (el cliente usa las que le sirvan, D46).
+**El cliente elige una plataforma, no una categoría (D67).** Es lo que muestra la pantalla, como un marketplace: cada plataforma con su logo y su propio paso a paso. En servidores y
+equipos la plataforma es el **sistema operativo**; en bases de datos, el **motor**. Dónde vive (EC2, Azure VM, RDS, Cloud SQL, Atlas, un VPS) lo dice el escenario, no la plataforma:
+así lo define la hoja del comité. Cada plataforma tiene `availability`: solo las `available` se pueden elegir, las `coming_soon` se muestran **bloqueadas**. Hoy solo AWS está disponible.
 
-**El tipo del activo se deduce de la conexión** con que se registra (D46): `ac_01` servicio en nube ·
+**Las reglas del paso 3 son datos, no constantes de código (D67):** qué conexiones ofrece cada escenario (`deployment_scenario_capabilities`; «híbrido» son sus seis filas), con qué
+frecuencia corre cada una (`capability_frequencies`), qué canales admite cada plataforma (`platform_connection_methods`; el recomendado va marcado), qué regiones puede declarar el
+cliente (`platform_regions`) y qué tipo de activo produce cada conexión (`automated_capabilities.asset_type`). Todas viven en `catalog`: se leen libre y solo `admin_monkey` las escribe
+(SEG-06), y nacen con las políticas del catálogo (SEG-05). Los enums que comparten catálogo y tenant (`connection_method`, `schedule_frequency`, `asset_type`) son del Backend: dónde se
+declaran es un detalle de `schema-implementacion.md`.
+
+Solo nube → `ac_01` · nube con servidores → `ac_01`+`ac_02`+`ac_03` · on-premise → `ac_04`+`ac_05`+`ac_06` · híbrido → **las seis** (el cliente usa las que le sirvan, D46).
+
+**El tipo del activo se deduce de la conexión** con que se registra (D46; hoy en `automated_capabilities.asset_type`, D67): `ac_01` servicio en nube ·
 `ac_02`/`ac_04` servidor · `ac_03`/`ac_05` base de datos · `ac_06` endpoint. El cliente ya no declara cuántos
 activos tiene (D60): los ve al conectar.
 

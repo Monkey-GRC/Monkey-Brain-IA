@@ -1,4 +1,4 @@
-# Registro de decisiones — D53–D61
+# Registro de decisiones — D53–D61 y D67
 
 > Parte de [`modelo-datos-decisiones.md`](../modelo-datos-decisiones.md) (índice). Conexión con la nube, sonda de servidores, trabajador del motor de nube y descubrimiento de activos.
 > Los identificadores (`D-n`, `A1`…) no cambian: se citan por su ID, no por la posición.
@@ -217,5 +217,45 @@ quiere evaluar, o ser de varios servicios, y al cliente no le servía una lista 
 
 **Migración:** `20261010140000_discovered_assets`. **Contrato:** `onboarding-technical-control.md` (`GET …/resources`, `PUT /v1/services/{id}/connections/{id}/assets`).
 **Fuente:** D53, D56, D59, `modelo-datos.md` §6.3 (`assets`, `service_assets`), SEG-53.
+
+---
+
+
+## D67 · El paso 3 es un marketplace de plataformas y el catálogo de conexiones vive en la base de datos (2026-10-10)
+
+**Problema.** «Nueva conexión» ofrecía las categorías técnicas (`ac_01`…`ac_06`) como tarjetas: «Servicios en nube», «Servidores en nube / VPS», «Bases de datos en nube».
+Es una clasificación interna: el cliente no sabe a qué corresponde y, al tocar «Servicios en nube», **se asumía AWS** (era el único flujo construido) sin que él lo
+eligiera. Además, qué conexiones se ofrecen por escenario, con qué frecuencia corre cada una, qué tipo de activo produce, qué canales admite y qué regiones acepta
+estaban en constantes del código (`technical-catalogs.ts`, `onboarding-catalogs.ts`), no en la base.
+
+**Decisión (producto; la lista de plataformas es la del comité).**
+1. **El cliente elige una plataforma, no una categoría.** La pantalla es un marketplace agrupado por tipo; cada plataforma es una tarjeta con su logo. Al elegirla entra a
+   **su propio paso a paso** (para AWS, el de D58). Nunca se asume una plataforma.
+2. **Las plataformas son las de la hoja «Activos del Servicio (SCOPE)» del comité (AC-01…AC-06):** `ac_01` AWS, Azure, GCP, Microsoft 365, Google Workspace · `ac_02` y `ac_04`
+   Linux, Windows, HP-UX, AIX, Solaris · `ac_03` PostgreSQL, MySQL, SQL Server, Oracle, MongoDB · `ac_05` PostgreSQL, MySQL/MariaDB, SQL Server, Oracle, MongoDB · `ac_06`
+   Windows, macOS, Linux. En servidores y equipos la plataforma es el **sistema operativo**; en bases de datos, el **motor**. No es el hosting (EC2, Azure VM, RDS, Atlas…), que
+   el comité cita solo como ejemplo de dónde vive: la medición depende del sistema operativo o del motor, y dónde vive ya lo dice el escenario (paso 1).
+3. **Se muestran todas; solo se elige la que tiene un flujo real.** Cada plataforma tiene `availability` (`available` | `coming_soon`, el mismo enum que los marcos, D50) y la
+   que no está disponible se muestra **bloqueada**. Hoy solo AWS está `available`. Marcar `available` sin flujo construido es un error; la API rechaza una plataforma bloqueada con
+   `422 connection.provider_not_supported`.
+4. **Todo lo que la pantalla ofrece y valida sale de la base** (esquema `catalog`, lo escribe solo `admin_monkey`, SEG-06): las plataformas, los canales de cada una, las
+   frecuencias de cada conexión, qué conexiones ofrece cada escenario, el tipo de activo que produce cada conexión y las regiones de cada plataforma. Dejan de ser constantes.
+5. **Lo demás no cambia:** las listas cerradas y pequeñas del onboarding (tamaño, industria, escenario…) siguen como `enum` (D26, D34). Las seis categorías, el escenario del
+   servicio y el flujo conectar → validar → activar → programar siguen igual.
+6. **Logos.** Cada plataforma lleva su **logo oficial en SVG**, guardado en la plataforma (`Frontend-Platform`); la base solo guarda `logo_key`. Se muestra con `<img>`: nunca se
+   inyecta SVG como HTML. Accesibilidad: el **nombre de la plataforma va siempre como texto visible** y el logo es decorativo (`alt` vacío); el estado bloqueado se dice con texto y
+   `aria-disabled`, no solo con opacidad; el contraste se cumple en tema claro y oscuro (una baldosa neutra detrás del logo si hace falta); el logo no se recolorea ni se redibuja.
+7. **Consecuencia que conviene tener presente:** servidores, bases de datos y equipos quedan **bloqueados** hasta que exista el canal de agente (DT-57). El formulario provisional de
+   esas conexiones (DT-31, DT-56) deja de ofrecerse y la API lo rechaza: en desarrollo ya no se podrá dar de alta un servidor ni siquiera en modo simulado.
+
+**Qué cambia en el modelo** (`modelo/06-onboarding.md` §6.3): tablas nuevas `capability_platforms`, `platform_connection_methods`, `platform_regions`, `capability_frequencies` y
+`deployment_scenario_capabilities`; `automated_capabilities` pierde `supported_platforms` y gana `asset_type`; `assets` gana `platform_id` (obligatorio en una conexión, nulo en un
+activo descubierto; `assets.platform` sigue siendo la etiqueta descriptiva, D61). La carga inicial es de `reference:load` (idempotente); los valores están en `contracts/enums.md`.
+
+**Por qué tabla y no `enum`.** Un `enum` pide una migración por cada plataforma nueva y no lleva atributos (disponibilidad, logo, canales, regiones). En un marketplace que crece,
+agregar una plataforma bloqueada es **un dato**; lo que sí exige código es habilitarla, porque necesita su flujo (adaptador y pasos).
+
+**Contrato:** `onboarding-technical-control.md` (plataformas en el catálogo, `platform` obligatorio, pantalla). **Pendiente:** el uso de los logos de marcas de terceros (`P21`).
+**Fuente:** responsable de producto, 2026-10-10; hoja «Activos del Servicio (SCOPE)» del TSC integral (AC-01…AC-06); D46, D50, D58, D60, D61.
 
 ---
