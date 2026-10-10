@@ -32,9 +32,10 @@ IA pueda:
 
 ## Cómo debe usarla un agente de IA
 
-1. Leer `manifest.json` para saber qué recursos existen y sus rutas.
-2. Leer `context/project-context.md` **siempre** antes de tocar código en
-   cualquiera de los repos.
+1. Empezar por `CLAUDE.md`: reglas no negociables y la tabla "qué leer según la tarea".
+   `manifest.json` es el índice máquina-legible de los recursos.
+2. Antes de tocar código, leer en `context/project-context.md` **solo la sección del repo en
+   que se trabaja** (Backend o Frontend), no el archivo entero.
 3. Si la tarea calza con un agente definido en `agents/`, adoptar ese rol/checklist.
 4. Si la tarea calza con una skill definida en `skills/` (técnica de backend
    en `skills/backend/`, técnica de frontend en `skills/frontend/`, de
