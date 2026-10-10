@@ -15,6 +15,11 @@ Cerradas hasta hoy:
 | **P1** | Cumplimiento fuera del onboarding | 2026-09-26 — el comité confirmó D23: el onboarding se queda en 3 componentes |
 | **P10** | Origen de `control_dimensions` y qué es `policies` | 2026-10-01 — cerrada por desarrollo en D39: la dimensión aplica si el control tiene una prueba de ella; `policies` es una plantilla. **Falta ratificar con el comité el tipo y las banderas derivados**; no bloquea nada |
 | **P5** | Dos cifras de la documentación de la sonda | 2026-10-08 — las cifras («869 checks, 646 nativos, 223 inferidos») no tenían universo y se quitaron de `wazuh.md`; la versión de referencia es la del manager que corre en desarrollo, 4.14.6 (D55) |
+| **P8** | ¿Un control que crea el cliente cuenta para el marco? | 2026-10-09 — D65: sí cuenta para el porcentaje; es solo documental, va en la categoría que elige el cliente y lo aprueba el consultor |
+| **P16** | Cuándo un activo está «Preparado», «Casi listo» o «Requiere trabajo» | 2026-10-09 — D62: se lee con el porcentaje de tests con resultado, con los cortes de 100% y 80% |
+| **P18** | Una categoría sin nada medido, y la cobertura | 2026-10-09 — D62: no está lograda y cuenta en el denominador; la cobertura es siempre un número aparte |
+| **P19** | Un consultor que atiende a varias empresas, con el correo único | 2026-10-09 — D64: una sola cuenta de Next que asigna `admin_monkey` a varias empresas |
+| **P20** | Quién reactiva a un consultor que la empresa suspendió | 2026-10-09 — D64: solo la empresa |
 | **P4** | `responsible_id` sin catálogo de cargos | 2026-09-29 — cerrada por desarrollo en D30: el cargo es `organization_responsibles`. **Falta ratificarla con el comité**; no bloquea nada |
 
 ## P2 · El flujo de la clave de acceso — 5 detalles sin definir
@@ -33,15 +38,14 @@ sprint de onboarding**:
 
 Las más urgentes son **(a)** y **(c)**.
 
-## P3 · Detalle fino de dos módulos
+## P3 · Qué ve y qué hace cada rol en cada pantalla de Cumplimiento
 
-Ninguna de las dos bloquea el sprint de onboarding, pero sí el desarrollo de su módulo:
+**Estado:** abierto. El comité entrega un Excel con los permisos **por pantalla**; hasta que llegue, la matriz de `modelo-datos.md` §5.5 es la vigente y los tickets que dependen de ella esperan.
 
-- **Usuarios:** qué permisos concretos puede llevar un `custom_role`, más allá del ejemplo
-  ya documentado ("Revisor de evidencia").
-- **Cumplimiento:** los permisos dentro del módulo más allá de "es de `admin_empresa`", y
-  si necesita su propia pantalla o vive dentro de la vista de cada servicio.
+Lo que ya está decidido: los 5 roles son fijos y no hay roles personalizados (D64); Cumplimiento vive **dentro de cada servicio**; el `funcional` ve solo sus controles y las evidencias que debe aportar.
+Lo que falta: el detalle por pantalla de cada rol.
 
+**Qué depende:** las pantallas y los endpoints de Cumplimiento por rol.
 
 ## P6 · La lista completa de `business_model`
 
@@ -58,18 +62,6 @@ de recursos y, sobre todo, backups y recuperación (un servicio administrado tip
 alojado hay que operarlos). Alternativa: un servidor separado, dedicado solo a la base. No afecta al
 modelo (RLS, 4 schemas, roles). **Sí condiciona la retención de 7 años del audit trail (D41):** los respaldos que
 la sostienen dependen de dónde viva el Postgres.
-
-## P8 · ¿Un control que crea el cliente cuenta para el marco?
-
-El cliente puede crear controles propios (`client_controls` con `control_id` nulo, D36). Un control propio
-no tiene punto de enfoque, y los requisitos de un marco se derivan recorriendo requisitos → puntos de enfoque
-→ controles del catálogo. Por eso hoy **no puede cerrar ningún requisito**.
-
-**La pregunta:** ¿cuenta para el % del servicio (por su dimensión)? ¿Y el cliente puede vincularlo a puntos
-de enfoque para que sí cuente para un requisito? Mi propuesta: en el MVP cuenta para el % del servicio pero
-no para los requisitos; mapearlo a puntos de enfoque queda para después.
-
-**Qué depende:** el cálculo del cumplimiento del marco (§9) y el módulo de Cumplimiento (§7).
 
 ## P9 · Datos del Excel que hay que corregir o confirmar
 
@@ -157,8 +149,7 @@ cubriría servidores, BD y endpoints; un motor de configuración, la nube.
 2. **Lista de 18 normas de protección de datos** (DT-40): ¿se ratifica que salga PCI DSS, que HIPAA y GLBA se queden, y las 5 que entraron (Ley 21.719 CL, UY, EC, PA, CR)? ¿Faltan otras (p. ej. Ley 1266 de Colombia)?
 3. **Categorías por marco** (D50, DT-38): confirmada la opción de que cada marco use las suyas. Falta que el comité entregue **cuáles son** las de cada marco (ISO 27001: ¿4 temas del Anexo A? PCI DSS: ¿12 requisitos? NIST CSF: ¿6 funciones?) y si «seguridad siempre obligatoria» se generaliza a un dominio obligatorio por marco.
 4. **Contacto de ventas** (DT-41): ¿qué canal real recibe el interés cuando un cliente toca un marco que no contrató?
-5. **Textos «auditoría» → «consultoría»** (DT-42): ¿se cambian también en Inicio y «Mis servicios»?
-6. **Certificación previa:** ¿las 8 opciones son las correctas para una «certificación o evaluación» previa?
+5. **Certificación previa:** ¿las 8 opciones son las correctas para una «certificación o evaluación» previa?
 
 ---
 
@@ -174,24 +165,6 @@ Del catálogo de 662 checks de AWS, lo que no llega a un control:
 4. **Ratificar las 569 asignaciones propuestas** (`monkey_proposed`): se pide por prueba (11 `T-CLD`), no check por check.
 
 **Qué depende:** que esos checks cuenten para el cumplimiento (§9) y la cobertura técnica real de la nube.
-
----
-
-## P16 · Cuándo un activo está «Preparado», «Casi listo» o «Requiere trabajo»
-
-**Estado:** abierto desde 2026-10-09. No bloquea la demo: el cálculo corre con umbrales **provisionales** y lo dice en pantalla.
-
-El modelo fija el estado binario de un control (R-05: una falla aplicable ⇒ no cumple) y que el porcentaje es secundario, pero **no define
-cuándo algo es «Casi listo»**. Desarrollo propuso, sin autoridad para cerrarlo (`Backend/.../domain/scan/readiness.ts`):
-
-- `Requiere trabajo`: hay al menos un fallo de severidad alta o crítica.
-- `Casi listo`: solo hay fallos leves (baja o media) o comprobaciones sin medir.
-- `Preparado`: nada falla y todo lo esperado se midió.
-- `Sin medir`: no hay nada medido (hueco de cobertura, no un fallo).
-
-**Preguntas:** ¿son esos los umbrales? ¿La severidad la fija el motor o el comité (hoy es la del motor)? ¿Cuántos fallos leves siguen siendo «Casi listo»?
-
-**Qué depende:** el estado de preparación de la pantalla y de `GET /v1/assets/{id}/readiness`.
 
 ---
 

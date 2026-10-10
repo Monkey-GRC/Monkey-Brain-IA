@@ -36,7 +36,7 @@ Las citas «§7.4» de todo el Brain apuntan a estas secciones. **Los números n
   - 4.3 Aislamiento de datos (multi-tenancy)
   - 4.4 Variables de sesión y reglas de integridad transversales
 - 5. Módulo Usuarios
-  - 5.1 Los 4 roles
+  - 5.1 Los 5 roles
   - 5.2 Las tablas
   - 5.3 Políticas de seguridad de la plataforma
   - 5.4 Responsables organizacionales
@@ -51,7 +51,8 @@ Las citas «§7.4» de todo el Brain apuntan a estas secciones. **Los números n
   - 7.2 Riesgos del cliente y sus indicadores
   - 7.3 Evidencias
   - 7.4 Evaluaciones y hallazgos (el histórico)
-  - 7.5 La IA y el auditor
+  - 7.5 La IA y el veredicto
+  - 7.6 Las observaciones
 - 8. Módulo Control Técnico — la operación continua
 - 9. Cómo se calcula el cumplimiento
 - 10. Diagrama global
@@ -119,3 +120,8 @@ D1 a D22 están agrupadas en bloques (A estructura, B y C el cálculo, D lo que 
 - D56 · El control técnico de la nube en el modelo: recurso hijo, procedencia del mapeo y checks sin filas
 - D57 · Quién ejecuta el motor de nube: un trabajador aislado
 - D58 · El flujo de conexión de una cuenta de nube: validación real a través del trabajador
+- D62 · El cumplimiento se cuenta, no se promedia: dimensión → control → categoría → marco
+- D63 · El auditor es un rol aparte
+- D64 · Hay cinco roles: el consultor prepara, el auditor certifica
+- D65 · Controles propios y cambios de controles con aprobación del consultor (cierra P8)
+- D66 · MFA obligatoria para los 5 roles

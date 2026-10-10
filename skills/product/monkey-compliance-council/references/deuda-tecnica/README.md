@@ -26,9 +26,9 @@ la cierra). Los ID (`DT-n`) no se reutilizan. Si una fila depende del comité, e
 
 | Archivo | Qué cubre | Filas |
 |---|---|---|
-| [`control-tecnico.md`](control-tecnico.md) | Componente 3 del onboarding: conexión de activos, la sonda, el paso 3, la nube y su ejecución | 27 |
+| [`control-tecnico.md`](control-tecnico.md) | Componente 3 del onboarding: conexión de activos, la sonda, el paso 3, la nube y su ejecución | 28 |
 | [`onboarding.md`](onboarding.md) | Componentes 1 y 2 del onboarding y el registro de empresa | 16 |
-| [`transversal.md`](transversal.md) | Pruebas y CI, auditoría, traducciones, entorno y funcionalidad sin contrato | 15 |
+| [`transversal.md`](transversal.md) | Pruebas y CI, auditoría, traducciones, entorno y funcionalidad sin contrato | 17 |
 
 Una fila vive en el archivo de su **área**. Al crear una deuda nueva: siguiente `DT-n` libre, en el archivo que corresponda,
 y una línea en el índice de abajo. Los requisitos de seguridad que una deuda incumple están en
@@ -36,7 +36,7 @@ y una línea en el índice de abajo. Los requisitos de seguridad que una deuda i
 
 ## Índice de todas las deudas
 
-58 filas (incluye las cerradas, tachadas). Severidad: ✅ 2 · 🔴 6 · 🟠 28 · 🟡 22.
+61 filas (incluye las cerradas, tachadas). Severidad: ✅ 2 · 🔴 6 · 🟠 31 · 🟡 22.
 
 | ID | | Qué | Archivo |
 |---|---|---|---|
@@ -96,6 +96,9 @@ y una línea en el índice de abajo. Los requisitos de seguridad que una deuda i
 | DT-61 | 🟠 | Las llaves base de AWS son de larga vida, viven en varios sitios y se compartieron: rotarlas. | [control-tecnico](control-tecnico.md) |
 | DT-62 | 🟡 | Sin verificar que el id de un recurso descubierto coincide con el de la evaluación. | [control-tecnico](control-tecnico.md) |
 | DT-63 | 🟠 | Un activo descubierto no se puede editar (criticidad, responsable). | [control-tecnico](control-tecnico.md) |
+| DT-65 | 🟠 | El calculador del Backend (y el Excel del comité) promedian porcentajes en vez de contar por nivel. | [transversal](transversal.md) |
+| DT-66 | 🟠 | La preparación de un activo se calcula por severidad, no por el porcentaje de D62. | [control-tecnico](control-tecnico.md) |
+| DT-67 | 🟠 | El Backend conserva `custom_roles`, no tiene el rol `consultor` y su `auditor_assignments` debe volverse `consultant_assignments`; la vista técnica no está restringida; sin contrato de observaciones ni de cambios de controles. | [transversal](transversal.md) |
 | DT-64 | 🟡 | La preparación por servicio no tiene pantalla; sin etiquetas de S3/Lambda; activos de regiones retiradas siguen activos. | [control-tecnico](control-tecnico.md) |
 | DT-48 | 🟠 | `check_results` sin política de retención ni partición. | [transversal](transversal.md) |
 | DT-49 | 🟠 | La operación continua (§8) no tiene contrato. | [transversal](transversal.md) |

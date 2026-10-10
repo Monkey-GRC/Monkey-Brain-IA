@@ -67,7 +67,7 @@ monkey-compliance-council/
 ├── SKILL.md                         (este archivo: el enrutador)
 └── references/
     ├── README.md                    mapa por carpetas: qué pregunta responde cada una
-    ├── producto/                    philosophy · mvp-roadmap · council · flujo-end-to-end · sprint-onboarding
+    ├── producto/                    philosophy · mvp-roadmap · council · flujo-end-to-end · sprint-onboarding · sprint-cumplimiento
     ├── arquitectura/                architecture: los 4 motores, el stack, los principios no negociables
     ├── datos/                       el modelo relacional (README con el índice de §, de decisiones y de schema)
     │   ├── modelo-datos.md          el qué, ordenado por módulos (obligado antes de tocar el schema)

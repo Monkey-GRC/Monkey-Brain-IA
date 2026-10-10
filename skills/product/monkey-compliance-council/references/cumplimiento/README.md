@@ -17,7 +17,7 @@ en el producto.
 
 ## Dónde está el resto del cumplimiento
 
-- **Cómo se calcula** (capas, las 12 reglas R-01 a R-12, ejemplo resuelto): [`../datos/modelo-datos.md`](../datos/modelo-datos.md) §9.
+- **Cómo se calcula** (los niveles dimensión → control → categoría → marco, las reglas R-01 a R-12, ejemplo resuelto; D62): [`../datos/modelo-datos.md`](../datos/modelo-datos.md) §9.
 - **Cómo se modela** (marco → requisito → punto de enfoque → control; el control es atómico e independiente del marco): `modelo-datos.md` §3.
 - **Cómo se mide el cumplimiento del cliente** (controles del cliente, riesgos, evidencias, evaluaciones): `modelo-datos.md` §7.
 - **Cómo se le habla al usuario final** (readiness cualitativo, sin jerga, plantilla de 7 campos): [`../producto/philosophy.md`](../producto/philosophy.md).

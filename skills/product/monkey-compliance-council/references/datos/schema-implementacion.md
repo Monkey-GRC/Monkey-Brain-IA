@@ -166,19 +166,19 @@ CREATE POLICY tenant_isolation ON <s>.<t>
 filtrarían a otra petición del pool): `app.tenant_id`, `app.user_id`, `app.user_role`. Detalle en
 `modelo-datos.md` §4.4.
 
-**Excepciones al patrón:**
+**Excepciones al patrón** *(el auditor no es una: su cuenta pertenece a la empresa, D63)*:
 
 1. `organizations` no tiene `tenant_id`: su discriminante es `company_id`.
-2. `auditor_assignments`: la política lee `company_id = app.tenant_id OR auditor_user_id =
-   app.user_id`, porque un auditor ve sus asignaciones sin importar el tenant activo.
-3. `companies` y `access_keys`: el propio tenant **o** `app.user_role = 'admin_monkey'`.
-4. `catalog`: `SELECT` libre; `INSERT/UPDATE/DELETE` solo `admin_monkey`. Sin `FORCE`, para que el
+2. `companies` y `access_keys`: el propio tenant **o** `app.user_role = 'admin_monkey'`.
+3. `catalog`: `SELECT` libre; `INSERT/UPDATE/DELETE` solo `admin_monkey`. Sin `FORCE`, para que el
    rol dueño (seeds, migraciones) siga pasando. **Toda tabla nueva de `catalog` debe repetir las
    cuatro políticas.**
-5. `audit_logs`: lectura del propio tenant o `admin_monkey`; inserción con `tenant_id` nulo o el
+4. `audit_logs`: lectura del propio tenant o `admin_monkey`; inserción con `tenant_id` nulo o el
    propio. **Se escribe sin `RETURNING`**: un `INSERT … RETURNING` exige que la fila nueva pase
    también la política de lectura, y una acción de plataforma sin tenant no la pasa. **Se escribe dentro de la transacción de la
    acción** (`insertAuditLog(tx, …)`, D52): el repositorio recibe un `AuditIntent` y, si el rastro falla, la acción se revierte.
+5. `consultant_assignments`: la política lee `company_id = app.tenant_id OR consultant_user_id = app.user_id`, porque un consultor ve sus asignaciones sin importar el tenant activo
+   (D64). Fija `app.tenant_id` solo después de comprobar que la asignación está `active`.
 6. `evaluations`: `REVOKE UPDATE, DELETE, TRUNCATE` y `GRANT UPDATE (confirmed_by,
    closure_observation_reason)`: inmutable salvo el cierre humano.
 

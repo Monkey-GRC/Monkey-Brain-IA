@@ -78,7 +78,7 @@ Este modelo es el activo más valioso del producto: agregar un framework nuevo d
 ## Los 4 motores
 
 ### Motor de Compliance
-Mantiene el mapa vivo entre controles atómicos y requisitos de cada framework, calcula el "readiness" (cualitativo: Preparado / Casi listo / Requiere trabajo — nunca solo un % desnudo), y traduce cada brecha a lenguaje de negocio con la plantilla de 7 campos (`philosophy.md`). Incluye gestión de excepciones auditable cuando un control no aplica.
+Mantiene el mapa vivo entre controles atómicos y requisitos de cada framework, calcula el "readiness" (cualitativo: Preparado = 100%, Casi listo = 80% o más, Requiere trabajo = menos — nunca solo un % desnudo), y traduce cada brecha a lenguaje de negocio con la plantilla de 7 campos (`philosophy.md`). Incluye gestión de excepciones auditable cuando un control no aplica.
 
 ### Motor de Riesgos
 Identificación automática (a partir de hallazgos de conectores, incluido Wazuh) y manual (riesgos de proceso). Scoring probabilidad × impacto, pero nunca expuesto crudo al usuario de negocio — se traduce a Alto/Medio/Bajo + frase de impacto. Incluye registro básico de riesgo de vendors integrado (no un módulo aparte).

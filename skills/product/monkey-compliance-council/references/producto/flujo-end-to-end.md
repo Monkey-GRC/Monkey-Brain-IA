@@ -6,7 +6,7 @@ la fuente exacta de cada paso. No repite el detalle campo por campo — para eso
 mapa de cómo se encadenan.
 
 > [!warning] ⚠️ Módulos aún no completos
-> **Usuarios** (roles personalizados, asignación fina de permisos) y **Cumplimiento**
+> **Usuarios** (asignación fina de permisos) y **Cumplimiento**
 > (edición de riesgos/causas/controles clonados) están documentados en su forma base,
 > pero no cerrados en detalle todavía. Donde aparecen abajo, se marca explícitamente qué
 > falta.
@@ -120,16 +120,15 @@ servicio.
 ## 8. Módulo de Usuarios *(no completo)*
 
 En cualquier momento (no es un paso del onboarding): `admin_empresa` invita más
-usuarios, les asigna rol (`funcional`, `auditor`, o un `custom_role`), y si son
+usuarios, les asigna rol (`funcional`, `consultor` o `auditor`), y si son
 `funcional` les asigna qué `client_controls` les toca (`user_control_assignments`). Si
-son `auditor`, se registran en `auditor_assignments` — no ven todos los tenants, solo
-los que se les asigna.
+son `auditor`, quedan como usuarios de **su empresa** (solo `admin_empresa` los crea): ven todo el cumplimiento con la vista técnica y escriben observaciones (D63). El `consultor`
+no lo crea la empresa: lo crea y asigna `admin_monkey` desde Monkey Admin; la empresa ve los que tiene asignados y puede suspender a uno (D64).
 
-**Lo que falta cerrar:** el detalle de permisos de los `custom_roles` más allá del
-ejemplo ya documentado ("Revisor de evidencia").
+**Lo que falta cerrar:** el detalle de permisos por pantalla (P3).
 
-**Entidades:** `users`, `custom_roles`, `user_control_assignments`,
-`auditor_assignments`.
+**Entidades:** `users`, `user_control_assignments`,
+`audit_observations` (§7.6).
 **Fuente:** `modelo-datos.md` §5. (`Usuarios.md` de la bóveda **no está en este repo**;
 lo que el comité entregó sobre usuarios está transcrito en `modelo-datos.md` §5.)
 
@@ -140,7 +139,7 @@ motor deriva el cumplimiento por par Servicio × Marco, recorriendo
 Requisito → PuntoDeEnfoque → Control, nunca como atributo del marco ni como número de
 empresa completa.
 
-**Fuente:** `modelo-datos.md` §9 (las 12 reglas del comité).
+**Fuente:** `modelo-datos.md` §9 (D62: se cuenta, no se promedia).
 
 ## Resumen visual
 
