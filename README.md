@@ -55,6 +55,7 @@ IA pueda:
 Monkey-Brain-IA/
 ├── README.md                      # este archivo
 ├── CLAUDE.md                      # instrucciones obligatorias antes de tomar cualquier decisión
+├── STANDARD.md                    # cómo se mantiene el cerebro: un dato un dueño, tamaños, IDs, cierre de tarea
 ├── manifest.json                  # índice máquina-legible de todos los recursos
 ├── context/
 │   ├── backend.md                 # convenciones, capas y mapa de features del Backend

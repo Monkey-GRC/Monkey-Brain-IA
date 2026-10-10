@@ -90,7 +90,7 @@ Fuera de `references/`:
 
 Un cambio no está terminado hasta que cierra o actualiza todo lo relacionado: `P-n`, `DT-n`, `D-n`,
 `SEG-n`, contrato, `enums.md` y los docs afectados, **en el mismo PR**. Cada dato vive en un solo
-archivo; los demás lo enlazan.
+archivo; los demás lo enlazan. Reglas de mantenimiento del cerebro: `STANDARD.md`.
 
 ## Cuándo NO aplica
 
