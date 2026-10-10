@@ -33,6 +33,7 @@ el porqué, las reglas, los contratos y lo que está provisional.
 - Un archivo de referencia no pasa de ~25 KB. Si crece, se parte **por módulo o por época** y queda un
   índice corto en el archivo original.
 - Excepción conocida: `schema-implementacion.md`, que se lee entero como consulta.
+- **Las listas vivas** (pendientes, deuda técnica, seguridad) llevan arriba un tablero ordenado por prioridad y, debajo, una ficha por ítem. Tablero y ficha se editan en el mismo cambio.
 - **Los índices viven en un solo archivo.** Un índice copiado en otro sitio se desactualiza.
 - Cada archivo parte con lo que responde y cuándo leerlo. `CLAUDE.md` se mantiene corto: reglas y
   tabla de lectura, sin historia ni estado.
