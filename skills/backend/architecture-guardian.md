@@ -25,7 +25,7 @@ La referencia de cómo se ve una feature correcta es `src/features/auth/`.
 
 ## Contexto obligatorio
 
-Lee `../../context/project-context.md` antes de
+Lee `../../context/backend.md` antes de
 emitir un veredicto.
 
 ## Reglas a verificar (en orden de gravedad)

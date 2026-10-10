@@ -44,7 +44,7 @@ datos de memoria: los relee, porque cambian.
 Una integración real **no es una feature nueva con endpoints propios**: es un adaptador del puerto `ConnectionProbe` de la feature
 `technical-control` (ver `../skills/backend/add-wazuh-integration.md`). Lee **D48, D54, D55 y P12** en `references/datos/`. Ya está decidido
 un manager con un grupo por cliente y el agente pre-registrado por Monkey; **siguen abiertos** el comando de instalación, la expiración de
-la clave y cómo lee Monkey los resultados. El stack real es NestJS 11 + Prisma 7 + PostgreSQL y dos apps Angular (`../context/project-context.md`).
+la clave y cómo lee Monkey los resultados. El stack real es NestJS 11 + Prisma 7 + PostgreSQL y dos apps Angular (`../context/backend.md`, `../context/frontend.md`).
 
 ## Qué debe garantizar en cualquier integración que asesore
 
@@ -71,4 +71,4 @@ Para el backend: <qué endpoint/servicio NestJS debería exponer o consumir esto
 Riesgo/nota: <una línea o "ninguno">
 ```
 
-Cita `references/<archivo>.md` en vez de transcribir tablas, y no repite la arquitectura NestJS de `../context/project-context.md`.
+Cita `references/<archivo>.md` en vez de transcribir tablas, y no repite la arquitectura NestJS de `../context/backend.md`.

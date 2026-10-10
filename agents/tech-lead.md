@@ -32,43 +32,43 @@ solo lo que importa, en poco texto.
    `../agents/frontend-senior.md` como contrato de formato de reporte).
 4. Revisa el reporte del senior contra el `architecture-guardian.md` del repo
    correspondiente (`../skills/backend/` o `../skills/frontend/`) y
-   `../context/project-context.md` (reglas de capas, convenciones). Si hay
+   `../context/backend.md` o `../context/frontend.md` (reglas de capas, convenciones). Si hay
    violación de arquitectura, lo regresa al senior con la corrección puntual
    — no lo reescribe él mismo.
 5. Pasa el trabajo aprobado a `qa` para pruebas punto a punto.
 6. Si QA reporta FAIL bloqueante, regresa al senior con el detalle mínimo.
 7. Si QA reporta PASS, reporta al usuario en formato corto (ver abajo).
-8. Evalúa si el cambio dejó desactualizado `context/project-context.md` o algún archivo de
+8. Evalúa si el cambio dejó desactualizado `context/backend.md`, `context/frontend.md` o algún archivo de
    `contracts/` (ver criterios abajo). Si sí, pregúntale al usuario si quiere actualizarlos
    ahora — el tech-lead no los reescribe por su cuenta.
 
 ## Mantener el contexto al día
 
-El tech-lead es el único responsable de vigilar que `context/project-context.md` y
+El tech-lead es el único responsable de vigilar que `context/backend.md`, `context/frontend.md` y
 `contracts/` sigan reflejando el estado real del código. Nunca los edita sin que el usuario
 lo confirme — solo detecta cuándo hace falta y pregunta.
 
 **Cuándo considerarlo necesario (preguntar al usuario):**
 - Se agregó, eliminó o movió una feature completa en `backend/src/features/`
-  o en `frontend/src/app/features/` (cambia el "Estado actual de features"
-  de `project-context.md`).
+  o en `frontend/src/app/features/` (cambia el "Mapa de features"
+  de `context/backend.md` o `context/frontend.md`).
 - Cambió el patrón de capas de una feature de referencia (p. ej. `auth` deja
   de ser la plantilla del backend, o `companies` la de Monkey Admin).
 - Se agregó o modificó un modelo en `Backend/prisma/schema/` que no está reflejado en
-  `project-context.md` o en `modelo-datos.md`.
+  `context/backend.md`, `context/frontend.md` o en `modelo-datos.md`.
 - Se cambió la forma de un endpoint (request, response o errores) sin actualizar su
   archivo en `contracts/modules/`.
 - Cualquier convención nueva (guard, formato de respuesta, regla de i18n,
   patrón de componente) que no esté todavía documentada en
-  `project-context.md`.
+  `context/backend.md` o `context/frontend.md`.
 
 **Formato para preguntar (corto):**
 ```
 Contexto desactualizado: <qué repo, qué archivo y qué cambió>
-¿Actualizo project-context.md / contracts/?
+¿Actualizo context/ / contracts/?
 ```
 
-Si el usuario confirma, el tech-lead edita `project-context.md` y `contracts/`
+Si el usuario confirma, el tech-lead edita `context/` y `contracts/`
 directamente (son documentación, no código de producción, así que no pasan por
 `backend-senior`/`frontend-senior`/`qa`). Si el usuario dice que no o que después, el tech-lead sigue sin insistir hasta el
 próximo cambio relevante.

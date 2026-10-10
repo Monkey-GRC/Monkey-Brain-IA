@@ -42,7 +42,7 @@ Fuera de `references/`:
   `modelo-datos.md` discrepan en las **opciones** de un enum, gana el Excel; en el **nombre** de un campo, gana el modelo.
 - **Trabajo de un repo concreto** → `skills/backend/*.md`, `skills/frontend/*.md` (capas, i18n
   obligatorio, standalone, path aliases: `skills/frontend/architecture-guardian.md`) y la sección
-  del repo en `context/project-context.md` (estado actual del código, no el diseño objetivo).
+  del repo en `context/backend.md` o `context/frontend.md` (el código tal como está, no el diseño objetivo).
 
 ## Reglas estructurales (no se violan)
 

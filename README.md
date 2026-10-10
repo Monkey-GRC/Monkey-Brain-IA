@@ -16,7 +16,7 @@ producto, justamente para poder moverlo, clonarlo o descargarlo en cualquier
 otro lugar sin arrastrarlo. Cuando se usa, se asume colocado como carpeta
 hermana de esos repos (p. ej. `Monkey/Backend/` y `Monkey/Frontend/` junto a
 `Monkey/Monkey-Brain-IA/`) — ver la nota de "Convención de rutas" en
-`context/project-context.md`.
+`context/backend.md` y `context/frontend.md`.
 
 Esta carpeta no depende de ninguna herramienta en particular (Claude Code, Cursor,
 Copilot, Windsurf, un agente custom, etc.). Es un conjunto de archivos en Markdown
@@ -34,8 +34,8 @@ IA pueda:
 
 1. Empezar por `CLAUDE.md`: reglas no negociables y la tabla "qué leer según la tarea".
    `manifest.json` es el índice máquina-legible de los recursos.
-2. Antes de tocar código, leer en `context/project-context.md` **solo la sección del repo en
-   que se trabaja** (Backend o Frontend), no el archivo entero.
+2. Antes de tocar código, leer solo el `context/` del repo en que se trabaja
+   (`backend.md` o `frontend.md`).
 3. Si la tarea calza con un agente definido en `agents/`, adoptar ese rol/checklist.
 4. Si la tarea calza con una skill definida en `skills/` (técnica de backend
    en `skills/backend/`, técnica de frontend en `skills/frontend/`, de
@@ -57,7 +57,8 @@ Monkey-Brain-IA/
 ├── CLAUDE.md                      # instrucciones obligatorias antes de tomar cualquier decisión
 ├── manifest.json                  # índice máquina-legible de todos los recursos
 ├── context/
-│   └── project-context.md         # estado ACTUAL del código de los tres repos
+│   ├── backend.md                 # convenciones, capas y mapa de features del Backend
+│   └── frontend.md                # las dos apps Angular: diferencias, convenciones y mapa de features
 ├── contracts/                     # forma exacta de cada endpoint: request, response y errores
 │   ├── README.md
 │   ├── conventions.md             # sobre de respuesta, errores, i18n, multi-select, paginación
@@ -128,7 +129,7 @@ Monkey-Brain-IA/
   único que habla con el usuario para temas de ingeniería. Antes de
   cualquier decisión crítica (ver `agents/tech-lead.md`), pregunta al
   usuario; para el resto, reporta corto al final. También vigila que
-  `context/project-context.md` no quede desactualizado tras un cambio — cuando lo
+  `context/backend.md` / `context/frontend.md` no queden desactualizados tras un cambio — cuando lo
   considera necesario, le pregunta al usuario si quiere actualizarlo.
 - **backend-senior**: ejecuta la tarea que le asigna el tech-lead en el
   backend siguiendo las skills (`skills/backend/add-feature.md`, etc.). No

@@ -104,7 +104,7 @@ uno:
 > backend como Node.js + Express y el frontend como React, con código de ejemplo en esa forma.
 > **Era falso para este proyecto.** Su *modelo* (roles, permisos, tablas, audit trail) es el que
 > está transcrito en §5 y es válido; su *implementación* no se copió. El stack real es
-> **NestJS 11 + Prisma 7 + Angular 20 standalone** — ver `context/project-context.md`.
+> **NestJS 11 + Prisma 7 + Angular 20 standalone** — ver `context/backend.md` y `context/frontend.md`.
 
 ### Fuera del repo, en `Monkey/` (carpeta hermana)
 

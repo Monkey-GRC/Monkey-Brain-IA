@@ -117,10 +117,9 @@ D23 en `modelo-datos-decisiones.md`.
 
 ## Relación con el código y con la filosofía de producto
 
-**El feature `onboarding` de `Frontend-Platform`** tiene hoy los pasos `account-setup`,
-`characterization`, `company-profile`, `template-selection` (`context/project-context.md`).
-No hay todavía una correspondencia 1:1 documentada entre esos pasos y los 3 componentes
-del comité — es trabajo pendiente de mapear antes de tocar esas pantallas.
+**En `Frontend-Platform`** los tres componentes ya existen como features: `onboarding` (Componente 1),
+`services` (Componente 2) y `technical-control` (Componente 3), cada uno con su contrato en
+`contracts/modules/`. El paso 3 del Componente 3 es provisional (D48; ver `deuda-tecnica/`). Mapa en `context/frontend.md`.
 
 **Los "10 pasos como configurar un iPhone" de `philosophy.md`** son la envoltura
 conversacional con la que la IA presenta estas preguntas — no un componente distinto ni
