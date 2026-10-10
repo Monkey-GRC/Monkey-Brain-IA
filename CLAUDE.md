@@ -18,7 +18,8 @@ Rutas relativas a `skills/product/monkey-compliance-council/references/`.
 
 | Si vas a… | Lee |
 |---|---|
-| Tocar el schema, una entidad o un cálculo de cumplimiento | `datos/modelo-datos.md` (y §9 para cualquier %) |
+| Tocar el schema o una entidad | `datos/modelo-datos.md` (índice) y solo el módulo que toques en `datos/modelo/` |
+| Tocar un cálculo o pantalla de cumplimiento (%) | `datos/modelo/09-calculo-cumplimiento.md` (§9) |
 | Tocar una migración, RLS, roles o `.env` | `datos/schema-implementacion.md` |
 | Diseñar texto o pantalla que verá un usuario final | `producto/philosophy.md` |
 | Decidir qué se construye ahora vs. después | `producto/mvp-roadmap.md` |
@@ -29,7 +30,7 @@ Rutas relativas a `skills/product/monkey-compliance-council/references/`.
 | Revisar seguridad de un endpoint, tabla o flujo | `seguridad/requisitos.md` (`SEG-n`; añade fila si hay requisito nuevo) |
 | Construir algo que dependa de una pregunta abierta | `datos/modelo-datos-pendientes.md` (`P-n`): si sigue ahí, **pregunta, no resuelvas** |
 | Usar un atajo o parche | regístralo en `deuda-tecnica/README.md` (`DT-n`); si cierras uno, bórralo |
-| Reabrir algo ya cerrado | `datos/modelo-datos-decisiones.md` (`D-n`) — se consulta para reabrir, no para construir |
+| Reabrir algo ya cerrado | `datos/modelo-datos-decisiones.md` (índice de `D-n`; abre solo el archivo de `decisiones/` que indica) — se consulta para reabrir, no para construir |
 | Resolver un desacuerdo de diseño | `producto/council.md` |
 | Arquitectura, motores, stack | `arquitectura/architecture.md` |
 

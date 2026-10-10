@@ -86,18 +86,8 @@ Monkey-Brain-IA/
     │   ├── call-backend-api.md
     │   ├── add-translation.md
     │   └── architecture-guardian.md
-    ├── product/                   # skills de producto/estrategia/compliance
-    │   └── monkey-compliance-council/  # "el Consejo": cerebro de producto/compliance de Monkey
-    │       ├── SKILL.md
-    │       └── references/        # README = mapa; una carpeta por parte de la aplicación:
-    │           ├── producto/            #   philosophy, mvp-roadmap, council, flujo-end-to-end, sprint-onboarding
-    │           ├── arquitectura/        #   architecture
-    │           ├── datos/               #   modelo-datos, schema-implementacion, decisiones (D-n), pendientes (P-n)
-    │           ├── seguridad/           #   requisitos (SEG-n)
-    │           ├── cumplimiento/        #   frameworks/* (14 marcos)
-    │           ├── control-tecnico/     #   la sonda (wazuh*), el motor de nube y su cruce con el catálogo
-    │           ├── modulos/             #   onboarding.md
-    │           └── deuda-tecnica/       #   índice + por área (DT-n)
+    └── product/                   # skills de producto/estrategia/compliance
+        └── monkey-compliance-council/  # "el Consejo": cerebro de producto/compliance (mapa en references/README.md)
 ```
 
 ## Equipo de agentes (jerarquía fija)
