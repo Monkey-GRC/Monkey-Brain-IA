@@ -242,9 +242,9 @@ estaban en constantes del código (`technical-catalogs.ts`, `onboarding-catalogs
    frecuencias de cada conexión, qué conexiones ofrece cada escenario, el tipo de activo que produce cada conexión y las regiones de cada plataforma. Dejan de ser constantes.
 5. **Lo demás no cambia:** las listas cerradas y pequeñas del onboarding (tamaño, industria, escenario…) siguen como `enum` (D26, D34). Las seis categorías, el escenario del
    servicio y el flujo conectar → validar → activar → programar siguen igual.
-6. **Logos.** Cada plataforma lleva su **logo oficial en SVG**, guardado en la plataforma (`Frontend-Platform`); la base solo guarda `logo_key`. Se muestra con `<img>`: nunca se
+6. **Logos.** Cada plataforma lleva su **logo en SVG**, un icono cuadrado a todo color y sin fondo, del mismo tamaño para todas y con su variante para tema oscuro (`<logo_key>.svg` y `<logo_key>-dark.svg`), guardado en la plataforma (`Frontend-Platform`); la base solo guarda `logo_key`. Se muestra con `<img>`: nunca se
    inyecta SVG como HTML. Accesibilidad: el **nombre de la plataforma va siempre como texto visible** y el logo es decorativo (`alt` vacío); el estado bloqueado se dice con texto y
-   `aria-disabled`, no solo con opacidad; el contraste se cumple en tema claro y oscuro (una baldosa neutra detrás del logo si hace falta); el logo no se recolorea ni se redibuja.
+   `aria-disabled`, no solo con opacidad; el contraste se cumple en tema claro y oscuro con la variante oscura del logo (sin baldosa de fondo ni filtros); el logo no se redibuja.
 7. **Consecuencia que conviene tener presente:** servidores, bases de datos y equipos quedan **bloqueados** hasta que exista el canal de agente (DT-57). El formulario provisional de
    esas conexiones (DT-31, DT-56) deja de ofrecerse y la API lo rechaza: en desarrollo ya no se podrá dar de alta un servidor ni siquiera en modo simulado.
 
@@ -254,6 +254,8 @@ activo descubierto; `assets.platform` sigue siendo la etiqueta descriptiva, D61)
 
 **Por qué tabla y no `enum`.** Un `enum` pide una migración por cada plataforma nueva y no lleva atributos (disponibilidad, logo, canales, regiones). En un marketplace que crece,
 agregar una plataforma bloqueada es **un dato**; lo que sí exige código es habilitarla, porque necesita su flujo (adaptador y pasos).
+
+**Implementado (2026-10-10).** Migraciones `20261010150000_connection_platform_catalog` (con la siembra) y `20261010150100_rls_connection_platform_catalog`; el código lee el catálogo con `ConnectionCatalogRepository`; se retiró el formulario provisional (DT-31, DT-56). Verificado: unitarias, e2e (incluida una prueba de que las reglas son datos), verificadores y la pantalla contra la API real en tema claro y oscuro. Los logos salen de colecciones de iconos, no de los kits (`DT-68`).
 
 **Contrato:** `onboarding-technical-control.md` (plataformas en el catálogo, `platform` obligatorio, pantalla). **Pendiente:** el uso de los logos de marcas de terceros (`P21`).
 **Fuente:** responsable de producto, 2026-10-10; hoja «Activos del Servicio (SCOPE)» del TSC integral (AC-01…AC-06); D46, D50, D58, D60, D61.

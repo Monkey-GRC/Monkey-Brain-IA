@@ -275,12 +275,14 @@ erDiagram
         int sort_order
     }
     capability_frequencies {
-        uuid automated_capability_id PK "FK"
-        enum schedule_frequency PK "continuous|every_6h|every_24h"
+        uuid id PK
+        uuid automated_capability_id FK "unico con schedule_frequency"
+        enum schedule_frequency "continuous|every_6h|every_24h"
     }
     deployment_scenario_capabilities {
-        enum deployment_scenario PK "cloud_managed_only|cloud_with_servers|on_premise|hybrid"
-        uuid automated_capability_id PK "FK"
+        uuid id PK
+        enum deployment_scenario "cloud_managed_only|cloud_with_servers|on_premise|hybrid; unico con la capacidad"
+        uuid automated_capability_id FK
     }
     services ||--o{ service_assets : "usa"
     assets ||--o{ service_assets : "da soporte a"

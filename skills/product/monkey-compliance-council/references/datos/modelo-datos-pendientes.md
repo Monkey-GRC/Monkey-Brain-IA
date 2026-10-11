@@ -15,7 +15,7 @@ Lo que sigue abierto, con lo más urgente arriba. 🚧 bloquea trabajo · ⚠️
 | P | Pregunta | ¿Qué espera por ella? | Abierta desde |
 |---|---|---|---|
 | [P3](#p3--qué-ve-y-qué-hace-cada-rol-en-cada-pantalla-de-cumplimiento) | Qué ve y qué hace cada rol en cada pantalla de Cumplimiento | 🚧 Las pantallas y endpoints de Cumplimiento por rol (espera el Excel del comité) | — |
-| [P12](#p12--cómo-se-conecta-monkey-a-la-sonda-paso-3-del-control-técnico) | Cómo se conecta Monkey a la sonda (paso 3 del control técnico) | 🚧 El rediseño del paso 3 (DT-31 a DT-36); no el resto del onboarding | 2026-10-02 |
+| [P12](#p12--cómo-se-conecta-monkey-a-la-sonda-paso-3-del-control-técnico) | Cómo se conecta Monkey a la sonda (paso 3 del control técnico) | 🚧 El rediseño del paso 3 (DT-32 a DT-36); no el resto del onboarding | 2026-10-02 |
 | [P14](#p14--motores-de-evaluación-rol-de-cada-uno-y-cómo-se-relacionan-con-el-modelo) | Motores de evaluación: rol de cada uno y su relación con el modelo | 🚧 El adaptador de nube y el cálculo de cobertura en nube; no Cumplimiento | 2026-10-07 |
 | [P2](#p2--el-flujo-de-la-clave-de-acceso--5-detalles-sin-definir) | El flujo de la clave de acceso: 5 detalles sin definir (urgentes: a y c) | ⚠️ Condiciona la pantalla de canje (hoy hecha como código a mano, D51) | — |
 | [P7](#p7--dónde-se-aloja-el-postgres-de-producción) | Dónde se aloja el Postgres de producción | ⚠️ Condiciona la retención de 7 años del audit trail (D41) | — |
@@ -95,7 +95,7 @@ neutro? ¿el comité entrega una versión sin el nombre del proveedor?
 
 ## P12 · Cómo se conecta Monkey a la sonda (paso 3 del control técnico)
 
-**Estado:** abierto desde 2026-10-02 (D48). Bloquea el rediseño del paso 3 (DT-31 a DT-36); no bloquea el resto del onboarding.
+**Estado:** abierto desde 2026-10-02 (D48). Bloquea el rediseño del paso 3 (DT-32 a DT-36); no bloquea el resto del onboarding.
 
 Preguntas para Nelson, Bryan y el comité:
 
@@ -186,12 +186,14 @@ políticas (sin activos técnicos) darlo por hecho?
 
 **Estado:** abierto desde 2026-10-10 (D67). No bloquea construir el marketplace: condiciona publicarlo con logos a clientes reales.
 
-El paso 3 muestra el logo oficial en SVG de cada plataforma (AWS, Azure, GCP, Microsoft 365, Google Workspace, Linux, Windows, PostgreSQL, Oracle…). Las marcas son de terceros y varias
+El paso 3 muestra el logo en SVG de cada plataforma (AWS, Azure, GCP, Microsoft 365, Google Workspace, Linux, Windows, PostgreSQL, Oracle…). Las marcas son de terceros y varias
 tienen guías de uso: logo oficial sin modificar, espacio libre mínimo, a veces una leyenda.
 
 1. ¿Se tiene permiso o se revisó la guía de marca de cada proveedor para mostrar su logo en la plataforma?
 2. ¿Quién entrega los SVG oficiales y dónde se guardan?
 3. ¿Basta con un aviso en la plataforma («las marcas pertenecen a sus titulares») o se necesita algo más?
+
+**Procedencia hoy** (`DT-68`): colecciones de iconos de marca, no los kits de cada proveedor. Simple Icons: Linux, HP (para HP-UX), PostgreSQL, MySQL, Oracle y MongoDB · Devicon: AWS, Azure, GCP, SQL Server y un icono genérico de Unix (para Solaris) · Logos: Microsoft (para Microsoft 365), la «G» de Google (para Google Workspace), Windows, AIX y Apple (para macOS). Cinco son una sustitución por la marca dueña del producto, no el logo propio de ese producto.
 
 **Qué depende:** los logos de `Frontend-Platform` (`logo_key`, D67) y la publicación del marketplace.
 

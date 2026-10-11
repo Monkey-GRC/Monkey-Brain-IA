@@ -87,20 +87,12 @@ Parches del Componente 3 del onboarding (conexión de activos, la sonda) y del p
 
 ## Paso 3 del control técnico: el modelo de conexión (D48)
 
-### DT-31 · El formulario de «Conectar mi primer sistema» pide credenciales que el modelo real no usa
-
-🔴 Crítica
-
-- **Qué está parchado:** *2026-10-09: para la **nube** ya no (D58: rol de solo lectura o llaves, validados de verdad); sigue vigente para servidores y bases de datos.*  En la sonda real el cliente instala un agente y Monkey lee la base/API del manager; no hay rol de lectura, usuario de base ni llave SSH que entregar a Monkey
-- **Por qué:** Se construyó antes de verificar la sonda (D46, DT-4)
-- **Qué lo cierra:** Rediseñar el paso 3 (P12): sin credenciales, mostrar el comando de instalación del agente y el estado «esperando al agente». **D67:** mientras no exista el canal de agente, servidores y bases se muestran bloqueadas en el marketplace y el formulario deja de ofrecerse
-
 ### DT-32 · No hay vínculo activo ↔ agente
 
 🔴 Crítica
 
 - **Qué está parchado:** `assets` no sabe qué agente de la sonda es, así que no hay forma real de «validar» una conexión ni de leer resultados
-- **Por qué:** Depende de DT-31
+- **Por qué:** Depende del diseño del canal de agente (P12)
 - **Qué lo cierra:** Campo o tabla de enlace y un adaptador real de `ConnectionProbe` que lea la sonda en **solo lectura**
 
 ### DT-33 · Aislamiento entre empresas sin imponer
@@ -196,14 +188,6 @@ Parches del Componente 3 del onboarding (conexión de activos, la sonda) y del p
 - **Por qué:** Hace falta una cuenta y un bucket públicos de solo lectura; no vale la pena para la demo
 - **Qué lo cierra:** Publicar la plantilla en S3 y devolver `launch_url` en `connection_setup`
 
-### DT-56 · La API aún acepta el formulario provisional del paso 3
-
-🟠 Importante
-
-- **Qué está parchado:** (`credentials` por categoría, sin `connection_method`), que la pantalla ya no usa para la nube. Sigue siendo la única forma de dar de alta servidores y bases de datos
-- **Por qué:** Los servidores y las bases de datos no tienen su canal real (agente) construido
-- **Qué lo cierra:** Construir el canal de agente (`DT-31`, `DT-32`, `P12`) y retirar el formulario. **D67:** la API deja de aceptarlo (`connection.provider_not_supported`) cuando la plataforma está bloqueada
-
 ### DT-57 · El canal de agente solo existe como diseño:
 
 🟠 Importante
@@ -276,3 +260,12 @@ Parches del Componente 3 del onboarding (conexión de activos, la sonda) y del p
 - **Por qué:** Se priorizó la conexión
 - **Qué lo cierra:** Pantalla de preparación por servicio; leer etiquetas de S3/Lambda; dar de baja los activos de regiones retiradas
 
+## Marketplace de plataformas (D67)
+
+### DT-68 · Los logos no vienen del kit de cada marca
+
+🟡 Mejora
+
+- **Qué está parchado:** Los 16 iconos de `Frontend-Platform/public/providers/` (cada uno con su variante `-dark.svg`) salen de colecciones de iconos de marca (Simple Icons, Devicon y Logos), no de los kits de cada proveedor. Varios son una **sustitución**: Microsoft 365 usa el logo de Microsoft, Google Workspace la «G» de Google, HP-UX el logo de HP, macOS el de Apple y Solaris un icono genérico de Unix. Oracle, AIX y SQL Server no se ven tan nítidos como los demás
+- **Por qué:** Cada kit es un portal distinto y los kits traen logos de distinta forma y peso; una fuente de iconos cuadrados permitió que todos se vean del mismo tamaño en los dos temas
+- **Qué lo cierra:** Resolver el uso de marcas (`P21`), reemplazar cada icono por el del kit oficial de su plataforma (con su versión para tema oscuro) y revisar que sigan viéndose del mismo tamaño

@@ -45,7 +45,6 @@ Pueden causar daño o engaño si se ignoran.
 | ID | Qué | Área |
 |---|---|---|
 | [DT-1](control-tecnico.md#dt-1--la-sonda-es-simulada-o-no-está-disponible) | La sonda es simulada o no está disponible | [Control técnico](control-tecnico.md) |
-| [DT-31](control-tecnico.md#dt-31--el-formulario-de-conectar-mi-primer-sistema-pide-credenciales-que-el-modelo-real-no-usa) | El formulario de «Conectar mi primer sistema» pide credenciales que el modelo real no usa | [Control técnico](control-tecnico.md) |
 | [DT-32](control-tecnico.md#dt-32--no-hay-vínculo-activo--agente) | No hay vínculo activo ↔ agente | [Control técnico](control-tecnico.md) |
 | [DT-33](control-tecnico.md#dt-33--aislamiento-entre-empresas-sin-imponer) | Aislamiento entre empresas sin imponer | [Control técnico](control-tecnico.md) |
 | [DT-39](onboarding.md#dt-39--el-adaptador-de-almacenamiento-s3--minio-no-se-ha-probado-contra-un-minio-real) | El adaptador de almacenamiento (S3 / minio) no se ha probado contra un minio real | [Onboarding](onboarding.md) |
@@ -83,7 +82,6 @@ Limitan el producto o al equipo.
 | [DT-50](transversal.md#dt-50--el-intérprete-check_results--evaluations-no-está-especificado) | El intérprete `check_results → evaluations` no está especificado | [Transversal](transversal.md) |
 | [DT-51](control-tecnico.md#dt-51--el-trabajador-usa-un-proxy-de-docker-que-filtra-por-ruta-no-por-contenido) | El trabajador usa un proxy de Docker que filtra por ruta, no por contenido | [Control técnico](control-tecnico.md) |
 | [DT-54](transversal.md#dt-54--el-backend-el-ci-y-el-dockerfile-corren-en-node-20) | El Backend, el CI y el `Dockerfile` corren en Node 20 | [Transversal](transversal.md) |
-| [DT-56](control-tecnico.md#dt-56--la-api-aún-acepta-el-formulario-provisional-del-paso-3) | La API aún acepta el formulario provisional del paso 3 | [Control técnico](control-tecnico.md) |
 | [DT-57](control-tecnico.md#dt-57--el-canal-de-agente-solo-existe-como-diseño) | El canal de agente solo existe como diseño: | [Control técnico](control-tecnico.md) |
 | [DT-59](control-tecnico.md#dt-59--el-sistema-operativo-de-un-servidor-de-la-nube-es-una-inferencia) | El sistema operativo de un servidor de la nube es una inferencia | [Control técnico](control-tecnico.md) |
 | [DT-60](control-tecnico.md#dt-60--sin-límite-de-uso-ni-cola-justa-en-la-comprobación-y-la-evaluación) | Sin límite de uso ni cola justa en la comprobación y la evaluación | [Control técnico](control-tecnico.md) |
@@ -122,3 +120,4 @@ Pendientes sin urgencia.
 | [DT-58](control-tecnico.md#dt-58--frontend-platform-no-tiene-pruebas-automáticas) | `Frontend-Platform` no tiene pruebas automáticas | [Control técnico](control-tecnico.md) |
 | [DT-62](control-tecnico.md#dt-62--no-se-ha-verificado-que-el-identificador-de-un-recurso-descubierto-coincida-con-el-que-trae-la-evaluación) | No se ha verificado que el identificador de un recurso descubierto coincida con el que trae la evaluación | [Control técnico](control-tecnico.md) |
 | [DT-64](control-tecnico.md#dt-64--la-preparación-por-servicio-no-tiene-pantalla) | La preparación por servicio no tiene pantalla | [Control técnico](control-tecnico.md) |
+| [DT-68](control-tecnico.md#dt-68--los-logos-no-vienen-del-kit-de-cada-marca) | Los logos no vienen del kit de cada marca | [Control técnico](control-tecnico.md) |

@@ -70,7 +70,7 @@ Si el código y esta lista difieren, manda el código y se corrige esta lista.
 | Platform · `auth` | Activación de cuenta en dos pasos e inicio de sesión; rechaza `admin_monkey`. Sesión en `core/domain/services/session.service.ts`. | `auth.md` · D51 |
 | Platform · `onboarding` | **Referencia de la plataforma.** Componente 1 en `/onboarding`; edición posterior desde «Mi empresa». | `onboarding-organizational-context.md` |
 | Platform · `services` | Componente 2 en `/services/new`; «Mis servicios» en `/services`. | `onboarding-service-context.md` |
-| Platform · `technical-control` | Componente 3 en `/services/:id/technical-control`. El paso 3 es **provisional**; avisos honestos de «modo demostración» o «aún no disponible». | `onboarding-technical-control.md` · D48 · DT-31…DT-36 · D67 (marketplace de plataformas: aún no construido) |
+| Platform · `technical-control` | Componente 3. `/services/:id/connections/new` es el **marketplace de plataformas** (D67): un grupo por tipo, tarjetas con el logo oficial desde `public/providers/`, las que no tienen flujo bloqueadas; la plataforma elegida lleva a su paso a paso en `…/new/:catalog/:platform`. Hoy solo AWS tiene flujo. | `onboarding-technical-control.md` · D48, D67 · DT-32…DT-36 · DT-68 |
 | Platform · `home` | Bienvenida provisional según `onboarding.next_step`. `assets` es del modelo viejo y no tiene ruta. | — |
 
 Tras entrar, Platform manda a `/onboarding` a quien aún no lo ha llenado. El dashboard se reconstruye

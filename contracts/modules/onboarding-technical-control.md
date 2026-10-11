@@ -44,7 +44,7 @@ El cliente conecta su infraestructura real. Ver `conventions.md` y `enums.md`.
   "data": {
     "deployment_scenario": "cloud_with_servers",
     "applicable_capabilities": [
-      { "catalog_code": "ac_01", "category": "Servicios en nube (gestionados, sin servidor)", "method": "Autorización API / rol de solo lectura u OAuth", "required_permissions": ["Rol de solo lectura", "Consentimiento OAuth"], "base_frequency": "cada 6-24 h", "platforms": [{ "code": "aws", "name": "AWS", "logo_key": "aws", "availability": "available", "connection_methods": ["readonly_role", "access_keys"] }, { "code": "azure", "name": "Azure", "logo_key": "azure", "availability": "coming_soon", "connection_methods": [] }, "…"], "generated_evidence": "Postura de configuración y registros de actividad de la nube" },
+      { "catalog_code": "ac_01", "category": "Servicios en nube (gestionados, sin servidor)", "method": "Autorización API / rol de solo lectura u OAuth", "required_permissions": ["Rol de solo lectura", "Consentimiento OAuth"], "base_frequency": "cada 6-24 h", "platforms": [{ "code": "aws", "name": "Amazon Web Services", "logo_key": "aws", "availability": "available", "connection_methods": ["readonly_role", "access_keys"] }, { "code": "azure", "name": "Azure", "logo_key": "azure", "availability": "coming_soon", "connection_methods": [] }, "…"], "generated_evidence": "Postura de configuración y registros de actividad de la nube" },
       { "catalog_code": "ac_02", "category": "Servidores en nube / VPS", "method": "Instalar agente ligero de Monkey (o agentless SSH/WinRM)", "required_permissions": ["sudo o administrador para la instalación"], "base_frequency": "continuo", "platforms": [{ "code": "linux", "name": "Linux", "logo_key": "linux", "availability": "coming_soon", "connection_methods": ["agent"] }, "…"] },
       { "catalog_code": "ac_03", "category": "Bases de datos en nube", "method": "Agente en host + usuario de solo lectura", "required_permissions": ["Usuario de solo lectura de auditoría"], "base_frequency": "continuo", "platforms": [{ "code": "postgresql", "name": "PostgreSQL", "logo_key": "postgresql", "availability": "coming_soon", "connection_methods": ["agent"] }, "…"] }
     ]
@@ -69,7 +69,7 @@ Las plataformas y sus atributos salen de la base (`platforms` en `GET /v1/catalo
 
 | Qué se conecta | Categoría | Plataforma que elige | Canales (`connection_method`) |
 |---|---|---|---|
-| Cuenta de nube o servicio gestionado | `ac_01` | AWS · Azure · GCP · Microsoft 365 · Google Workspace | AWS: `readonly_role` (recomendado) · `access_keys`. Las demás: aún sin canal |
+| Cuenta de nube o servicio gestionado | `ac_01` | Amazon Web Services · Azure · GCP · Microsoft 365 · Google Workspace | AWS: `readonly_role` (recomendado) · `access_keys`. Las demás: aún sin canal |
 | Servidor en nube, on-premise o equipo | `ac_02`, `ac_04`, `ac_06` | el **sistema operativo** | `agent` (solo diseño, `DT-57`) |
 | Base de datos | `ac_03`, `ac_05` | el **motor** | `agent` (solo diseño, `DT-57`) |
 
@@ -81,10 +81,10 @@ no se pregunta aquí: lo dice el escenario (paso 1).
 - **Un grupo por tipo** que aplica al escenario del servicio, con el nombre de la categoría en lenguaje de negocio (nunca `ac_01`) y, debajo, una **tarjeta por plataforma** en el orden del catálogo.
   Título «Nueva conexión»; «Elige a qué quieres conectarte. Al terminar, Monkey te muestra los activos que encontró.»
 - **Tarjeta:** logo, nombre de la plataforma y, si está bloqueada, un candado y el texto «Próximamente». Una tarjeta disponible navega a su paso a paso; una bloqueada **no navega**.
-- **Logos:** SVG oficial, **sin recolorear ni redibujar**, desde `Frontend-Platform` (`logo_key`); se muestra con `<img>`, nunca se inyecta SVG como HTML. Uso de marcas de terceros: `P21`.
+- **Logos:** un **icono cuadrado a todo color y sin fondo**, del mismo tamaño para todas las plataformas (así ninguna se ve más grande), desde `Frontend-Platform/public/providers/`. Cada `logo_key` tiene dos archivos: `<logo_key>.svg` (tema claro) y `<logo_key>-dark.svg` (oscuro, donde se aclaran solo los colores muy oscuros). Se muestra con `<img>`, nunca se inyecta SVG como HTML. No son de los kits de marca (`DT-68`); uso de marcas de terceros: `P21`.
 - **Accesibilidad (WCAG 2.2 AA):** el nombre va siempre como **texto visible** y el logo es decorativo (`alt=""`); cada grupo es una sección con su encabezado y una lista; la tarjeta es un enlace o
   botón con foco visible y área táctil de al menos 44 px; la tarjeta bloqueada se anuncia como «no disponible, próximamente» (`aria-disabled="true"`) y **no se distingue solo por opacidad**;
-  contraste de 4,5:1 para el texto y 3:1 para el logo, el icono y el borde, en tema claro y oscuro (si un logo no contrasta, va sobre una baldosa neutra).
+  contraste de 4,5:1 para el texto y 3:1 para el logo, el icono y el borde, en tema claro y oscuro (por eso el logo tiene su variante oscura, no una baldosa de fondo).
 - Sin escenario elegido: `409 DEPLOYMENT_SCENARIO_NOT_SET` y la pantalla lleva a «dónde vive».
 
 El cliente **elige** el canal entre los de **su plataforma**. `GET /v1/catalogs/connection_method` y `GET /v1/catalogs/aws_region` dan las opciones (desde D67 se leen de
@@ -339,18 +339,20 @@ Todas las que había quedaron **cubiertas por desarrollo en D46**; lo que sigue 
 | **Logos de las plataformas** | ❌ Falta confirmar el uso de marcas de terceros y quién entrega los SVG oficiales (`P21`) |
 | **Las 18 capacidades de `technical_coverage`** | ❌ Sin definir (DT-2): hoy es una constante |
 
-## Pendiente de construir — D67 (marketplace y catálogo en la base)
+## Construido — D67 (2026-10-10)
 
-Definido aquí y en `modelo-datos.md` §6.3; **aún no existe en el código** (el Backend y `Frontend-Platform` siguen con las constantes y las tarjetas por categoría).
+El marketplace y el catálogo de conexiones en la base están implementados en `Backend` y `Frontend-Platform`.
 
 | Pieza | Estado |
 |---|---|
-| Tablas `capability_platforms`, `platform_connection_methods`, `platform_regions`, `capability_frequencies`, `deployment_scenario_capabilities`; `automated_capabilities.asset_type`; `assets.platform_id` | ⏳ Migración y carga (`reference:load`) |
-| Constantes de `technical-catalogs.ts` y `onboarding-catalogs.ts` (escenario → conexiones, frecuencias, tipo, canales, regiones) | ⏳ Se retiran; pasan a leerse de la base |
-| `platforms` en `GET /v1/catalogs/automated-capabilities` y en `applicable_capabilities` | ⏳ Reemplaza a `supported_platforms` |
-| `platform` obligatorio en `POST /v1/assets`, con `connection.provider_not_supported` y `platform.not_in_category` | ⏳ |
-| Pantalla del marketplace y los pasos a paso por plataforma; los SVG | ⏳ `Frontend-Platform` |
-| Retirar el formulario provisional de servidores y bases (DT-31, DT-56) | ⏳ Se cierran con esto |
+| Tablas `capability_platforms`, `platform_connection_methods`, `platform_regions`, `capability_frequencies`, `deployment_scenario_capabilities`; `automated_capabilities.asset_type`; `assets.platform_id` | ✅ Migraciones `20261010150000` y `…150100` (RLS del catálogo). Siembra en la propia migración y en `reference:load` (verificados idénticos) |
+| Constantes de `technical-catalogs.ts` y `onboarding-catalogs.ts` (escenario → conexiones, frecuencias, tipo, canales, regiones) | ✅ Retiradas; se leen de la base. Una prueba lo demuestra: agregar una región o quitar una conexión de un escenario en la base cambia lo que la API ofrece y acepta |
+| `platforms` en `GET /v1/catalogs/automated-capabilities` y en `applicable_capabilities` | ✅ Reemplaza a `supported_platforms` |
+| `platform` obligatorio en `POST /v1/assets`, con `connection.provider_not_supported` y `platform.not_in_category` | ✅ Servidores, bases y equipos quedan bloqueados: no se pueden registrar |
+| `GET /v1/catalogs/aws_region` | ✅ Sale de `platform_regions`; la etiqueta, de i18n si existe |
+| Marketplace (`/services/{id}/connections/new`) y paso a paso por plataforma (`…/new/{catalog}/{platform}`) | ✅ Verificado contra la API real, en tema claro y oscuro |
+| Logos | ✅ 16 iconos con su variante oscura en `Frontend-Platform/public/providers/`, mostrados con `<img>`. **No son de los kits de marca**: `DT-68`, `P21` |
+| Retirar el formulario provisional de servidores y bases | ✅ Cerrados `DT-31` y `DT-56` |
 
 ## Estado de implementación (2026-10-09)
 
@@ -371,7 +373,7 @@ Implementado en `Backend/src/features/technical-control` (más `catalogs` y el p
 | `POST /v1/assets/{id}/activate` | ✅ Con la sonda simulada deja `operational_status = warning`, **no** `operational` («Automatizado ≠ Operativo») |
 | `PUT /v1/assets/{id}/schedule` | ✅ Valida la frecuencia por conexión; `409 ASSET_NOT_ACTIVE` si no está activo |
 
-- **Credenciales:** en nube solo el canal `access_keys` las pide (`access_key_id` + `secret_access_key`, cifradas). El canal de rol no entrega secretos. Los formularios de contraseña por conexión de servidores/bases (SSH, DB) son el modelo anterior (`DT-56`).
+- **Credenciales:** en nube solo el canal `access_keys` las pide (`access_key_id` + `secret_access_key`, cifradas). El canal de rol no entrega secretos. Los formularios de contraseña por conexión de servidores/bases (SSH, DB) se retiraron (D67).
 - **Seguridad:** las credenciales no vuelven en ningún response, no se escriben en logs ni en `audit_logs`.
   La comprobación corre fuera de la transacción de base de datos.
 - **Auditoría:** `service.deployment_scenario`, `asset.create`, `asset.validate`
@@ -383,4 +385,4 @@ Implementado en `Backend/src/features/technical-control` (más `catalogs` y el p
   omiten, y una prueba revisa respuestas, i18n, `src/`, logs y el bundle de la aplicación en cada recorrido.
 - **Variables de entorno:** `CREDENTIALS_ENCRYPTION_KEY` (obligatoria), `PROBE_MODE` (`runner` | `simulated` | `unavailable`; `simulated` no arranca en producción), `MONKEY_AWS_PRINCIPAL_ARN` y `VALIDATION_WAIT_SECONDS`.
 - **Pantallas (Platform, D60):** `/services/{id}` es el servicio (su información, «dónde vive» y la lista de conexiones); `/services/{id}/connections/new` propone los métodos
-  de conexión (hoy por categoría; pasa a ser el marketplace de plataformas, D67); `/services/{id}/connections/{id}` muestra la conexión y los **activos que encontró** (D59). «Mis servicios» lista los servicios con su número de conexiones.
+  de conexión (el marketplace de plataformas, D67); `/services/{id}/connections/{id}` muestra la conexión y los **activos que encontró** (D59). «Mis servicios» lista los servicios con su número de conexiones.

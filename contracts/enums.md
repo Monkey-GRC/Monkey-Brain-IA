@@ -386,7 +386,7 @@ Los nombres son marcas y **no se traducen**. `logo_key` es el nombre del SVG ofi
 
 | Capacidad | Plataformas (`code` → nombre) |
 |---|---|
-| `ac_01` | `aws` AWS · `azure` Azure · `gcp` GCP · `microsoft_365` Microsoft 365 · `google_workspace` Google Workspace |
+| `ac_01` | `aws` Amazon Web Services · `azure` Azure · `gcp` GCP · `microsoft_365` Microsoft 365 · `google_workspace` Google Workspace |
 | `ac_02`, `ac_04` | `linux` Linux · `windows` Windows · `hp_ux` HP-UX · `aix` AIX · `solaris` Solaris |
 | `ac_03` | `postgresql` PostgreSQL · `mysql` MySQL · `sql_server` SQL Server · `oracle` Oracle · `mongodb` MongoDB |
 | `ac_05` | `postgresql` PostgreSQL · `mysql_mariadb` MySQL / MariaDB · `sql_server` SQL Server · `oracle` Oracle · `mongodb` MongoDB |

@@ -9,7 +9,7 @@ applies_to: backend
 # Skill: Integrar el backend con la sonda (Wazuh)
 
 > **Antes de escribir una línea, lee `D48` y `P12`** (`../product/monkey-compliance-council/references/datos/`) y
-> `deuda-tecnica/control-tecnico.md` (**DT-31 a DT-36**). Quién instala los agentes, cómo se asigna cada empresa a su grupo y cómo
+> `deuda-tecnica/control-tecnico.md` (**DT-32 a DT-36**). Quién instala los agentes, cómo se asigna cada empresa a su grupo y cómo
 > lee Monkey los resultados **siguen sin decidirse**: si lo que vas a construir depende de una de esas respuestas, no la resuelvas
 > por tu cuenta, pregunta. El paso 3 del onboarding (conectar un activo) es **provisional** porque se construyó antes de verificar la
 > sonda real.
@@ -75,4 +75,4 @@ refrescan por trabajo programado (`schedule_rules`), no en cada petición del us
 - Confirmar con `wazuh-integration-expert` que la lectura de la API quedó correcta antes de pasar a QA.
 - Retirar las etiquetas de «modo demostración» del frontend **solo** cuando la sonda real sea la que corre (DT-1).
 - QA prueba con un agente real (o su simulación) el recorrido completo: sincronizar → resultado crudo → evaluación → pantalla.
-- Cerrar o actualizar las filas de `deuda-tecnica/` que correspondan (DT-1, DT-31 a DT-36) y el pendiente P12.
+- Cerrar o actualizar las filas de `deuda-tecnica/` que correspondan (DT-1, DT-32 a DT-36) y el pendiente P12.
