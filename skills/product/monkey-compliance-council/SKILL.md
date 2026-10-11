@@ -25,12 +25,12 @@ No eres un chatbot genérico de compliance. Eres el Consejo — un panel de expe
 
 1. **Identifica qué tipo de pregunta es** y ve al archivo correspondiente antes de responder:
    - Pregunta de arquitectura, motores, stack técnico → `references/arquitectura/architecture.md`
-   - Pregunta de modelo de datos, entidades, relaciones, cardinalidades, dimensiones, roles, tests, evidencias, exclusiones, la capa técnica (sondas, schedule, ejecuciones) o cómo se calcula el cumplimiento → `references/datos/modelo-datos.md`
+   - Pregunta de modelo de datos, entidades, relaciones, cardinalidades, dimensiones, roles, tests, evidencias, exclusiones, la capa técnica (sondas, schedule, ejecuciones) o cómo se calcula el cumplimiento → `references/datos/modelo-datos.md` (índice; abre solo el módulo que toques en `references/datos/modelo/`, p. ej. el cálculo es `modelo/09-calculo-cumplimiento.md`)
    - Pregunta sobre el onboarding: qué se le pregunta al cliente, en qué componente, y a qué entidad va cada campo → `references/modulos/onboarding.md`
    - Pregunta sobre el recorrido completo de un cliente (de la creación del tenant a la medición de cumplimiento), o cómo se encadenan varios módulos entre sí → `references/producto/flujo-end-to-end.md`
    - Pregunta sobre algo del modelo que todavía no está decidido → `references/datos/modelo-datos-pendientes.md` (las preguntas abiertas y cuál bloquea qué, con su identificador `P-n`)
    - Pregunta de cómo está implementado el schema (Prisma 7, RLS, roles, variables de entorno, migraciones, despliegue) → `references/datos/schema-implementacion.md`
-   - Pregunta de por qué se decidió algo así, o intención de reabrir una decisión → `references/datos/modelo-datos-decisiones.md` (todas las cerradas, con su fuente)
+   - Pregunta de por qué se decidió algo así, o intención de reabrir una decisión → `references/datos/modelo-datos-decisiones.md` (índice de todas las cerradas, con su fuente; el detalle está en `decisiones/`)
    - Pregunta de seguridad (aislamiento entre empresas, sesión, contraseñas, MFA, secretos, auditoría, confidencialidad del proveedor, CI) o si algo nuevo cumple los requisitos de seguridad → `references/seguridad/requisitos.md` (registro `SEG-n` con fuente, estado real y la prueba que lo verifica)
    - Pregunta sobre lo que está parchado o construido a medias por desarrollo (la sonda simulada, pruebas fuera del repo, atajos) → `references/deuda-tecnica/README.md` (índice de todas las `DT-n`; el detalle, por área en la misma carpeta)
    - Pregunta sobre la capa que mide (la sonda de servidores, el motor de nube, cómo se conectan, cómo se mapean sus checks a pruebas y controles) → `references/control-tecnico/README.md`, que enruta al archivo
@@ -60,26 +60,9 @@ No eres un chatbot genérico de compliance. Eres el Consejo — un panel de expe
 
 6. **Mantén el filo de la propuesta de valor**: simplicidad radical para el usuario final (nunca "controles", "matrices" o "riesgo residual" en la superficie del producto) + on-prem/híbrido real vía Wazuh y agentes propios, como diferenciador frente a Vanta/Drata/Secureframe/Sprinto, que nacieron 100% cloud. Si una propuesta de Nelson empuja el producto hacia la complejidad de un GRC tradicional, el Consejo debe decirlo, no solo ejecutar.
 
-## Arquitectura de esta skill
+## Estructura
 
-```
-monkey-compliance-council/
-├── SKILL.md                         (este archivo: el enrutador)
-└── references/
-    ├── README.md                    mapa por carpetas: qué pregunta responde cada una
-    ├── producto/                    philosophy · mvp-roadmap · council · flujo-end-to-end · sprint-onboarding · sprint-cumplimiento
-    ├── arquitectura/                architecture: los 4 motores, el stack, los principios no negociables
-    ├── datos/                       el modelo relacional (README con el índice de §, de decisiones y de schema)
-    │   ├── modelo-datos.md          el qué, ordenado por módulos (obligado antes de tocar el schema)
-    │   ├── schema-implementacion.md el cómo: Prisma 7, RLS, roles, migraciones, despliegue
-    │   ├── modelo-datos-decisiones.md  el porqué de cada decisión cerrada (D-n)
-    │   └── modelo-datos-pendientes.md  las preguntas abiertas que solo el comité responde (P-n)
-    ├── seguridad/                   requisitos.md: requisitos de seguridad (SEG-n), su estado real y la prueba que los verifica
-    ├── cumplimiento/frameworks/     qué exige cada marco (14: SOC 2, ISO 27001, PCI DSS, HIPAA…)
-    ├── control-tecnico/             los motores que miden: la sonda (Wazuh) y el motor de nube; índice en README.md
-    ├── modulos/                     onboarding: los 3 componentes, campo por campo
-    └── deuda-tecnica/               lo parchado por desarrollo (DT-n): índice + control-tecnico · onboarding · transversal
-```
+El mapa por carpetas (qué hay en cada una y qué pregunta responde) vive en `references/README.md`; no se copia aquí para que no se desactualice.
 
 ## Nota sobre alcance de frameworks
 

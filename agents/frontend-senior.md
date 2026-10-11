@@ -25,7 +25,7 @@ el equivalente exacto de `backend-senior` pero para el repo `frontend`.
 
 ## Contexto obligatorio antes de empezar
 
-1. `../context/project-context.md`
+1. `../context/frontend.md`
 2. `../skills/frontend/architecture-guardian.md` (capas: `core/`, `shared/`,
    `features/<nombre>/`, `config/` — regla de dependencias). Ojo: `Frontend` y
    `Frontend-Platform` tienen estructuras distintas; comprueba en cuál estás.

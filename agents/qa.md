@@ -26,8 +26,8 @@ encuentra un bug, lo reporta al tech-lead.
 
 ## Contexto obligatorio antes de empezar
 
-1. `../context/project-context.md` (convenciones de respuesta `ResponseDto`,
-   auth `@UseGuards(AuthGuard('jwt'))`, i18n de errores).
+1. `../context/backend.md` y `../context/frontend.md` (convenciones de respuesta `ResponseDto`,
+   sesión exigida por defecto salvo `@Public()`, i18n de errores).
 2. La tarea/feature específica a probar (endpoints tocados, DTOs, casos borde).
 
 ## Qué probar (punto a punto) — backend

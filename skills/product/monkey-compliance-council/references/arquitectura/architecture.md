@@ -93,7 +93,7 @@ Dos patrones: (a) conectores API-first para SaaS/cloud (OAuth, rotación de cred
 
 | Capa | Elección | Por qué |
 |---|---|---|
-| Backend core | Monolito modular, no microservicios prematuros. **Ya elegido y en uso: NestJS 11 + TypeScript 5.7 + Prisma 7** (ver `context/project-context.md`) | Más barato de operar para un equipo de 10-20 ingenieros; extraer servicios solo cuando la escala lo exija — decisión del Principal Software Architect |
+| Backend core | Monolito modular, no microservicios prematuros. **Ya elegido y en uso: NestJS 11 + TypeScript 5.7 + Prisma 7** (ver `context/backend.md`) | Más barato de operar para un equipo de 10-20 ingenieros; extraer servicios solo cuando la escala lo exija — decisión del Principal Software Architect |
 | Base de datos transaccional | PostgreSQL con row-level security multi-tenant | Estándar de la industria, JSONB para evidencia heterogénea sin sacrificar integridad relacional |
 | Grafo de conocimiento contextual | Base de grafos o modelado de grafo sobre Postgres | El modelo contextual (activos↔personas↔riesgos↔controles↔evidencia) es intrínsecamente un grafo |
 | Búsqueda de evidencia | Índice vectorial + full-text | RAG para que la IA ancle respuestas a datos reales del tenant |

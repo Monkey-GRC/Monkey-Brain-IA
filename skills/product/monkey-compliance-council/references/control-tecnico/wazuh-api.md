@@ -57,7 +57,7 @@ operativas**, no su arquitectura:
 - El prototipo agrupaba por cliente con un grupo de agentes; **cómo se asigna cada empresa a su grupo ya está decidido**
   (D54: un grupo por cliente y agente pre-registrado por Monkey; P12 y DT-33).
 
-El stack real del proyecto es NestJS 11 + Prisma 7 en el backend y dos apps Angular (ver `context/project-context.md`).
+El stack real del proyecto es NestJS 11 + Prisma 7 en el backend y dos apps Angular (ver `context/backend.md` y `context/frontend.md`).
 
 ## Reglas del conector de Monkey
 

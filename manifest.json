@@ -71,9 +71,14 @@
   },
   "context": [
     {
-      "id": "project-context",
-      "path": "context/project-context.md",
-      "description": "Resumen de dominio, stack, arquitectura y convenciones. Leer antes de cualquier tarea en este repo."
+      "id": "backend-context",
+      "path": "context/backend.md",
+      "description": "Convenciones, capas y mapa de features del Backend. Leer antes de tocar el Backend."
+    },
+    {
+      "id": "frontend-context",
+      "path": "context/frontend.md",
+      "description": "Las dos apps Angular (admin y plataforma): diferencias, convenciones y mapa de features. Leer antes de tocar un Frontend."
     }
   ],
   "agents": [
@@ -88,7 +93,7 @@
     {
       "id": "tech-lead",
       "path": "agents/tech-lead.md",
-      "description": "Supervisa a backend-senior, frontend-senior y qa. No implementa código. Escala decisiones críticas al usuario y reporta corto. También vigila que context/project-context.md y contracts/ se mantengan al día, y le pregunta al usuario antes de actualizarlos.",
+      "description": "Supervisa a backend-senior, frontend-senior y qa. No implementa código. Escala decisiones críticas al usuario y reporta corto. También vigila que context/backend.md, context/frontend.md y contracts/ se mantengan al día, y le pregunta al usuario antes de actualizarlos.",
       "model": "sonnet",
       "applies_to": [
         "backend",
@@ -100,7 +105,8 @@
         "qa"
       ],
       "maintains": [
-        "context/project-context.md"
+        "context/backend.md",
+        "context/frontend.md"
       ]
     },
     {

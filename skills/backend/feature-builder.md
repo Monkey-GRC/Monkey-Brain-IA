@@ -23,7 +23,7 @@ el ejemplo de CRUD paginado). La usa típicamente el agente `backend-senior` (ve
 ## Contexto obligatorio antes de empezar
 
 Lee, en este orden:
-1. `../../context/project-context.md`
+1. `../../context/backend.md`
 2. El contrato del módulo en `../../contracts/modules/` y `../../contracts/conventions.md`
 3. `add-feature.md` (los pasos exactos)
 4. El código real de `src/features/auth/**` como plantilla viva.

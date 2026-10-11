@@ -16,7 +16,7 @@ producto, justamente para poder moverlo, clonarlo o descargarlo en cualquier
 otro lugar sin arrastrarlo. Cuando se usa, se asume colocado como carpeta
 hermana de esos repos (p. ej. `Monkey/Backend/` y `Monkey/Frontend/` junto a
 `Monkey/Monkey-Brain-IA/`) — ver la nota de "Convención de rutas" en
-`context/project-context.md`.
+`context/backend.md` y `context/frontend.md`.
 
 Esta carpeta no depende de ninguna herramienta en particular (Claude Code, Cursor,
 Copilot, Windsurf, un agente custom, etc.). Es un conjunto de archivos en Markdown
@@ -32,9 +32,10 @@ IA pueda:
 
 ## Cómo debe usarla un agente de IA
 
-1. Leer `manifest.json` para saber qué recursos existen y sus rutas.
-2. Leer `context/project-context.md` **siempre** antes de tocar código en
-   cualquiera de los repos.
+1. Empezar por `CLAUDE.md`: reglas no negociables y la tabla "qué leer según la tarea".
+   `manifest.json` es el índice máquina-legible de los recursos.
+2. Antes de tocar código, leer solo el `context/` del repo en que se trabaja
+   (`backend.md` o `frontend.md`).
 3. Si la tarea calza con un agente definido en `agents/`, adoptar ese rol/checklist.
 4. Si la tarea calza con una skill definida en `skills/` (técnica de backend
    en `skills/backend/`, técnica de frontend en `skills/frontend/`, de
@@ -54,9 +55,11 @@ IA pueda:
 Monkey-Brain-IA/
 ├── README.md                      # este archivo
 ├── CLAUDE.md                      # instrucciones obligatorias antes de tomar cualquier decisión
+├── STANDARD.md                    # cómo se mantiene el cerebro: un dato un dueño, tamaños, IDs, cierre de tarea
 ├── manifest.json                  # índice máquina-legible de todos los recursos
 ├── context/
-│   └── project-context.md         # estado ACTUAL del código de los tres repos
+│   ├── backend.md                 # convenciones, capas y mapa de features del Backend
+│   └── frontend.md                # las dos apps Angular: diferencias, convenciones y mapa de features
 ├── contracts/                     # forma exacta de cada endpoint: request, response y errores
 │   ├── README.md
 │   ├── conventions.md             # sobre de respuesta, errores, i18n, multi-select, paginación
@@ -84,18 +87,8 @@ Monkey-Brain-IA/
     │   ├── call-backend-api.md
     │   ├── add-translation.md
     │   └── architecture-guardian.md
-    ├── product/                   # skills de producto/estrategia/compliance
-    │   └── monkey-compliance-council/  # "el Consejo": cerebro de producto/compliance de Monkey
-    │       ├── SKILL.md
-    │       └── references/        # README = mapa; una carpeta por parte de la aplicación:
-    │           ├── producto/            #   philosophy, mvp-roadmap, council, flujo-end-to-end, sprint-onboarding
-    │           ├── arquitectura/        #   architecture
-    │           ├── datos/               #   modelo-datos, schema-implementacion, decisiones (D-n), pendientes (P-n)
-    │           ├── seguridad/           #   requisitos (SEG-n)
-    │           ├── cumplimiento/        #   frameworks/* (14 marcos)
-    │           ├── control-tecnico/     #   la sonda (wazuh*), el motor de nube y su cruce con el catálogo
-    │           ├── modulos/             #   onboarding.md
-    │           └── deuda-tecnica/       #   índice + por área (DT-n)
+    └── product/                   # skills de producto/estrategia/compliance
+        └── monkey-compliance-council/  # "el Consejo": cerebro de producto/compliance (mapa en references/README.md)
 ```
 
 ## Equipo de agentes (jerarquía fija)
@@ -127,7 +120,7 @@ Monkey-Brain-IA/
   único que habla con el usuario para temas de ingeniería. Antes de
   cualquier decisión crítica (ver `agents/tech-lead.md`), pregunta al
   usuario; para el resto, reporta corto al final. También vigila que
-  `context/project-context.md` no quede desactualizado tras un cambio — cuando lo
+  `context/backend.md` / `context/frontend.md` no queden desactualizados tras un cambio — cuando lo
   considera necesario, le pregunta al usuario si quiere actualizarlo.
 - **backend-senior**: ejecuta la tarea que le asigna el tech-lead en el
   backend siguiendo las skills (`skills/backend/add-feature.md`, etc.). No

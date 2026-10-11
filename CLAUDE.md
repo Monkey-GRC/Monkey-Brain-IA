@@ -1,145 +1,105 @@
 # Monkey — instrucciones obligatorias para Claude
 
-Este repo (`Monkey-Brain-IA`) es el cerebro de producto de Monkey. Antes de tomar
-CUALQUIER decisión de arquitectura, UX, modelo de datos o priorización — en este
-repo o en cualquiera de los repos hermanos (`Backend`, `Frontend`,
-`Frontend-Platform`, `monkey-cis-sync`) — hay que consultar lo que ya está
-decidido aquí. No repetir de memoria un resumen de conversación anterior: los
-archivos pueden haber cambiado.
+Este repo (`Monkey-Brain-IA`) es el cerebro de producto de Monkey. Aplica a este repo y a los
+hermanos (`Backend`, `Frontend`, `Frontend-Platform`, `monkey-cis-sync`). No decidas de memoria ni
+repitas un resumen de una conversación anterior: los archivos pueden haber cambiado. **Lee solo lo
+que la tarea necesita** (tabla de abajo); no cargues el cerebro entero.
 
 ## Regla no negociable
 
-**Antes de construir o rediseñar cualquier pantalla, endpoint o flujo, invoca la
-skill `monkey-compliance-council` (o lee directamente los archivos de
-`skills/product/monkey-compliance-council/references/`) y sigue su método de
-enrutar la pregunta al archivo correcto** (ver `SKILL.md` de esa skill, sección
-"Cómo operar"). En particular:
+Antes de construir o rediseñar una pantalla, endpoint o flujo, o de tomar una decisión de
+arquitectura, UX, modelo de datos o priorización: invoca la skill `monkey-compliance-council`
+(`skills/product/monkey-compliance-council/SKILL.md`, sección "Cómo operar") y sigue su ruteo al
+archivo correcto. Mapa por carpetas: `skills/product/monkey-compliance-council/references/README.md`.
 
-- `modelo-datos.md` — el modelo relacional del dominio, **ordenado por módulos**
-  (catálogo maestro, Monkey Admin, Usuarios, Onboarding ×3, Cumplimiento, Control
-  Técnico): entidades con sus PK/FK, relaciones y
-  cardinalidades, las 5 dimensiones, tests, evidencias, exclusiones y cómo se
-  calcula el cumplimiento. Es la referencia obligada antes de tocar el schema o
-  cualquier cálculo de cumplimiento. Dos reglas estructurales que no se violan:
-  - El **Control es atómico e independiente del marco**: se vincula a Requisitos,
-    y son los Requisitos los que pertenecen a un marco. Nunca colgar un control
-    (ni sus tests, evidencias o medición) de un framework concreto.
-  - El cumplimiento de un marco **se deriva** recorriendo requisitos → controles.
-    Nunca se almacena como atributo del marco.
-- `philosophy.md` — cómo debe hablarle Monkey a un usuario final. Contiene reglas
-  ya violadas una vez en este proyecto por apurar una UI sin leerlas primero:
-  - **Nunca un % desnudo como métrica principal** — el readiness es cualitativo
-    (Preparado = 100%, Casi listo = 80% o más, Requiere trabajo = menos), el % es secundario.
-  - **Nunca jerga técnica en la superficie** ("controles", "CC6.1", "matrices",
-    "riesgo residual") — la vista técnica/detallada existe, pero **es la pantalla de los roles
-    `auditor` y `consultor`**, no un modo ni un botón: el cliente (`admin_empresa`, `funcional`) solo ve la vista
-    de negocio (en qué falla y su porcentaje). **Consultoría** prepara para la auditoría; **auditoría** certifica.
-  - La IA nunca certifica cumplimiento, nunca presenta inferencia como hecho
-    verificado sin mostrar evidencia, siempre etiqueta lo que ella generó.
-  - Plantilla de 7 campos para explicarle un hallazgo a un usuario final.
-- `modelo-datos.md` §9 — **cómo se mide el cumplimiento**: se cuenta, no se promedia (dimensión → control → categoría → marco, y cada nivel se cumple solo al 100%). Léelo antes de tocar cualquier cálculo o pantalla de porcentaje.
-- `architecture.md` — los 4 motores, la estructura del modelo y el stack de
-  referencia.
-- `mvp-roadmap.md` — qué es MUST/SHOULD/LATER/NO BUILD ya decidido.
-- `cumplimiento/frameworks/*.md` — qué exige cada framework (SOC 2, ISO 27001, PCI DSS, etc.),
-  con fuente y fecha verificada. No inventar citas ni cifras de un framework.
-- `references/README.md` (en `skills/product/monkey-compliance-council/`) — el **mapa por carpetas**: `producto/`,
-  `arquitectura/`, `datos/`, `seguridad/`, `cumplimiento/`, `control-tecnico/`, `modulos/` y `deuda-tecnica/`. Los
-  nombres de archivo de abajo viven dentro de esas carpetas.
-- `council.md` — cómo se resuelven desacuerdos de diseño entre los roles del panel.
-- `modelo-datos-pendientes.md` — las preguntas que **todavía no están cerradas** y que
-  solo el comité puede responder (la lista vive en ese archivo). Antes de construir algo que dependa de una,
-  consúltala: si sigue ahí, no la resuelvas por tu cuenta — pregunta.
-- `deuda-tecnica/README.md` — lo que está **parchado o construido a medias** por desarrollo (la sonda simulada, la
-  Descripción del Sistema sin procesar, el recorrido de navegador fuera del repo…), con su riesgo y qué lo cierra. No son
-  preguntas del comité (esas van en `modelo-datos-pendientes.md`) ni decisiones cerradas (esas, en
-  `modelo-datos-decisiones.md`). Si construyes algo con un atajo, **regístralo ahí**; si cierras uno, bórralo.
-- `seguridad/requisitos.md` — los **requisitos de seguridad** (`SEG-n`) con su fuente, su estado real y la
-  prueba automática que los verifica. Todo endpoint, tabla o flujo nuevo se revisa contra esa lista
-  antes de darse por terminado; si introduce un requisito nuevo, se añade una fila en el mismo PR.
-- `schema-implementacion.md` — el **cómo** en el Backend: Prisma 7, RLS, roles, variables de
-  entorno, migraciones y despliegue. Léelo antes de tocar el schema, una migración o el `.env`.
-- `modelo-datos-decisiones.md` — el **por qué** de cada decisión ya cerrada, con su
-  fuente. Se consulta si alguien quiere reabrir algo, no para construir.
-- `modulos/onboarding.md` — los 3 componentes que capturan el contexto del cliente
-  (Contexto Organizacional, Contexto del Servicio, Control Técnico) y a qué entidad de
-  `modelo-datos.md` va cada campo. Antes de tocar el feature `onboarding` de
-  `Frontend-Platform`, léelo.
-- `flujo-end-to-end.md` — el recorrido completo de un cliente, del registro del tenant en
-  Monkey Admin hasta la medición del cumplimiento. Es el mapa de cómo se encadenan los
-  módulos entre sí.
+## Qué leer según la tarea
 
-## Por encima de todo eso están los `assets/`
+Rutas relativas a `skills/product/monkey-compliance-council/references/`.
 
-`assets/` contiene los documentos del **comité funcional** (blueprint del Centro de
-Control Técnico, matriz de controles, desglose SOC 2, notas del conector). **No son
-material de apoyo: son la fuente de verdad.** Los `.md` de `references/` solo los
-transcriben. Si un `.md` y un documento fuente se contradicen, **gana el documento**
-y el `.md` se corrige. Inventario completo, incluidas las fuentes que viven fuera de
-este repo, en `skills/product/monkey-compliance-council/references/datos/modelo-datos.md` §0.
+| Si vas a… | Lee |
+|---|---|
+| Tocar el schema o una entidad | `datos/modelo-datos.md` (índice) y solo el módulo que toques en `datos/modelo/` |
+| Tocar un cálculo o pantalla de cumplimiento (%) | `datos/modelo/09-calculo-cumplimiento.md` (§9) |
+| Tocar una migración, RLS, roles o `.env` | `datos/schema-implementacion.md` |
+| Diseñar texto o pantalla que verá un usuario final | `producto/philosophy.md` |
+| Decidir qué se construye ahora vs. después | `producto/mvp-roadmap.md` |
+| Tocar el onboarding (Contexto Org., Servicio, Control Técnico) | `modulos/onboarding.md` |
+| Entender el recorrido de un cliente de punta a punta | `producto/flujo-end-to-end.md` |
+| Saber qué exige un marco (SOC 2, ISO 27001…) | `cumplimiento/frameworks/<marco>.md` — no inventes citas ni cifras |
+| Integrar la sonda o el motor de nube | `control-tecnico/README.md` |
+| Revisar seguridad de un endpoint, tabla o flujo | `seguridad/requisitos.md` (`SEG-n`; añade fila si hay requisito nuevo) |
+| Construir algo que dependa de una pregunta abierta | `datos/modelo-datos-pendientes.md` (`P-n`): si sigue ahí, **pregunta, no resuelvas** |
+| Usar un atajo o parche | regístralo en `deuda-tecnica/README.md` (`DT-n`); si cierras uno, bórralo |
+| Reabrir algo ya cerrado | `datos/modelo-datos-decisiones.md` (índice de `D-n`; abre solo el archivo de `decisiones/` que indica) — se consulta para reabrir, no para construir |
+| Resolver un desacuerdo de diseño | `producto/council.md` |
+| Arquitectura, motores, stack | `arquitectura/architecture.md` |
 
-### El comité manda sobre lo implementado
+Fuera de `references/`:
 
-**El proyecto está en etapa de reconstrucción.** El modelo relacional
-(`modelo-datos.md`) es **el plan vigente**: dice qué entidades hay y cómo se van a
-implementar. El schema actual de `Backend` **no es la referencia** — es el punto de
-partida que se está rehaciendo.
+- **Endpoint o formulario → `contracts/` primero**, antes de construir, no después. `contracts/conventions.md`
+  (sobre de respuesta, errores, i18n, multi-select, fechas, paginación), `contracts/enums.md`
+  (`valor` snake_case ↔ etiqueta; el frontend nunca hardcodea listas de opciones) y
+  `contracts/modules/*.md`. Si no está ahí, el contrato se acuerda primero. Si el Excel del comité y
+  `modelo-datos.md` discrepan en las **opciones** de un enum, gana el Excel; en el **nombre** de un campo, gana el modelo.
+- **Trabajo de un repo concreto** → `skills/backend/*.md`, `skills/frontend/*.md` (capas, i18n
+  obligatorio, standalone, path aliases: `skills/frontend/architecture-guardian.md`) y la sección
+  del repo en `context/backend.md` o `context/frontend.md` (el código tal como está, no el diseño objetivo).
 
-De ahí dos consecuencias que no se discuten caso por caso:
+## Reglas estructurales (no se violan)
 
-1. **Si Monkey hoy hace algo de una forma y el comité propuso otra, se hace caso al
-   comité.** Ellos hicieron el análisis funcional. Que una tabla, un enum o un cálculo ya
-   exista en el código no es argumento para conservarlo.
-2. **Que algo no exista todavía en el schema no es un pendiente del modelo.** Si está
-   definido en `modelo-datos.md`, está decidido y listo para construirse. Lo único que
-   queda abierto son las preguntas que **solo el comité puede responder**, y están en
-   `modelo-datos-pendientes.md`.
+- **El Control es atómico e independiente del marco.** Se vincula a Requisitos; los Requisitos
+  pertenecen a un marco. Nunca cuelgues un control (ni sus tests, evidencias o medición) de un framework.
+- **El cumplimiento de un marco se deriva** recorriendo requisitos → controles. Nunca se almacena
+  como atributo del marco. Se **cuenta**, no se promedia: dimensión → control → categoría → marco,
+  y cada nivel se cumple solo al 100% (`modelo-datos.md` §9).
 
-Dos reglas más que salen de los assets y aplican siempre:
+## Reglas de producto (de `philosophy.md`; ya se violaron una vez)
 
-- **La dependencia de Wazuh es confidencial frente al cliente final.** En el producto
-  se habla de "sonda", "capacidad automática" o "evaluación automática" — nunca del
-  proveedor por su nombre (ni Wazuh ni Prowler), en ninguna pantalla, notificación,
-  reporte o texto generado por IA.
-- `conexion_api_wazuh_monkey.txt` **contiene credenciales en texto plano**. No se
-  copia a este ni a ningún otro repo.
+- **Nunca un % desnudo como métrica principal.** El readiness es cualitativo: Preparado = 100%,
+  Casi listo = 80% o más, Requiere trabajo = menos. El % es secundario.
+- **Nunca jerga técnica en la superficie** ("controles", "CC6.1", "matrices", "riesgo residual").
+  La vista técnica existe, pero **es la pantalla de los roles `auditor` y `consultor`**, no un modo
+  ni un botón. El cliente (`admin_empresa`, `funcional`) solo ve la vista de negocio (en qué falla y
+  su porcentaje). Consultoría prepara para la auditoría; auditoría certifica.
+- **La IA nunca certifica cumplimiento**, nunca presenta inferencia como hecho verificado sin
+  mostrar evidencia, y siempre etiqueta lo que ella generó.
+- Para explicarle un hallazgo a un usuario final: plantilla de 7 campos de `philosophy.md`.
 
-## Y antes de tocar un endpoint o un formulario: `contracts/`
+## Confidencialidad y secretos
 
-`contracts/` tiene la forma exacta de cada endpoint — request, response y errores — acordada
-entre backend y frontend. **Se lee antes de construir, no después.** Si lo que vas a construir
-no está ahí, el contrato se acuerda primero.
+- **Wazuh y Prowler son confidenciales frente al cliente final.** En el producto se dice "sonda",
+  "capacidad automática" o "evaluación automática" — nunca el proveedor por su nombre, en ninguna
+  pantalla, notificación, reporte o texto generado por IA.
+- `conexion_api_wazuh_monkey.txt` contiene credenciales en texto plano. No se copia a este ni a
+  ningún otro repo.
 
-- `contracts/conventions.md` — el sobre de respuesta, la forma del error de validación, i18n,
-  multi-select, fechas y paginación. Aplica a todos los endpoints.
-- `contracts/enums.md` — la tabla `valor` ↔ etiqueta. Por el cable viaja el valor en
-  `snake_case`; la etiqueta la resuelve i18n. **El frontend nunca hardcodea listas de opciones.**
-- `contracts/modules/*.md` — un archivo por módulo: `monkey-admin`, `auth`, y los 3 componentes
-  del onboarding.
+## El comité manda sobre lo implementado
 
-Si el Excel del comité y `modelo-datos.md` discrepan en las **opciones** de un enum, gana el
-Excel y se corrige el modelo. Si discrepan en el **nombre** de un campo, gana el modelo.
+- `assets/` (blueprint del Centro de Control, matriz de controles, desglose SOC 2, notas del
+  conector) es **la fuente de verdad**, por encima de todo. Los `.md` de `references/` solo lo
+  transcriben: si se contradicen, **gana el documento** y el `.md` se corrige. Inventario en
+  `datos/modelo-datos.md` §0.
+- El proyecto está en **reconstrucción**. `modelo-datos.md` es el plan vigente; el schema actual de
+  `Backend` es el punto de partida que se rehace, no la referencia.
+  1. Si Monkey hoy hace algo de una forma y el comité propuso otra, **se hace caso al comité**. Que
+     una tabla, enum o cálculo ya exista no es argumento para conservarlo.
+  2. Que algo no exista aún en el schema no es un pendiente: si está en `modelo-datos.md`, está
+     decidido y listo para construirse. Solo queda abierto lo que está en `modelo-datos-pendientes.md`.
 
-Para trabajo específico de cada repo, también existen:
+## Cierre de una tarea
 
-- `skills/backend/*.md` (arquitectura, cómo agregar features/modelos/integraciones)
-- `skills/frontend/*.md` (arquitectura de capas core/shared/features, i18n
-  obligatorio, standalone components, path aliases — ver
-  `skills/frontend/architecture-guardian.md`)
-- `skills/product/monkey-compliance-council/references/control-tecnico/` (la sonda y el motor de nube: cómo se integran, qué trae cada uno de fábrica)
-
-## Por qué existe este archivo
-
-El 24 de agosto de 2026 se construyó una pantalla de "Cumplimiento" copiando el
-estilo de Vanta sin pasar primero por `philosophy.md` — resultado: porcentajes
-desnudos como métrica principal y códigos técnicos (`CC1.1-CC1.5`) expuestos en
-la vista por defecto, exactamente lo que esa skill ya prohibía por escrito. Este
-archivo existe para que esto no se repita: la skill se consulta ANTES de diseñar,
-no después de que el usuario lo señale.
+Un cambio no está terminado hasta que cierra o actualiza todo lo relacionado: `P-n`, `DT-n`, `D-n`,
+`SEG-n`, contrato, `enums.md` y los docs afectados, **en el mismo PR**. Cada dato vive en un solo
+archivo; los demás lo enlazan. Reglas de mantenimiento del cerebro: `STANDARD.md`.
 
 ## Cuándo NO aplica
 
-Trabajo puramente mecánico sin impacto de producto (fix de un typo, migración de
-Prisma, corrección de un bug ya diagnosticado) no requiere releer las skills cada
-vez — pero cualquier cosa que un usuario final vaya a ver o cualquier decisión de
-qué construir sí.
+Trabajo puramente mecánico sin impacto de producto (typo, migración de Prisma, bug ya
+diagnosticado) no requiere releer las skills. Todo lo que un usuario final vaya a ver, y toda
+decisión de qué construir, sí.
+
+## Por qué existe
+
+El 24 de agosto de 2026 se construyó la pantalla "Cumplimiento" copiando a Vanta sin pasar por
+`philosophy.md`: salieron porcentajes desnudos y códigos técnicos (`CC1.1-CC1.5`) en la vista por
+defecto. La skill se consulta ANTES de diseñar, no después de que el usuario lo señale.

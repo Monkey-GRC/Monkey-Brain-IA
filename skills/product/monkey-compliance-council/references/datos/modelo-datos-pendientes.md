@@ -8,19 +8,26 @@ algo que dependa de una, consúltala — si sigue aquí, no la resuelvas por tu 
 **Los números son estables: una pregunta cerrada no se reutiliza ni renumera el resto**, para
 que las referencias desde `contracts/`, Jira o un comentario viejo sigan valiendo.
 
-Cerradas hasta hoy:
+## Tablero
 
-| | Pregunta | Cerrada |
-|---|---|---|
-| **P1** | Cumplimiento fuera del onboarding | 2026-09-26 — el comité confirmó D23: el onboarding se queda en 3 componentes |
-| **P10** | Origen de `control_dimensions` y qué es `policies` | 2026-10-01 — cerrada por desarrollo en D39: la dimensión aplica si el control tiene una prueba de ella; `policies` es una plantilla. **Falta ratificar con el comité el tipo y las banderas derivados**; no bloquea nada |
-| **P5** | Dos cifras de la documentación de la sonda | 2026-10-08 — las cifras («869 checks, 646 nativos, 223 inferidos») no tenían universo y se quitaron de `wazuh.md`; la versión de referencia es la del manager que corre en desarrollo, 4.14.6 (D55) |
-| **P8** | ¿Un control que crea el cliente cuenta para el marco? | 2026-10-09 — D65: sí cuenta para el porcentaje; es solo documental, va en la categoría que elige el cliente y lo aprueba el consultor |
-| **P16** | Cuándo un activo está «Preparado», «Casi listo» o «Requiere trabajo» | 2026-10-09 — D62: se lee con el porcentaje de tests con resultado, con los cortes de 100% y 80% |
-| **P18** | Una categoría sin nada medido, y la cobertura | 2026-10-09 — D62: no está lograda y cuenta en el denominador; la cobertura es siempre un número aparte |
-| **P19** | Un consultor que atiende a varias empresas, con el correo único | 2026-10-09 — D64: una sola cuenta de Next que asigna `admin_monkey` a varias empresas |
-| **P20** | Quién reactiva a un consultor que la empresa suspendió | 2026-10-09 — D64: solo la empresa |
-| **P4** | `responsible_id` sin catálogo de cargos | 2026-09-29 — cerrada por desarrollo en D30: el cargo es `organization_responsibles`. **Falta ratificarla con el comité**; no bloquea nada |
+Lo que sigue abierto, con lo más urgente arriba. 🚧 bloquea trabajo · ⚠️ condiciona una decisión o pantalla · sin icono, no bloquea. Cada P lleva a su detalle más abajo.
+
+| P | Pregunta | ¿Qué espera por ella? | Abierta desde |
+|---|---|---|---|
+| [P3](#p3--qué-ve-y-qué-hace-cada-rol-en-cada-pantalla-de-cumplimiento) | Qué ve y qué hace cada rol en cada pantalla de Cumplimiento | 🚧 Las pantallas y endpoints de Cumplimiento por rol (espera el Excel del comité) | — |
+| [P12](#p12--cómo-se-conecta-monkey-a-la-sonda-paso-3-del-control-técnico) | Cómo se conecta Monkey a la sonda (paso 3 del control técnico) | 🚧 El rediseño del paso 3 (DT-32 a DT-36); no el resto del onboarding | 2026-10-02 |
+| [P14](#p14--motores-de-evaluación-rol-de-cada-uno-y-cómo-se-relacionan-con-el-modelo) | Motores de evaluación: rol de cada uno y su relación con el modelo | 🚧 El adaptador de nube y el cálculo de cobertura en nube; no Cumplimiento | 2026-10-07 |
+| [P2](#p2--el-flujo-de-la-clave-de-acceso--5-detalles-sin-definir) | El flujo de la clave de acceso: 5 detalles sin definir (urgentes: a y c) | ⚠️ Condiciona la pantalla de canje (hoy hecha como código a mano, D51) | — |
+| [P7](#p7--dónde-se-aloja-el-postgres-de-producción) | Dónde se aloja el Postgres de producción | ⚠️ Condiciona la retención de 7 años del audit trail (D41) | — |
+| [P9](#p9--datos-del-excel-que-hay-que-corregir-o-confirmar) | Datos del Excel que hay que corregir o confirmar | ⚠️ La dimensión Aplicación del cálculo y las causas que ve el cliente | — |
+| [P11](#p11--el-nombre-del-proveedor-en-los-textos-de-las-pruebas) | El nombre del proveedor en los textos de las pruebas | ⚠️ Qué ve el cliente de una prueba (hoy ningún texto de prueba sale a la UI) | — |
+| [P21](#p21--el-uso-de-los-logos-de-marcas-de-terceros) | El uso de los logos de marcas de terceros en el marketplace | ⚠️ Publicar el marketplace con logos a clientes reales; no bloquea construirlo | 2026-10-10 |
+| [P6](#p6--la-lista-completa-de-business_model) | La lista completa de `business_model` | No bloquea (valen las 19 y `other`) | — |
+| [P13](#p13--ratificar-lo-que-desarrollo-decidió-en-las-correcciones-del-2026-10-05-d50-d51) | Ratificar lo que desarrollo decidió el 2026-10-05 (D50, D51) | No bloquea: está construido y funcionando | 2026-10-06 |
+| [P15](#p15--cómo-se-mapean-los-checks-de-nube-que-quedan-fuera) | Cómo se mapean los checks de nube que quedan fuera | No bloquea: lo no mapeado no cuenta hasta responder | 2026-10-08 |
+| [P17](#p17--el-paso-3-del-onboarding-exige-al-menos-una-conexión-comprobada) | ¿El paso 3 del onboarding exige al menos una conexión comprobada? | No bloquea: hoy el paso se da por hecho al definir dónde vive el servicio (D60) | 2026-10-10 |
+
+---
 
 ## P2 · El flujo de la clave de acceso — 5 detalles sin definir
 
@@ -86,11 +93,9 @@ de confidencialidad frente al cliente final. Se guardan tal cual (son la fuente)
 la UI, a un reporte ni a la IA**. Falta decidir qué ve el cliente de una prueba: ¿solo su resultado y un nombre
 neutro? ¿el comité entrega una versión sin el nombre del proveedor?
 
----
-
 ## P12 · Cómo se conecta Monkey a la sonda (paso 3 del control técnico)
 
-**Estado:** abierto desde 2026-10-02 (D48). Bloquea el rediseño del paso 3 (DT-31 a DT-36); no bloquea el resto del onboarding.
+**Estado:** abierto desde 2026-10-02 (D48). Bloquea el rediseño del paso 3 (DT-32 a DT-36); no bloquea el resto del onboarding.
 
 Preguntas para Nelson, Bryan y el comité:
 
@@ -101,7 +106,15 @@ Preguntas para Nelson, Bryan y el comité:
 5. **¿Qué se promete a un cliente con un sistema que no sea Ubuntu 22.04, Ubuntu 14.04 o Windows 11?** Hoy no hay pruebas para él.
 6. **¿Se autoriza la IP de desarrollo** en la API de la sonda para poder probar un adaptador real?
 
----
+## P13 · Ratificar lo que desarrollo decidió en las correcciones del 2026-10-05 (D50, D51)
+
+**Estado:** abierto desde 2026-10-06. No bloquea nada: todo está construido y funcionando; falta que el comité lo confirme.
+
+1. **Lista de 7 marcos ofrecidos** (SOC 2, ISO 27001, HIPAA, GDPR, PCI DSS, NIST CSF, SOC 1) y su orden. La armó desarrollo con datos de demanda de proveedores de cumplimiento (Drata, ACC 2025), no el comité. ¿Es la lista correcta para la oferta comercial?
+2. **Lista de 18 normas de protección de datos** (DT-40): ¿se ratifica que salga PCI DSS, que HIPAA y GLBA se queden, y las 5 que entraron (Ley 21.719 CL, UY, EC, PA, CR)? ¿Faltan otras (p. ej. Ley 1266 de Colombia)?
+3. **Categorías por marco** (D50, DT-38): confirmada la opción de que cada marco use las suyas. Falta que el comité entregue **cuáles son** las de cada marco (ISO 27001: ¿4 temas del Anexo A? PCI DSS: ¿12 requisitos? NIST CSF: ¿6 funciones?) y si «seguridad siempre obligatoria» se generaliza a un dominio obligatorio por marco.
+4. **Contacto de ventas** (DT-41): ¿qué canal real recibe el interés cuando un cliente toca un marco que no contrató?
+5. **Certificación previa:** ¿las 8 opciones son las correctas para una «certificación o evaluación» previa?
 
 ## P14 · Motores de evaluación: rol de cada uno y cómo se relacionan con el modelo
 
@@ -141,17 +154,6 @@ cubriría servidores, BD y endpoints; un motor de configuración, la nube.
 2. Quién revisa el texto de IA antes de que llegue al cliente y quién responde por un falso positivo.
 
 **Qué depende:** columnas nuevas de `check_results` (recurso, región, detalle), carga de checks, `Evaluation` en nube y el paso 3 del onboarding para nube (DT-35).
-## P13 · Ratificar lo que desarrollo decidió en las correcciones del 2026-10-05 (D50, D51)
-
-**Estado:** abierto desde 2026-10-06. No bloquea nada: todo está construido y funcionando; falta que el comité lo confirme.
-
-1. **Lista de 7 marcos ofrecidos** (SOC 2, ISO 27001, HIPAA, GDPR, PCI DSS, NIST CSF, SOC 1) y su orden. La armó desarrollo con datos de demanda de proveedores de cumplimiento (Drata, ACC 2025), no el comité. ¿Es la lista correcta para la oferta comercial?
-2. **Lista de 18 normas de protección de datos** (DT-40): ¿se ratifica que salga PCI DSS, que HIPAA y GLBA se queden, y las 5 que entraron (Ley 21.719 CL, UY, EC, PA, CR)? ¿Faltan otras (p. ej. Ley 1266 de Colombia)?
-3. **Categorías por marco** (D50, DT-38): confirmada la opción de que cada marco use las suyas. Falta que el comité entregue **cuáles son** las de cada marco (ISO 27001: ¿4 temas del Anexo A? PCI DSS: ¿12 requisitos? NIST CSF: ¿6 funciones?) y si «seguridad siempre obligatoria» se generaliza a un dominio obligatorio por marco.
-4. **Contacto de ventas** (DT-41): ¿qué canal real recibe el interés cuando un cliente toca un marco que no contrató?
-5. **Certificación previa:** ¿las 8 opciones son las correctas para una «certificación o evaluación» previa?
-
----
 
 ## P15 · Cómo se mapean los checks de nube que quedan fuera
 
@@ -165,8 +167,6 @@ Del catálogo de 662 checks de AWS, lo que no llega a un control:
 4. **Ratificar las 569 asignaciones propuestas** (`monkey_proposed`): se pide por prueba (11 `T-CLD`), no check por check.
 
 **Qué depende:** que esos checks cuenten para el cumplimiento (§9) y la cobertura técnica real de la nube.
-
----
 
 ## P17 · ¿El paso 3 del onboarding exige al menos una conexión comprobada?
 
@@ -182,6 +182,23 @@ políticas (sin activos técnicos) darlo por hecho?
 
 ---
 
+## P21 · El uso de los logos de marcas de terceros
+
+**Estado:** abierto desde 2026-10-10 (D67). No bloquea construir el marketplace: condiciona publicarlo con logos a clientes reales.
+
+El paso 3 muestra el logo en SVG de cada plataforma (AWS, Azure, GCP, Microsoft 365, Google Workspace, Linux, Windows, PostgreSQL, Oracle…). Las marcas son de terceros y varias
+tienen guías de uso: logo oficial sin modificar, espacio libre mínimo, a veces una leyenda.
+
+1. ¿Se tiene permiso o se revisó la guía de marca de cada proveedor para mostrar su logo en la plataforma?
+2. ¿Quién entrega los SVG oficiales y dónde se guardan?
+3. ¿Basta con un aviso en la plataforma («las marcas pertenecen a sus titulares») o se necesita algo más?
+
+**Procedencia hoy** (`DT-68`): colecciones de iconos de marca, no los kits de cada proveedor. Simple Icons: Linux, HP (para HP-UX), PostgreSQL, MySQL, Oracle y MongoDB · Devicon: AWS, Azure, GCP, SQL Server y un icono genérico de Unix (para Solaris) · Logos: Microsoft (para Microsoft 365), la «G» de Google (para Google Workspace), Windows, AIX y Apple (para macOS). Cinco son una sustitución por la marca dueña del producto, no el logo propio de ese producto.
+
+**Qué depende:** los logos de `Frontend-Platform` (`logo_key`, D67) y la publicación del marketplace.
+
+---
+
 ## Cómo se cierra un pendiente
 
 1. El comité responde.
@@ -190,3 +207,19 @@ políticas (sin activos técnicos) darlo por hecho?
 3. Se borra de este archivo.
 4. Se cierra el ticket de Jira correspondiente en el proyecto `MD`, con la decisión y su
    fuente en un comentario.
+
+## Cerradas hasta hoy
+
+Se quedan aquí como referencia; el detalle de cada una está en la decisión que la cerró.
+
+| | Pregunta | Cerrada |
+|---|---|---|
+| **P1** | Cumplimiento fuera del onboarding | 2026-09-26 — el comité confirmó D23: el onboarding se queda en 3 componentes |
+| **P4** | `responsible_id` sin catálogo de cargos | 2026-09-29 — cerrada por desarrollo en D30: el cargo es `organization_responsibles`. **Falta ratificarla con el comité**; no bloquea nada |
+| **P5** | Dos cifras de la documentación de la sonda | 2026-10-08 — las cifras («869 checks, 646 nativos, 223 inferidos») no tenían universo y se quitaron de `wazuh.md`; la versión de referencia es la del manager que corre en desarrollo, 4.14.6 (D55) |
+| **P8** | ¿Un control que crea el cliente cuenta para el marco? | 2026-10-09 — D65: sí cuenta para el porcentaje; es solo documental, va en la categoría que elige el cliente y lo aprueba el consultor |
+| **P10** | Origen de `control_dimensions` y qué es `policies` | 2026-10-01 — cerrada por desarrollo en D39: la dimensión aplica si el control tiene una prueba de ella; `policies` es una plantilla. **Falta ratificar con el comité el tipo y las banderas derivados**; no bloquea nada |
+| **P16** | Cuándo un activo está «Preparado», «Casi listo» o «Requiere trabajo» | 2026-10-09 — D62: se lee con el porcentaje de tests con resultado, con los cortes de 100% y 80% |
+| **P18** | Una categoría sin nada medido, y la cobertura | 2026-10-09 — D62: no está lograda y cuenta en el denominador; la cobertura es siempre un número aparte |
+| **P19** | Un consultor que atiende a varias empresas, con el correo único | 2026-10-09 — D64: una sola cuenta de Next que asigna `admin_monkey` a varias empresas |
+| **P20** | Quién reactiva a un consultor que la empresa suspendió | 2026-10-09 — D64: solo la empresa |

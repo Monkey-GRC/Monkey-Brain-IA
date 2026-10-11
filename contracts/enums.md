@@ -247,7 +247,7 @@ falta, se añade un valor al enum.
 
 ### `connection_category` — `assets.connection_category` y `automated_capabilities.catalog_code`
 
-| Valor | es | Plataformas |
+| Valor | es | Plataformas (catálogo en la base, más abajo) |
 |---|---|---|
 | `ac_01` | Servicios en nube (gestionados, sin servidor) | AWS, Azure, GCP, Microsoft 365, Google Workspace |
 | `ac_02` | Servidores en nube / VPS | Linux, Windows, HP-UX, AIX, Solaris |
@@ -256,7 +256,7 @@ falta, se añade un valor al enum.
 | `ac_05` | Bases de datos on-premise | PostgreSQL, MySQL/MariaDB, SQL Server, Oracle, MongoDB |
 | `ac_06` | Endpoints / estaciones de trabajo | Windows, macOS, Linux |
 
-`ac_01` corre cada 6-24 h; `ac_02` a `ac_06` son continuos.
+`ac_01` corre cada 6-24 h; `ac_02` a `ac_06` son continuos (también datos: `capability_frequencies`, D67).
 
 ### `operational_status` — `assets.operational_status`
 
@@ -378,8 +378,27 @@ Qué canales existen por categoría: `modules/onboarding-technical-control.md`. 
 ### `resource_kind` — `asset_resources.kind` (D59)
 `server` Servidor · `database` Base de datos · `storage` Almacenamiento · `function` Función · `other` Otro (solo lo conoce la evaluación; **no** se muestra como activo).
 
-### `cloud_platform` — `assets.platform` cuando `connection_category = ac_01`
-`aws` Amazon Web Services · `azure` Microsoft Azure · `gcp` Google Cloud. *(Propuesta; hoy solo AWS tiene cuenta de prueba.)*
+### Plataformas de conexión — `catalog.capability_platforms` (D67)
+
+**No es un `enum`: es un catálogo en la base**, cargado por `npm run reference:load` (idempotente) y servido en `GET /v1/catalogs/automated-capabilities`. Es lo que el cliente elige en el
+marketplace del paso 3. Las plataformas son las de la hoja del comité (AC-01…AC-06): en nube, proveedores; en servidores y equipos, el **sistema operativo**; en bases de datos, el **motor**.
+Los nombres son marcas y **no se traducen**. `logo_key` es el nombre del SVG oficial en `Frontend-Platform` (igual a `code`, salvo `mysql_mariadb` → `mysql`). Orden = el de la hoja.
+
+| Capacidad | Plataformas (`code` → nombre) |
+|---|---|
+| `ac_01` | `aws` Amazon Web Services · `azure` Azure · `gcp` GCP · `microsoft_365` Microsoft 365 · `google_workspace` Google Workspace |
+| `ac_02`, `ac_04` | `linux` Linux · `windows` Windows · `hp_ux` HP-UX · `aix` AIX · `solaris` Solaris |
+| `ac_03` | `postgresql` PostgreSQL · `mysql` MySQL · `sql_server` SQL Server · `oracle` Oracle · `mongodb` MongoDB |
+| `ac_05` | `postgresql` PostgreSQL · `mysql_mariadb` MySQL / MariaDB · `sql_server` SQL Server · `oracle` Oracle · `mongodb` MongoDB |
+| `ac_06` | `windows` Windows · `macos` macOS · `linux` Linux |
+
+- **`availability`** (el enum de los marcos, D50): `available` | `coming_soon`. **Solo `aws` está `available`** (es el único flujo construido, D58); todas las demás se muestran **bloqueadas**.
+  Pasar una a `available` exige que su flujo exista; es un cambio de dato, no de contrato.
+- **Canales** (`platform_connection_methods`, el primero es el recomendado): `aws` → `readonly_role`, `access_keys`; los sistemas operativos y los motores de bases de datos → `agent`
+  (diseño, DT-57); Azure, GCP, Microsoft 365 y Google Workspace → ninguno hasta que se defina su canal.
+- **Frecuencias** (`capability_frequencies`): `ac_01` → `every_6h`, `every_24h`; `ac_02` a `ac_06` → `continuous`.
+- **Tipo de activo** (`automated_capabilities.asset_type`): `ac_01` → `cloud_service` · `ac_02`, `ac_04` → `server` · `ac_03`, `ac_05` → `database` · `ac_06` → `endpoint`.
+- **Regiones** (`platform_regions`): las de AWS se cargan de la lista actual del Backend (`GET /v1/catalogs/aws_region`); las demás plataformas no tienen regiones hasta que tengan flujo.
 
 ### `readiness` — nivel de preparación (`modules/control-tecnico-operacion.md`)
 `ready` Preparado (100%) · `almost_ready` Casi listo (de 80% a menos de 100%) · `needs_work` Requiere trabajo (menos de 80%) · `not_measured` Sin medir. **Cualitativo primero**

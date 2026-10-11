@@ -93,6 +93,8 @@ Lo que aporta este componente al onboarding, específicamente:
 - El cliente elige su **escenario de despliegue** (solo nube / nube con servidores /
   on-premise / híbrido), que determina qué conexiones del catálogo AC-01…AC-06 se le
   ofrecen.
+- **El cliente elige una plataforma** (AWS, un sistema operativo, un motor de base de datos…), no una categoría técnica; cada una lleva a su paso a paso y las que aún no tienen flujo se
+  muestran bloqueadas (D67). El catálogo de plataformas y las reglas de las conexiones viven en la base de datos.
 - Por cada conexión, el flujo es el de aprovisionamiento ya modelado: conectar → validar
   → activar → programar (`modelo-datos.md` §6.3 y §8).
 - El resultado de este componente es lo que llena `assets` (lo que Monkey encontró al conectar) del servicio que se está
@@ -117,10 +119,9 @@ D23 en `modelo-datos-decisiones.md`.
 
 ## Relación con el código y con la filosofía de producto
 
-**El feature `onboarding` de `Frontend-Platform`** tiene hoy los pasos `account-setup`,
-`characterization`, `company-profile`, `template-selection` (`context/project-context.md`).
-No hay todavía una correspondencia 1:1 documentada entre esos pasos y los 3 componentes
-del comité — es trabajo pendiente de mapear antes de tocar esas pantallas.
+**En `Frontend-Platform`** los tres componentes ya existen como features: `onboarding` (Componente 1),
+`services` (Componente 2) y `technical-control` (Componente 3), cada uno con su contrato en
+`contracts/modules/`. El paso 3 del Componente 3 es provisional (D48; ver `deuda-tecnica/`). Mapa en `context/frontend.md`.
 
 **Los "10 pasos como configurar un iPhone" de `philosophy.md`** son la envoltura
 conversacional con la que la IA presenta estas preguntas — no un componente distinto ni

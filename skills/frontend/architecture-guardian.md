@@ -17,7 +17,7 @@ al revisar el trabajo del `frontend-senior`.
 
 ## Contexto obligatorio
 
-Leer `../../context/project-context.md` y
+Leer `../../context/frontend.md` y
 las convenciones de este archivo antes de emitir un
 veredicto.
 
