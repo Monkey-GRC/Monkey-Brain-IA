@@ -22,6 +22,8 @@ Lo que sigue abierto, con lo más urgente arriba. 🚧 bloquea trabajo · ⚠️
 | [P9](#p9--datos-del-excel-que-hay-que-corregir-o-confirmar) | Datos del Excel que hay que corregir o confirmar | ⚠️ La dimensión Aplicación del cálculo y las causas que ve el cliente | — |
 | [P11](#p11--el-nombre-del-proveedor-en-los-textos-de-las-pruebas) | El nombre del proveedor en los textos de las pruebas | ⚠️ Qué ve el cliente de una prueba (hoy ningún texto de prueba sale a la UI) | — |
 | [P21](#p21--el-uso-de-los-logos-de-marcas-de-terceros) | El uso de los logos de marcas de terceros en el marketplace | ⚠️ Publicar el marketplace con logos a clientes reales; no bloquea construirlo | 2026-10-10 |
+| [P23](#p23--cómo-se-guarda-y-se-muestra-la-evaluación-del-consultor-y-la-del-auditor) | Cómo se guarda y se muestra la evaluación del consultor y la del auditor | ⚠️ Las pantallas de veredicto del consultor (MD-155) y la evaluación del auditor | 2026-10-10 |
+| [P22](#p22--motor-de-evaluación-las-diez-decisiones-que-el-excel-deja-abiertas) | Motor de evaluación: las diez decisiones que el Excel deja abiertas | ⚠️ Los parámetros del motor (exclusiones, errores, vigencia); 🚧 el riesgo residual (MD-151, fuera del sprint) | 2026-10-10 |
 | [P6](#p6--la-lista-completa-de-business_model) | La lista completa de `business_model` | No bloquea (valen las 19 y `other`) | — |
 | [P13](#p13--ratificar-lo-que-desarrollo-decidió-en-las-correcciones-del-2026-10-05-d50-d51) | Ratificar lo que desarrollo decidió el 2026-10-05 (D50, D51) | No bloquea: está construido y funcionando | 2026-10-06 |
 | [P15](#p15--cómo-se-mapean-los-checks-de-nube-que-quedan-fuera) | Cómo se mapean los checks de nube que quedan fuera | No bloquea: lo no mapeado no cuenta hasta responder | 2026-10-08 |
@@ -197,6 +199,36 @@ tienen guías de uso: logo oficial sin modificar, espacio libre mínimo, a veces
 
 **Qué depende:** los logos de `Frontend-Platform` (`logo_key`, D67) y la publicación del marketplace.
 
+## P22 · Motor de evaluación: las diez decisiones que el Excel deja abiertas
+
+**Estado:** abierto desde 2026-10-10 (D68). La hoja `MODELO EVALUACIÓN MONKEY` de la VF2 las lista en su último bloque como «**decisiones pendientes para el equipo Monkey (antes de programar)**»: no son una
+pregunta al comité, las resuelve el equipo (y lleva al comité lo que necesite su criterio funcional). Esa hoja la generó una IA a pedido de quien manejaba el libro (su bitácora, `Claude Log`), así que son lo que quedó sin
+resolver, no puntos que el comité haya querido discutir a propósito. **Mientras no se respondan, el motor las deja como parámetros y no fija ningún valor** (REQ-039: nada de umbrales ni apetito escritos en el código).
+
+1. **Metodología del riesgo residual.** Propuesta del comité (sin aprobar): cada control efectivo baja la probabilidad o el impacto, con un tope (máximo 2 puntos en probabilidad y 1 en impacto). ¿Se aprueba, y el diseño o solidez del control pondera la reducción?
+2. **Apetito de riesgo.** El ejemplo usa 9 sobre 25. ¿Es por servicio, por criterio o global, y quién lo aprueba?
+3. **Política de exclusiones de activos.** ¿Quién autoriza, por cuánto tiempo y con qué evidencia de la justificación? (REQ-008; ticket MD-144.)
+4. **Error técnico.** ¿Cuántos reintentos, con qué plazo, y cuándo escala a `PENDIENTE` o a `NO CUMPLE`? (REQ-012.)
+5. **Vigencia de las evidencias y cada cuánto se repite cada test** (continuous compliance). Al vencer, el estado pasa solo a `VENCIDO`. (REQ-046.)
+6. **El rol de la IA con los documentos.** ¿Qué umbral de confianza para sugerir? La confirmación humana ya está decidida: siempre. (REQ-047, prioridad LATER.)
+7. **Controles vencidos.** ¿Una categoría o un marco con controles `VENCIDO` se reporta `NO CUMPLE` (el comportamiento del comité hoy) o con un estado propio?
+8. **Probabilidad e impacto inherentes** de los 10 riesgos: la hoja `Riesgos` los trae **vacíos** y el prototipo usa valores de ejemplo. D33 había dicho que los llena el cliente; el comité pide diligenciarlos. ¿Quién?
+9. **Relación causa–control completa.** Solo hay 4 causas de las 56 (F025, F029, F038, F031) con su efecto (probabilidad o impacto) y si el control es obligatorio. Falta el resto del catálogo.
+10. **Versionado.** ¿Cuándo un cambio de test o de control invalida un resultado reutilizado (alcance, período y versión equivalentes)? (REQ-045.)
+
+**Qué depende:** el riesgo residual, el apetito y el mapa de calor (MD-151) esperan las respuestas 1, 2, 8 y 9; la política de exclusiones (3) y los errores (4) condicionan MD-144 y MD-138; la vigencia (5) y los vencidos (7) condicionan el estado de un control.
+
+## P23 · Cómo se guarda y se muestra la evaluación del consultor y la del auditor
+
+**Estado:** abierto desde 2026-10-10 (D68). Lo planteó el responsable de producto: el consultor y el auditor **hacen cada uno una evaluación del cumplimiento sobre los mismos datos, con distinto enfoque** (el consultor prepara a la
+empresa, el auditor certifica, D63 y D64). El Excel del comité no la contempla. Hoy el consultor da el veredicto de los tests documentales y manuales (§7.5) y el auditor solo escribe observaciones (§7.6).
+
+1. **¿La evaluación del auditor es un resultado aparte** (su opinión o certificado, que se muestra al lado) **o puede cambiar el estado** que ve el cliente? *Recomendación: aparte; el estado solo lo mueven los datos.*
+2. **¿La evaluación del consultor es solo por test, como hoy, o también un veredicto general** («lista» o «no lista») por servicio y marco? *Recomendación: agregar el general.*
+3. ¿Se registran con la **evaluación del servicio** (servicio + marco + versión + período + fecha de corte) para que cada una diga sobre qué datos se hizo?
+
+**Qué depende:** la pantalla del veredicto del consultor (MD-155), las observaciones (MD-154) y la evaluación del auditor, que aún no tiene ticket.
+
 ---
 
 ## Cómo se cierra un pendiente
@@ -219,7 +251,7 @@ Se quedan aquí como referencia; el detalle de cada una está en la decisión qu
 | **P5** | Dos cifras de la documentación de la sonda | 2026-10-08 — las cifras («869 checks, 646 nativos, 223 inferidos») no tenían universo y se quitaron de `wazuh.md`; la versión de referencia es la del manager que corre en desarrollo, 4.14.6 (D55) |
 | **P8** | ¿Un control que crea el cliente cuenta para el marco? | 2026-10-09 — D65: sí cuenta para el porcentaje; es solo documental, va en la categoría que elige el cliente y lo aprueba el consultor |
 | **P10** | Origen de `control_dimensions` y qué es `policies` | 2026-10-01 — cerrada por desarrollo en D39: la dimensión aplica si el control tiene una prueba de ella; `policies` es una plantilla. **Falta ratificar con el comité el tipo y las banderas derivados**; no bloquea nada |
-| **P16** | Cuándo un activo está «Preparado», «Casi listo» o «Requiere trabajo» | 2026-10-09 — D62: se lee con el porcentaje de tests con resultado, con los cortes de 100% y 80% |
-| **P18** | Una categoría sin nada medido, y la cobertura | 2026-10-09 — D62: no está lograda y cuenta en el denominador; la cobertura es siempre un número aparte |
+| **P16** | Cuándo un activo está «Preparado», «Casi listo» o «Requiere trabajo» | 2026-10-09 — D62: se lee con el porcentaje de tests con resultado, con los cortes de 100% y 80% *(el semáforo se conserva en D68)* |
+| **P18** | Una categoría sin nada medido, y la cobertura | 2026-10-09 — D62: no está lograda y cuenta en el denominador; la cobertura es siempre un número aparte *(D68: una categoría sin nada medido queda «en evaluación» y no cumple; la cobertura sigue aparte)* |
 | **P19** | Un consultor que atiende a varias empresas, con el correo único | 2026-10-09 — D64: una sola cuenta de Next que asigna `admin_monkey` a varias empresas |
 | **P20** | Quién reactiva a un consultor que la empresa suspendió | 2026-10-09 — D64: solo la empresa |

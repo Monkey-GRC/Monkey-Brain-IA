@@ -66,7 +66,7 @@ Monkey-Brain-IA/
 │   ├── enums.md                   # valor snake_case ↔ etiqueta es/en, para todos los enums
 │   └── modules/                   # un archivo por módulo (monkey-admin, auth, los 3 componentes)
 ├── assets/                        # la FUENTE MAESTRA del comité, sin transcribir
-│   └── TSC INTERGRAL SOC 2 DETALLADO VF.xlsx      # (gitignored: 2,5 MB binarios)
+│   └── TSC INTERGRAL SOC 2 DETALLADO VF2.xlsx     # (gitignored: 5,2 MB binarios)
 ├── agents/
 │   ├── product-owner.md           # rol: decide qué/por qué/prioridad
 │   ├── tech-lead.md               # rol: supervisa backend-senior + frontend-senior + qa

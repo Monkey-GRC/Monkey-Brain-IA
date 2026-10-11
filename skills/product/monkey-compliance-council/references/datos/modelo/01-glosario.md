@@ -47,7 +47,10 @@ que les corresponde.
 | **Consultoría** · **Auditoría** | — | Consultoría es preparar al cliente para la auditoría (lo que hace Monkey); auditoría es el examen final que da la certificación del marco |
 | **Hallazgo** | `findings` | Una falla concreta que **detecta el sistema**: qué falló, en qué dimensión, sobre qué insumo |
 | **Observación del auditor** | `audit_observations` | Lo que escribe el rol `auditor` (observación, recomendación o solicitud de información) y que la empresa debe atender — §7.6. **No es un hallazgo** |
-| **Mitigación** · **Riesgo residual** | `mitigations` · `residual_risks` | Indicadores **separados** del cumplimiento (§9). Un 93% de cumplimiento no dice que el riesgo residual sea 7% |
+| **Mitigación** · **Riesgo residual** | `mitigations` · `residual_risks` | Indicadores **separados** del cumplimiento (§9). La mitigación (causa, riesgo) ya tiene reglas (D68); el residual y el apetito son una propuesta sin aprobar (`P22`) |
+| **Evaluación del servicio** | `service_frameworks` | Un servicio frente a un marco, en una versión, un período auditado y una fecha de corte (D68, REQ-004). No es `evaluations`, que son los resultados |
+| **Avance** · **Cobertura** · **Estado** | — | **Avance**: lo cumplido sobre el total del nivel. **Cobertura**: qué parte de lo aplicable ya se evaluó. **Estado**: si cumple (efectivo, cumple…); lo decide la regla «todo o nada», nunca el porcentaje (§9) |
+| **Evaluación del consultor** · **del auditor** | — | Cada uno evalúa el cumplimiento con distinto enfoque: el consultor prepara, el auditor certifica (D68, `P23`) |
 | **Cobertura técnica** | — | Cuánto del scope se puede medir automáticamente. **Número aparte** del cumplimiento |
 
 ### De la capa técnica

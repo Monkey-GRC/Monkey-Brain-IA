@@ -71,7 +71,7 @@ Lo que ve el cliente por defecto. **Cualitativo primero; el número es secundari
 }
 ```
 
-- `readiness`: `ready` · `almost_ready` · `needs_work` · `not_measured`. **`not_measured` no es un fallo**: es un hueco de cobertura (R-06, `pending` ≠
+- `readiness`: `ready` · `almost_ready` · `needs_work` · `not_measured`. **`not_measured` no es un fallo**: es un hueco de cobertura (§9, D68: lo sin medir queda pendiente y **no cuenta como cumplido**; `pending` ≠
   `non_compliant`).
 - `coverage` y `of_measured` son **dos números separados** (los dos son verdad): cuánto se midió y, de lo medido, cuánto cumple.
   **No existe un porcentaje consolidado**; si la pantalla lo calcula para mostrarlo, va **debajo** y nunca como métrica principal.
@@ -81,7 +81,7 @@ Lo que ve el cliente por defecto. **Cualitativo primero; el número es secundari
 - `includes_proposed_mappings`: `true` si parte de lo medido se apoya en vínculos check→prueba que el comité **aún no ratificó** (desarrollo y demostración).
   En producción es `false` y solo cuenta lo ratificado; la pantalla debe decirlo cuando sea `true`. Antes de la primera corrida, `readiness` es
   `not_measured` con todo en cero (no un `404`).
-- Un cálculo **no** se declara `ready` si hay algo `not_compliant` aplicable (R-05: una falla aplicable ⇒ no cumple). Para la categoría y el marco de un servicio, `ready` es 100%, `almost_ready` de 80% a menos de 100%, y `needs_work` menos de 80% (`modelo-datos.md` §9); y para el activo es el mismo (tests con resultado cumplidos / tests con resultado; D62).
+- Un cálculo **no** se declara `ready` si hay algo `not_compliant` aplicable (§9, «todo o nada»: una falla aplicable ⇒ no cumple; D68). Para la categoría y el marco de un servicio, `ready` es 100%, `almost_ready` de 80% a menos de 100%, y `needs_work` menos de 80% (`modelo-datos.md` §9); y para el activo es el mismo (tests con resultado cumplidos / tests con resultado; D62).
 
 ### `GET /v1/assets/{id}/findings` — hallazgos, en la plantilla de 7 campos
 

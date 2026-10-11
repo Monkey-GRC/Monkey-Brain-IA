@@ -16,7 +16,7 @@ servicio y conectar al menos un activo, y ver su catálogo de cumplimiento listo
 medirse.
 
 **Fuente de cada componente:** `modulos/onboarding.md`, que transcribe
-`assets/TSC INTERGRAL SOC 2 DETALLADO VF.xlsx` (hojas *Contexto Empresa*, *Contexto del
+`assets/TSC INTERGRAL SOC 2 DETALLADO VF2.xlsx` (hojas *Contexto Empresa*, *Contexto del
 servicio*, *Activos del Servicio (SCOPE)*). Si algo de aquí contradice esas fuentes, ganan
 ellas. La forma exacta de cada endpoint está en `contracts/modules/`.
 

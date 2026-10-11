@@ -47,6 +47,8 @@ tests `T-SRV-*` y `T-CLD-*`, y produce evaluaciones en las dos dimensiones.
 Lo confirma el reparto del catálogo: de los 61 TEST, **26 son documentales** y **11 son de
 nube** — están segmentados por dimensión, no replicados en todas.
 
+**Qué dimensiones exige cada control lo define el comité** en la hoja `Controles Monkey` (columnas L a P: con test = la exige; «NO APLICA» = no la exige, con su razón). Una dimensión exigida que se quede sin ningún test vigente deja el control `INCOMPLETO` (§9, D68). Sus cifras no coinciden con las 210 sembradas (`DT-69`).
+
 Por cada dimensión de un control se define:
 
 - **El tipo**: `manual` · `automated` · `hybrid` · **`technical_manual`** (decisión D4).

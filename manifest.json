@@ -16,14 +16,15 @@
     "files": [
       {
         "id": "tsc-integral-soc2",
-        "path": "assets/TSC INTERGRAL SOC 2 DETALLADO VF.xlsx",
+        "path": "assets/TSC INTERGRAL SOC 2 DETALLADO VF2.xlsx",
         "primary": true,
-        "description": "FUENTE MAESTRA. 17 hojas: modelo RBAC (4 roles, matriz de permisos, 12 politicas de seguridad), contexto de empresa y de servicio, activos del scope + catálogo de conexiones AC-01..AC-06, 10 riesgos (metodología 5x5), 56 causas con 92 relaciones riesgo-causa, 119 controles de catálogo (118 asignados; CPL-1 es la Descripcion del Sistema) sobre 302 puntos de enfoque (729 relaciones), 61 requisitos TSC, 61 TEST de 23 campos con 228 asignaciones control-TEST, y 11.352 checks de 77 politicas SCA sobre 18 plataformas con 20 referencias de mapeo. IMPORTANTE: estas cifras salen de los datos crudos de las hojas, NO de la hoja Resumen, que quedo desactualizada (declara 658 relaciones).",
+        "description": "VF2 (2026-10-10), FUENTE MAESTRA; reemplaza a la VF del 2026-09-15, cuyas hojas no cambiaron. FUENTE MAESTRA. 17 hojas anteriores: modelo RBAC (4 roles, matriz de permisos, 12 politicas de seguridad), contexto de empresa y de servicio, activos del scope + catálogo de conexiones AC-01..AC-06, 10 riesgos (metodología 5x5), 56 causas con 92 relaciones riesgo-causa, 119 controles de catálogo (118 asignados; CPL-1 es la Descripcion del Sistema) sobre 302 puntos de enfoque (729 relaciones), 61 requisitos TSC, 61 TEST de 23 campos con 228 asignaciones control-TEST, y 11.352 checks de 77 politicas SCA sobre 18 plataformas con 20 referencias de mapeo. IMPORTANTE: estas cifras salen de los datos crudos de las hojas, NO de la hoja Resumen, que quedo desactualizada (declara 658 relaciones). NUEVAS en VF2: 'MODELO EVALUACIÓN MONKEY' (prototipo del motor de cumplimiento y de riesgos: reglas RN-01..RN-25, 8 casos, 15 validaciones, 10 decisiones pendientes), 'REQUISITOS EVALUACIÓN MONKEY' (REQ-001..REQ-051) y 'PROMPT DESARROLLO MONKEY' (referencia, no se adopta: D68).",
         "consumedBy": [
           "skills/product/monkey-compliance-council/references/datos/modelo-datos.md",
           "skills/product/monkey-compliance-council/references/modulos/onboarding.md",
           "skills/product/monkey-compliance-council/references/producto/philosophy.md",
-          "skills/product/monkey-compliance-council/references/cumplimiento/frameworks/soc2.md"
+          "skills/product/monkey-compliance-council/references/cumplimiento/frameworks/soc2.md",
+          "skills/product/monkey-compliance-council/references/datos/modelo/09-calculo-cumplimiento.md"
         ]
       },
       {

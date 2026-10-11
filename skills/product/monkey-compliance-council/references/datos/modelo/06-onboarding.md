@@ -115,7 +115,10 @@ erDiagram
         uuid catalog_version_id FK
         date contracted_at
         enum status
-        string evaluation_period
+        string evaluation_period "AAAA-Tn: el periodo por defecto (trimestre natural); D68 lo precisa con las tres fechas de abajo"
+        date period_start "periodo auditado (D68, REQ-004)"
+        date period_end "periodo auditado"
+        date cutoff_date "fecha de corte de la evaluacion"
     }
     subservice_organizations {
         uuid id PK
@@ -171,6 +174,8 @@ ese marco (riesgos, causas, controles) se clona al escenario del cliente (§3.5)
 también **contra qué versión del catálogo** (`catalog_version_id`) y **desde qué periodo**
 (`evaluation_period`) aplica, que es lo que evita que un control nuevo mueva el número a
 mitad de periodo.
+
+**La evaluación del comité es este par servicio × marco en un período** (D68, REQ-004): `service_frameworks` más su versión del catálogo (`catalog_version_id`), el **período auditado** (`period_start`, `period_end`) y la **fecha de corte**. Sin esos cinco datos no se ejecuta ni se reutiliza un resultado (§9). `evaluation_period` queda como el período por defecto.
 
 **La regulación se declara solo a nivel de empresa** (D51, que revierte D45). `organization_regulations` dice a qué
 normas de protección de datos está sujeta la empresa; **no hay `service_regulations`**: esas leyes aplican a la empresa,

@@ -44,7 +44,7 @@ El registro está partido por épocas en `decisiones/`. **Busca el ID en el índ
 | [`decisiones/03-onboarding.md`](decisiones/03-onboarding.md) | **D43–D47** — Clave de acceso y los 3 componentes del onboarding; el marco se contrata al registrar. |
 | [`decisiones/04-sonda-y-correcciones.md`](decisiones/04-sonda-y-correcciones.md) | **D48–D52** — Paso 3 provisional contra la sonda real, pool de conexiones, correcciones del comité, auditoría atómica. |
 | [`decisiones/05-control-tecnico-y-nube.md`](decisiones/05-control-tecnico-y-nube.md) | **D53–D61 y D67** — Conexión con la nube, sonda de servidores, trabajador del motor de nube y descubrimiento de activos. |
-| [`decisiones/06-cumplimiento-y-roles.md`](decisiones/06-cumplimiento-y-roles.md) | **D62–D66** — Cómo se cuenta el cumplimiento, el auditor, los cinco roles, controles propios y MFA. |
+| [`decisiones/06-cumplimiento-y-roles.md`](decisiones/06-cumplimiento-y-roles.md) | **D62–D68** — Cómo se calcula el cumplimiento, el auditor, los cinco roles, controles propios y MFA. |
 
 ### Índice
 
@@ -118,3 +118,4 @@ El registro está partido por épocas en `decisiones/`. **Busca el ID en el índ
 | D65 | Controles propios y cambios de controles con aprobación del consultor (cierra P8) | 06 |
 | D66 | MFA obligatoria para los 5 roles | 06 |
 | D67 | El paso 3 es un marketplace de plataformas y el catálogo de conexiones vive en la base de datos | 05 |
+| D68 | El motor de evaluación del comité es la regla del cálculo | 06 |
