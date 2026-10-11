@@ -50,8 +50,7 @@ Está marcado en cada caso.
 
 ### `business_model` — `organizations.business_model` · 19 valores
 
-⚠️ `modelo-datos.md` dice "40+ opciones" y el Excel lista 19. **Faltan las demás**: hasta que el
-comité entregue la lista completa, valen estas 19 y `other`.
+**La lista es esta: 19 más `other`** (D73). El texto «40+ opciones» del Excel no tiene respaldo en su hoja; si el comité entrega más, se agregan con una migración y aquí.
 
 `bpo_kpo_ito` (BPO/KPO/ITO) · `call_contact_center` (Call/Contact Center) · `data_center`
 (Data Center) · `ai_ml` (IA/ML) · `service_desk` (Mesa de servicio) · `saas_paas_iaas`
@@ -432,5 +431,37 @@ estado: se deriva de `due_date`.
 
 ### `risk_treatment_decision` · `evaluation_result` · `finding_status` · `finding_origin` · `check_result_status`
 Ya definidos en `modelo-datos.md` (§7 y §8): `mitigate|accept|transfer|avoid`,
-`compliant|non_compliant|pending|not_applicable`, `open|remediated|excluded`, `system|auditor`,
+`compliant|non_compliant|pending|error|excluded|not_applicable` (el resultado de un activo en un test, ampliado por D68), `open|remediated|excluded`, `system|auditor`,
 `passed|failed|invalid|not_applicable|not_run`.
+
+## Estados de evaluación (D68)
+
+Los **estados que el motor calcula** en cada nivel (`modelo-datos.md` §9). Se **derivan**, no son una columna que alguien edita. **La fuente (hoja `MODELO EVALUACIÓN MONKEY`) solo da las etiquetas en español**; los valores en
+`snake_case` en inglés son nuestra nomenclatura. Las etiquetas del cliente van en lenguaje de negocio (Preparado, Casi listo, Requiere trabajo, Sin medir: `philosophy.md`); estas son la **vista técnica** del consultor y el auditor.
+
+### `evidence_state` — estado calculado de una evidencia
+`compliant` Cumple · `non_compliant` No cumple · `pending` Pendiente · `in_review` En revisión · `expired` Evidencia vencida · `not_applicable` No aplica.
+
+### `evidence_review` — `evidence_submissions.review`
+`pending_review` Pendiente de revisión · `ai_prevalidated` Pre-validada por IA · `human_validated` Validada por una persona. Solo `human_validated` permite `compliant`; la IA nunca produce «cumple» (RN-03).
+
+### `asset_result` — el resultado de un activo en un test (`evaluations.result`)
+`compliant` Cumple · `non_compliant` No cumple · `pending` Pendiente · `error` Error · `excluded` Excluido (más `not_applicable`).
+
+### `test_state` — estado de un test
+`compliant` Cumple · `non_compliant` No cumple · `pending` Pendiente · `evaluating` En evaluación · `in_review` En revisión · `expired` Vencido · `error` Error · `no_assets` Sin activos ·
+`not_applicable` No aplica · `deactivated` Desactivado.
+
+### `control_state` — estado de un control del cliente
+`effective` Efectivo · `ineffective` No efectivo · `expired` Vencido · `error` Error · `incomplete` Incompleto · `evaluating` En evaluación · `no_tests` Sin tests.
+
+### `rollup_state` — estado de una categoría y de un marco
+`compliant` Cumple · `non_compliant` No cumple · `evaluating` En evaluación · `no_controls` Sin controles · `out_of_scope` Fuera de alcance.
+
+### `cause_state` · `risk_state` — mitigación (no es el riesgo que queda)
+Causa: `mitigated` Mitigada · `not_mitigated` No mitigada · `evaluating` En evaluación · `no_controls` Sin controles.
+Riesgo: `mitigated` Mitigado · `not_mitigated` No mitigado · `evaluating` En evaluación · `no_causes` Sin causas.
+El **riesgo residual aceptable / no aceptable** no se define todavía (`P22`).
+
+Colores estándar (REQ-048): verde cumple, efectivo, mitigado · rojo no cumple, no efectivo, no mitigado · amarillo pendiente, sin activos, sin tests · naranja en evaluación, en revisión, incompleto, vencido, error · gris no aplica, fuera de alcance, desactivado.
+

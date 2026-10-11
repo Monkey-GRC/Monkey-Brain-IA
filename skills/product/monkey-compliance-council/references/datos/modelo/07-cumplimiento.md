@@ -59,6 +59,12 @@ erDiagram
         uuid id PK
         uuid client_control_id FK
         uuid test_id FK
+        boolean is_mandatory "si es No, no cuenta para el control (RN-12)"
+        boolean is_active "vigente; si es No, no cuenta (desactivacion controlada)"
+        date valid_from "alta"
+        date valid_to "nullable, baja"
+        text deactivation_reason "nullable, obligatoria al desactivar"
+        uuid deactivated_by FK "nullable"
     }
     action_plans {
         uuid id PK
@@ -228,20 +234,34 @@ erDiagram
         string version
         enum validation_status
         text ai_verdict "etiquetado como generado por IA"
+        boolean type_ok "atributos de la evidencia (RN-01); nulo = sin revisar"
+        boolean period_ok "la fecha cae dentro del periodo"
+        boolean valid_ok "vigente; en No es EVIDENCIA VENCIDA (RN-02)"
+        boolean approved_ok "aprobacion del documento"
+        boolean signed_ok "firma o autorizacion"
+        boolean content_ok "contenido obligatorio"
+        enum review "pending_review|ai_prevalidated|human_validated (RN-03)"
     }
     exclusions {
         uuid id PK
         uuid test_id FK
+        uuid asset_id FK "nullable: si excluye un activo de ese test (D68, REQ-008)"
         uuid proposed_by FK "consultor"
         uuid approved_by FK "cliente"
-        string excluded_check_id
+        string excluded_check_id "nullable: si excluye un check"
         text justification
+        date valid_from
         date valid_until
     }
     client_controls ||--o{ evidence_requirements : "exige"
     evidence_requirements ||--o{ evidence_submissions : "se cumple con"
     tests ||--o{ exclusions : "excluye checks por"
 ```
+
+**Lo que D68 agrega a estas tablas** (la regla está en §9): `client_control_tests` lleva *obligatorio*, *vigente*, fechas y la justificación de una desactivación; `evidence_submissions` guarda los seis atributos que se
+validan por evidencia y la **revisión** (`pending_review`, `ai_prevalidated`, `human_validated`), de donde se **deriva** su estado (`evidence_state`). **`validation_status` sigue siendo la aprobación de la empresa**
+(solo `admin_empresa`) y no es el estado de cumplimiento de la evidencia. `exclusions` puede excluir un **activo** de un test además de un check, siempre con justificación, aprobador y vigencia. Un `evaluations.result` ahora
+distingue `error` y `excluded`.
 
 **El responsable de la evidencia es cargo *y* persona, en planos distintos** (decisión A1):
 `evidence_requirements.responsible_id` apunta a `organization_responsibles`, es decir, al
@@ -276,7 +296,7 @@ erDiagram
         uuid confirmed_by FK "nullable"
         datetime evaluated_at
         enum dimension
-        enum result "compliant|non_compliant|pending|not_applicable"
+        enum result "compliant|non_compliant|pending|error|excluded|not_applicable (D68)"
         enum raw_probe_result "ok|fail"
         decimal diagnostic_percentage
         enum origin
@@ -360,6 +380,9 @@ vida propia no entra al MVP.
 
 La IA evalúa evidencia, sugiere una conclusión y recomendaciones; **nunca da el veredicto**. El veredicto de un test documental o manual lo da el
 **consultor** (`evaluations.confirmed_by`), y si lo da con observaciones abiertas se documenta la razón (`evaluations.closure_observation_reason`).
+
+**El consultor y el auditor evalúan el cumplimiento con distinto enfoque** (D68): el consultor **prepara** a la empresa y el auditor **certifica**, cada uno sobre los mismos datos. Hoy el consultor da el veredicto de los
+tests documentales y manuales (arriba) y el auditor escribe observaciones (§7.6). Cómo se guarda y se muestra la evaluación de cada uno, y si cambia o no el estado calculado (§9), está abierto: `P23`.
 
 ### 7.6 Las observaciones
 

@@ -37,7 +37,7 @@ El contrato dice **qué**, no **por qué**. El porqué de una decisión vive en
 
 ## Quién manda si hay conflicto
 
-1. `assets/TSC INTERGRAL SOC 2 DETALLADO VF.xlsx` — la fuente del comité. Trae `clave_json`,
+1. `assets/TSC INTERGRAL SOC 2 DETALLADO VF2.xlsx` — la fuente del comité. Trae `clave_json`,
    `tipo`, `opciones (pipe)` y un `fragmento_json` por campo. De ahí salen las **listas de
    opciones** y la semántica de cada campo.
 2. `references/datos/modelo-datos.md` §4-§9 — de ahí salen los **nombres de campo y de entidad**, en

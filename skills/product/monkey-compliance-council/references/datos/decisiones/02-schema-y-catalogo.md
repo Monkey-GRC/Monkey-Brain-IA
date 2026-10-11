@@ -272,6 +272,8 @@ el comité cambia las pruebas de un control, sus dimensiones cambian con ellas. 
 banderas) los derivó desarrollo** y no vienen del Excel: se aplican para no bloquear el clonado y se ratifican con
 el comité (igual que D30). Si el comité define otra cosa, se corrige con una versión nueva del catálogo.
 
+> **Ajustada por D68 (2026-10-10).** Qué dimensiones exige un control las define el comité en `Controles Monkey` (columnas L a P), no se derivan de las pruebas; una exigida que se quede sin test vigente deja el control `INCOMPLETO`. Las cifras de esta decisión (210) no coinciden con esa hoja (`DT-69`).
+
 **Fuente:** decisión de Héctor, 2026-10-01. Implementación: migración `catalog_policies_as_templates`;
 `Backend/prisma/seed/` (`deriveControlDimensions`, `testKind`, `parsePolicyLine`).
 

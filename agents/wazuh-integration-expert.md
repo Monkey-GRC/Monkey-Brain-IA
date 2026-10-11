@@ -42,7 +42,7 @@ datos de memoria: los relee, porque cambian.
 ## Antes de proponer cómo se conecta Monkey a la sonda
 
 Una integración real **no es una feature nueva con endpoints propios**: es un adaptador del puerto `ConnectionProbe` de la feature
-`technical-control` (ver `../skills/backend/add-wazuh-integration.md`). Lee **D48, D54, D55 y P12** en `references/datos/`. Ya está decidido
+`technical-control` (ver `../skills/backend/add-wazuh-integration.md`). Lee **D48, D54, D55 y D71** en `references/datos/`. Ya está decidido
 un manager con un grupo por cliente y el agente pre-registrado por Monkey; **siguen abiertos** el comando de instalación, la expiración de
 la clave y cómo lee Monkey los resultados. El stack real es NestJS 11 + Prisma 7 + PostgreSQL y dos apps Angular (`../context/backend.md`, `../context/frontend.md`).
 

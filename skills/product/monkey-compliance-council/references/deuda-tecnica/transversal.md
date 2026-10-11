@@ -42,7 +42,7 @@ Lo que no pertenece a un solo módulo (pruebas, CI, auditoría, traducciones, en
 
 - **Qué está parchado:** *2026-10-09: construido el intérprete puro, el calculador de preparación por activo y la persistencia de una corrida (`executions`, `check_results`, `asset_resources`, en una transacción con su rastro; 8 pruebas contra Postgres). Falta quien ejecute el motor y el paso a `evaluations`, que depende del módulo de Cumplimiento. Los umbrales del activo son los de D62 (DT-66).*  R-04 dice que «Monkey interpreta el criterio», pero no está escrito dónde vive el criterio (`tests.compliance_criterion` es texto libre), cómo se determinan los activos aplicables de un control (R-02), qué pasa con un resultado sin check conocido (hoy se descartaría en silencio) ni cómo se registran las exclusiones
 - **Por qué:** §9 especifica el cálculo, no la interpretación
-- **Qué lo cierra:** Especificar en `modelo-datos.md` §9 el intérprete y sus reglas, con el ejemplo resuelto como prueba
+- **Qué lo cierra:** §9 ya fija cómo se lee la sonda (`passed` → cumple, `failed` → no cumple, `invalid` → error, `not_run` → pendiente) y el estado del test (D68). Falta el paso a `evaluations` y probarlo con los 8 casos del comité
 
 ### DT-54 · El Backend, el CI y el `Dockerfile` corren en Node 20
 
@@ -56,9 +56,9 @@ Lo que no pertenece a un solo módulo (pruebas, CI, auditoría, traducciones, en
 
 🟠 Importante
 
-- **Qué está parchado:** y no cuenta cumplidos contra totales por nivel como pide `modelo-datos.md` §9. El Excel del comité (`MONKEY_Ejemplo_Formula_Cumplimiento.xlsx`, hojas 07 a 09 y 11) tampoco refleja §9
-- **Por qué:** Se construyó antes de D62
-- **Qué lo cierra:** Escribir el motor como función pura probada con los ejemplos de §9 (MD-138, MD-139); que el comité actualice o retire el Excel
+- **Qué está parchado:** y no aplica las reglas del comité de `modelo-datos.md` §9 (D68): estados por nivel, «todo o nada», lo pendiente que bloquea, el marco sobre controles únicos. Promedia porcentajes y no tiene los estados nuevos (vencido, error, incompleto…)
+- **Por qué:** Se construyó antes de D62 y de D68
+- **Qué lo cierra:** Escribir el motor como funciones puras probadas con los 8 casos del comité, las simulaciones 1 a 6 y las validaciones V01 a V15 (MD-138, MD-139); el Excel de la fórmula del 9 de octubre queda superado por la VF2
 
 ### DT-67 · El Backend conserva `custom_roles`
 

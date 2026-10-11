@@ -7,7 +7,7 @@ API, en [`wazuh-api.md`](wazuh-api.md). **Todo el producto habla de «sonda»: n
 
 Un solo manager, `wazuh/wazuh-manager:4.14.6`, **sin indexador ni dashboard**, en un contenedor de la VPS de desarrollo (~0,5 GB en
 reposo, límite 2 GB). La API (55000) escucha solo en `127.0.0.1`; solo el puerto de agentes (1514) está publicado. Monkey solo necesita
-la API: el indexador y el dashboard no hacen falta. El dónde se aloja producción es `P7`; no está decidido.
+la API: el indexador y el dashboard no hacen falta. Dónde se aloja producción: D72 (la base, separada de la app).
 
 ## Puertos
 
@@ -30,7 +30,7 @@ Monkey. Flujo verificado contra la API real (2026-10-08):
 4. El cliente recibe un comando de instalación que lleva esa clave; el agente no se inscribe por su cuenta ni elige su grupo.
 5. Al sincronizar, Monkey solo acepta resultados de agentes cuyo grupo corresponde al `tenant_id` (`SEG-45`).
 
-Cada grupo tiene su `agent.conf` en `/var/ossec/etc/shared/<grupo>/agent.conf`. **Pendiente (P12):** el comando de instalación exacto, la
+Cada grupo tiene su `agent.conf` en `/var/ossec/etc/shared/<grupo>/agent.conf`. **Pendiente (DT-57):** el comando de instalación exacto, la
 expiración de la clave y qué se promete para sistemas sin evaluación real (`DT-34`).
 
 ## Qué puede ser un agente

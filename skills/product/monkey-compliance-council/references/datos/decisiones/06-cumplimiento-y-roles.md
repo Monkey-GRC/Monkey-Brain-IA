@@ -1,4 +1,4 @@
-# Registro de decisiones — D62–D66
+# Registro de decisiones — D62–D68
 
 > Parte de [`modelo-datos-decisiones.md`](../modelo-datos-decisiones.md) (índice). Cómo se cuenta el cumplimiento, el auditor, los cinco roles, controles propios y MFA.
 > Los identificadores (`D-n`, `A1`…) no cambian: se citan por su ID, no por la posición.
@@ -25,6 +25,8 @@ diagnóstico que se le muestra al cliente. Una categoría al 99% se ve como 99%,
 
 **Qué cierra.** P16 y P18.
 **Fuente:** responsable de producto, 2026-10-09; `modelo-datos.md` §9.
+
+> **Reemplazada en parte por D68 (2026-10-10).** La agregación (dimensión como nivel, % del control por dimensiones, % del marco por categorías, «solo se mide lo que tiene resultado») la sustituye el motor del comité. Se conservan los pesos iguales, el par servicio × marco, el semáforo y la cobertura aparte.
 
 ---
 
@@ -92,3 +94,42 @@ una cuenta única evita un correo por empresa (el correo es único en todo el si
 (§5.3) aplican a todos. Es un requisito de seguridad sin excepciones; se construye en el sprint de acceso y usuarios, no en el de Cumplimiento.
 **Por qué.** La hoja de roles del TSC la exigía solo a admin y auditor y dejaba al `funcional` sin ella; el responsable de producto la extendió a todos.
 **Fuente:** responsable de producto, 2026-10-09.
+
+
+## D68 · El motor de evaluación del comité es la regla del cálculo (2026-10-10)
+
+**Problema.** El comité entregó la VF2 del TSC integral con tres hojas nuevas que especifican el **motor de evaluación** (`MODELO EVALUACIÓN MONKEY`, `REQUISITOS EVALUACIÓN MONKEY` y un prompt de
+desarrollo): estados por nivel, reglas RN-01 a RN-25, 51 requisitos y 8 casos de prueba. D62 había fijado la agregación con otro criterio (la fijó el responsable de producto porque el Excel de la
+fórmula no la reflejaba, §0). Las dos no coinciden en varios puntos.
+
+**Decisión (el comité manda; se aplica tal cual, salvo lo que se dice al final).**
+1. **La regla del cálculo es la del comité** (`modelo-datos.md` §9): activo → test → control → categoría → marco, con «todo o nada» en cada nivel y el porcentaje como **avance**, no como criterio de cumplimiento.
+2. **Lo pendiente bloquea el cumplimiento.** Lo sin medir queda `PENDIENTE` o `EN EVALUACIÓN`, nunca cumplido ni ignorado. 45 de 50 servidores conformes y 5 sin evaluar **no es CUMPLE**. Reemplaza a D62 («solo se mide lo que tiene resultado»).
+3. **Estados nuevos por nivel**: vencido, error, incompleto, sin tests, sin activos, desactivado, fuera de alcance y en revisión, además de los que ya había (`contracts/enums.md`).
+4. **La dimensión deja de ser un nivel con estado propio** y sigue siendo obligatoria: una dimensión requerida sin test vigente deja el control `INCOMPLETO`. Las dimensiones requeridas salen de la hoja `Controles Monkey` del comité
+   (columnas L a P). **Ajusta D39** (que las derivó de las pruebas): en los datos del comité coinciden en la forma, pero las cifras no (`DT-69`).
+5. **El control** es `EFECTIVO` solo con todos sus tests obligatorios, vigentes y aplicables cumplidos y ninguna dimensión sin test; su **avance** son los tests cumplidos sobre (tests + dimensiones sin test). **El marco** se evalúa sobre los
+   **controles únicos** de las categorías en alcance (uno compartido cuenta una vez) y su avance es efectivos / controles únicos. Reemplaza al «% del marco = categorías logradas / contratadas» de D62.
+6. **La evaluación** es servicio + marco + versión + período + fecha de corte, y un resultado se calcula **una vez** y lo reutilizan todos los controles que usan el test.
+7. **Relación control–test con atributos** (obligatorio, vigente, fechas, justificación) y **desactivación controlada** con rastro. **Evidencias** validadas por atributo, y solo una validada por una persona puede ser `CUMPLE`.
+8. **Excluir un activo** exige justificación, aprobador y vigencia: es la exclusión que ya existía (la propone el consultor y la aprueba la empresa, A3), ahora también por activo.
+9. **El error técnico** de un activo deja el test en `ERROR`; no es un incumplimiento ni un cumplido. Una corrida que no llegó a la cuenta del cliente (D57) sigue sin guardar resultados.
+10. **Causas y riesgos**: se adoptan los estados de mitigación (RN-20, RN-21) y el riesgo inherente = probabilidad × impacto (RN-22). **El riesgo residual, el apetito y el mapa de calor no se adoptan todavía**: el comité mismo los marca como
+    propuesta con parámetros sin aprobar (`P22`; ticket MD-151, fuera del sprint). El residual y el mapa son vista del consultor y del auditor, no del cliente (`philosophy.md`).
+11. **El consultor y el auditor hacen cada uno una evaluación del cumplimiento, con distinto enfoque** (el consultor prepara, el auditor certifica). **Lo agregó el responsable de producto**: el Excel no la contempla, y su «validada por
+    auditor» (RN-03) se entiende como «validada por una persona». Su diseño está abierto: `P23`.
+
+**Lo que no se adopta.** El **prompt de desarrollo** del Excel se lee como referencia: pide una API `/api/v1` y «TypeScript/Node o Go», y aquí rigen `contracts/` (`/v1`) y la pila ya elegida. Las **diez decisiones pendientes** que trae la hoja
+(para «el equipo Monkey») **se registran, no se resuelven**: `P22`.
+
+**Se conserva de D62:** pesos iguales en todos los niveles, la unidad (servicio × marco) sin número de empresa, el semáforo cualitativo y la cobertura siempre aparte.
+
+**Por qué.** El comité hizo el análisis funcional, y CLAUDE.md dice que ante un conflicto manda el documento fuente. D62 había llenado un hueco que el Excel de la fórmula no cubría; ahora el comité lo cubrió y su regla es más estricta y más
+trazable (cada estado se explica con una regla numerada y casos de prueba). La evaluación del consultor y del auditor es un hecho del producto que el Excel omitió.
+
+**Qué cambia.** `modelo-datos.md` §9 (reescrita), §2, §7.1, §7.4, §7.5 y el glosario; `contracts/enums.md` (estados de evaluación); `sprint-cumplimiento.md` y `mvp-roadmap.md`; `DT-65` y `DT-66` (el calculador que promedia y la
+preparación por severidad se escriben contra esta regla) y `DT-69` (dimensiones); pendientes `P22` y `P23`.
+
+**Fuente:** comité funcional, `assets/TSC INTERGRAL SOC 2 DETALLADO VF2.xlsx` (hojas `MODELO EVALUACIÓN MONKEY` y `REQUISITOS EVALUACIÓN MONKEY`), 2026-10-10; evaluación del consultor y del auditor: responsable de producto, 2026-10-10.
+
+---

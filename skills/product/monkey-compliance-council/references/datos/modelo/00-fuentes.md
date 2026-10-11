@@ -12,7 +12,7 @@ archivo, **gana el documento**.
 
 | Fuente | Qué define |
 |---|---|
-| `assets/TSC INTERGRAL SOC 2 DETALLADO VF.xlsx` | **La fuente maestra**, 17 hojas: catálogo maestro (61 requisitos TSC, 302 puntos de enfoque, 119 controles de los que 118 están asignados, 729 relaciones punto de enfoque↔control), 61 TEST de 23 columnas con 284 asignaciones control↔TEST (hoja Pruebas), 89 vínculos documento↔control (50 documentos distintos), 11.352 checks de 77 políticas SCA sobre 18 plataformas con 20 referencias de mapeo, 10 riesgos, 56 causas con 92 relaciones riesgo↔causa, el modelo RBAC, y los formularios de contexto de empresa y de servicio con sus opciones literales |
+| `assets/TSC INTERGRAL SOC 2 DETALLADO VF2.xlsx` | **La fuente maestra** (VF2, entregada el 2026-10-10; reemplaza a la VF del 2026-09-15, cuyas hojas **no cambiaron**). Trae las 17 hojas anteriores y 3 nuevas: `MODELO EVALUACIÓN MONKEY` (el prototipo del motor: reglas RN-01 a RN-25, 8 casos de prueba, 15 validaciones y 10 decisiones pendientes), `REQUISITOS EVALUACIÓN MONKEY` (REQ-001 a REQ-051) y `PROMPT DESARROLLO MONKEY` (se lee como referencia y **no se adopta**: pide otra API y otra pila, D68). De ellas sale §9. Las hojas `GRAFICO` y `Hoja1` están vacías. Las 17 hojas anteriores: catálogo maestro (61 requisitos TSC, 302 puntos de enfoque, 119 controles de los que 118 están asignados, 729 relaciones punto de enfoque↔control), 61 TEST de 23 columnas con 284 asignaciones control↔TEST (hoja Pruebas), 89 vínculos documento↔control (50 documentos distintos), 11.352 checks de 77 políticas SCA sobre 18 plataformas con 20 referencias de mapeo, 10 riesgos, 56 causas con 92 relaciones riesgo↔causa, el modelo RBAC, y los formularios de contexto de empresa y de servicio con sus opciones literales |
 
 ⚠️ **Las cifras salen de los datos crudos de las hojas, no de la hoja `Resumen`**, que quedó
 desactualizada: declara 658 relaciones donde los datos tienen 729, y su desglose por categoría
@@ -27,7 +27,7 @@ uno:
 
 | Fuente original | Dónde está su contenido ahora |
 |---|---|
-| `MONKEY_Ejemplo_Formula_Cumplimiento.xlsx` | §9: de él salen las reglas R-01 a R-04, R-06, R-07, R-11 y R-12. La agregación (R-05, R-08 a R-10) la fijó el responsable de producto (D62) y el Excel no la refleja: no lo uses para calcular |
+| `MONKEY_Ejemplo_Formula_Cumplimiento.xlsx` | §9: de él salieron las reglas R-01 a R-04, R-07, R-11 y R-12 (se conservan) y R-06 (la reemplazó el motor del comité, D68). La agregación que fijó el responsable de producto (D62) **la reemplaza el motor del comité** (VF2, D68): no uses este Excel para calcular |
 | `RESUMEN-MODELO-USUARIOS-MONKEY.md` | §5: los roles (§5.1), las tablas (§5.2), las políticas de seguridad con su justificación normativa (§5.3), la matriz de permisos (§5.5) y el mapeo a TSC del modelo de acceso (§5.6) |
 | `draft-BLUEPRINT FUNCIONAL-ControlTecnico.docx` | §8: `schedule_rules`, `executions`, `check_results`, `execution_logs`, `monitoring_domains` y las tres reglas de la operación técnica |
 | `vision_controles.pptx` | Nada propio: su matriz de evaluación quedó superada por el ejemplo de fórmula |

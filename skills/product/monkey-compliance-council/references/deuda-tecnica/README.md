@@ -90,6 +90,7 @@ Limitan el producto o al equipo.
 | [DT-65](transversal.md#dt-65--el-calculador-de-cumplimiento-del-backend-compliancecalculatorts-promedia-porcentajes) | El calculador de cumplimiento del Backend (`compliance.calculator.ts`) promedia porcentajes | [Transversal](transversal.md) |
 | [DT-66](control-tecnico.md#dt-66--el-estado-de-preparación-de-un-activo-se-calcula-por-severidad) | El estado de preparación de un activo se calcula por severidad | [Control técnico](control-tecnico.md) |
 | [DT-67](transversal.md#dt-67--el-backend-conserva-custom_roles) | El Backend conserva `custom_roles` | [Transversal](transversal.md) |
+| [DT-69](control-tecnico.md#dt-69--las-dimensiones-de-cada-control-no-coinciden-con-las-que-define-el-comité) | Las dimensiones de cada control no coinciden con las que define el comité | [Control técnico](control-tecnico.md) |
 
 ### 🟡 Mejoras
 
@@ -105,7 +106,6 @@ Pendientes sin urgencia.
 | [DT-16](onboarding.md#dt-16--evaluation_period--trimestre-natural-de-la-contratación) | `evaluation_period` = trimestre natural de la contratación | [Onboarding](onboarding.md) |
 | [DT-17](onboarding.md#dt-17--trust_criterion_required-del-contrato-no-se-usa) | `TRUST_CRITERION_REQUIRED` del contrato no se usa | [Onboarding](onboarding.md) |
 | [DT-18](onboarding.md#dt-18--sin-guardado-parcial-en-el-servidor) | Sin guardado parcial en el servidor | [Onboarding](onboarding.md) |
-| [DT-19](onboarding.md#dt-19--business_model-trae-19-de-40) | `business_model` trae 19 de «40+» | [Onboarding](onboarding.md) |
 | [DT-24](transversal.md#dt-24--tailwind-avisa-de-clases-canónicas-darkbg-white003--darkbg-white3-en-platfor) | Tailwind avisa de clases canónicas (`dark:bg-white/[0.03]` → `dark:bg-white/3`) en Platfor | [Transversal](transversal.md) |
 | [DT-27](onboarding.md#dt-27--el-contrato-guarda-solo-el-marco-y-la-fecha) | El contrato guarda solo el marco y la fecha | [Onboarding](onboarding.md) |
 | [DT-29](transversal.md#dt-29--authlogin_failed-se-guarda-con-tenant_id-nulo) | `auth.login_failed` se guarda con `tenant_id` nulo | [Transversal](transversal.md) |

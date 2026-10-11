@@ -5,7 +5,7 @@ El onboarding es donde entran los datos que alimentan todo el modelo. Está comp
 `skills/frontend/`): cada uno es un bloque de preguntas al cliente, y cada respuesta se
 mapea a una entidad concreta de `modelo-datos.md`.
 
-Especificado por el comité en `assets/TSC INTERGRAL SOC 2 DETALLADO VF.xlsx`, hojas
+Especificado por el comité en `assets/TSC INTERGRAL SOC 2 DETALLADO VF2.xlsx`, hojas
 *Contexto Empresa*, *Contexto del servicio* y *Activos del Servicio (SCOPE)*. Esas hojas
 son la fuente exacta de cada pregunta, su tipo (texto / selección / multi-select) y sus
 opciones — este archivo resume el mapeo a entidades, no repite el detalle campo por campo.

@@ -10,7 +10,7 @@ type: reference
 **Segundo entregable del MVP.** Jira, proyecto `MD`, sprint «MD Sprint 2» (2026-10-09 a 2026-10-23). Es **solo de Cumplimiento**:
 la gestión de usuarios, Monkey Admin y la infraestructura que no sirve a Cumplimiento van a otro sprint.
 
-**Reglas que el sprint construye:** `modelo-datos.md` §9 (el cálculo), §5.1 y §5.5 (los 5 roles y la matriz), §7.1 (controles propios y
+**Reglas que el sprint construye:** `modelo-datos.md` §9 (el cálculo **del comité**, D68), §5.1 y §5.5 (los 5 roles y la matriz), §7.1 (controles propios y
 cambios con aprobación), §7.5 (el veredicto) y §7.6 (las observaciones).
 
 ## Qué entra
@@ -25,6 +25,24 @@ cambios con aprobación), §7.5 (el veredicto) y §7.6 (las observaciones).
 | Medición y resumen (MD-106) | MD-137 resumen del servicio · MD-138 motor de cálculo · MD-139 estado del activo |
 | Exclusiones y cierre (MD-107) | MD-144 exclusiones · MD-145 evaluaciones inmutables · MD-147 verificación del backend · MD-149 revisión de pantallas y demo |
 | Auditoría y consultoría (MD-152) | MD-154 observaciones · MD-155 veredicto del consultor · MD-156 aprobación de cambios de controles |
+
+## Lo que cambia con el motor del comité (D68, 2026-10-10)
+
+El comité entregó la VF2 con el motor de evaluación completo. **Reemplaza la agregación de D62** y cambia el alcance de estos tickets (Jira se reescribe a mano; aquí queda el qué):
+
+| Ticket | Qué cambia |
+|---|---|
+| **MD-138** motor de cálculo | Se construye contra `modelo-datos.md` §9: funciones puras para activo, test, control, categoría y marco, con **los 8 casos del comité** (C1 a C8), las simulaciones 1 a 6 y las validaciones V01 a V15 como pruebas de aceptación. Lo pendiente bloquea; el marco se evalúa sobre controles únicos. Cierra `DT-65` |
+| **MD-139** estado del activo | El resultado de un activo en un test tiene 5 estados (cumple, no cumple, pendiente, error, excluido). El semáforo del activo sigue la lectura de D62 (`DT-66`) |
+| **MD-137** resumen del servicio | Muestra avance, cobertura y estado por separado (REQ-032); el cliente ve el semáforo y en qué falla, y el consultor y el auditor ven los estados técnicos (REQ-049) |
+| **MD-144** exclusiones | Incluye **excluir un activo** de un test con justificación, aprobador y vigencia (REQ-008). La propone el consultor, la aprueba la empresa y vence con el período: **cerrada en D74** |
+| **MD-145** evaluaciones inmutables | La evaluación es servicio + marco + versión + período + fecha de corte (REQ-004) y cada cambio de estado deja un evento inmutable (REQ-044) |
+| **MD-155** veredicto del consultor | Se amplía con la evaluación del consultor y la del auditor: diseño abierto en `P23` |
+| **MD-151** mitigación y riesgo residual | **Sigue fuera.** El comité ya trae los estados de mitigación (RN-20, RN-21), pero el residual, el apetito y el mapa de calor esperan decisiones: `P22` |
+
+**Tickets nuevos que el motor pide y aún no se crean** (siguen la prioridad MUST, SHOULD o LATER de la hoja `REQUISITOS EVALUACIÓN MONKEY`): desactivación controlada de tests con justificación (REQ-019 a REQ-021),
+evidencias validadas por atributo y por una persona (REQ-014 a REQ-018), dimensión requerida sin test ⇒ control incompleto (REQ-022, REQ-023), vigencia y vencimiento automático (REQ-046, depende de `P22`),
+reutilización de resultados entre marcos (REQ-013, REQ-033) y la evaluación del auditor (`P23`). Aparte, cargar `control_dimensions` desde la hoja del comité (`DT-69`).
 
 ## Qué quedó fuera (vuelve al backlog)
 
@@ -53,4 +71,4 @@ responder una observación desde la empresa, la pantalla de aprobación de cambi
 
 ## Preguntas abiertas que tocan este sprint
 
-`modelo-datos-pendientes.md`: **P3** (permisos por pantalla).
+`modelo-datos-pendientes.md`: **P3** (permisos por pantalla), **P22** (las diez decisiones abiertas del motor) y **P23** (la evaluación del consultor y la del auditor).

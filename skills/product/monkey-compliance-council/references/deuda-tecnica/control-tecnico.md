@@ -92,7 +92,7 @@ Parches del Componente 3 del onboarding (conexión de activos, la sonda) y del p
 🔴 Crítica
 
 - **Qué está parchado:** `assets` no sabe qué agente de la sonda es, así que no hay forma real de «validar» una conexión ni de leer resultados
-- **Por qué:** Depende del diseño del canal de agente (P12)
+- **Por qué:** Depende del diseño del canal de agente (D71)
 - **Qué lo cierra:** Campo o tabla de enlace y un adaptador real de `ConnectionProbe` que lea la sonda en **solo lectura**
 
 ### DT-33 · Aislamiento entre empresas sin imponer
@@ -159,7 +159,7 @@ Parches del Componente 3 del onboarding (conexión de activos, la sonda) y del p
 
 - **Qué está parchado:** Un trabajador comprometido podría pedir un contenedor con montajes del servidor: es acceso amplio a Docker aunque no sea el socket directo
 - **Por qué:** Se aceptó para desarrollo: código nuestro, sin puertos de entrada, aislado en su propia red
-- **Qué lo cierra:** Ejecutar el motor como tarea en la nube (un adaptador `ScanEngine` nuevo, sin socket), o un Docker sin privilegios dedicado a los escaneos. Depende de `P7` y `P14`
+- **Qué lo cierra:** Ejecutar el motor como tarea en la nube (un adaptador `ScanEngine` nuevo, sin socket), o un Docker sin privilegios dedicado a los escaneos. Depende de `D72` y `P14`
 
 ### DT-52 · El trabajador solo conoce AWS, una corrida a la vez por réplica, y el canal de llaves entrega llaves de larga vida
 
@@ -194,7 +194,7 @@ Parches del Componente 3 del onboarding (conexión de activos, la sonda) y del p
 
 - **Qué está parchado:** la pantalla no ofrece servidores ni bases de datos con agente, y el backend responde «no disponible» al validarlos. Tampoco se genera el comando de instalación ni se pre-registra el agente (D54)
 - **Por qué:** Alcance de la etapa: solo AWS
-- **Qué lo cierra:** Adaptador de la sonda de servidores en el backend y el instalador de Monkey (`P12`). Hasta entonces sus plataformas están `coming_soon` (D67)
+- **Qué lo cierra:** Adaptador de la sonda de servidores en el backend y el instalador de Monkey (D71). Hasta entonces sus plataformas están `coming_soon` (D67)
 
 ### DT-58 · `Frontend-Platform` no tiene pruebas automáticas
 
@@ -248,7 +248,7 @@ Parches del Componente 3 del onboarding (conexión de activos, la sonda) y del p
 
 🟠 Importante
 
-- **Qué está parchado:** (`readiness.ts`: alta o crítica ⇒ Requiere trabajo), no por el porcentaje de tests con resultado con cortes en 100% y 80% que fijó D62
+- **Qué está parchado:** (`readiness.ts`: alta o crítica ⇒ Requiere trabajo), no por el porcentaje de tests con resultado con cortes en 100% y 80% que fijó D62 y que D68 conserva para el activo (el comité no lo define)
 - **Por qué:** Se construyó antes de D62
 - **Qué lo cierra:** Alinear `readiness.ts` y `GET /v1/assets/{id}/readiness`
 
@@ -269,3 +269,11 @@ Parches del Componente 3 del onboarding (conexión de activos, la sonda) y del p
 - **Qué está parchado:** Los 16 iconos de `Frontend-Platform/public/providers/` (cada uno con su variante `-dark.svg`) salen de colecciones de iconos de marca (Simple Icons, Devicon y Logos), no de los kits de cada proveedor. Varios son una **sustitución**: Microsoft 365 usa el logo de Microsoft, Google Workspace la «G» de Google, HP-UX el logo de HP, macOS el de Apple y Solaris un icono genérico de Unix. Oracle, AIX y SQL Server no se ven tan nítidos como los demás
 - **Por qué:** Cada kit es un portal distinto y los kits traen logos de distinta forma y peso; una fuente de iconos cuadrados permitió que todos se vean del mismo tamaño en los dos temas
 - **Qué lo cierra:** Resolver el uso de marcas (`P21`), reemplazar cada icono por el del kit oficial de su plataforma (con su versión para tema oscuro) y revisar que sigan viéndose del mismo tamaño
+
+### DT-69 · Las dimensiones de cada control no coinciden con las que define el comité
+
+🟠 Importante
+
+- **Qué está parchado:** D39 derivó las dimensiones de cada control de las pruebas y sembró **210** filas en `control_dimensions` (118 documentales, 43 de servidores, 18 de bases de datos, 31 de nube, ninguna de aplicación). El comité las define en la hoja `Controles Monkey`, columnas L a P (D68): **191** (118, 25, 17 y 31; aplicación «NO APLICA» en los 118 controles). La hoja `Análisis TEST x Control` da otra cifra y las dos hojas no coinciden en 6 celdas (IAC-1, IAC-7, IAC-8, IAC-9, IAC-12 en servidores y MON-3 en bases de datos)
+- **Por qué:** Se derivaron de las pruebas antes de que el comité entregara el motor de evaluación (D68). Una dimensión de más o de menos cambia qué controles quedan `INCOMPLETO`
+- **Qué lo cierra:** Cargar `control_dimensions` desde `Controles Monkey` L a P, reconciliar las 6 celdas con el comité y actualizar `catalog:verify`

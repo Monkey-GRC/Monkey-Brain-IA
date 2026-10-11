@@ -89,7 +89,7 @@ porque son texto de un estándar y viven en la misma base (§3.5, D25).
 ## 6. Onboarding — Componente 3: Control Técnico
 
 > **Provisional (D48):** la parte de «conectar» no coincide con cómo funciona la sonda real (el cliente instala un agente y
-> Monkey lee lo que el agente reporta; no se entregan credenciales). Se rediseña al responder P12 (DT-32 a DT-36).
+> Monkey lee lo que el agente reporta; no se entregan credenciales). Se rediseña con D71 (DT-32 a DT-36).
 
 El cliente conecta su infraestructura real. Elige escenario de despliegue, y por cada
 conexión del catálogo AC-01…AC-06 corre conectar → validar → activar → programar. El
@@ -137,9 +137,10 @@ lo que el comité entregó sobre usuarios está transcrito en `modelo-datos.md` 
 Con Servicio, Scope, catálogo clonado y (opcionalmente) Cumplimiento personalizado, el
 motor deriva el cumplimiento por par Servicio × Marco, recorriendo
 Requisito → PuntoDeEnfoque → Control, nunca como atributo del marco ni como número de
-empresa completa.
+empresa completa. Con las reglas del comité (D68): un estado por nivel (activo → test → control → categoría → marco), «todo o nada», y lo pendiente bloquea el cumplimiento.
+Encima de ese cálculo, el consultor (que prepara) y el auditor (que certifica) hacen cada uno su evaluación (`P23`).
 
-**Fuente:** `modelo-datos.md` §9 (D62: se cuenta, no se promedia).
+**Fuente:** `modelo-datos.md` §9 (D68, el motor del comité; reemplaza la agregación de D62).
 
 ## Resumen visual
 

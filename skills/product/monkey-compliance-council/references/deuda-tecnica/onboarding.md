@@ -122,11 +122,3 @@ Parches de los Componentes 1 y 2 del onboarding y del registro de empresa. Conte
 - **Por qué:** Columnas `NOT NULL`
 - **Qué lo cierra:** Volver opcionales las columnas y mover la validación de completitud a la aplicación, si el comité quiere borradores
 
-### DT-19 · `business_model` trae 19 de «40+»
-
-🟡 Mejora
-
-- **Qué está parchado:** ; «Otra» regulación no tiene campo de texto
-- **Por qué:** P6 / el modelo no tiene dónde guardarlo
-- **Qué lo cierra:** Lista completa del comité
-

@@ -234,7 +234,7 @@ transacción que se revierte, con el rol dueño y con `monkey_app`.
 - **Las migraciones ya aplicadas no se editan**: se corrige con una nueva.
 - **`contracts/enums.md`** manda sobre `modelo-datos.md` en los valores de enum.
 - **Enums:** el estado y su cierre están en `contracts/enums.md` y en D34. Lo único abierto es la
-  lista completa de `business_model` (P6).
+  lista completa de `business_model` (D73: son 19 más `other`).
 - **Una migración nueva tiene fecha posterior a la última de `develop`.** Antes de abrir el PR, `git pull` de
   `develop`: si trae migraciones más nuevas que la tuya, renombra la carpeta de la tuya a una fecha posterior (solo
   si nadie la aplicó todavía fuera de tu máquina).
@@ -314,7 +314,7 @@ desechable, ver §13):
 - **`sslmode=require`** en las tres URLs contra el servidor remoto, y restringir el firewall del 5432.
 - **Rotar credenciales** antes de producción: la contraseña de `postgres`, `JWT_SECRET` y
   `WAZUH_API_PASSWORD` se pegaron en texto plano en chats de depuración.
-- **Producción:** no alojar el Postgres en el mismo servidor que la app (P7).
+- **Producción:** no alojar el Postgres en el mismo servidor que la app (D72).
 
 ## 10. Migraciones, en orden
 
