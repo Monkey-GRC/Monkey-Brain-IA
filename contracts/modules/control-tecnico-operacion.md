@@ -19,7 +19,7 @@ operación continua»): empieza cuando un activo ya está conectado y validado. 
 
 > ⚠️ **Confidencialidad.** Ningún campo, valor, mensaje ni ejemplo nombra al proveedor de ningún motor. Se habla de «sonda», «evaluación
 > automática» o «capacidad automática». Los textos que traen los motores (descripciones, remediaciones) **no salen tal cual**: pueden nombrar
-> al proveedor (`P11`, `P14` D3).
+> al proveedor (D70, `P14` D3).
 >
 > ⚠️ **Lenguaje de la superficie** (`philosophy.md`). Nada de lo que ve el cliente por defecto lleva códigos de control ni de requisito.
 > Los códigos técnicos viajan solo en el objeto `technical` y solo si quien pide tiene el rol `auditor` o `consultor` y pide `view=technical`; para cualquier otro rol esa vista responde `403` (D63, D64, SEG-54).

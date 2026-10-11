@@ -92,7 +92,7 @@ Parches del Componente 3 del onboarding (conexión de activos, la sonda) y del p
 🔴 Crítica
 
 - **Qué está parchado:** `assets` no sabe qué agente de la sonda es, así que no hay forma real de «validar» una conexión ni de leer resultados
-- **Por qué:** Depende del diseño del canal de agente (P12)
+- **Por qué:** Depende del diseño del canal de agente (D71)
 - **Qué lo cierra:** Campo o tabla de enlace y un adaptador real de `ConnectionProbe` que lea la sonda en **solo lectura**
 
 ### DT-33 · Aislamiento entre empresas sin imponer
@@ -159,7 +159,7 @@ Parches del Componente 3 del onboarding (conexión de activos, la sonda) y del p
 
 - **Qué está parchado:** Un trabajador comprometido podría pedir un contenedor con montajes del servidor: es acceso amplio a Docker aunque no sea el socket directo
 - **Por qué:** Se aceptó para desarrollo: código nuestro, sin puertos de entrada, aislado en su propia red
-- **Qué lo cierra:** Ejecutar el motor como tarea en la nube (un adaptador `ScanEngine` nuevo, sin socket), o un Docker sin privilegios dedicado a los escaneos. Depende de `P7` y `P14`
+- **Qué lo cierra:** Ejecutar el motor como tarea en la nube (un adaptador `ScanEngine` nuevo, sin socket), o un Docker sin privilegios dedicado a los escaneos. Depende de `D72` y `P14`
 
 ### DT-52 · El trabajador solo conoce AWS, una corrida a la vez por réplica, y el canal de llaves entrega llaves de larga vida
 
@@ -194,7 +194,7 @@ Parches del Componente 3 del onboarding (conexión de activos, la sonda) y del p
 
 - **Qué está parchado:** la pantalla no ofrece servidores ni bases de datos con agente, y el backend responde «no disponible» al validarlos. Tampoco se genera el comando de instalación ni se pre-registra el agente (D54)
 - **Por qué:** Alcance de la etapa: solo AWS
-- **Qué lo cierra:** Adaptador de la sonda de servidores en el backend y el instalador de Monkey (`P12`). Hasta entonces sus plataformas están `coming_soon` (D67)
+- **Qué lo cierra:** Adaptador de la sonda de servidores en el backend y el instalador de Monkey (D71). Hasta entonces sus plataformas están `coming_soon` (D67)
 
 ### DT-58 · `Frontend-Platform` no tiene pruebas automáticas
 

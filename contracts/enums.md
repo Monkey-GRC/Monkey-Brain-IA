@@ -50,8 +50,7 @@ Está marcado en cada caso.
 
 ### `business_model` — `organizations.business_model` · 19 valores
 
-⚠️ `modelo-datos.md` dice "40+ opciones" y el Excel lista 19. **Faltan las demás**: hasta que el
-comité entregue la lista completa, valen estas 19 y `other`.
+**La lista es esta: 19 más `other`** (D73). El texto «40+ opciones» del Excel no tiene respaldo en su hoja; si el comité entrega más, se agregan con una migración y aquí.
 
 `bpo_kpo_ito` (BPO/KPO/ITO) · `call_contact_center` (Call/Contact Center) · `data_center`
 (Data Center) · `ai_ml` (IA/ML) · `service_desk` (Mesa de servicio) · `saas_paas_iaas`

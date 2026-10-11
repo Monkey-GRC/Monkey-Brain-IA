@@ -169,7 +169,7 @@ Igual que arriba, con `"connection_method": "access_keys"` y:
 
 Mismo cuerpo sin `external_account_id` ni `regions`, con `"connection_method": "agent"`. El comando de instalación lo generará Monkey
 (pre-registra al agente en el grupo de la empresa, D54) y su `<token>` es de un solo uso. **No está construido**: `validate` responde `503`
-(`DT-57`; instalador y hospedaje, `P12`).
+(`DT-57`; instalador y hospedaje, D71).
 
 ### `POST /v1/assets/{id}/validate` — validar la conexión
 
@@ -334,7 +334,7 @@ Todas las que había quedaron **cubiertas por desarrollo en D46**; lo que sigue 
 | **Valores de `assets.type`, `criticality`, `origin` y `status`** | ✅ Cerrados en `enums.md` (D34). El tipo ahora se **deduce de la conexión** (D46) |
 | **¿Qué es «híbrido»?** | ✅ Las seis conexiones (D46, DT-7) |
 | **Dónde guardar la frecuencia de `schedule`** | ✅ `asset_provisionings.schedule_frequency` (D46) |
-| **Qué pide cada conexión** | ✅ Nube: rol de solo lectura o llaves (D53, D58). ❌ Servidores y bases: canal de agente, solo diseño (`P12`, `DT-57`) |
+| **Qué pide cada conexión** | ✅ Nube: rol de solo lectura o llaves (D53, D58). ❌ Servidores y bases: canal de agente, solo diseño (D71, `DT-57`) |
 | **Azure y GCP** | ❌ Sin cuentas de prueba; el comité debe entregarlas. Se muestran **bloqueadas** (D67) |
 | **Logos de las plataformas** | ❌ Falta confirmar el uso de marcas de terceros y quién entrega los SVG oficiales (`P21`) |
 | **Las 18 capacidades de `technical_coverage`** | ❌ Sin definir (DT-2): hoy es una constante |

@@ -45,6 +45,7 @@ El registro está partido por épocas en `decisiones/`. **Busca el ID en el índ
 | [`decisiones/04-sonda-y-correcciones.md`](decisiones/04-sonda-y-correcciones.md) | **D48–D52** — Paso 3 provisional contra la sonda real, pool de conexiones, correcciones del comité, auditoría atómica. |
 | [`decisiones/05-control-tecnico-y-nube.md`](decisiones/05-control-tecnico-y-nube.md) | **D53–D61 y D67** — Conexión con la nube, sonda de servidores, trabajador del motor de nube y descubrimiento de activos. |
 | [`decisiones/06-cumplimiento-y-roles.md`](decisiones/06-cumplimiento-y-roles.md) | **D62–D68** — Cómo se calcula el cumplimiento, el auditor, los cinco roles, controles propios y MFA. |
+| [`decisiones/07-cierres-2026-10-10.md`](decisiones/07-cierres-2026-10-10.md) | **D69–D74** — Cierres del 2026-10-10: el paso 3, el nombre neutro de las pruebas, la lectura de la sonda, el Postgres de producción, los modelos de negocio y las exclusiones |
 
 ### Índice
 
@@ -119,3 +120,9 @@ El registro está partido por épocas en `decisiones/`. **Busca el ID en el índ
 | D66 | MFA obligatoria para los 5 roles | 06 |
 | D67 | El paso 3 es un marketplace de plataformas y el catálogo de conexiones vive en la base de datos | 05 |
 | D68 | El motor de evaluación del comité es la regla del cálculo | 06 |
+| D69 | El paso 3 se completa al definir dónde vive el servicio, e «Inicio» invita a conectar (cierra P17) | 07 |
+| D70 | El cliente ve el resultado de una prueba con un nombre neutro; los textos del comité son internos (cierra P11) | 07 |
+| D71 | Cómo lee Monkey a la sonda y qué se promete (cierra P12) | 07 |
+| D72 | El Postgres de producción vive separado de la app (cierra P7) | 07 |
+| D73 | La lista de modelos de negocio es de 19, más «otro» (cierra P6) | 07 |
+| D74 | Exclusiones de activos y controles vencidos (puntos 3 y 7 de P22) | 07 |

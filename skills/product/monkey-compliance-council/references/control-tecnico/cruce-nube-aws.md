@@ -1,6 +1,6 @@
 # Resultado del escaneo de AWS contra el catálogo
 
-**Estado:** 2026-10-08. Interno: nombra al motor y **nada de esto sale al cliente** (P11, P14 D3). Las decisiones que salen de aquí
+**Estado:** 2026-10-08. Interno: nombra al motor y **nada de esto sale al cliente** (D70, P14 D3). Las decisiones que salen de aquí
 están en `D53` y `D56` (`../datos/modelo-datos-decisiones.md`); el modelo, en `modelo-datos.md` §3.3 y §8. Este archivo solo guarda lo
 **medido**. Los datos crudos están en `assets/soc2/` (no versionado: contienen una cuenta real).
 

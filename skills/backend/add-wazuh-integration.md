@@ -1,14 +1,14 @@
 ---
 id: add-wazuh-integration
 name: Integrar el backend con la sonda (Wazuh)
-description: Cómo construir el adaptador real de la sonda en el backend NestJS (puerto ConnectionProbe de technical-control), respetando las reglas del modelo, la confidencialidad del proveedor y las decisiones aún abiertas (D48, P12). Consultar al wazuh-integration-expert para los hechos de API/infra.
+description: Cómo construir el adaptador real de la sonda en el backend NestJS (puerto ConnectionProbe de technical-control), respetando las reglas del modelo, la confidencialidad del proveedor y las decisiones aún abiertas (D48, D71). Consultar al wazuh-integration-expert para los hechos de API/infra.
 type: skill
 applies_to: backend
 ---
 
 # Skill: Integrar el backend con la sonda (Wazuh)
 
-> **Antes de escribir una línea, lee `D48` y `P12`** (`../product/monkey-compliance-council/references/datos/`) y
+> **Antes de escribir una línea, lee `D48` y `D71`** (`../product/monkey-compliance-council/references/datos/`) y
 > `deuda-tecnica/control-tecnico.md` (**DT-32 a DT-36**). Quién instala los agentes, cómo se asigna cada empresa a su grupo y cómo
 > lee Monkey los resultados **siguen sin decidirse**: si lo que vas a construir depende de una de esas respuestas, no la resuelvas
 > por tu cuenta, pregunta. El paso 3 del onboarding (conectar un activo) es **provisional** porque se construyó antes de verificar la
@@ -53,12 +53,12 @@ de la respuesta y las restricciones de seguridad/rendimiento.
 
 El proveedor **nunca** aparece ante el cliente final: ni en pantallas, notificaciones, reportes, mensajes de error, logs que el cliente
 vea ni texto generado por IA. En el producto se dice «sonda», «capacidad automática» o «evaluación automática». Los textos de las
-pruebas del comité sí lo nombran (P11) y **no deben salir a la UI**.
+pruebas del comité sí lo nombran (D70) y **no deben salir a la UI**.
 
 ## Multi-tenancy y seguridad
 
 - **Hoy nada impide que un agente caiga en otra empresa** (DT-33): la clave de inscripción es global y el grupo lo declara el agente.
-  Hasta que P12 lo resuelva, el adaptador **debe validar la pertenencia del agente a la empresa al sincronizar**, y nunca traer
+  Mientras el canal de agente no esté construido (D71, DT-57), el adaptador **debe validar la pertenencia del agente a la empresa al sincronizar**, y nunca traer
   agentes de todas las empresas para filtrar después en el backend.
 - No asumas la convención `cliente_<nombre>` para los grupos: no es una regla de Monkey.
 - Toda lectura de datos de Monkey pasa por `prisma.withScope` (RLS). Credenciales de la API cifradas, nunca en el repo.
@@ -75,4 +75,4 @@ refrescan por trabajo programado (`schedule_rules`), no en cada petición del us
 - Confirmar con `wazuh-integration-expert` que la lectura de la API quedó correcta antes de pasar a QA.
 - Retirar las etiquetas de «modo demostración» del frontend **solo** cuando la sonda real sea la que corre (DT-1).
 - QA prueba con un agente real (o su simulación) el recorrido completo: sincronizar → resultado crudo → evaluación → pantalla.
-- Cerrar o actualizar las filas de `deuda-tecnica/` que correspondan (DT-1, DT-32 a DT-36) y el pendiente P12.
+- Cerrar o actualizar las filas de `deuda-tecnica/` que correspondan (DT-1, DT-32 a DT-36) y D71 y D70.

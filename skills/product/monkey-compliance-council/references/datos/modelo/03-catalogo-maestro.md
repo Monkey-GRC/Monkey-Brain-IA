@@ -165,7 +165,8 @@ erDiagram
         uuid id PK
         string code "T-DOC-001, T-SRV-007"
         enum dimension "una sola"
-        string name
+        string name "nombre del comite"
+        string display_name "nombre neutro que ve el cliente; nunca nombra al proveedor (D70)"
         text objective
         string type "texto libre del comite"
         string tool "INTERNO: nombra al proveedor"
@@ -254,7 +255,7 @@ no existen en *Pruebas* — la propia hoja marca *"FALTAN 6"* — y contiene las
 
 **Las pruebas son texto interno.** Nombran al proveedor del motor de monitoreo en 15 de sus 23 columnas
 (`tool`, `automated_coverage`, `limitations`, `prerequisites`, `step_by_step`…) e incluso en 4 nombres:
-ninguno de esos textos sale tal cual a la UI, a un reporte ni a un texto generado por IA (P11). Los campos
+ninguno de esos textos sale tal cual a la UI, a un reporte ni a un texto generado por IA (D70). Los campos
 `population_size` y `suggested_sample_size` son **texto** porque en el Excel son frases ("Por determinar con
 base en el inventario de proveedores"; "N<5 → 100%; si no, 10% de la población (mín. 5, máx. 25)"), no
 enteros: el muestreo se guarda como dato y su cálculo se construye después (D8).

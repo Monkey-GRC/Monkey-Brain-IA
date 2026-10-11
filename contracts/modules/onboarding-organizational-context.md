@@ -175,15 +175,13 @@ Claves i18n: `organizational_context.get`, `organizational_context.saved`,
   cliente, no entra al cálculo de cumplimiento.
 - `completion` cuenta campos de formulario. **No es un porcentaje de cumplimiento** y no se
   presenta como métrica de readiness (`philosophy.md`).
-- `business_model`: el modelo dice "40+ opciones" y el Excel lista 19. Hasta que el comité
-  entregue la lista completa, el enum tiene esas 19 más `other`.
+- `business_model`: son las 19 del Excel más `other` (D73). Si el comité entrega más, se agregan con una migración.
 
 ## Preguntas abiertas
 
-Ninguna de las 5 de `modelo-datos-pendientes.md` bloquea este componente. Dos cosas por cerrar
+Ninguna de `modelo-datos-pendientes.md` bloquea este componente. Una cosa por cerrar
 al implementar:
 
-- La lista completa de `business_model` (el Excel dice "40+", trae 19).
 - `organizations` no tiene `created_at`/`updated_at` en el diagrama de §6.1, a diferencia de
   `companies`. El response de arriba no los expone; si se añaden al modelo, se añaden aquí.
 

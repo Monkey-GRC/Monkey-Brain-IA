@@ -106,7 +106,6 @@ Pendientes sin urgencia.
 | [DT-16](onboarding.md#dt-16--evaluation_period--trimestre-natural-de-la-contratación) | `evaluation_period` = trimestre natural de la contratación | [Onboarding](onboarding.md) |
 | [DT-17](onboarding.md#dt-17--trust_criterion_required-del-contrato-no-se-usa) | `TRUST_CRITERION_REQUIRED` del contrato no se usa | [Onboarding](onboarding.md) |
 | [DT-18](onboarding.md#dt-18--sin-guardado-parcial-en-el-servidor) | Sin guardado parcial en el servidor | [Onboarding](onboarding.md) |
-| [DT-19](onboarding.md#dt-19--business_model-trae-19-de-40) | `business_model` trae 19 de «40+» | [Onboarding](onboarding.md) |
 | [DT-24](transversal.md#dt-24--tailwind-avisa-de-clases-canónicas-darkbg-white003--darkbg-white3-en-platfor) | Tailwind avisa de clases canónicas (`dark:bg-white/[0.03]` → `dark:bg-white/3`) en Platfor | [Transversal](transversal.md) |
 | [DT-27](onboarding.md#dt-27--el-contrato-guarda-solo-el-marco-y-la-fecha) | El contrato guarda solo el marco y la fecha | [Onboarding](onboarding.md) |
 | [DT-29](transversal.md#dt-29--authlogin_failed-se-guarda-con-tenant_id-nulo) | `auth.login_failed` se guarda con `tenant_id` nulo | [Transversal](transversal.md) |

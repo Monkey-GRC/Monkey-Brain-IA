@@ -127,7 +127,7 @@ Estado de un vistazo (contado el 2026-10-10 a partir de la columna Estado; los e
 |---|---|---|---|---|---|
 | **SEG-33** | ✅ | `audit_logs` y `compliance_events` son append-only para **todos** los roles | `REVOKE` + triggers `audit.reject_mutation()` | `audit:verify` (en CI) | D41, §4.3 |
 | **SEG-34** | ✅ | El audit trail de una empresa no se lee ni se escribe desde otra | RLS en `audit` | `rls-comportamiento` | §4.3 |
-| **SEG-35** | 🟠 `P7` | Retención de 7 años | Depende de los respaldos | Inmutabilidad ✅; la retención depende de dónde viva el Postgres | D41, §5.3 (SOC 2 Tipo II) |
+| **SEG-35** | 🟠 `D72` | Retención de 7 años | Depende de los respaldos | Inmutabilidad ✅; la retención depende de dónde viva el Postgres | D41, §5.3 (SOC 2 Tipo II) |
 | **SEG-36** | ✅ | La auditoría se escribe **en la misma transacción** que la acción | Cada método del repositorio que cambia datos **exige** un `AuditIntent` (el compilador lo impone) y lo escribe con `insertAuditLog(tx, …)` dentro de su transacción. Excepción documentada: los intentos fallidos y los cierres automáticos de sesión (DT-47) | `test/auditoria/audit-atomica.e2e-spec.ts`: cada acción deja exactamente 1 rastro con su empresa; forzando que el rastro falle **después** de insertarse, la acción se revierte (servicio, escenario, alcance, activo, descripción, contexto, login, logout, empresa, canje) y la fila de auditoría también. Una mutación (rastro tras el commit) hace fallar la prueba | D41, D52 |
 | **SEG-37** | 🟠 | Los intentos de acceso denegados se registran (CC7.2/CC7.3) | `auth.login_failed` y el canje fallido (`access_key.redeem` con `result = error`), de mejor esfuerzo y sin tenant | `test/autenticacion/autenticacion.e2e-spec.ts`: cada fallo de login deja su rastro (con `user_id`, o con el correo tecleado si no existe). **Un 403 por rol no se registra** | §5.6 |
 | **SEG-38** | 🟡 MD-145 | `evaluations` es inmutable salvo el cierre humano | `REVOKE` + `GRANT UPDATE` por columna | Ninguna prueba | §7.4 |
@@ -136,7 +136,7 @@ Estado de un vistazo (contado el 2026-10-10 a partir de la columna Estado; los e
 
 | ID | Estado | Requisito | Cómo se hace cumplir | Verificación | Fuente |
 |---|---|---|---|---|---|
-| **SEG-39** | 🟠 MD-87, `P11` | Ninguna pantalla, notificación, reporte ni texto de IA nombra al proveedor del motor (ni la sonda ni el motor de nube) | Revisión | Ninguna prueba automática | `CLAUDE.md`, `philosophy.md`, `wazuh.md` |
+| **SEG-39** | 🟠 MD-87, `D70` | Ninguna pantalla, notificación, reporte ni texto de IA nombra al proveedor del motor (ni la sonda ni el motor de nube) | Revisión | Ninguna prueba automática | `CLAUDE.md`, `philosophy.md`, `wazuh.md` |
 
 > El prototipo de postura de AWS (`assets/monkey-postura-aws.html`) **lo violaba** (nombraba el motor y la versión al pie).
 > No es un caso aislado: sin una prueba que busque esos nombres en lo que sale al cliente, depende de la atención de quien revisa.

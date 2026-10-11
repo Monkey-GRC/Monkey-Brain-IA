@@ -35,7 +35,7 @@ El comité entregó la VF2 con el motor de evaluación completo. **Reemplaza la 
 | **MD-138** motor de cálculo | Se construye contra `modelo-datos.md` §9: funciones puras para activo, test, control, categoría y marco, con **los 8 casos del comité** (C1 a C8), las simulaciones 1 a 6 y las validaciones V01 a V15 como pruebas de aceptación. Lo pendiente bloquea; el marco se evalúa sobre controles únicos. Cierra `DT-65` |
 | **MD-139** estado del activo | El resultado de un activo en un test tiene 5 estados (cumple, no cumple, pendiente, error, excluido). El semáforo del activo sigue la lectura de D62 (`DT-66`) |
 | **MD-137** resumen del servicio | Muestra avance, cobertura y estado por separado (REQ-032); el cliente ve el semáforo y en qué falla, y el consultor y el auditor ven los estados técnicos (REQ-049) |
-| **MD-144** exclusiones | Incluye **excluir un activo** de un test con justificación, aprobador y vigencia (REQ-008). La política (quién autoriza, cuánto dura) está abierta: `P22` |
+| **MD-144** exclusiones | Incluye **excluir un activo** de un test con justificación, aprobador y vigencia (REQ-008). La propone el consultor, la aprueba la empresa y vence con el período: **cerrada en D74** |
 | **MD-145** evaluaciones inmutables | La evaluación es servicio + marco + versión + período + fecha de corte (REQ-004) y cada cambio de estado deja un evento inmutable (REQ-044) |
 | **MD-155** veredicto del consultor | Se amplía con la evaluación del consultor y la del auditor: diseño abierto en `P23` |
 | **MD-151** mitigación y riesgo residual | **Sigue fuera.** El comité ya trae los estados de mitigación (RN-20, RN-21), pero el residual, el apetito y el mapa de calor esperan decisiones: `P22` |

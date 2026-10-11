@@ -28,7 +28,7 @@ erDiagram
         text description
         enum size "from_10_to_50 ... more_than_5000"
         enum industry
-        enum business_model "40+ opciones"
+        enum business_model "19 opciones mas other (D73)"
         enum years_in_operation "nullable"
         json incorporation_countries
         json client_countries
