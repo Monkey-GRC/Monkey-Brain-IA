@@ -80,9 +80,9 @@ Lo que no pertenece a un solo módulo (pruebas, CI, auditoría, traducciones, en
 
 🟠 Importante
 
-- **Qué está parchado:** y sin revisar; Monkey Platform no tiene i18n (todo en español)
+- **Qué está parchado:** y sin revisar. *Hecho (MD-114):* Monkey Platform ya tiene i18n (es/en) en toda la app; el inglés de `Frontend-Platform/public/i18n/en/` también lo escribió desarrollo y está sin revisar. Los términos de Cumplimiento (`compliance.json`) siguen el glosario **propuesto** en MD-109, aún no aprobado por producto. Los nombres de los tipos de conexión (`ac_01`…`ac_06`) salen de la base solo en español: Platform los traduce por código (`TECHNICAL_CONTROL.CATEGORY.*`). La pantalla legacy `assets/asset-detail` (sin ruta, MD-116) no se tradujo
 - **Por qué:** El Excel solo trae español
-- **Qué lo cierra:** Revisión del comité; instalar i18n en Platform
+- **Qué lo cierra:** Revisión del comité de los dos idiomas y aprobar el glosario de MD-109; traducir `automated_capabilities.category` en el backend (o llevarlo a `catalogs.json`) para no depender del mapa del frontend; instalar i18n en Platform
 
 ### DT-22 · Base de datos dedicada → «no disponible»
 

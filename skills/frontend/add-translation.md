@@ -42,3 +42,19 @@ propósito, así que no necesita auth.
 - Seguir la convención de nombres ya usada por feature (`SIDEBAR.*`,
   `RISK.*`, `HOME`) — no mezclar mayúsculas/minúsculas dentro de la misma
   jerarquía.
+
+## En Frontend-Platform
+
+Mismo patrón (`public/i18n/{es,en}/<area>.json`, pipe `translate`), con estas diferencias:
+
+- Los archivos que se cargan se listan en `I18N_FILES` de `src/app/app.config.ts`; un archivo nuevo se agrega ahí.
+- El idioma lo maneja `LanguageService` (`core/domain/services/language.service.ts`): `current()` es una señal, `set()`/`toggle()` cambian
+  el idioma y `storedLanguage()` lo lee sin inyectar. El interceptor lo manda como `Accept-Language`.
+- Al cambiar el idioma la pantalla **no se recrea** (se perdería lo que el cliente escribió). Los textos fijos cambian solos con `translate`.
+  Lo que el backend traduce (catálogos) se vuelve a pedir con un `effect` sobre `language.current()` que solo reasigna esas listas, nunca
+  reinicia `stage` ni el formulario. Toda pantalla nueva que pida catálogos debe hacerlo. La caché de `CatalogService` es por idioma.
+- Un texto que sale de una constante o de un modelo (no de la plantilla) guarda la **clave**, no el texto, y la pantalla la pasa por
+  `translate` (ver `SCENARIO_HELP` en `technical-control.models.ts`).
+- Textos con variables: `"Paso {{current}} de {{total}}"` y `{{ 'CLAVE' | translate: { current: 1, total: 6 } }}`. No hay plurales ICU:
+  dos claves (`..._ONE`, `..._MANY`) y se elige en la plantilla.
+- Los textos de Cumplimiento usan los términos del glosario aprobado (MD-109) en `compliance.json`, nunca palabras sueltas.

@@ -25,7 +25,7 @@ en el admin, ni al revés.
 | Estructura de feature | `models/` + `services/` + `presentation/` | `domain/` + `presentation/` |
 | `core/` y `shared/` | `core/{guards,interceptors,services}`, `shared/models` | `core/domain/*`, `shared/domain/*` |
 | `ApiResponse<T>` | `@shared/models/api-response.model` | `@shared/domain/models/api-response.model` |
-| i18n | ngx-translate + `public/i18n/{en,es}` | **no instalada** (texto en español hardcodeado) |
+| i18n | ngx-translate + `public/i18n/{en,es}` | ngx-translate + `public/i18n/{es,en}` (un JSON por área, ver `I18N_FILES` en `app.config.ts`) |
 | Interceptores | `error-handler`, `auth` (en ese orden) | `credentials` (cookies + renovación de sesión); sin manejo global de errores |
 | Syncfusion | sí | no |
 
@@ -39,8 +39,11 @@ Angular, TypeScript estricto, **standalone components** (sin NgModules), TailAdm
 `material-symbols`. Syncfusion solo en `Frontend`. Sin librería de estado: servicios
 `providedIn: 'root'` con estado local. Versiones exactas: `package.json`.
 
-- **i18n:** solo en `Frontend` (`@ngx-translate/core`, JSON en `public/i18n/{en,es}/*.json`). Las
-  reglas de traducción obligatoria no aplican en `Frontend-Platform` hasta que se instale.
+- **i18n:** en las dos apps (`@ngx-translate/core`, JSON en `public/i18n/{en,es}/*.json`). Platform guarda el idioma en
+  `localStorage('lang')` (`core/domain/services/language.service.ts`) y lo manda como `Accept-Language`. Al cambiarlo la
+  pantalla **no se recrea** (no se pierde lo escrito): los textos fijos cambian solos con `translate` y lo que traduce el
+  backend (catálogos) se vuelve a pedir con un `effect` sobre `LanguageService.current()`. Toda cadena visible pasa por
+  `translate`, en `es` y en `en` a la vez.
 - **Auth:** cookie httpOnly (`withCredentials: true`), sin manejo manual de tokens en JS;
   `Accept-Language` desde `localStorage('lang')`.
 - **Puertos en local:** Platform `4200`, Admin `4201`. Comparten las cookies de `localhost`: dos
@@ -86,11 +89,11 @@ primero, el % nunca solo).
 - Auth y errores ya se interceptan globalmente: un servicio de feature no los reimplementa.
 - Opciones de formularios: del backend (`GET /v1/catalogs/{name}`), nunca hardcodeadas
   (`contracts/enums.md`).
-- Traducciones (solo `Frontend`): toda cadena visible pasa por `translate`, agregada en `en` y `es`.
+- Traducciones (las dos apps): toda cadena visible pasa por `translate`, agregada en `en` y `es`.
 
 ## Qué NO hacer
 
 - No crear `NgModule` nuevos.
 - No importar una feature desde otra feature directamente.
 - No manejar tokens/cookies de auth manualmente en un servicio.
-- No hardcodear texto visible sin pasar por i18n (en `Frontend`).
+- No hardcodear texto visible sin pasar por i18n.
