@@ -55,7 +55,7 @@ lo mismo, y el consultor prepara el terreno. Por eso `consultor` y `auditor` son
 2. **Al iniciar sesión elige en qué empresa trabajar y ve una a la vez.** Dentro de ella ve todo el cumplimiento de todos los servicios, con la vista técnica, y puede registrar observaciones y exportar reportes igual que el auditor (§7.6). El sistema comprueba su asignación en cada petición.
 3. **La empresa puede cortarle el acceso.** `admin_empresa` ve qué consultores tiene asignados, en solo lectura, y puede suspender a uno (`CC6.3`).
 4. **Da el veredicto** (cumple / no cumple) de los tests **documentales y manuales**. La IA sugiere y nunca decide (§7.5).
-5. **Propone las exclusiones de checks**; las aprueba `admin_empresa` (§7.2).
+5. **Aprueba las exclusiones** que propone la empresa (§7.2, D78).
 6. **Aprueba los cambios de controles que propone la empresa**: crear un control propio, darlo de baja y editar sus dimensiones o su interpretación (§7.1).
 7. **MFA TOTP obligatoria**, como todos los roles (§5.3).
 

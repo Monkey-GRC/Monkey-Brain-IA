@@ -43,12 +43,12 @@ Estado de un vistazo (contado el 2026-10-10 a partir de la columna Estado; los e
 |---|--:|--:|--:|--:|--:|--:|
 | A. Aislamiento entre empresas (el riesgo #1 del producto) | 6 | 1 | 1 | 2 | · | 10 |
 | B. Autenticación y sesión | 6 | · | 2 | 2 | · | 10 |
-| C. Autorización | 1 | · | 3 | 2 | · | 6 |
+| C. Autorización | 2 | · | 4 | 1 | · | 7 |
 | D. Datos y secretos | 7 | 3 | 2 | 5 | 3 | 20 |
 | E. Auditoría y trazabilidad | 3 | 1 | 2 | · | · | 6 |
 | F. Confidencialidad del proveedor del motor | · | · | 1 | · | · | 1 |
 | G. Desarrollo y entrega | 1 | 1 | · | 1 | · | 3 |
-| **Total** | **24** | **6** | **11** | **12** | **3** | **56** |
+| **Total** | **25** | **6** | **12** | **11** | **3** | **57** |
 
 ---
 
@@ -92,8 +92,9 @@ Estado de un vistazo (contado el 2026-10-10 a partir de la columna Estado; los e
 |---|---|---|---|---|---|
 | **SEG-20** | ✅ (2 de 5 roles) | La autorización se verifica en cada petición; no se confía en el frontend | `@Roles()` + guard | `http`: una empresa no accede a rutas de `admin_monkey` y `admin_monkey` no actúa como `admin_empresa` | §5.3 |
 | **SEG-21** | 🟠 `P3` | Matriz de permisos por rol (13 acciones) | Por módulo | Solo `admin_monkey` y `admin_empresa`. `funcional`, `consultor` y `auditor` no tienen endpoints todavía. El `consultor` y el `auditor` ven toda su empresa sin asignación (D63, D64) | §5.5 |
-| **SEG-54** | 🟠 `DT-67` | La vista técnica (códigos de requisito y de control, resultados por check) la reciben **solo los roles `auditor` y `consultor`**; `admin_empresa` y `funcional` reciben la vista de negocio y un `403` si piden la técnica | `view=technical` restringido por `@Roles('auditor','consultor')` | Ninguna todavía | D63 |
+| **SEG-54** | 🟠 `MD-137` | La vista técnica (códigos de requisito y de control, resultados por check) la reciben **solo los roles `auditor` y `consultor`**; `admin_empresa` y `funcional` reciben la vista de negocio y un `403` si piden la técnica | `view=technical` restringido por `@Roles('auditor','consultor')` | Ninguna todavía | D63 |
 | **SEG-56** | 🔴 D77 | Solo el `consultor` emite la evaluación del consultor y solo el `auditor` la del auditor; una emitida no se edita ni se borra | Permiso por rol en el caso de uso, `CHECK` de que `assessor_role` coincida con el rol de quien emite y `REVOKE` de `UPDATE`/`DELETE` | Ninguna prueba: aún no se construye | §7.5, D77 |
+| **SEG-57** | ✅ | Una suspensión de la empresa solo la reactiva la empresa; solo `admin_monkey` asigna y retira a un consultor; ningún otro rol toca una asignación, y nadie la borra | Políticas RLS de `consultant_assignments` + el trigger `consultant_assignment_guard` (valida quién cambia el estado y sella quién y cuándo) | `test/aislamiento/consultor-asignaciones.e2e-spec.ts` (19 pruebas contra la base, con el rol real de la app) | D64, §5.2 |
 | **SEG-22** | 🔴 | `funcional` siempre acotado a lo que tiene asignado | `user_control_assignments` | No existe aún el módulo | §5.5 |
 | **SEG-23** | 🟠 | Un usuario desactivado pierde el acceso y se cierran sus sesiones (CC6.3) | El guard comprueba el estado del usuario en cada petición | `test/autenticacion/autenticacion.e2e-spec.ts`: con el usuario `inactive` su sesión abierta deja de servir y no puede volver a entrar. **Falta el endpoint para desactivarlo (MD-132)** | §5.6 |
 
@@ -120,7 +121,7 @@ Estado de un vistazo (contado el 2026-10-10 a partir de la columna Estado; los e
 | **SEG-51** | ✅ D59 | El descubrimiento de activos solo **lee**, solo en las regiones declaradas, y no filtra el error del proveedor ni atributos arbitrarios: lo que entrega el trabajador se limpia antes de guardarse y el error de AWS nunca se registra ni se devuelve | `AwsInventoryScanner` (solo `Describe*`/`List*`, `warnings` sin detalle); `toInventory` limpia atributos; inventario con RLS (`asset_resources`) | `src/runner/infrastructure/inventory/aws-inventory-scanner.spec.ts`, `test/control-tecnico/conexion.e2e-spec.ts` (descubrimiento: empresa ajena 404, clase inventada rechazada) | D59 |
 | **SEG-52** | ✅ D60 | Un activo dado de baja no existe para nadie: no se valida, activa, programa, edita ni evalúa (`404`), y sus llaves guardadas se borran; los activos que descubrió se dan de baja con ella | `readAsset`/`findProbeTarget`/`queueExecution` solo ven activos `active`; `retireAsset` anula `encrypted_credentials` | `test/control-tecnico/conexion.e2e-spec.ts` («un activo dado de baja no se puede operar…») | D59, D60 |
 | **SEG-53** | ✅ D61 | El servicio solo puede enlazar activos que sean **de esa conexión y de su empresa**; un id ajeno, inventado o de otra conexión se rechaza (`422`), y otra empresa ve `404`. Un activo descubierto no se opera por su cuenta | `setServiceAssets` valida contra los hijos activos de la conexión dentro de `withScope` (RLS); `readAsset`/`findProbeTarget`/`queueExecution` solo ven conexiones | `test/control-tecnico/conexion.e2e-spec.ts` («solo se pueden enlazar activos de ESA conexión…», «los activos descubiertos no son conexiones…») | D61 |
-| **SEG-55** | 🔴 `DT-67` | Un consultor solo entra a una empresa con una asignación **activa**; la comprobación ocurre en cada petición, la empresa puede suspenderla y cada elección o cambio de empresa queda en la auditoría | Política RLS de `consultant_assignments` + guard de empresa activa | Ninguna todavía | D64 |
+| **SEG-55** | 🟠 `MD-160` | Un consultor solo entra a una empresa con una asignación **activa**; la comprobación ocurre en cada petición, la empresa puede suspenderla y cada elección o cambio de empresa queda en la auditoría | Política RLS de `consultant_assignments` (hecha, MD-157) + guard de empresa activa (falta, MD-160) | La política, sí: `test/aislamiento/consultor-asignaciones.e2e-spec.ts`. El guard, ninguna todavía | D64 |
 
 ## E. Auditoría y trazabilidad
 

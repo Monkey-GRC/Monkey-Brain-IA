@@ -32,6 +32,7 @@ NestJS (Express), TypeScript, Prisma 7 (`prisma-client`, `moduleFormat = "cjs"`,
 PostgreSQL, `class-validator`, `@nestjs/swagger` (`/v1/docs`), `nestjs-i18n` (`/i18n/{en,es}`), Jest +
 supertest, ESLint 9 + Prettier. Versiones exactas: `package.json`.
 
+- **Roles:** cinco (`admin_monkey`, `admin_empresa`, `funcional`, `consultor`, `auditor`); no hay roles personalizados. El consultor es de Next y entra a cada empresa solo por una asignación activa (`consultant_assignments`, D64, SEG-57); el auditor pertenece a su empresa (D63).
 - **Auth:** access token JWT HS256 de corta vida + refresh token opaco rotado, ambos en cookies
   httpOnly; contraseñas con bcrypt. Detalle y límites en `contracts/modules/auth.md`.
 - **Pruebas:** unitarias (`*.spec.ts`), verificadores contra la base (`catalog:verify`,
@@ -70,6 +71,7 @@ manda el código y se corrige esta lista.
 | `catalogs` | Opciones de los formularios con etiqueta según `Accept-Language`. Valores en `src/common/catalogs/onboarding-catalogs.ts`; solo regulaciones y marcos salen de la base. | `contracts/enums.md` |
 | `onboarding` | Componente 1 (contexto organizacional) y derivación del avance para `me`. | `contracts/modules/onboarding-organizational-context.md` · D44 |
 | `services` | Componente 2 (contexto del servicio). **Crear o ampliar un servicio clona el catálogo del marco en la misma transacción** (`CloneCatalogService`). | `contracts/modules/onboarding-service-context.md` · D40, D45, D51 |
+| `compliance` | **Motor de evaluación** (`domain/engine/`, funciones puras, sin base de datos): estado de un test, un control, una categoría y un marco, y el semáforo de un activo (§9, D68). Todavía sin endpoints ni casos de uso. | `modelo-datos.md` §9 · MD-138, MD-139 |
 | `technical-control` | Componente 3: escenario de despliegue, activos, comprobar → activar → programar. La **sonda** es un puerto (`ConnectionProbe`) con adaptadores `simulated` y `unavailable` (`PROBE_MODE`); el proveedor del motor nunca sale. El paso 3 es **provisional** para servidores y bases. Qué conexiones, plataformas, canales, regiones, frecuencias y tipo de activo ofrece cada escenario sale de la **base** (`catalog.*`, D67), no del código. | `contracts/modules/onboarding-technical-control.md`, `control-tecnico-operacion.md` · D46, D48, D67 · DT-32…DT-36 · D71 |
 
 **Siembra** (no existe `prisma db seed`): `npm run bootstrap:admin` (empresa interna de Monkey y

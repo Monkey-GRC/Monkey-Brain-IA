@@ -127,8 +127,8 @@ fórmula no la reflejaba, §0). Las dos no coinciden en varios puntos.
 **Por qué.** El comité hizo el análisis funcional, y CLAUDE.md dice que ante un conflicto manda el documento fuente. D62 había llenado un hueco que el Excel de la fórmula no cubría; ahora el comité lo cubrió y su regla es más estricta y más
 trazable (cada estado se explica con una regla numerada y casos de prueba). La evaluación del consultor y del auditor es un hecho del producto que el Excel omitió.
 
-**Qué cambia.** `modelo-datos.md` §9 (reescrita), §2, §7.1, §7.4, §7.5 y el glosario; `contracts/enums.md` (estados de evaluación); `sprint-cumplimiento.md` y `mvp-roadmap.md`; `DT-65` y `DT-66` (el calculador que promedia y la
-preparación por severidad se escriben contra esta regla) y `DT-69` (dimensiones); pendiente `P22` (`P23` lo cerró D77).
+**Qué cambia.** `modelo-datos.md` §9 (reescrita), §2, §7.1, §7.4, §7.5 y el glosario; `contracts/enums.md` (estados de evaluación); `sprint-cumplimiento.md` y `mvp-roadmap.md`; `DT-66` (la
+preparación por severidad se escribe contra esta regla; `DT-65`, el calculador que promediaba, se retiró porque ese código ya no existe) y `DT-69` (dimensiones); pendiente `P22` (`P23` lo cerró D77).
 
 **Fuente:** comité funcional, `assets/TSC INTERGRAL SOC 2 DETALLADO VF2.xlsx` (hojas `MODELO EVALUACIÓN MONKEY` y `REQUISITOS EVALUACIÓN MONKEY`), 2026-10-10; evaluación del consultor y del auditor: responsable de producto, 2026-10-10.
 

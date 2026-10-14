@@ -25,6 +25,7 @@ cambios con aprobación), §7.5 (el veredicto) y §7.6 (las observaciones).
 | Medición y resumen (MD-106) | MD-137 resumen del servicio · MD-138 motor de cálculo · MD-139 estado del activo |
 | Exclusiones y cierre (MD-107) | MD-144 exclusiones · MD-145 evaluaciones inmutables · MD-147 verificación del backend · MD-149 revisión de pantallas y demo |
 | Auditoría y consultoría (MD-152) | MD-154 observaciones · MD-155 veredicto del consultor · MD-156 aprobación de cambios de controles |
+| Acceso (MD-153), prerrequisito | MD-157 roles consultor y auditor en el backend: **construido**. Desbloquea MD-118, MD-144 y MD-154 a MD-156, que dependen del rol `consultor` |
 
 ## Lo que cambia con el motor del comité (D68, 2026-10-10)
 
@@ -32,7 +33,7 @@ El comité entregó la VF2 con el motor de evaluación completo. **Reemplaza la 
 
 | Ticket | Qué cambia |
 |---|---|
-| **MD-138** motor de cálculo | Se construye contra `modelo-datos.md` §9 (una comprobación automática se reintenta **tres veces** antes de quedar en `ERROR` con aviso, D76): funciones puras para activo, test, control, categoría y marco, con **los 8 casos del comité** (C1 a C8), las simulaciones 1 a 6 y las validaciones V01 a V15 como pruebas de aceptación. Lo pendiente bloquea; el marco se evalúa sobre controles únicos. Cierra `DT-65` |
+| **MD-138** motor de cálculo | Se construye contra `modelo-datos.md` §9 (una comprobación automática se reintenta **tres veces** antes de quedar en `ERROR` con aviso, D76): funciones puras para activo, test, control, categoría y marco, con **los 8 casos del comité** (C1 a C8), las simulaciones 1 a 6 y las validaciones V01 a V15 como pruebas de aceptación. Lo pendiente bloquea; el marco se evalúa sobre controles únicos. Reemplaza al calculador anterior, que ya no existe |
 | **MD-139** estado del activo | El resultado de un activo en un test tiene 5 estados (cumple, no cumple, pendiente, error, excluido). El semáforo del activo sigue la lectura de D62 (`DT-66`) |
 | **MD-137** resumen del servicio | Muestra avance, cobertura y estado por separado (REQ-032); el cliente ve el semáforo y en qué falla, y el consultor y el auditor ven los estados técnicos (REQ-049) |
 | **MD-144** exclusiones | Incluye **excluir un activo** de un test con justificación, aprobador y vigencia (REQ-008). La propone la empresa, la aprueba el consultor y vence con el período: **cerrada en D74 y D78** |
@@ -47,7 +48,7 @@ reutilización de resultados entre marcos (REQ-013, REQ-033) y la evaluación de
 ## Qué quedó fuera (vuelve al backlog)
 
 - **Acceso y usuarios (MD-153):** invitar (MD-131), desactivar (MD-132), pantalla Equipo (MD-134), Monkey Admin heredado (MD-143), MFA para los 5 roles (MD-94),
-  roles consultor y auditor en el backend (MD-157), asignar acciones de protección a personas (MD-158), crear y asignar consultores desde Monkey Admin (MD-159),
+  asignar acciones de protección a personas (MD-158), crear y asignar consultores desde Monkey Admin (MD-159),
   elegir la empresa de trabajo del consultor (MD-160), ver y suspender consultores asignados (MD-161).
 - **Monkey Admin:** catálogo maestro (MD-141, MD-142) y detalle de empresa (MD-146).
 - **Infraestructura y limpieza:** MD-112 (docker-compose y respaldo), MD-116 (limpieza de Platform), MD-87 (confidencialidad de la sonda).

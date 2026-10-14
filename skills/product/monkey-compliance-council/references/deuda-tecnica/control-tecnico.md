@@ -250,7 +250,7 @@ Parches del Componente 3 del onboarding (conexión de activos, la sonda) y del p
 
 - **Qué está parchado:** (`readiness.ts`: alta o crítica ⇒ Requiere trabajo), no por el porcentaje de tests con resultado con cortes en 100% y 80% que fijó D62 y que D68 conserva para el activo (el comité no lo define)
 - **Por qué:** Se construyó antes de D62
-- **Qué lo cierra:** Alinear `readiness.ts` y `GET /v1/assets/{id}/readiness`
+- **Qué lo cierra:** Cablear `GET /v1/assets/{id}/readiness` a `evaluateAssetReadiness` (`features/compliance`, MD-139), que ya calcula el porcentaje con los cortes de D62, y retirar `readiness.ts`
 
 ### DT-64 · La preparación por servicio no tiene pantalla
 
