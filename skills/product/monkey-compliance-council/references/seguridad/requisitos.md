@@ -43,12 +43,12 @@ Estado de un vistazo (contado el 2026-10-10 a partir de la columna Estado; los e
 |---|--:|--:|--:|--:|--:|--:|
 | A. Aislamiento entre empresas (el riesgo #1 del producto) | 6 | 1 | 1 | 2 | · | 10 |
 | B. Autenticación y sesión | 6 | · | 2 | 2 | · | 10 |
-| C. Autorización | 2 | · | 4 | 1 | · | 7 |
+| C. Autorización | 2 | · | 4 | 2 | · | 8 |
 | D. Datos y secretos | 7 | 3 | 2 | 5 | 3 | 20 |
 | E. Auditoría y trazabilidad | 3 | 1 | 2 | · | · | 6 |
 | F. Confidencialidad del proveedor del motor | · | · | 1 | · | · | 1 |
 | G. Desarrollo y entrega | 1 | 1 | · | 1 | · | 3 |
-| **Total** | **25** | **6** | **12** | **11** | **3** | **57** |
+| **Total** | **25** | **6** | **12** | **12** | **3** | **58** |
 
 ---
 
@@ -95,6 +95,7 @@ Estado de un vistazo (contado el 2026-10-10 a partir de la columna Estado; los e
 | **SEG-54** | 🟠 `MD-137` | La vista técnica (códigos de requisito y de control, resultados por check) la reciben **solo los roles `auditor` y `consultor`**; `admin_empresa` y `funcional` reciben la vista de negocio y un `403` si piden la técnica | `view=technical` restringido por `@Roles('auditor','consultor')` | Ninguna todavía | D63 |
 | **SEG-56** | 🔴 D77 | Solo el `consultor` emite la evaluación del consultor y solo el `auditor` la del auditor; una emitida no se edita ni se borra | Permiso por rol en el caso de uso, `CHECK` de que `assessor_role` coincida con el rol de quien emite y `REVOKE` de `UPDATE`/`DELETE` | Ninguna prueba: aún no se construye | §7.5, D77 |
 | **SEG-57** | ✅ | Una suspensión de la empresa solo la reactiva la empresa; solo `admin_monkey` asigna y retira a un consultor; ningún otro rol toca una asignación, y nadie la borra | Políticas RLS de `consultant_assignments` + el trigger `consultant_assignment_guard` (valida quién cambia el estado y sella quién y cuándo) | `test/aislamiento/consultor-asignaciones.e2e-spec.ts` (19 pruebas contra la base, con el rol real de la app) | D64, §5.2 |
+| **SEG-58** | 🔴 MD-108 | Nadie decide lo que él mismo propuso: aprobar o rechazar un cambio de control, una exclusión o una entrega de evidencia lo hace otra persona, con otro rol cuando el modelo lo exige | El caso de uso compara `decided_by` con quien propuso y responde `403` | Ninguna todavía | `contracts/conventions.md` (decisiones), D65, D78 |
 | **SEG-22** | 🔴 | `funcional` siempre acotado a lo que tiene asignado | `user_control_assignments` | No existe aún el módulo | §5.5 |
 | **SEG-23** | 🟠 | Un usuario desactivado pierde el acceso y se cierran sus sesiones (CC6.3) | El guard comprueba el estado del usuario en cada petición | `test/autenticacion/autenticacion.e2e-spec.ts`: con el usuario `inactive` su sesión abierta deja de servir y no puede volver a entrar. **Falta el endpoint para desactivarlo (MD-132)** | §5.6 |
 

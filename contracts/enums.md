@@ -292,14 +292,14 @@ nuevo manda estos cuatro en minúscula; la API expone los del modelo.
 
 ### `audit_observation_status` — `audit_observations.status`
 `open` Abierta · `answered` Respondida · `closed` Cerrada. `admin_empresa` o el `funcional` dueño del control la pasan a `answered`; solo quien la escribió (`auditor` o `consultor`) la cierra o la devuelve a `open`.
-*(Los endpoints de observaciones no tienen contrato todavía: se acuerda en MD-108 antes de MD-154.)*
+*(Contrato: `modules/compliance-audit.md`.)*
 
 ### `control_change_type` — `client_control_changes.change_type`
 `create` Crear un control propio · `retire` Dar de baja · `edit_dimensions` Editar dimensiones · `edit_interpretation` Editar interpretación
 
 ### `control_change_status` — `client_control_changes.status`
 `pending` Pendiente · `approved` Aprobado · `rejected` Rechazado. Solo el `consultor` decide.
-*(Sin contrato todavía: se acuerda en MD-108 antes de MD-156.)*
+*(Contrato: `modules/compliance-controls.md`.)*
 
 ### `consultant_assignment_status` — `consultant_assignments.status`
 `active` Activa · `suspended` Suspendida por la empresa · `revoked` Retirada por Monkey. *(La tabla está construida (MD-157); sus endpoints no tienen contrato todavía: MD-159 y MD-161.)*
@@ -433,6 +433,30 @@ estado: se deriva de `due_date`.
 Ya definidos en `modelo-datos.md` (§7 y §8): `mitigate|accept|transfer|avoid`,
 `compliant|non_compliant|pending|error|excluded|not_applicable` (el resultado de un activo en un test, ampliado por D68), `open|remediated|excluded`, `system|auditor`,
 `passed|failed|invalid|not_applicable|not_run`.
+
+## Cumplimiento — contratos de endpoints (MD-108)
+
+Valores que usan `modules/compliance-*.md`. Los de las tablas ya existentes (`dimension`, `trust_criterion`, `risk_criterion`, `risk_level`, `failure_category`, `risk_treatment_decision`, `evidence_validation_status`,
+`audit_observation_*`, `control_change_*`) no se repiten.
+
+### `control_type` — `client_controls.type`
+`manual` Manual · `automated` Automática · `hybrid` Híbrida · `technical_manual` Técnica manual
+
+### `control_approval` — si un control propio ya lo aprobó el consultor
+`approved` Aprobado · `pending` Pendiente de aprobación · `rejected` Rechazado. Un control del catálogo es siempre `approved`; uno propio cuenta desde que se crea, aunque esté `pending` (D65).
+
+### `exclusion_status` — `exclusions.status`
+`pending` Pendiente · `approved` Aprobada · `rejected` Rechazada. «Vencida» no es un estado: se deriva de `valid_until` (`is_expired`).
+
+### `responsible_type` — `organization_responsibles.type`
+`coo` COO · `it` TI · `compliance` Cumplimiento · `process` Proceso · `ciso` CISO · `asset_owner` Propietario del activo
+
+### `loss_type` — tipos de pérdida de `client_risks.potential_impact` *(provisional, `P9`)*
+`reputational` Reputacional · `financial_loss` Pérdida financiera · `regulatory_sanction` Sanción regulatoria · `litigation` Litigios · `customer_trust_loss` Pérdida de confianza de clientes ·
+`operation_interruption` Interrupción de la operación. El Excel trae dos variantes de la última («…de la operación» y «…o cierre de la operación»); se tratan como un valor hasta que el comité confirme.
+
+### `verdict_result` — el veredicto de un test (`modules/compliance-audit.md`)
+`compliant` Cumple · `non_compliant` No cumple. Es el subconjunto de `asset_result` que puede dar una persona.
 
 ## Estados de evaluación (D68)
 

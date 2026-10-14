@@ -21,6 +21,8 @@ Lo que sigue abierto, con lo más urgente arriba. 🚧 bloquea trabajo · ⚠️
 | [P21](#p21--el-uso-de-los-logos-de-marcas-de-terceros) | El uso de los logos de marcas de terceros en el marketplace | ⚠️ Publicar el marketplace con logos a clientes reales; no bloquea construirlo | 2026-10-10 |
 | [P22](#p22--motor-de-evaluación-lo-que-falta-para-calcular-el-riesgo) | Motor de evaluación: lo que falta para calcular el riesgo | 🚧 El riesgo residual y las dos matrices (MD-151, fuera del sprint); ⚠️ la periodicidad de los controles | 2026-10-10 |
 | [P24](#p24--quién-aprueba-una-exclusión-si-la-empresa-no-tiene-consultor) | Quién aprueba una exclusión si la empresa no tiene consultor | ⚠️ La pantalla de exclusiones (MD-144) | 2026-10-13 |
+| [P25](#p25--quién-valida-los-atributos-de-una-evidencia-y-cómo-se-relaciona-con-el-veredicto-del-consultor) | Quién valida los atributos de una evidencia y cómo se relaciona con el veredicto del consultor | ⚠️ El endpoint de validación y el veredicto (MD-155), y el estado de los tests documentales | 2026-10-14 |
+| [P26](#p26--quién-define-el-período-auditado-y-la-fecha-de-corte-de-una-evaluación) | Quién define el período auditado y la fecha de corte de una evaluación | 🚧 Que el motor ejecute: sin esos datos el resumen es «Sin medir» y no se emiten evaluaciones (MD-137, MD-155) | 2026-10-14 |
 | [P13](#p13--ratificar-lo-que-desarrollo-decidió-en-las-correcciones-del-2026-10-05-d50-d51) | Ratificar lo que desarrollo decidió el 2026-10-05 (D50, D51) | No bloquea: está construido y funcionando | 2026-10-06 |
 | [P15](#p15--cómo-se-mapean-los-checks-de-nube-que-quedan-fuera) | Cómo se mapean los checks de nube que quedan fuera | No bloquea: lo no mapeado no cuenta hasta responder | 2026-10-08 |
 
@@ -53,7 +55,7 @@ Lo que falta: el detalle por pantalla de cada rol.
 
 ## P9 · Datos del Excel que hay que corregir o confirmar
 
-Dos inconsistencias **dentro del propio archivo del comité**, que el seed carga tal cual sin adivinar (D38):
+Inconsistencias **dentro del propio archivo del comité**, que el seed carga tal cual sin adivinar (D38):
 
 - **Pruebas de aplicación.** La matriz *Análisis TEST x Control* asigna a 17+5+1+2+1+1 = 27 pares control↔prueba
   seis pruebas `T-APP-001…006` que no existen en la hoja *Pruebas* (la hoja marca *"FALTAN 6"*), y la hoja
@@ -64,7 +66,9 @@ Dos inconsistencias **dentro del propio archivo del comité**, que el seed carga
 - **Diez causas sin riesgo.** F003, F004, F016, F020, F026, F034, F042, F045, F053 y F054 no aparecen en ninguna
   de las 92 relaciones riesgo↔causa. ¿A qué riesgo(s) pertenecen o se descartan?
 
-**Qué depende:** la dimensión Aplicación del cálculo (§2, §9) y qué causas ve el cliente al clonar (§7.2).
+- **Tipos de pérdida de un riesgo.** La hoja *Riesgos* usa «Interrupción de la operación» en dos riesgos e «Interrupción o cierre de la operación» en otros dos. ¿Son el mismo tipo de pérdida? El contrato los trata como uno solo (`operation_interruption`).
+
+**Qué depende:** la dimensión Aplicación del cálculo (§2, §9) qué causas ve el cliente al clonar (§7.2) y los valores de `loss_type`.
 
 ## P13 · Ratificar lo que desarrollo decidió en las correcciones del 2026-10-05 (D50, D51)
 
@@ -179,6 +183,26 @@ la **matriz inherente** muestra cada riesgo antes de aplicar controles y la **ma
 **Qué depende:** la pantalla de exclusiones (MD-144).
 
 ---
+
+## P25 · Quién valida los atributos de una evidencia y cómo se relaciona con el veredicto del consultor
+
+**Estado:** abierto desde 2026-10-14 (MD-108). La regla del comité valora **seis atributos por evidencia** y dice que solo una evidencia «validada por un revisor humano» puede cumplir (RN-01 a RN-03, `modelo-datos.md` §9). No dice **quién** es ese revisor.
+Hoy hay tres actos que se parecen: la empresa **aprueba** lo que sube (`validation_status`, solo `admin_empresa`); alguien **valida** sus atributos (`review = human_validated`); y el consultor da el **veredicto** de un test documental (D64, R-03).
+
+1. **¿Quién marca los seis atributos y la validación humana de cada evidencia?** *Recomendación: el consultor, que prepara a la empresa; la empresa solo aporta y aprueba lo suyo.*
+2. **¿Validar las evidencias de un test documental es lo mismo que dar su veredicto, o son dos pasos?** *Recomendación: es el mismo acto; el endpoint de veredicto queda para los tests manuales sin archivo.*
+
+**Qué depende:** `PATCH /v1/evidence-submissions/{id}/review` y el veredicto de MD-155 (`contracts/modules/compliance-audit.md`), y cómo se calcula un test documental con datos reales.
+
+## P26 · Quién define el período auditado y la fecha de corte de una evaluación
+
+**Estado:** abierto desde 2026-10-14 (MD-108). El motor no ejecuta sin los cinco datos de la evaluación: servicio, marco, versión, **período auditado** y **fecha de corte** (REQ-004, §9). `service_frameworks` tiene `period_start`, `period_end` y `cutoff_date`,
+pero ningún formulario ni endpoint los llena: el onboarding solo pide un `evaluation_period` de texto.
+
+1. **¿Quién declara el período auditado y cuándo?** *Recomendación: `admin_empresa`, al contratar el marco o crear el servicio; editable mientras no se haya emitido una evaluación, y el consultor puede corregirlo.*
+2. **¿La fecha de corte es «hoy» mientras se monitorea y se congela al emitir una evaluación del consultor o del auditor?** *Recomendación: sí; así cada evaluación dice sobre qué datos se hizo.*
+
+**Qué depende:** el resumen del servicio (MD-137), las evaluaciones del consultor y del auditor (MD-155) y la vigencia de las exclusiones (MD-144). Mientras tanto la API responde `not_measured` y `409 EVALUATION_NOT_DEFINED`.
 
 ---
 

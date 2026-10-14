@@ -25,6 +25,7 @@ erDiagram
         uuid control_id FK "nullable: null si lo creo el cliente"
         uuid service_id FK
         string own_code "C01"
+        string name "nullable: solo en un control propio; en uno del catalogo sale de controls.name (D79)"
         enum trust_criterion "nullable: la categoria de un control propio, la elige el cliente"
         text client_interpretation
         enum type
@@ -237,6 +238,9 @@ erDiagram
         uuid evidence_requirement_id FK
         uuid submitted_by FK
         uuid approved_by FK "solo admin_empresa"
+        datetime submitted_at "D79"
+        datetime approved_at "nullable, D79"
+        text decision_note "nullable, obligatoria al rechazar (D79)"
         string file_path
         string file_type
         int file_size
@@ -258,7 +262,12 @@ erDiagram
         uuid test_id FK
         uuid asset_id FK "nullable: si excluye un activo de ese test (D68, REQ-008)"
         uuid proposed_by FK "admin_empresa"
-        uuid approved_by FK "consultor"
+        uuid decided_by FK "nullable, el consultor (antes approved_by, D79)"
+        enum status "pending|approved|rejected (D79)"
+        datetime requested_at "D79"
+        datetime decided_at "nullable"
+        text decision_note "nullable, obligatoria al rechazar"
+        text technical_justification "nullable, obligatoria si el test es automatico"
         string excluded_check_id "nullable: si excluye un check"
         text justification
         date valid_from

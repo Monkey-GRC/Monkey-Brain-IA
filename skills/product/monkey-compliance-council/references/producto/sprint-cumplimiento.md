@@ -17,7 +17,7 @@ cambios con aprobación), §7.5 (el veredicto) y §7.6 (las observaciones).
 
 | Épico | Tickets |
 |---|---|
-| Fundación (MD-101) | MD-108 contratos · MD-109 glosario · MD-110 almacenamiento de evidencias · MD-113 rastro de auditoría (listo) · MD-114 idiomas en Platform · MD-115 componentes compartidos |
+| Fundación (MD-101) | MD-108 contratos (escritos en `contracts/modules/compliance-*.md`) · MD-109 glosario · MD-110 almacenamiento de evidencias · MD-113 rastro de auditoría (listo) · MD-114 idiomas en Platform · MD-115 componentes compartidos |
 | Acciones de protección (MD-102) | MD-117 listar y ver · MD-118 proponer edición o baja · MD-150 proponer un control propio |
 | Riesgos y causas (MD-103) | MD-122 riesgos y causas · MD-123 evaluación 5×5 y tratamiento |
 | Evidencias (MD-104) | MD-126 subir · MD-127 aprobar o rechazar · MD-128 Descripción del Sistema como archivo (listo) |
@@ -72,4 +72,4 @@ responder una observación desde la empresa, la pantalla de aprobación de cambi
 
 ## Preguntas abiertas que tocan este sprint
 
-`modelo-datos-pendientes.md`: **P3** (permisos por pantalla), y **P22** (lo que falta para calcular el riesgo).
+`modelo-datos-pendientes.md`: **P3** (permisos por pantalla), **P22** (lo que falta para calcular el riesgo), **P24** (quién aprueba una exclusión sin consultor), **P25** (quién valida una evidencia) y **P26** (período y fecha de corte de una evaluación).
