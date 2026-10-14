@@ -19,8 +19,8 @@ Lo que sigue abierto, con lo más urgente arriba. 🚧 bloquea trabajo · ⚠️
 | [P2](#p2--el-flujo-de-la-clave-de-acceso--5-detalles-sin-definir) | El flujo de la clave de acceso: 5 detalles sin definir (urgentes: a y c) | ⚠️ Condiciona la pantalla de canje (hoy hecha como código a mano, D51) | — |
 | [P9](#p9--datos-del-excel-que-hay-que-corregir-o-confirmar) | Datos del Excel que hay que corregir o confirmar | ⚠️ La dimensión Aplicación del cálculo y las causas que ve el cliente | — |
 | [P21](#p21--el-uso-de-los-logos-de-marcas-de-terceros) | El uso de los logos de marcas de terceros en el marketplace | ⚠️ Publicar el marketplace con logos a clientes reales; no bloquea construirlo | 2026-10-10 |
-| [P23](#p23--cómo-se-guarda-y-se-muestra-la-evaluación-del-consultor-y-la-del-auditor) | Cómo se guarda y se muestra la evaluación del consultor y la del auditor | ⚠️ Las pantallas de veredicto del consultor (MD-155) y la evaluación del auditor | 2026-10-10 |
-| [P22](#p22--motor-de-evaluación-las-diez-decisiones-que-el-excel-deja-abiertas) | Motor de evaluación: las diez decisiones que el Excel deja abiertas | ⚠️ Los parámetros del motor (errores, vigencia); 🚧 el riesgo residual (MD-151, fuera del sprint) | 2026-10-10 |
+| [P22](#p22--motor-de-evaluación-lo-que-falta-para-calcular-el-riesgo) | Motor de evaluación: lo que falta para calcular el riesgo | 🚧 El riesgo residual y las dos matrices (MD-151, fuera del sprint); ⚠️ la periodicidad de los controles | 2026-10-10 |
+| [P24](#p24--quién-aprueba-una-exclusión-si-la-empresa-no-tiene-consultor) | Quién aprueba una exclusión si la empresa no tiene consultor | ⚠️ La pantalla de exclusiones (MD-144) | 2026-10-13 |
 | [P13](#p13--ratificar-lo-que-desarrollo-decidió-en-las-correcciones-del-2026-10-05-d50-d51) | Ratificar lo que desarrollo decidió el 2026-10-05 (D50, D51) | No bloquea: está construido y funcionando | 2026-10-06 |
 | [P15](#p15--cómo-se-mapean-los-checks-de-nube-que-quedan-fuera) | Cómo se mapean los checks de nube que quedan fuera | No bloquea: lo no mapeado no cuenta hasta responder | 2026-10-08 |
 
@@ -143,35 +143,42 @@ tienen guías de uso: logo oficial sin modificar, espacio libre mínimo, a veces
 
 **Qué depende:** los logos de `Frontend-Platform` (`logo_key`, D67) y la publicación del marketplace.
 
-## P22 · Motor de evaluación: las diez decisiones que el Excel deja abiertas
+## P22 · Motor de evaluación: lo que falta para calcular el riesgo
 
-**Estado:** abierto desde 2026-10-10 (D68). La hoja `MODELO EVALUACIÓN MONKEY` de la VF2 las lista en su último bloque como «**decisiones pendientes para el equipo Monkey (antes de programar)**»: no son una
-pregunta al comité, las resuelve el equipo (y lleva al comité lo que necesite su criterio funcional). Esa hoja la generó una IA a pedido de quien manejaba el libro (su bitácora, `Claude Log`), así que son lo que quedó sin
-resolver, no puntos que el comité haya querido discutir a propósito. **Mientras no se respondan, el motor las deja como parámetros y no fija ningún valor** (REQ-039: nada de umbrales ni apetito escritos en el código).
+**Estado:** abierto desde 2026-10-10; revisado a fondo contra el Excel el 2026-10-13 (D76). De las diez «decisiones pendientes» del prototipo, **siete están cerradas** (D74, D75, D76) y lo que sigue abierto son **tres datos y una entrega**.
+Solo afectan al **motor de riesgos** (MD-151, fuera del sprint); el cálculo del cumplimiento (§9) no depende de ellas.
 
-1. **Metodología del riesgo residual.** Propuesta del comité (sin aprobar): cada control efectivo baja la probabilidad o el impacto, con un tope (máximo 2 puntos en probabilidad y 1 en impacto). ¿Se aprueba, y el diseño o solidez del control pondera la reducción?
-2. **Apetito de riesgo.** El ejemplo usa 9 sobre 25. ¿Es por servicio, por criterio o global, y quién lo aprueba?
-3. ~~**Política de exclusiones de activos.**~~ **Cerrada (D74):** la propone el consultor, la aprueba la empresa y vence con el período (A3).
-4. **Error técnico.** ¿Cuántos reintentos, con qué plazo, y cuándo escala a `PENDIENTE` o a `NO CUMPLE`? (REQ-012.)
-5. **Vigencia de las evidencias y cada cuánto se repite cada test** (continuous compliance). Al vencer, el estado pasa solo a `VENCIDO`. (REQ-046.)
-6. **El rol de la IA con los documentos.** ¿Qué umbral de confianza para sugerir? La confirmación humana ya está decidida: siempre. (REQ-047, prioridad LATER.)
-7. ~~**Controles vencidos.**~~ **Cerrada (D74):** `NO CUMPLE`, como dice el comité, y es un parámetro.
-8. **Probabilidad e impacto inherentes** de los 10 riesgos: la hoja `Riesgos` los trae **vacíos** y el prototipo usa valores de ejemplo. D33 había dicho que los llena el cliente; el comité pide diligenciarlos. ¿Quién?
-9. **Relación causa–control completa.** Solo hay 4 causas de las 56 (F025, F029, F038, F031) con su efecto (probabilidad o impacto) y si el control es obligatorio. Falta el resto del catálogo.
-10. **Versionado.** ¿Cuándo un cambio de test o de control invalida un resultado reutilizado (alcance, período y versión equivalentes)? (REQ-045.)
+**Vocabulario del comité** (D76): *riesgo* es la probabilidad y el impacto de que algo ocurra o se pierda si alguien lo materializa · *causa* es aquello por lo que el riesgo se materializa · *control* es el paso a paso que lo evita o lo mitiga ·
+la **matriz inherente** muestra cada riesgo antes de aplicar controles y la **matriz residual**, después. **Las matrices son la lectura de la evolución, no el criterio de mitigación**: eso lo dicen los controles y sus tests.
 
-**Qué depende:** el riesgo residual, el apetito y el mapa de calor (MD-151) esperan las respuestas 1, 2, 8 y 9; los errores (4) condicionan MD-138 y la vigencia (5) el estado de un control. La política de exclusiones (3, MD-144) y los controles vencidos (7) ya están cerrados (D74).
+**1. De cada relación causa–control, ¿el control es obligatorio y reduce la probabilidad o el impacto?** *(decisión 9; es lo único que bloquea el riesgo residual)*
+*Lo que ya está:* la hoja `Causas`, columna «Controles_Aplicables», tiene **las 56 causas con sus controles: 209 relaciones**. Eso está completo.
+*Lo que falta:* para cada una de esas 209, dos datos que la fórmula necesita: si el control es **obligatorio** para esa causa, y si al funcionar hace el riesgo **menos probable** o **menos grave**. Hoy solo lo tienen las **9** del ejemplo del prototipo (bloque G).
+*Por qué importa:* sin el efecto, la fórmula del residual (D75) no puede aplicarse a casi ningún riesgo.
 
-## P23 · Cómo se guarda y se muestra la evaluación del consultor y la del auditor
+**2. ¿Cada cuánto se reevalúa cada control, y puede bajarse la frecuencia de lo automático?** *(decisión 5)*
+*Lo que ya está:* la regla, que el comité confirmó: **manda la periodicidad del control** (si se revisa cada 3 meses, sus checks se evalúan cada 3 meses); las comprobaciones automáticas corren con la frecuencia de su conexión (`AC-01` cada 6-24 h, el resto continuas). El período de prueba de cada test está en `Pruebas` columna I.
+*Lo que falta:* la periodicidad **no es un campo del catálogo**: está en prosa, en la descripción de **18 de los 119 controles**. Hace falta como **columna por control** para poder programarla. Y una respuesta a la objeción de desarrollo: **reevaluar a diario todo lo automático genera una carga alta** de peticiones sobre la infraestructura del cliente y sobre la sonda; ¿se puede bajar esa frecuencia por control o por conexión?
 
-**Estado:** abierto desde 2026-10-10 (D68). Lo planteó el responsable de producto: el consultor y el auditor **hacen cada uno una evaluación del cumplimiento sobre los mismos datos, con distinto enfoque** (el consultor prepara a la
-empresa, el auditor certifica, D63 y D64). El Excel del comité no la contempla. Hoy el consultor da el veredicto de los tests documentales y manuales (§7.5) y el auditor solo escribe observaciones (§7.6).
+**3. ¿Quién fija y aprueba el apetito de riesgo?** *(decisión 2)*
+*Lo que ya está:* el valor inicial, **9 sobre 25**, que propone el comité y ya usamos (D75); y para qué sirve: leer la matriz residual, no declarar un riesgo mitigado (D76).
+*Lo que falta:* quién lo fija y quién lo aprueba — ¿Monkey para todos, cada empresa o cada servicio? — y si cambia según el tipo de riesgo.
 
-1. **¿La evaluación del auditor es un resultado aparte** (su opinión o certificado, que se muestra al lado) **o puede cambiar el estado** que ve el cliente? *Recomendación: aparte; el estado solo lo mueven los datos.*
-2. **¿La evaluación del consultor es solo por test, como hoy, o también un veredicto general** («lista» o «no lista») por servicio y marco? *Recomendación: agregar el general.*
-3. ¿Se registran con la **evaluación del servicio** (servicio + marco + versión + período + fecha de corte) para que cada una diga sobre qué datos se hizo?
+**Lo que el comité va a entregar** *(no son preguntas; se espera el archivo)*
+- **Un Excel con el detalle completo de la fórmula de cumplimiento**, entre el **14 y el 15 de octubre de 2026**. Hasta recibirlo no se construye el motor de riesgos; si contradice algo de §9, manda ese archivo.
+- **Los criterios** que guíen al cliente al poner la probabilidad y el impacto de cada riesgo (decisión 8). Quién los pone ya está decidido: **el cliente** (D33, D76), y las escalas de 1 a 5 ya están descritas en la hoja `Riesgos`.
 
-**Qué depende:** la pantalla del veredicto del consultor (MD-155), las observaciones (MD-154) y la evaluación del auditor, que aún no tiene ticket.
+**Qué depende:** el riesgo residual y las dos matrices (MD-151) esperan el dato 1 y el Excel que viene. La periodicidad (2) condiciona cuándo se marca algo vencido y la carga sobre la sonda.
+
+## P24 · Quién aprueba una exclusión si la empresa no tiene consultor
+
+**Estado:** abierto desde 2026-10-13 (D78). La empresa propone excluir un activo y la aprueba el consultor. Pero el consultor lo asigna `admin_monkey` y una empresa puede no tener ninguno todavía, o haberlo suspendido.
+
+1. **Mientras no haya consultor, ¿la exclusión espera** (no cuenta hasta que lo haya) **o la puede aprobar otro rol**? *Recomendación: espera; el activo sigue contando. Una exclusión sin quien la apruebe no puede cambiar el resultado.*
+
+**Qué depende:** la pantalla de exclusiones (MD-144).
+
+---
 
 ---
 
@@ -204,3 +211,4 @@ Se quedan aquí como referencia; el detalle de cada una está en la decisión qu
 | **P18** | Una categoría sin nada medido, y la cobertura | 2026-10-09 — D62: no está lograda y cuenta en el denominador; la cobertura es siempre un número aparte *(D68: una categoría sin nada medido queda «en evaluación» y no cumple; la cobertura sigue aparte)* |
 | **P19** | Un consultor que atiende a varias empresas, con el correo único | 2026-10-09 — D64: una sola cuenta de Next que asigna `admin_monkey` a varias empresas |
 | **P20** | Quién reactiva a un consultor que la empresa suspendió | 2026-10-09 — D64: solo la empresa |
+| **P23** | Cómo se guarda y se muestra la evaluación del consultor y la del auditor | 2026-10-13 — D77: la del auditor va aparte y no cambia el estado; el consultor suma un veredicto general; ambas ligadas a la evaluación del servicio |

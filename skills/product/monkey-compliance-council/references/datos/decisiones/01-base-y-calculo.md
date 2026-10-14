@@ -30,7 +30,7 @@ Implica una tabla puente `service_assets` y que el activo cuelgue de la
 **organización**, no del scope de un solo servicio (§6.3).
 
 **A3 · La exclusión la propone el consultor y la aprueba el cliente; vence con el
-periodo de evaluación.**
+periodo de evaluación.** *(D78, 2026-10-13: quién propone y quién aprueba se invirtió: la propone la empresa y la aprueba el consultor. La vigencia y lo demás siguen igual.)*
 Tres fuentes convergen: el catálogo de TEST ya trae el *tratamiento de excepciones*
 paso a paso; el desglose SOC 2 dice que en lo automático *"es preferible no hacerlo"*;
 y el RBAC hace de *aprobar evidencia* un permiso **exclusivo de `admin_empresa`**. Una

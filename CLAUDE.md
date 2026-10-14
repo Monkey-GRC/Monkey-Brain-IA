@@ -50,8 +50,9 @@ Fuera de `references/`:
 - **El Control es atómico e independiente del marco.** Se vincula a Requisitos; los Requisitos
   pertenecen a un marco. Nunca cuelgues un control (ni sus tests, evidencias o medición) de un framework.
 - **El cumplimiento de un marco se deriva** recorriendo requisitos → controles. Nunca se almacena
-  como atributo del marco. Se **cuenta**, no se promedia: dimensión → control → categoría → marco,
-  y cada nivel se cumple solo al 100% (`modelo-datos.md` §9).
+  como atributo del marco. Se **cuenta**, no se promedia: activo → test → control → categoría → marco,
+  «todo o nada» en cada nivel, y **lo pendiente no cuenta como cumplido** (`modelo-datos.md` §9, D68).
+  El porcentaje es el **avance**: informa, nunca decide el cumplimiento.
 
 ## Reglas de producto (de `philosophy.md`; ya se violaron una vez)
 

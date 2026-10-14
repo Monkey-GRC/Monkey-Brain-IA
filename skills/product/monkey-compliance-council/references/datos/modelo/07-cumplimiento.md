@@ -153,6 +153,17 @@ erDiagram
         uuid tenant_id FK
         uuid client_cause_id FK
         uuid client_control_id FK
+        boolean is_mandatory "D75"
+        enum effect "probability|impact (D75)"
+    }
+    residual_parameters {
+        uuid id PK
+        uuid tenant_id FK
+        uuid service_id FK "nullable: por servicio o global, aun abierto (P22)"
+        int max_probability_reduction "2 por defecto (D75)"
+        int max_impact_reduction "1 por defecto"
+        int risk_appetite "9 de 25 por defecto"
+        enum status "proposed|approved"
     }
     mitigations {
         uuid id PK
@@ -193,7 +204,7 @@ erDiagram
 **Cada cliente trabaja sobre su propia copia** (decisión D28). Al crearse `service_frameworks`
 se copian los riesgos y causas base a `client_risks` y `client_causes` **de ese servicio**, con
 sus relaciones (`client_risk_causes` replica `risk_causes`; `client_cause_controls` replica
-`cause_controls` pero apuntando al control **del cliente**, `client_controls`, que es el que él
+`cause_controls` (con `is_mandatory` y `effect`, D75) pero apuntando al control **del cliente**, `client_controls`, que es el que él
 particulariza). `risk_id` / `cause_id` guardan la plantilla de origen —para que una actualización
 del catálogo sepa a quién afecta (§3.5)— y son `null` en lo que el cliente creó desde cero.
 
@@ -246,8 +257,8 @@ erDiagram
         uuid id PK
         uuid test_id FK
         uuid asset_id FK "nullable: si excluye un activo de ese test (D68, REQ-008)"
-        uuid proposed_by FK "consultor"
-        uuid approved_by FK "cliente"
+        uuid proposed_by FK "admin_empresa"
+        uuid approved_by FK "consultor"
         string excluded_check_id "nullable: si excluye un check"
         text justification
         date valid_from
@@ -274,7 +285,7 @@ plantilla, `sequence` = su orden en el control y `validity_within_period` = el p
 **La evidencia es válida si cae dentro del periodo de evaluación** del marco (decisión C1), no
 por una fecha de caducidad fija.
 
-**La exclusión la propone el consultor (rol `consultor`) y la aprueba el cliente (`admin_empresa`), y vence** (decisión A3). Una
+**La exclusión la propone la empresa (`admin_empresa`) y la aprueba el consultor (rol `consultor`), y vence** (D78, que invirtió A3). Una
 exclusión sin justificación aprobada no cambia el denominador — y un check que sale por
 omisión es un agujero, no una exclusión.
 
@@ -381,8 +392,28 @@ vida propia no entra al MVP.
 La IA evalúa evidencia, sugiere una conclusión y recomendaciones; **nunca da el veredicto**. El veredicto de un test documental o manual lo da el
 **consultor** (`evaluations.confirmed_by`), y si lo da con observaciones abiertas se documenta la razón (`evaluations.closure_observation_reason`).
 
-**El consultor y el auditor evalúan el cumplimiento con distinto enfoque** (D68): el consultor **prepara** a la empresa y el auditor **certifica**, cada uno sobre los mismos datos. Hoy el consultor da el veredicto de los
-tests documentales y manuales (arriba) y el auditor escribe observaciones (§7.6). Cómo se guarda y se muestra la evaluación de cada uno, y si cambia o no el estado calculado (§9), está abierto: `P23`.
+**El consultor y el auditor evalúan el cumplimiento con distinto enfoque** (D68, D77): el consultor **prepara** a la empresa y el auditor **certifica**, cada uno sobre los mismos datos.
+Cada uno emite su evaluación del servicio en `framework_assessments`, ligada a la evaluación del servicio (`service_frameworks`: servicio + marco + versión + período + fecha de corte):
+
+```mermaid
+erDiagram
+    framework_assessments {
+        uuid id PK
+        uuid tenant_id FK
+        uuid service_framework_id FK "la evaluación del servicio sobre la que opina"
+        enum assessor_role "consultor|auditor"
+        enum verdict "ready|not_ready (consultor) · certified|not_certified (auditor)"
+        text rationale "obligatoria"
+        uuid issued_by FK
+        datetime issued_at
+    }
+    service_frameworks ||--o{ framework_assessments : "recibe"
+```
+
+- **Cada rol emite solo la suya** (`SEG-56`): el consultor, `ready`/`not_ready` («lista» o «no lista para la auditoría»); el auditor, `certified`/`not_certified`.
+- **No cambia el estado calculado** (§9): se muestra al lado. La del auditor es su opinión; el estado lo mueven solo los datos medidos.
+- **Inmutable una vez emitida**: para cambiarla se emite otra, y la vigente es la última de ese rol sobre esa evaluación. Se escribe en la misma transacción que la acción (`audit_logs`, D52).
+- El veredicto **por test** del consultor sigue en `evaluations.confirmed_by`; este es el general.
 
 ### 7.6 Las observaciones
 

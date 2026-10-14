@@ -59,7 +59,7 @@ Por cada dimensión de un control se define:
   un porcentaje puede cerrar un control por sí solo.
 
 **De dónde salen (D39):** el catálogo solo trae las dimensiones que **aplican** (las que tienen al menos una
-prueba del control; 210 filas, ninguna de `app`), con el tipo y las banderas derivados de sus pruebas. Una
+prueba del control; 210 filas, ninguna de `app`), con el tipo y las banderas derivados de sus pruebas. **Esa cifra no coincide con las que define el comité** en `Controles Monkey` L a P (191): `DT-69`. Una
 dimensión que no aplica se declara en el escenario del cliente (`client_control_dimensions`) con su
 `reason_not_applicable`.
 

@@ -323,6 +323,8 @@ erDiagram
         uuid id PK
         uuid cause_id FK
         uuid control_id FK
+        boolean is_mandatory "si es No, no cuenta para mitigar la causa (D75)"
+        enum effect "probability|impact; sin efecto no participa del residual"
     }
     risks ||--o{ risk_causes : "originado por"
     causes ||--o{ risk_causes : "origina"
