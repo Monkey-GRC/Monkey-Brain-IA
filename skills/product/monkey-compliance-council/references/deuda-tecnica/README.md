@@ -87,9 +87,7 @@ Limitan el producto o al equipo.
 | [DT-60](control-tecnico.md#dt-60--sin-límite-de-uso-ni-cola-justa-en-la-comprobación-y-la-evaluación) | Sin límite de uso ni cola justa en la comprobación y la evaluación | [Control técnico](control-tecnico.md) |
 | [DT-61](control-tecnico.md#dt-61--las-llaves-base-de-aws-identidad-monkey-audit-son-de-larga-vida-y-viven-en-varios-sitios) | Las llaves base de AWS (identidad `monkey-audit`) son de larga vida y viven en varios sitios: | [Control técnico](control-tecnico.md) |
 | [DT-63](control-tecnico.md#dt-63--un-activo-descubierto-no-se-puede-editar) | Un activo descubierto no se puede editar | [Control técnico](control-tecnico.md) |
-| [DT-65](transversal.md#dt-65--el-calculador-de-cumplimiento-del-backend-compliancecalculatorts-promedia-porcentajes) | El calculador de cumplimiento del Backend (`compliance.calculator.ts`) promedia porcentajes | [Transversal](transversal.md) |
 | [DT-66](control-tecnico.md#dt-66--el-estado-de-preparación-de-un-activo-se-calcula-por-severidad) | El estado de preparación de un activo se calcula por severidad | [Control técnico](control-tecnico.md) |
-| [DT-67](transversal.md#dt-67--el-backend-conserva-custom_roles) | El Backend conserva `custom_roles` | [Transversal](transversal.md) |
 | [DT-69](control-tecnico.md#dt-69--las-dimensiones-de-cada-control-no-coinciden-con-las-que-define-el-comité) | Las dimensiones de cada control no coinciden con las que define el comité | [Control técnico](control-tecnico.md) |
 
 ### 🟡 Mejoras

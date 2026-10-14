@@ -292,17 +292,17 @@ nuevo manda estos cuatro en minúscula; la API expone los del modelo.
 
 ### `audit_observation_status` — `audit_observations.status`
 `open` Abierta · `answered` Respondida · `closed` Cerrada. `admin_empresa` o el `funcional` dueño del control la pasan a `answered`; solo quien la escribió (`auditor` o `consultor`) la cierra o la devuelve a `open`.
-*(Los endpoints de observaciones no tienen contrato todavía: DT-67.)*
+*(Los endpoints de observaciones no tienen contrato todavía: se acuerda en MD-108 antes de MD-154.)*
 
 ### `control_change_type` — `client_control_changes.change_type`
 `create` Crear un control propio · `retire` Dar de baja · `edit_dimensions` Editar dimensiones · `edit_interpretation` Editar interpretación
 
 ### `control_change_status` — `client_control_changes.status`
 `pending` Pendiente · `approved` Aprobado · `rejected` Rechazado. Solo el `consultor` decide.
-*(Sin contrato todavía: DT-67.)*
+*(Sin contrato todavía: se acuerda en MD-108 antes de MD-156.)*
 
 ### `consultant_assignment_status` — `consultant_assignments.status`
-`active` Activa · `suspended` Suspendida por la empresa · `revoked` Retirada por Monkey. *(Sin contrato todavía: DT-67.)*
+`active` Activa · `suspended` Suspendida por la empresa · `revoked` Retirada por Monkey. *(La tabla está construida (MD-157); sus endpoints no tienen contrato todavía: MD-159 y MD-161.)*
 
 ### `user_status` — `users.status`
 `active` Activo · `inactive` Inactivo · `suspended` Suspendido

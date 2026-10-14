@@ -52,22 +52,6 @@ Lo que no pertenece a un solo módulo (pruebas, CI, auditoría, traducciones, en
 - **Por qué:** Se heredó; subir de versión mezclado con otro cambio habría ensuciado el lock y el despliegue
 - **Qué lo cierra:** Un PR aparte: Node 22 en `Dockerfile`, `ci.yml` y `.nvmrc`, regenerando el lock con esa versión. Probar las pruebas de aislamiento y el trabajador antes de mergear
 
-### DT-65 · El calculador de cumplimiento del Backend (`compliance.calculator.ts`) promedia porcentajes
-
-🟠 Importante
-
-- **Qué está parchado:** y no aplica las reglas del comité de `modelo-datos.md` §9 (D68): estados por nivel, «todo o nada», lo pendiente que bloquea, el marco sobre controles únicos. Promedia porcentajes y no tiene los estados nuevos (vencido, error, incompleto…)
-- **Por qué:** Se construyó antes de D62 y de D68
-- **Qué lo cierra:** Escribir el motor como funciones puras probadas con los 8 casos del comité, las simulaciones 1 a 6 y las validaciones V01 a V15 (MD-138, MD-139); el Excel de la fórmula del 9 de octubre queda superado por la VF2
-
-### DT-67 · El Backend conserva `custom_roles`
-
-🟠 Importante
-
-- **Qué está parchado:** (y `users.custom_role_id`), que el modelo no contempla (D64); su enum de roles no tiene `consultor`; y su tabla `auditor_assignments` debe volverse `consultant_assignments` (asignada por `admin_monkey`, suspendible por la empresa). La vista técnica (`view=technical`) no está restringida a `auditor` y `consultor` (SEG-54) y no existe la elección de empresa del consultor (SEG-55). No hay contrato de los endpoints de observaciones (§7.6) ni de los cambios de controles (§7.1)
-- **Por qué:** Se construyó antes de D63
-- **Qué lo cierra:** Migración que retire la tabla y la excepción de RLS, `@Roles('auditor')` en la vista técnica, y acordar los contratos de `audit_observations` y `client_control_changes` antes de construirlos
-
 ### DT-47 · Los cierres automáticos de sesión no dejan rastro
 
 🟡 Mejora
