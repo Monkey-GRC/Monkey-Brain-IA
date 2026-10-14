@@ -37,7 +37,7 @@ Lista paginada. Se omiten los dados de baja. Un servicio recién clonado trae un
 | `approval` | `approved` · `pending` · `rejected` (solo tiene sentido en un control propio) |
 | `assigned_to` | `uuid` de un usuario con cuenta |
 | `origin` | `catalog` · `own` |
-| `page`, `page_size`, `sort` | convenciones; `sort` por defecto `own_code` |
+| `page`, `page_size`, `sort` | convenciones; `sort` acepta `own_code` (por defecto, ordenado por su número: `C2` antes que `C10`), `-own_code`, `name` y `-name` |
 
 ```json
 {
@@ -144,7 +144,7 @@ El detalle de una acción. Mismas reglas de acceso que la lista.
 - `dimensions` lista **todas las que el control exige**; una que no aplica **se declara con su motivo**, nunca se omite.
 - `interpretation.is_customized` es `true` si la empresa la reescribió; si no, es el texto del catálogo.
 - `failing` dice **en qué falla**, por dimensión, con el activo o la prueba afectados (`kind`: `asset` · `test`, y un `display_name` en vez de `name` cuando es una prueba). Nunca el texto de la prueba.
-- Con `?view=technical` agrega `technical` (los mismos campos de la lista y, además, `tests`: el resumen de `compliance-audit.md`).
+- Con `?view=technical` agrega `technical` (los mismos campos de la lista y, además, `tests`: `[ { "test_code": "T-CLD-001", "display_name": "Prueba de nube", "dimension": "cloud", "state": "compliant" } ]`, con `state` = `test_state`). El detalle completo de los tests está en `compliance-audit.md`.
 
 ## `POST /v1/services/{service_id}/controls` — crear un control propio
 
@@ -343,6 +343,16 @@ Todos con el mismo sobre (`conventions.md`); `message` es la clave i18n del erro
 | `client_control_change.decide` | el consultor aprueba o rechaza (con `before_state`/`after_state` del control cuando se aplica) | `consultor` |
 
 Aprobar un cambio que altera lo que se mide deja además un `compliance_events` en la misma transacción.
+
+## Estado de implementación
+
+**Construido: MD-117** (listar y ver; 2026-10-14). Crear un control propio (MD-150), proponer y decidir cambios (MD-118, MD-156) **no**.
+
+- Lo que sale **hoy** con valores fijos, porque las tablas que los calculan aún no existen (`DT-71`): `approval` es siempre `approved`, `has_pending_change` es `false`, `origin` es siempre `catalog`.
+- `display_name` de una prueba es el nombre neutro que escribe Monkey (D70); mientras una prueba no lo tenga, sale un texto genérico de su dimensión («Prueba de nube», «Revisión documental»…). **Nunca** el nombre del comité.
+- **Sin resultados guardados todo sale «Sin medir».** El paso de lo que mide la sonda a `evaluations` no está construido (`DT-50`): una acción sube de «Sin medir» en cuanto existan evaluaciones de su test sobre los activos del servicio.
+- Un test de la dimensión documental cuenta siempre como pendiente hasta que se guarde su veredicto o la validación de sus evidencias (`P25`).
+- El `consultor` solo puede leer la empresa donde trabaja cuando exista la elección de empresa al iniciar sesión (MD-160); hasta entonces, los datos de un cliente los lee el `auditor`.
 
 ## Preguntas abiertas
 
