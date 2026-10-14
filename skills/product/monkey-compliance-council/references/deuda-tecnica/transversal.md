@@ -113,9 +113,9 @@ Lo que no pertenece a un solo módulo (pruebas, CI, auditoría, traducciones, en
 
 🟠 Importante
 
-- **Qué está parchado:** `ControlPrismaRepository` marca todo test vinculado a un control como obligatorio y vigente, porque `client_control_tests` aún no guarda esos datos (D68); `approval` y `has_pending_change` salen fijos (`approved`, `false`), porque no existen `client_control_changes` ni los controles propios; y un test documental cuenta siempre como pendiente, porque las evidencias no guardan los atributos que lo deciden (`P25`)
-- **Por qué:** MD-117 se construyó antes que MD-118, MD-150 y la validación de evidencias
-- **Qué lo cierra:** la migración de `client_control_tests` (obligatorio, vigente, fechas) con la desactivación controlada; MD-118 y MD-150 (cambios y control propio); y `P25` con su endpoint. Cada uno reemplaza su valor fijo en `control.prisma.repository.ts` y `control-readout.ts`
+- **Qué está parchado:** `ControlPrismaRepository` marca todo test vinculado a un control como obligatorio y vigente, porque `client_control_tests` aún no guarda esos datos (D68); y un test documental cuenta siempre como pendiente, porque las evidencias no guardan los atributos que lo deciden (`P25`)
+- **Por qué:** MD-117 se construyó antes que la desactivación controlada de tests y la validación de evidencias. *(2026-10-14: MD-118 y MD-150 ya reemplazaron los valores fijos de `approval` y `has_pending_change`.)*
+- **Qué lo cierra:** la migración de `client_control_tests` (obligatorio, vigente, fechas) con la desactivación controlada, y `P25` con su endpoint. Cada uno reemplaza su valor fijo en `control.prisma.repository.ts` y `control-readout.ts`
 
 ## Funcionalidad que el brain menciona y aún no tiene contrato
 

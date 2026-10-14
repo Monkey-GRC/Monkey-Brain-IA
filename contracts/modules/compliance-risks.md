@@ -86,7 +86,7 @@ Un riesgo **sin evaluar** trae `likelihood`, `impact`, `inherent_risk_value` e `
         "name": "Cuentas sin dueño tras una salida de personal",
         "failure_category": "human_resource",
         "controls": [
-          { "control_id": "3f1c…", "own_code": "C07", "name": "Gestión de accesos de usuarios", "is_mandatory": true, "effect": null }
+          { "control_id": "3f1c…", "own_code": null, "name": "Gestión de accesos de usuarios", "is_mandatory": true, "effect": null }
         ]
       }
     ]
@@ -136,7 +136,7 @@ Una causa tiene esta forma (los endpoints de la tabla devuelven este mismo objet
   "origin": "catalog",
   "is_active": true,
   "risks": [ { "id": "c1a7…", "code": "R001", "name": "Acceso no autorizado a información sensible" } ],
-  "controls": [ { "control_id": "3f1c…", "own_code": "C07", "name": "Gestión de accesos de usuarios", "is_mandatory": true, "effect": null } ]
+  "controls": [ { "control_id": "3f1c…", "own_code": null, "name": "Gestión de accesos de usuarios", "is_mandatory": true, "effect": null } ]
 }
 ```
 

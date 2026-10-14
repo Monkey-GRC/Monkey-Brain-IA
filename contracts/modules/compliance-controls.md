@@ -37,7 +37,7 @@ Lista paginada. Se omiten los dados de baja. Un servicio recién clonado trae un
 | `approval` | `approved` · `pending` · `rejected` (solo tiene sentido en un control propio) |
 | `assigned_to` | `uuid` de un usuario con cuenta |
 | `origin` | `catalog` · `own` |
-| `page`, `page_size`, `sort` | convenciones; `sort` acepta `own_code` (por defecto, ordenado por su número: `C2` antes que `C10`), `-own_code`, `name` y `-name` |
+| `page`, `page_size`, `sort` | convenciones; `sort` acepta `code` (por defecto: el código interno por prefijo y número, `IAC-2` antes que `IAC-10`, `C2` antes que `C10`), `-code`, `name` y `-name` |
 
 ```json
 {
@@ -47,7 +47,7 @@ Lista paginada. Se omiten los dados de baja. Un servicio recién clonado trae un
     "items": [
       {
         "id": "3f1c…",
-        "own_code": "C07",
+        "own_code": null,
         "name": "Gestión de accesos de usuarios",
         "origin": "catalog",
         "type": "hybrid",
@@ -61,7 +61,7 @@ Lista paginada. Se omiten los dados de baja. Un servicio recién clonado trae un
       },
       {
         "id": "9d44…",
-        "own_code": "C81",
+        "own_code": "C01",
         "name": "Revisión trimestral de proveedores",
         "origin": "own",
         "type": "manual",
@@ -79,7 +79,7 @@ Lista paginada. Se omiten los dados de baja. Un servicio recién clonado trae un
 }
 ```
 
-- `own_code` es la numeración **por servicio** (`C01`, `C02`…): la tiene todo control, del catálogo o propio. **No es el código técnico** del catálogo.
+- `own_code` es la numeración **por servicio de los controles propios** (`C01`, `C02`…) y es `null` en uno del catálogo: el código del catálogo (`IAC-12`) es técnico y solo viaja en `technical.control_code` (D63). Los controles del catálogo se ubican por su `name`.
 - `name` de un control del catálogo sale del catálogo (hoy solo en español); el de uno propio lo escribe la empresa.
 - `approval` de un control del catálogo es siempre `approved`. Un control propio **cuenta en el avance desde que se crea, aunque esté `pending`**; si se rechaza, se da de baja y deja de contar (D65).
 - `trust_criteria` es un array: un control del catálogo puede servir a varias categorías y **cuenta una sola vez** en el marco.
@@ -108,7 +108,7 @@ El detalle de una acción. Mismas reglas de acceso que la lista.
   "data": {
     "id": "3f1c…",
     "service_id": "55aa…",
-    "own_code": "C07",
+    "own_code": null,
     "name": "Gestión de accesos de usuarios",
     "origin": "catalog",
     "type": "hybrid",
@@ -159,7 +159,7 @@ Solo `admin_empresa`. Un control propio es **solo documental** (su única dimens
 }
 ```
 
-`dimensions` es opcional; si viene, solo puede ser `["policy"]`. Responde `201` con el mismo objeto del detalle, `approval: "pending"` y el `own_code` que el servidor asigna:
+`dimensions` es opcional; si viene, solo puede ser `["policy"]`. Responde `201` con el mismo objeto del detalle, `approval: "pending"` y el `own_code` que el servidor asigna (el siguiente libre del servicio):
 
 ```json
 {
@@ -168,7 +168,7 @@ Solo `admin_empresa`. Un control propio es **solo documental** (su única dimens
   "data": {
     "id": "9d44…",
     "service_id": "55aa…",
-    "own_code": "C81",
+    "own_code": "C01",
     "name": "Revisión trimestral de proveedores",
     "origin": "own",
     "type": "manual",
@@ -346,9 +346,12 @@ Aprobar un cambio que altera lo que se mide deja además un `compliance_events` 
 
 ## Estado de implementación
 
-**Construido: MD-117** (listar y ver; 2026-10-14). Crear un control propio (MD-150), proponer y decidir cambios (MD-118, MD-156) **no**.
+**Construido (2026-10-14):** MD-117 (listar y ver), MD-150 (crear un control propio) y MD-118 (proponer cambios y listarlos). **No** MD-156: decidir una propuesta, la bandeja `GET /v1/control-changes` y `PATCH /v1/control-changes/{id}`.
 
-- Lo que sale **hoy** con valores fijos, porque las tablas que los calculan aún no existen (`DT-71`): `approval` es siempre `approved`, `has_pending_change` es `false`, `origin` es siempre `catalog`.
+- `approval`, `has_pending_change` y `origin` salen de los datos: un control propio pendiente cuenta desde que se crea y una propuesta pendiente no cambia la acción.
+- `proposed_values` se guarda **normalizado**: en `edit_dimensions`, cada dimensión lleva `reason_not_applicable` (el motivo recortado si no aplica, `null` si aplica); en `edit_interpretation`, el texto recortado; `retire` guarda `{}`.
+- Una propuesta pendiente por tipo y por acción la impone la base (índice único parcial); una decidida lleva quién y cuándo, y rechazar exige motivo (restricciones de la base).
+- Crear un control propio deja, en la misma transacción, su rastro de auditoría y un evento de cumplimiento (cambia lo que se mide). Proponer un cambio deja solo el rastro: no cambia el estado hasta que se apruebe.
 - `display_name` de una prueba es el nombre neutro que escribe Monkey (D70); mientras una prueba no lo tenga, sale un texto genérico de su dimensión («Prueba de nube», «Revisión documental»…). **Nunca** el nombre del comité.
 - **Sin resultados guardados todo sale «Sin medir».** El paso de lo que mide la sonda a `evaluations` no está construido (`DT-50`): una acción sube de «Sin medir» en cuanto existan evaluaciones de su test sobre los activos del servicio.
 - Un test de la dimensión documental cuenta siempre como pendiente hasta que se guarde su veredicto o la validación de sus evidencias (`P25`).

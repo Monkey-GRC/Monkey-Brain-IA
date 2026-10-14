@@ -102,11 +102,14 @@ apuntan a `client_control_id`. `control_id` es la plantilla de origen y es nulo 
 **Un control propio es solo documental** (su única dimensión es `policy`, tipo `manual`) y **lo ubica el cliente en una categoría** (`trust_criterion`). No tiene
 punto de enfoque (el puente `point_of_focus_controls` es del catálogo): cuenta para el porcentaje de su categoría y del marco, pero no cierra ningún requisito (D65).
 
+**`own_code`** es el código del catálogo (`IAC-12`) en un control clonado y la numeración propia (`C01…`) en uno que creó la empresa; el código del catálogo es técnico y la API no lo muestra al cliente (solo en la vista técnica). Un control propio lleva además `name` y `trust_criterion` (D79).
+
 **Los cambios de controles los decide el consultor** (D65). Crear un control propio, darlo de baja y editar las dimensiones o la interpretación de un control —del
 catálogo o propio— son **propuestas** (`client_control_changes`) que la empresa hace y el consultor aprueba o rechaza:
 
 - **Crear:** el control existe desde que se propone y **cuenta en el porcentaje mientras está pendiente**. Si el consultor lo rechaza, se da de baja y deja de contar.
 - **Dar de baja y editar:** el control sigue como estaba (y contando) hasta que el consultor aprueba; entonces se aplica el cambio.
+- **Una propuesta pendiente por tipo y por control** (índice único parcial), y una decidida lleva quién y cuándo; rechazar exige motivo (restricciones de la base).
 
 ### 7.2 Riesgos del cliente y sus indicadores
 

@@ -18,7 +18,7 @@ cambios con aprobación), §7.5 (el veredicto) y §7.6 (las observaciones).
 | Épico | Tickets |
 |---|---|
 | Fundación (MD-101) | MD-108 contratos (escritos en `contracts/modules/compliance-*.md`) · MD-109 glosario · MD-110 almacenamiento de evidencias · MD-113 rastro de auditoría (listo) · MD-114 idiomas en Platform · MD-115 componentes compartidos |
-| Acciones de protección (MD-102) | MD-117 listar y ver (**construido**) · MD-118 proponer edición o baja · MD-150 proponer un control propio |
+| Acciones de protección (MD-102) | MD-117 listar y ver (**construido**) · MD-118 proponer edición o baja (**construido**) · MD-150 proponer un control propio (**construido**) |
 | Riesgos y causas (MD-103) | MD-122 riesgos y causas · MD-123 evaluación 5×5 y tratamiento |
 | Evidencias (MD-104) | MD-126 subir · MD-127 aprobar o rechazar · MD-128 Descripción del Sistema como archivo (listo) |
 | Responsables de la organización (MD-105) | MD-133 cargos en la API · MD-135 cargos en pantalla |

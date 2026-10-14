@@ -55,7 +55,7 @@ Un bloque por **marco contratado**. Dentro, solo las categorías **en alcance** 
             "failing_controls": [
               {
                 "control_id": "3f1c…",
-                "own_code": "C07",
+                "own_code": null,
                 "name": "Gestión de accesos de usuarios",
                 "readiness": "needs_work",
                 "failing": [
