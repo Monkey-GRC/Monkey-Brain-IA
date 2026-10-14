@@ -205,6 +205,8 @@ erDiagram
     client_risks ||--o{ risk_treatments : "se trata con"
 ```
 
+**El impacto potencial de un riesgo se guarda como el texto que trae el comité** (`["Reputacional", "Sanción regulatoria"]`), igual en el catálogo y en lo que crea la empresa; la API lo expone como valores `loss_type` (`contracts/enums.md`).
+
 **Cada cliente trabaja sobre su propia copia** (decisión D28). Al crearse `service_frameworks`
 se copian los riesgos y causas base a `client_risks` y `client_causes` **de ese servicio**, con
 sus relaciones (`client_risk_causes` replica `risk_causes`; `client_cause_controls` replica

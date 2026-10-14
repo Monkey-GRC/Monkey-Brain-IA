@@ -234,7 +234,8 @@ Solo `admin_empresa`. Agrega una decisión; la vigente es la última.
 | 404 | `NOT_FOUND` | El riesgo, la causa, la acción o el cargo no existen para esta empresa (incluye vincular algo de otra) |
 | 409 | `CODE_ALREADY_EXISTS` | `code` ya usado en el servicio |
 | 409 | `LINK_ALREADY_EXISTS` | El vínculo ya existe |
-| 409 | `RISK_INACTIVE` | Evaluar o tratar un riesgo dado de baja |
+| 409 | `RISK_INACTIVE` | Editar, vincular, evaluar o tratar un riesgo dado de baja |
+| 409 | `CAUSE_INACTIVE` | Editar o vincular una causa dada de baja |
 | 422 | `VALIDATION_FAILED` | Campos: `required`, `enum.invalid`, `number.range` (`likelihood`, `impact`), `date.past` (`due_date`), `array.min` |
 
 Claves i18n: `risk.list`, `risk.read`, `risk.created`, `risk.updated`, `risk.evaluated`, `risk_treatment.created`, `cause.*`.
@@ -299,6 +300,15 @@ Todos con el mismo sobre (`conventions.md`); `message` es la clave i18n del erro
 | `client_cause_control.link` · `client_cause_control.unlink` | vínculo causa–acción |
 | `client_risk.evaluate` | con el valor anterior y el nuevo |
 | `risk_treatment.create` | tratamiento |
+
+## Estado de implementación
+
+**Construido: MD-122** (riesgos, causas y vínculos; 2026-10-14). **No** MD-123: la evaluación 5×5 y el tratamiento (`treatment` sale `null` y los campos de la evaluación, `null`).
+
+- El impacto potencial se guarda como el **texto del comité** (`["Reputacional", …]`) y la API lo convierte a `loss_type` en los dos sentidos; un texto que no se reconoce se omite en la respuesta, no se pierde.
+- Quitar un vínculo que no existe responde `404`. Dar de baja dos veces es idempotente (`204`).
+- `is_mandatory` y `effect` del vínculo causa–acción viven en `client_cause_controls`; hoy `effect` es `null` en todas las que vienen del catálogo (`P22`).
+- **Para MD-123:** `risk_treatments.responsible_id` apunta hoy a `users`, y este contrato (y el ticket) dicen que es un **cargo** (`organization_responsibles`). Se corrige con una migración al construir el tratamiento.
 
 ## Preguntas abiertas
 

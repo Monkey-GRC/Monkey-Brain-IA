@@ -47,7 +47,7 @@ Paginada. Filtro `type`.
 { "type": "ciso", "person_name": "Andrés Pardo" }
 ```
 
-`201` con el cargo. Repetir el mismo `type` con la misma `person_name` es `409 CONFLICT`. Puede haber varios `asset_owner`.
+`201` con el cargo (el nombre se guarda recortado). Repetir el mismo `type` con la misma `person_name` es `409 RESPONSIBLE_ALREADY_EXISTS`. Puede haber varios `asset_owner`, con nombres distintos.
 
 ## `PATCH /v1/responsibles/{id}`
 
@@ -59,7 +59,7 @@ Solo cambia la persona (`type` no cambia). `200` con el cargo; **todo lo que apu
 
 ## `DELETE /v1/responsibles/{id}`
 
-`204`. Si el cargo está en uso, `409 RESPONSIBLE_IN_USE`: primero se reasigna lo que apunta a él.
+`204`. Si el cargo está en uso, `409 RESPONSIBLE_IN_USE`: primero se reasigna lo que apunta a él. Hoy cuentan los activos y las evidencias requeridas; el tratamiento de un riesgo se suma con MD-123.
 
 ## Errores
 
@@ -67,7 +67,7 @@ Solo cambia la persona (`type` no cambia). `200` con el cargo; **todo lo que apu
 |---|---|---|
 | 403 | `FORBIDDEN` | El rol no es `admin_empresa` |
 | 404 | `NOT_FOUND` | El cargo no existe para esta empresa |
-| 409 | `CONFLICT` | Ya existe ese cargo con esa persona |
+| 409 | `RESPONSIBLE_ALREADY_EXISTS` | Ya existe ese cargo con esa persona (al crear o al cambiar la persona) |
 | 409 | `RESPONSIBLE_IN_USE` | Se quita un cargo del que algo depende |
 | 422 | `VALIDATION_FAILED` | `required`, `enum.invalid` (`type`), `string.max` (`person_name`) |
 
@@ -106,6 +106,10 @@ Todos con el mismo sobre (`conventions.md`); `message` es la clave i18n del erro
 ## Auditoría
 
 `responsible.create` · `responsible.update` · `responsible.delete`.
+
+## Estado de implementación
+
+**Construido: MD-133** (2026-10-14). Si la organización aún no está declarada, crear un cargo responde `409 ORGANIZATION_NOT_DECLARED`. Cada alta, cambio y baja deja su rastro de auditoría en la misma transacción.
 
 ## Preguntas abiertas
 
