@@ -234,8 +234,8 @@ permisos **por pantalla**; cuando llegue, esta matriz se ajusta a él (P3).
 | Ver evidencia | | ✓ | ✓ solo la suya | ✓ | ✓ |
 | Dar el veredicto de un test documental o manual | | | | ✓ | |
 | Ejecutar test | | ✓ | ✓ solo el suyo | | solo lectura |
-| Proponer una exclusión de checks | | | | ✓ | |
-| Aprobar una exclusión de checks | | ✓ | | | |
+| Proponer una exclusión (de un activo, un test o un check) | | ✓ | | | |
+| Aprobar una exclusión | | | | ✓ | |
 | Vista técnica (códigos, requisitos, resultados por check) | | | | ✓ | ✓ |
 | Módulo de auditoría y registrar observaciones (§7.6) | | | | ✓ | ✓ |
 | Responder una observación | | ✓ | ✓ solo de su control | | |
@@ -248,7 +248,7 @@ Cuatro cosas que se leen mal si no se dicen:
 - **`admin_monkey` no crea controles ni riesgos de un cliente**: administra la plataforma y el catálogo maestro, no el escenario de nadie.
 - **`funcional` está siempre acotado a lo que tiene asignado** vía `user_control_assignments`.
 - **El `auditor` ve toda su empresa y el `consultor` toda la empresa en la que trabaja** (D63, D64), sin restricción de asignación de controles. Ninguno aprueba evidencia, y el cliente nunca ve la vista técnica.
-- **La empresa propone y el consultor decide**: ni `admin_empresa` ni `funcional` pueden aplicar por sí solos un cambio de controles ni el veredicto de un test.
+- **La empresa propone y el consultor decide**: ni `admin_empresa` ni `funcional` pueden aplicar por sí solos un cambio de controles, una exclusión ni el veredicto de un test (D65, D78).
 
 > ⚠️ El material del comité habla de **"34 permisos"**, pero la matriz que entregó tiene 13 acciones. No repetir "34 permisos" como si estuviera documentado aquí.
 

@@ -138,7 +138,7 @@ Con Servicio, Scope, catálogo clonado y (opcionalmente) Cumplimiento personaliz
 motor deriva el cumplimiento por par Servicio × Marco, recorriendo
 Requisito → PuntoDeEnfoque → Control, nunca como atributo del marco ni como número de
 empresa completa. Con las reglas del comité (D68): un estado por nivel (activo → test → control → categoría → marco), «todo o nada», y lo pendiente bloquea el cumplimiento.
-Encima de ese cálculo, el consultor (que prepara) y el auditor (que certifica) hacen cada uno su evaluación (`P23`).
+Encima de ese cálculo, el consultor (que prepara) y el auditor (que certifica) hacen cada uno su evaluación (D77).
 
 **Fuente:** `modelo-datos.md` §9 (D68, el motor del comité; reemplaza la agregación de D62).
 

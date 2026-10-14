@@ -45,7 +45,7 @@ El registro está partido por épocas en `decisiones/`. **Busca el ID en el índ
 | [`decisiones/04-sonda-y-correcciones.md`](decisiones/04-sonda-y-correcciones.md) | **D48–D52** — Paso 3 provisional contra la sonda real, pool de conexiones, correcciones del comité, auditoría atómica. |
 | [`decisiones/05-control-tecnico-y-nube.md`](decisiones/05-control-tecnico-y-nube.md) | **D53–D61 y D67** — Conexión con la nube, sonda de servidores, trabajador del motor de nube y descubrimiento de activos. |
 | [`decisiones/06-cumplimiento-y-roles.md`](decisiones/06-cumplimiento-y-roles.md) | **D62–D68** — Cómo se calcula el cumplimiento, el auditor, los cinco roles, controles propios y MFA. |
-| [`decisiones/07-cierres-2026-10-10.md`](decisiones/07-cierres-2026-10-10.md) | **D69–D74** — Cierres del 2026-10-10: el paso 3, el nombre neutro de las pruebas, la lectura de la sonda, el Postgres de producción, los modelos de negocio y las exclusiones |
+| [`decisiones/07-cierres-2026-10-10.md`](decisiones/07-cierres-2026-10-10.md) | **D69–D78** — Cierres del 2026-10-10 y 13: el paso 3, el nombre neutro de las pruebas, la lectura de la sonda, el Postgres de producción, los modelos de negocio, las exclusiones y la fórmula del riesgo residual |
 
 ### Índice
 
@@ -53,7 +53,7 @@ El registro está partido por épocas en `decisiones/`. **Busca el ID en el índ
 |---|---|---|
 | A1 | El responsable de una evidencia es cargo *y* persona, en planos distintos | 01 |
 | A2 | Un activo puede pertenecer a varios servicios (`N:M`) | 01 |
-| A3 | La exclusión la propone el consultor y la aprueba el cliente; vence con el periodo de evaluación | 01 |
+| A3 | ~~La exclusión la propone el consultor y la aprueba el cliente~~ (D78: la propone la empresa y la aprueba el consultor); vence con el periodo de evaluación | 01 |
 | A4 | El catálogo maestro se versiona, y cada evaluación guarda contra qué versión se midió | 01 |
 | B1 | No se pondera por nivel de riesgo | 01 |
 | B2 | El requisito es binario, igual que el control | 01 |
@@ -125,4 +125,8 @@ El registro está partido por épocas en `decisiones/`. **Busca el ID en el índ
 | D71 | Cómo lee Monkey a la sonda y qué se promete (cierra P12) | 07 |
 | D72 | El Postgres de producción vive separado de la app (cierra P7) | 07 |
 | D73 | La lista de modelos de negocio es de 19, más «otro» (cierra P6) | 07 |
-| D74 | Exclusiones de activos y controles vencidos (puntos 3 y 7 de P22) | 07 |
+| D74 | Exclusiones de activos y controles vencidos (decisiones 3 y 7 del Excel, P22) | 07 |
+| D75 | Se adopta la fórmula del riesgo residual del comité, y se cierran tres decisiones del Excel por su recomendación o por lo ya decidido | 07 |
+| D76 | Respuestas del comité sobre el motor, y qué significa el mapa de calor | 07 |
+| D77 | La evaluación del consultor y la del auditor: el auditor va aparte, el consultor suma un veredicto general (cierra P23) | 07 |
+| D78 | Quién propone y quién aprueba una exclusión: la empresa propone, el consultor aprueba | 07 |

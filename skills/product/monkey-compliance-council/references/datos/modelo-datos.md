@@ -66,7 +66,7 @@ el nombre en inglés.
 | 6 | Onboarding | Los 3 componentes que capturan el contexto del cliente | [`modelo/06-onboarding.md`](modelo/06-onboarding.md) |
 | 7 | Cumplimiento | Controles del cliente, riesgos, evidencias, evaluaciones | [`modelo/07-cumplimiento.md`](modelo/07-cumplimiento.md) |
 | 8 | Control Técnico | La operación continua de la sonda | [`modelo/08-control-tecnico.md`](modelo/08-control-tecnico.md) |
-| 9 | El cálculo | Cómo se deriva el cumplimiento: dimensión → control → categoría → marco, y sus reglas | [`modelo/09-calculo-cumplimiento.md`](modelo/09-calculo-cumplimiento.md) |
+| 9 | El cálculo | Cómo se deriva el cumplimiento: activo → test → control → categoría → marco, con sus estados y reglas | [`modelo/09-calculo-cumplimiento.md`](modelo/09-calculo-cumplimiento.md) |
 | 10 | Diagrama global | Todo junto | [`modelo/10-diagrama-global.md`](modelo/10-diagrama-global.md) |
 
 ---

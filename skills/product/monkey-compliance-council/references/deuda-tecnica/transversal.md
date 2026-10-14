@@ -133,4 +133,3 @@ Lo que no pertenece a un solo módulo (pruebas, CI, auditoría, traducciones, en
 
 - **Qué:** El principio está en `modelo-datos.md` §3 y D9/D31, pero no hay contrato, pantallas ni épico
 - **Nota:** Primero un contrato en `contracts/modules/` (qué campos, cómo se vincula un control nuevo, cuándo se publica la versión, A4)
-

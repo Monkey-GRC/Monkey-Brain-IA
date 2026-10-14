@@ -43,12 +43,12 @@ Estado de un vistazo (contado el 2026-10-10 a partir de la columna Estado; los e
 |---|--:|--:|--:|--:|--:|--:|
 | A. Aislamiento entre empresas (el riesgo #1 del producto) | 6 | 1 | 1 | 2 | · | 10 |
 | B. Autenticación y sesión | 6 | · | 2 | 2 | · | 10 |
-| C. Autorización | 1 | · | 3 | 1 | · | 5 |
+| C. Autorización | 1 | · | 3 | 2 | · | 6 |
 | D. Datos y secretos | 7 | 3 | 2 | 5 | 3 | 20 |
 | E. Auditoría y trazabilidad | 3 | 1 | 2 | · | · | 6 |
 | F. Confidencialidad del proveedor del motor | · | · | 1 | · | · | 1 |
 | G. Desarrollo y entrega | 1 | 1 | · | 1 | · | 3 |
-| **Total** | **24** | **6** | **11** | **11** | **3** | **55** |
+| **Total** | **24** | **6** | **11** | **12** | **3** | **56** |
 
 ---
 
@@ -93,6 +93,7 @@ Estado de un vistazo (contado el 2026-10-10 a partir de la columna Estado; los e
 | **SEG-20** | ✅ (2 de 5 roles) | La autorización se verifica en cada petición; no se confía en el frontend | `@Roles()` + guard | `http`: una empresa no accede a rutas de `admin_monkey` y `admin_monkey` no actúa como `admin_empresa` | §5.3 |
 | **SEG-21** | 🟠 `P3` | Matriz de permisos por rol (13 acciones) | Por módulo | Solo `admin_monkey` y `admin_empresa`. `funcional`, `consultor` y `auditor` no tienen endpoints todavía. El `consultor` y el `auditor` ven toda su empresa sin asignación (D63, D64) | §5.5 |
 | **SEG-54** | 🟠 `DT-67` | La vista técnica (códigos de requisito y de control, resultados por check) la reciben **solo los roles `auditor` y `consultor`**; `admin_empresa` y `funcional` reciben la vista de negocio y un `403` si piden la técnica | `view=technical` restringido por `@Roles('auditor','consultor')` | Ninguna todavía | D63 |
+| **SEG-56** | 🔴 D77 | Solo el `consultor` emite la evaluación del consultor y solo el `auditor` la del auditor; una emitida no se edita ni se borra | Permiso por rol en el caso de uso, `CHECK` de que `assessor_role` coincida con el rol de quien emite y `REVOKE` de `UPDATE`/`DELETE` | Ninguna prueba: aún no se construye | §7.5, D77 |
 | **SEG-22** | 🔴 | `funcional` siempre acotado a lo que tiene asignado | `user_control_assignments` | No existe aún el módulo | §5.5 |
 | **SEG-23** | 🟠 | Un usuario desactivado pierde el acceso y se cierran sus sesiones (CC6.3) | El guard comprueba el estado del usuario en cada petición | `test/autenticacion/autenticacion.e2e-spec.ts`: con el usuario `inactive` su sesión abierta deja de servir y no puede volver a entrar. **Falta el endpoint para desactivarlo (MD-132)** | §5.6 |
 

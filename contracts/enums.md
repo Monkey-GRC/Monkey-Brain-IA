@@ -461,7 +461,14 @@ Los **estados que el motor calcula** en cada nivel (`modelo-datos.md` §9). Se *
 ### `cause_state` · `risk_state` — mitigación (no es el riesgo que queda)
 Causa: `mitigated` Mitigada · `not_mitigated` No mitigada · `evaluating` En evaluación · `no_controls` Sin controles.
 Riesgo: `mitigated` Mitigado · `not_mitigated` No mitigado · `evaluating` En evaluación · `no_causes` Sin causas.
-El **riesgo residual aceptable / no aceptable** no se define todavía (`P22`).
+### `residual_acceptance` — el riesgo que queda frente al apetito (D75)
+`acceptable` Aceptable · `not_acceptable` No aceptable. El valor del apetito es un parámetro (inicial: 9 sobre 25); quién lo define está abierto (`P22`).
+
+### `assessor_role` · `assessment_verdict` — evaluación del consultor y del auditor (D77)
+Rol: `consultor` Consultor · `auditor` Auditor. Veredicto del consultor: `ready` Lista para la auditoría · `not_ready` No lista. Veredicto del auditor: `certified` Certifica · `not_certified` No certifica.
+
+### `cause_control_effect` — `cause_controls.effect` y `client_cause_controls.effect` (D75)
+`probability` Probabilidad · `impact` Impacto. Un control sin efecto definido no participa del residual.
 
 Colores estándar (REQ-048): verde cumple, efectivo, mitigado · rojo no cumple, no efectivo, no mitigado · amarillo pendiente, sin activos, sin tests · naranja en evaluación, en revisión, incompleto, vencido, error · gris no aplica, fuera de alcance, desactivado.
 

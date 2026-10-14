@@ -251,7 +251,7 @@ Claves i18n: `service.created`, `service.list`, `service.updated`, `service.dele
 | **Descripción del Sistema: enlace o archivo** | ✅ Cerrada (D51): enlace, archivo o los dos. El archivo se guarda en S3 / minio. Falta **probarlo contra el minio real** (DT-12, DT-39) y procesar las 10 secciones |
 | **Categorías de cada marco** | ✅ Decidido (D50): cada marco usa sus **categorías nativas**, no las 5 de SOC 2. No se migra el schema hasta sembrar el primer marco que no sea SOC 2 (DT-38) |
 | **`business_model` y `services.type`** | El Excel gana sobre el modelo (11 tipos de servicio, no 5). Hay que corregir el enum en `modelo-datos.md` §6.2 |
-| **Dimensiones de los controles clonados** | `control_dimensions` está vacío en el catálogo (P10): los controles se clonan sin dimensiones y como `manual` hasta que se siembren |
+| **Dimensiones de los controles clonados** | Ya sembradas (D39, cerró P10): el clonado copia las dimensiones del control con su tipo y sus banderas. Cuáles exige cada control las define el comité en `Controles Monkey` L a P y hoy no coinciden con lo sembrado (`DT-69`) |
 
 ## Estado de implementación (actualizado 2026-10-07)
 

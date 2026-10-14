@@ -62,7 +62,7 @@ asignación»; aquí solo `admin_empresa` crea auditores y el auditor ve todos l
 - Al iniciar sesión **elige la empresa en la que trabaja** y ve una a la vez; el sistema comprueba su asignación en cada petición. Cambiar de empresa queda en la auditoría.
 - **La empresa puede suspender** a un consultor asignado (`CC6.3`) y ve la lista de los que tiene, en solo lectura. **Una suspensión de la empresa solo la reactiva la empresa**: `admin_monkey` no puede, porque anularía el control de la empresa sobre sus propios datos.
 - Ve todo el cumplimiento de la empresa con la **vista técnica**, registra observaciones (las cierra quien las escribió) y exporta reportes como el auditor.
-- **Da el veredicto** de los tests documentales y manuales (R-03; la IA solo sugiere), **propone las exclusiones** (las aprueba el cliente, A3) y **aprueba los cambios de controles** (D65).
+- **Da el veredicto** de los tests documentales y manuales (R-03; la IA solo sugiere), **aprueba las exclusiones** que propone la empresa (D78, que invirtió A3) y **aprueba los cambios de controles** (D65).
 - MFA obligatoria (D66).
 - **El auditor es distinto:** lo crea `admin_empresa` y pertenece a una sola empresa (D63).
 - **Sin roles personalizados** (`custom_roles` y `users.custom_role_id` salen del modelo). Si sobra tiempo más adelante, se vuelve a plantear.
@@ -112,15 +112,15 @@ fórmula no la reflejaba, §0). Las dos no coinciden en varios puntos.
    **controles únicos** de las categorías en alcance (uno compartido cuenta una vez) y su avance es efectivos / controles únicos. Reemplaza al «% del marco = categorías logradas / contratadas» de D62.
 6. **La evaluación** es servicio + marco + versión + período + fecha de corte, y un resultado se calcula **una vez** y lo reutilizan todos los controles que usan el test.
 7. **Relación control–test con atributos** (obligatorio, vigente, fechas, justificación) y **desactivación controlada** con rastro. **Evidencias** validadas por atributo, y solo una validada por una persona puede ser `CUMPLE`.
-8. **Excluir un activo** exige justificación, aprobador y vigencia: es la exclusión que ya existía (la propone el consultor y la aprueba la empresa, A3), ahora también por activo.
+8. **Excluir un activo** exige justificación, aprobador y vigencia: es la exclusión que ya existía (A3; la propone la empresa y la aprueba el consultor, D78), ahora también por activo.
 9. **El error técnico** de un activo deja el test en `ERROR`; no es un incumplimiento ni un cumplido. Una corrida que no llegó a la cuenta del cliente (D57) sigue sin guardar resultados.
 10. **Causas y riesgos**: se adoptan los estados de mitigación (RN-20, RN-21) y el riesgo inherente = probabilidad × impacto (RN-22). **El riesgo residual, el apetito y el mapa de calor no se adoptan todavía**: el comité mismo los marca como
-    propuesta con parámetros sin aprobar (`P22`; ticket MD-151, fuera del sprint). El residual y el mapa son vista del consultor y del auditor, no del cliente (`philosophy.md`).
+    propuesta con parámetros sin aprobar. *(D75, 2026-10-13: se adopta la fórmula y el valor inicial del apetito; faltan datos y el aprobador, `P22`; ticket MD-151, fuera del sprint.)* El residual y el mapa son vista del consultor y del auditor, no del cliente (`philosophy.md`).
 11. **El consultor y el auditor hacen cada uno una evaluación del cumplimiento, con distinto enfoque** (el consultor prepara, el auditor certifica). **Lo agregó el responsable de producto**: el Excel no la contempla, y su «validada por
-    auditor» (RN-03) se entiende como «validada por una persona». Su diseño está abierto: `P23`.
+    auditor» (RN-03) se entiende como «validada por una persona». Su diseño lo cerró D77.
 
 **Lo que no se adopta.** El **prompt de desarrollo** del Excel se lee como referencia: pide una API `/api/v1` y «TypeScript/Node o Go», y aquí rigen `contracts/` (`/v1`) y la pila ya elegida. Las **diez decisiones pendientes** que trae la hoja
-(para «el equipo Monkey») **se registran, no se resuelven**: `P22`.
+(para «el equipo Monkey») **se registran, no se resuelven**: `P22`. *(Revisadas después: cinco se cerraron en D74 y D75; quedan cinco para el comité en `P22`.)*
 
 **Se conserva de D62:** pesos iguales en todos los niveles, la unidad (servicio × marco) sin número de empresa, el semáforo cualitativo y la cobertura siempre aparte.
 
@@ -128,7 +128,7 @@ fórmula no la reflejaba, §0). Las dos no coinciden en varios puntos.
 trazable (cada estado se explica con una regla numerada y casos de prueba). La evaluación del consultor y del auditor es un hecho del producto que el Excel omitió.
 
 **Qué cambia.** `modelo-datos.md` §9 (reescrita), §2, §7.1, §7.4, §7.5 y el glosario; `contracts/enums.md` (estados de evaluación); `sprint-cumplimiento.md` y `mvp-roadmap.md`; `DT-65` y `DT-66` (el calculador que promedia y la
-preparación por severidad se escriben contra esta regla) y `DT-69` (dimensiones); pendientes `P22` y `P23`.
+preparación por severidad se escriben contra esta regla) y `DT-69` (dimensiones); pendiente `P22` (`P23` lo cerró D77).
 
 **Fuente:** comité funcional, `assets/TSC INTERGRAL SOC 2 DETALLADO VF2.xlsx` (hojas `MODELO EVALUACIÓN MONKEY` y `REQUISITOS EVALUACIÓN MONKEY`), 2026-10-10; evaluación del consultor y del auditor: responsable de producto, 2026-10-10.
 
