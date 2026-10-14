@@ -29,6 +29,8 @@ Ejemplo: `C-01` aplica a las dimensiones **Servidores + Nube** (5 activos) y per
 | Aplicación | `app` | **0 pruebas definidas todavía** (P9) |
 | Nube | `cloud` | **0 checks todavía** (§9) |
 
+**Qué activos entran al universo de cada dimensión** (MD-117): un test de una dimensión corre sobre los activos **vigentes del servicio** de ese tipo: `server` → servidores, `database` → bases de datos, `cloud` → servicios en nube y `app` → aplicaciones. La dimensión documental (`policy`) no tiene activos: se resuelve por evidencias. `endpoint`, `network_device` y `documentation` no son dimensión, así que no entran al universo de ningún test. Un test sin ningún activo de su dimensión queda `SIN ACTIVOS`: no cumple.
+
 Se mantienen exactamente estas 5 (decisión D5). Endpoints y dispositivos de red **se
 monitorean pero no son dimensiones**.
 

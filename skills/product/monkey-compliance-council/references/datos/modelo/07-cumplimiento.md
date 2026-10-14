@@ -25,6 +25,7 @@ erDiagram
         uuid control_id FK "nullable: null si lo creo el cliente"
         uuid service_id FK
         string own_code "C01"
+        string name "nullable: solo en un control propio; en uno del catalogo sale de controls.name (D79)"
         enum trust_criterion "nullable: la categoria de un control propio, la elige el cliente"
         text client_interpretation
         enum type
@@ -101,11 +102,14 @@ apuntan a `client_control_id`. `control_id` es la plantilla de origen y es nulo 
 **Un control propio es solo documental** (su única dimensión es `policy`, tipo `manual`) y **lo ubica el cliente en una categoría** (`trust_criterion`). No tiene
 punto de enfoque (el puente `point_of_focus_controls` es del catálogo): cuenta para el porcentaje de su categoría y del marco, pero no cierra ningún requisito (D65).
 
+**`own_code`** es el código del catálogo (`IAC-12`) en un control clonado y la numeración propia (`C01…`) en uno que creó la empresa; el código del catálogo es técnico y la API no lo muestra al cliente (solo en la vista técnica). Un control propio lleva además `name` y `trust_criterion` (D79).
+
 **Los cambios de controles los decide el consultor** (D65). Crear un control propio, darlo de baja y editar las dimensiones o la interpretación de un control —del
 catálogo o propio— son **propuestas** (`client_control_changes`) que la empresa hace y el consultor aprueba o rechaza:
 
 - **Crear:** el control existe desde que se propone y **cuenta en el porcentaje mientras está pendiente**. Si el consultor lo rechaza, se da de baja y deja de contar.
 - **Dar de baja y editar:** el control sigue como estaba (y contando) hasta que el consultor aprueba; entonces se aplica el cambio.
+- **Una propuesta pendiente por tipo y por control** (índice único parcial), y una decidida lleva quién y cuándo; rechazar exige motivo (restricciones de la base).
 
 ### 7.2 Riesgos del cliente y sus indicadores
 
@@ -201,6 +205,8 @@ erDiagram
     client_risks ||--o{ risk_treatments : "se trata con"
 ```
 
+**El impacto potencial de un riesgo se guarda como el texto que trae el comité** (`["Reputacional", "Sanción regulatoria"]`), igual en el catálogo y en lo que crea la empresa; la API lo expone como valores `loss_type` (`contracts/enums.md`).
+
 **Cada cliente trabaja sobre su propia copia** (decisión D28). Al crearse `service_frameworks`
 se copian los riesgos y causas base a `client_risks` y `client_causes` **de ese servicio**, con
 sus relaciones (`client_risk_causes` replica `risk_causes`; `client_cause_controls` replica
@@ -237,6 +243,9 @@ erDiagram
         uuid evidence_requirement_id FK
         uuid submitted_by FK
         uuid approved_by FK "solo admin_empresa"
+        datetime submitted_at "D79"
+        datetime approved_at "nullable, D79"
+        text decision_note "nullable, obligatoria al rechazar (D79)"
         string file_path
         string file_type
         int file_size
@@ -258,7 +267,12 @@ erDiagram
         uuid test_id FK
         uuid asset_id FK "nullable: si excluye un activo de ese test (D68, REQ-008)"
         uuid proposed_by FK "admin_empresa"
-        uuid approved_by FK "consultor"
+        uuid decided_by FK "nullable, el consultor (antes approved_by, D79)"
+        enum status "pending|approved|rejected (D79)"
+        datetime requested_at "D79"
+        datetime decided_at "nullable"
+        text decision_note "nullable, obligatoria al rechazar"
+        text technical_justification "nullable, obligatoria si el test es automatico"
         string excluded_check_id "nullable: si excluye un check"
         text justification
         date valid_from

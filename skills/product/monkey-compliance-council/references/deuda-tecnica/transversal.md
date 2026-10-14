@@ -40,7 +40,7 @@ Lo que no pertenece a un solo módulo (pruebas, CI, auditoría, traducciones, en
 
 🟠 Importante
 
-- **Qué está parchado:** *2026-10-09: construido el intérprete puro, el calculador de preparación por activo y la persistencia de una corrida (`executions`, `check_results`, `asset_resources`, en una transacción con su rastro; 8 pruebas contra Postgres). Falta quien ejecute el motor y el paso a `evaluations`, que depende del módulo de Cumplimiento. Los umbrales del activo son los de D62 (DT-66).*  R-04 dice que «Monkey interpreta el criterio», pero no está escrito dónde vive el criterio (`tests.compliance_criterion` es texto libre), cómo se determinan los activos aplicables de un control (R-02), qué pasa con un resultado sin check conocido (hoy se descartaría en silencio) ni cómo se registran las exclusiones
+- **Qué está parchado:** *2026-10-09: construido el intérprete puro, el calculador de preparación por activo y la persistencia de una corrida (`executions`, `check_results`, `asset_resources`, en una transacción con su rastro; 8 pruebas contra Postgres). Falta quien ejecute el motor y el paso a `evaluations`, que depende del módulo de Cumplimiento. *2026-10-14 (MD-117): los activos aplicables de un test ya se determinan por la dimensión del activo (servidor, base de datos, nube, aplicación; `modelo-datos.md` §2); lo que falta es escribir los resultados. Hasta entonces la lectura de acciones de protección sale «Sin medir».* Los umbrales del activo son los de D62 (DT-66).*  R-04 dice que «Monkey interpreta el criterio», pero no está escrito dónde vive el criterio (`tests.compliance_criterion` es texto libre), cómo se determinan los activos aplicables de un control (R-02), qué pasa con un resultado sin check conocido (hoy se descartaría en silencio) ni cómo se registran las exclusiones
 - **Por qué:** §9 especifica el cálculo, no la interpretación
 - **Qué lo cierra:** §9 ya fija cómo se lee la sonda (`passed` → cumple, `failed` → no cumple, `invalid` → error, `not_run` → pendiente) y el estado del test (D68). Falta el paso a `evaluations` y probarlo con los 8 casos del comité
 
@@ -108,6 +108,14 @@ Lo que no pertenece a un solo módulo (pruebas, CI, auditoría, traducciones, en
 - **Por qué:** Solo estético
 - **Qué lo cierra:** Una pasada de limpieza
 
+
+### DT-71 · La lectura de acciones de protección fija valores que el modelo ya prevé
+
+🟠 Importante
+
+- **Qué está parchado:** `ControlPrismaRepository` marca todo test vinculado a un control como obligatorio y vigente, porque `client_control_tests` aún no guarda esos datos (D68); y un test documental cuenta siempre como pendiente, porque las evidencias no guardan los atributos que lo deciden (`P25`)
+- **Por qué:** MD-117 se construyó antes que la desactivación controlada de tests y la validación de evidencias. *(2026-10-14: MD-118 y MD-150 ya reemplazaron los valores fijos de `approval` y `has_pending_change`.)*
+- **Qué lo cierra:** la migración de `client_control_tests` (obligatorio, vigente, fechas) con la desactivación controlada, y `P25` con su endpoint. Cada uno reemplaza su valor fijo en `control.prisma.repository.ts` y `control-readout.ts`
 
 ## Funcionalidad que el brain menciona y aún no tiene contrato
 

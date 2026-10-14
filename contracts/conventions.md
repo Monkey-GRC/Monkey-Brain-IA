@@ -183,3 +183,59 @@ El **porcentaje no se devuelve como métrica principal** en nada que vea el clie
 - Lo generado por IA viaja siempre con su marca: `"is_ai_generated": true` y `"ai_confidence"`.
   Nunca se presenta inferencia como hecho verificado.
 - Ningún campo ni mensaje nombra al proveedor del motor de monitoreo.
+
+## Cumplimiento: roles, vistas y decisiones
+
+Lo que comparten todos los módulos de Cumplimiento (`modules/compliance-*.md`). Los contratos no lo repiten.
+
+**Quién es quién.** Los 5 roles son `admin_monkey`, `admin_empresa`, `funcional`, `consultor` y `auditor` (`modelo-datos.md` §5.1, §5.5). Todo se resuelve
+**en el servidor, con el rol leído de la base**, nunca con lo que mande el frontend. El `consultor` trabaja en **una empresa a la vez** (la que eligió al
+iniciar sesión, MD-160); el resto de roles, en la suya. El acceso de `admin_monkey` al cumplimiento de una empresa (solo lectura, MD-146) tiene sus propios endpoints en Monkey Admin y
+**no está definido aquí**: hasta entonces estos endpoints le responden `403`.
+
+**403 o 404.**
+
+| Situación | Respuesta |
+|---|---|
+| El recurso es de **otra empresa** | `404` (que exista no se informa) |
+| El `funcional` pide o escribe algo de su empresa que **no tiene asignado** | `403` |
+| El rol no puede hacer esa acción (p. ej. el auditor intenta proponer) | `403` |
+| Una lista que el `funcional` no puede ver completa | no falla: **devuelve solo lo suyo** (vacía si no tiene nada) |
+
+**Vista de negocio y vista técnica.** Por defecto, todo `GET` de Cumplimiento devuelve la **vista de negocio**: en qué falla, con un semáforo y sin códigos.
+Con **`?view=technical`** se agrega el objeto `technical` (códigos de requisito y de control, puntos de enfoque, estados de evaluación de
+`enums.md`). **Solo los roles `auditor` y `consultor` pueden pedirla; para cualquier otro, incluidos `admin_empresa` y `funcional`, responde `403`**
+(D63, D64, SEG-54). La vista técnica **agrega**, nunca quita: es la de negocio más `technical`.
+
+**Cómo se mide en la vista de negocio.** Siempre cualitativo primero (`readiness`: `ready` · `almost_ready` · `needs_work` · `not_measured`), con dos contadores
+separados y **ningún porcentaje**: el avance y la cobertura viajan como conteos y la pantalla los muestra debajo, nunca como métrica principal (`philosophy.md`).
+
+```json
+{ "readiness": "almost_ready", "progress": { "done": 4, "total": 5 }, "coverage": { "measured": 5, "applicable": 5 } }
+```
+
+- `progress`: lo que **cumple** sobre el total del nivel (controles efectivos / controles únicos, tests que cumplen / tests…).
+- `coverage`: lo que **ya tiene resultado** sobre lo aplicable. `100% de lo medido` con cobertura baja **nunca** es `ready`.
+- `not_measured` no es un fallo: es un hueco de cobertura. Lo pendiente **no cuenta como cumplido** (§9).
+- No existe un número de «cumplimiento de la empresa»: la unidad es el par servicio × marco.
+
+**Textos de pruebas.** Una respuesta al cliente nunca trae el texto de una prueba del comité ni nombra al proveedor del motor. Una prueba viaja como
+`display_name` (el nombre neutro que escribe Monkey, D70). Los códigos de prueba (`T-DOC-001`) solo van en `technical`.
+
+**Lo generado por IA** viaja marcado: `"is_ai_generated": true` y `"ai_confidence"`. Una sugerencia de la IA **nunca** decide nada.
+
+**Decisiones sobre una propuesta.** Aprobar o rechazar algo que otro propuso (un cambio de control, una exclusión, una evidencia) es un `PATCH` sobre ese recurso:
+
+```json
+{ "status": "rejected", "decision_note": "La interpretación no cubre el acceso remoto." }
+```
+
+`decision_note` es **obligatoria al rechazar** y opcional al aprobar. Quien decide queda en `decided_by` y `decided_at`. Una propuesta ya decidida no se vuelve a
+decidir: `409 ALREADY_DECIDED`. Nadie decide lo que él mismo propuso (`403`).
+
+**Baja, no borrado.** `DELETE` sobre un riesgo, causa o control **desactiva** (`is_active = false`) y devuelve `204`: el histórico se conserva y la fila sigue existiendo
+(las evaluaciones son inmutables). Una colección omite lo inactivo salvo `?include_inactive=true`.
+
+**Auditoría.** Cada escritura deja su `audit_logs` en la misma transacción (D52) y, si cambia el estado de cumplimiento, un `compliance_events`. Las `action`
+de cada módulo están en su tabla «Auditoría».
+

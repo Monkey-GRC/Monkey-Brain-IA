@@ -17,11 +17,11 @@ cambios con aprobación), §7.5 (el veredicto) y §7.6 (las observaciones).
 
 | Épico | Tickets |
 |---|---|
-| Fundación (MD-101) | MD-108 contratos · MD-109 glosario · MD-110 almacenamiento de evidencias · MD-113 rastro de auditoría (listo) · MD-114 idiomas en Platform · MD-115 componentes compartidos |
-| Acciones de protección (MD-102) | MD-117 listar y ver · MD-118 proponer edición o baja · MD-150 proponer un control propio |
-| Riesgos y causas (MD-103) | MD-122 riesgos y causas · MD-123 evaluación 5×5 y tratamiento |
+| Fundación (MD-101) | MD-108 contratos (escritos en `contracts/modules/compliance-*.md`) · MD-109 glosario · MD-110 almacenamiento de evidencias · MD-113 rastro de auditoría (listo) · MD-114 idiomas en Platform · MD-115 componentes compartidos |
+| Acciones de protección (MD-102) | MD-117 listar y ver (**construido**) · MD-118 proponer edición o baja (**construido**) · MD-150 proponer un control propio (**construido**) |
+| Riesgos y causas (MD-103) | MD-122 riesgos y causas (**construido**) · MD-123 evaluación 5×5 y tratamiento |
 | Evidencias (MD-104) | MD-126 subir · MD-127 aprobar o rechazar · MD-128 Descripción del Sistema como archivo (listo) |
-| Responsables de la organización (MD-105) | MD-133 cargos en la API · MD-135 cargos en pantalla |
+| Responsables de la organización (MD-105) | MD-133 cargos en la API (**construido**) · MD-135 cargos en pantalla |
 | Medición y resumen (MD-106) | MD-137 resumen del servicio · MD-138 motor de cálculo · MD-139 estado del activo |
 | Exclusiones y cierre (MD-107) | MD-144 exclusiones · MD-145 evaluaciones inmutables · MD-147 verificación del backend · MD-149 revisión de pantallas y demo |
 | Auditoría y consultoría (MD-152) | MD-154 observaciones · MD-155 veredicto del consultor · MD-156 aprobación de cambios de controles |
@@ -43,7 +43,7 @@ El comité entregó la VF2 con el motor de evaluación completo. **Reemplaza la 
 
 **Tickets nuevos que el motor pide y aún no se crean** (siguen la prioridad MUST, SHOULD o LATER de la hoja `REQUISITOS EVALUACIÓN MONKEY`): desactivación controlada de tests con justificación (REQ-019 a REQ-021),
 evidencias validadas por atributo y por una persona (REQ-014 a REQ-018), dimensión requerida sin test ⇒ control incompleto (REQ-022, REQ-023), vigencia y vencimiento automático (REQ-046, depende de `P22`),
-reutilización de resultados entre marcos (REQ-013, REQ-033) y la evaluación del auditor (D77; falta crear su ticket). Aparte, cargar `control_dimensions` desde la hoja del comité (`DT-69`).
+reutilización de resultados entre marcos (REQ-013, REQ-033) y la evaluación del auditor (D77; falta crear su ticket). **Falta también el ticket de guardar los resultados de la sonda como `evaluations` por test, activo y control (`DT-50`)**: sin él, todo lo que MD-117, MD-137 y MD-139 muestran sale «Sin medir». Aparte, cargar `control_dimensions` desde la hoja del comité (`DT-69`).
 
 ## Qué quedó fuera (vuelve al backlog)
 
@@ -72,4 +72,4 @@ responder una observación desde la empresa, la pantalla de aprobación de cambi
 
 ## Preguntas abiertas que tocan este sprint
 
-`modelo-datos-pendientes.md`: **P3** (permisos por pantalla), y **P22** (lo que falta para calcular el riesgo).
+`modelo-datos-pendientes.md`: **P3** (permisos por pantalla), **P22** (lo que falta para calcular el riesgo), **P24** (quién aprueba una exclusión sin consultor), **P25** (quién valida una evidencia) y **P26** (período y fecha de corte de una evaluación).

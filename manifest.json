@@ -302,6 +302,34 @@
       {
         "path": "contracts/modules/onboarding-technical-control.md",
         "description": "Componente 3: escenario de despliegue, scope declarado y flujo conectar-validar-activar-programar sobre ac_01 a ac_06. El proveedor del motor de monitoreo NO aparece."
+      },
+      {
+        "path": "contracts/modules/control-tecnico-operacion.md",
+        "description": "Control tecnico, operacion continua: ejecuciones, estado de preparacion, hallazgos, vista tecnica y API interna del trabajador."
+      },
+      {
+        "path": "contracts/modules/compliance-controls.md",
+        "description": "Cumplimiento, acciones de proteccion: listar y ver, control propio, cambios propuestos por la empresa y decididos por el consultor."
+      },
+      {
+        "path": "contracts/modules/compliance-risks.md",
+        "description": "Cumplimiento, riesgos y causas: gestion, vinculos, evaluacion 5x5 y tratamiento con responsable."
+      },
+      {
+        "path": "contracts/modules/compliance-evidence.md",
+        "description": "Cumplimiento, evidencias: subida con huella SHA-256 y version, descarga con enlace firmado, aprobacion solo del administrador de la empresa."
+      },
+      {
+        "path": "contracts/modules/compliance-responsibles.md",
+        "description": "Cumplimiento, cargos responsables de la organizacion y la persona que los ocupa."
+      },
+      {
+        "path": "contracts/modules/compliance-overview.md",
+        "description": "Cumplimiento, resumen del servicio por marco y categoria con vista tecnica, y las evaluaciones del consultor y del auditor."
+      },
+      {
+        "path": "contracts/modules/compliance-audit.md",
+        "description": "Cumplimiento, consultoria y auditoria: tests y veredictos, observaciones y exclusiones."
       }
     ]
   }

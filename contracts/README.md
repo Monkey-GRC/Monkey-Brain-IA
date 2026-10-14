@@ -25,6 +25,12 @@ te toca. Si lo que vas a construir no está aquí, el contrato se acuerda primer
 | `modules/onboarding-organizational-context.md` | Componente 1 — 10 campos |
 | `modules/onboarding-service-context.md` | Componente 2 — 16 campos, repetible por servicio |
 | `modules/onboarding-technical-control.md` | Componente 3 del onboarding — escenario, scope, conexión de activos (rol, llaves, agente), validación, activación |
+| `modules/compliance-controls.md` | Cumplimiento: acciones de protección (listar, ver, crear un control propio, proponer cambios y que el consultor decida) |
+| `modules/compliance-risks.md` | Cumplimiento: riesgos y causas, vínculos, evaluación 5×5 y tratamiento |
+| `modules/compliance-evidence.md` | Cumplimiento: evidencias (subir con huella y versión, descargar con enlace firmado, aprobar o rechazar) |
+| `modules/compliance-responsibles.md` | Cumplimiento: los cargos responsables de la organización |
+| `modules/compliance-overview.md` | Cumplimiento: el resumen del servicio por marco y categoría, y las evaluaciones del consultor y del auditor |
+| `modules/compliance-audit.md` | Cumplimiento: tests y veredictos, observaciones del auditor y del consultor, y exclusiones |
 | `modules/control-tecnico-operacion.md` | Módulo de operación continua (§8): ejecuciones, estado de preparación, hallazgos, vista técnica del auditor y API interna del trabajador. Empieza donde acaba el Componente 3 |
 
 ## Formato de cada módulo

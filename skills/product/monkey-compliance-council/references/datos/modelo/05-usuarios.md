@@ -22,7 +22,7 @@ Definido y cerrado por el comité en su modelo de gestión de usuarios, transcri
 | `admin_empresa` | CISO, Compliance Leader | Su empresa. **Único que aprueba evidencia** | Sí |
 | `funcional` | Control Owners | **Solo los controles asignados** | Sí |
 | `consultor` | Consultor de Next (la empresa dueña de Monkey) que **prepara al cliente para la auditoría**. Una sola cuenta, que **crea y asigna `admin_monkey`** a las empresas que atiende | Todo el cumplimiento de **todos** los servicios de la empresa **en la que trabaja** (elige una de las asignadas), con vista técnica. **Da el veredicto de los tests documentales y manuales y aprueba los cambios de controles** | Sí |
-| `auditor` | Quien audita el cumplimiento de la empresa dentro de Monkey (suele ser una persona externa a la empresa, pero su cuenta **pertenece a la empresa**) | Lectura de **todo** el cumplimiento de **todos** los servicios de su empresa + módulo de auditoría. **Único que registra observaciones** | Sí |
+| `auditor` | Quien audita el cumplimiento de la empresa dentro de Monkey (suele ser una persona externa a la empresa, pero su cuenta **pertenece a la empresa**) | Lectura de **todo** el cumplimiento de **todos** los servicios de su empresa + módulo de auditoría. **Registra observaciones**, igual que el consultor | Sí |
 
 **Correcciones obligadas al enum actual** (`MONKEY_ADMIN`, `CLIENT_ADMIN`, `USER`, `VIEWER`):
 
