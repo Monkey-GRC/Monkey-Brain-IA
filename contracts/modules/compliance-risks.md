@@ -1,7 +1,7 @@
 ---
 id: contracts-compliance-risks
 name: Contrato — Cumplimiento, riesgos y causas
-description: Gestionar los riesgos y las causas de un servicio, vincularlos con las acciones de protección, evaluar un riesgo en la matriz 5×5 y registrar su tratamiento.
+description: Gestionar los riesgos y las causas de un servicio, vincularlos con los controles, evaluar un riesgo en la matriz 5×5 y registrar su tratamiento.
 type: contract
 ---
 

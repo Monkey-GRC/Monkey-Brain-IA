@@ -1,17 +1,17 @@
 ---
 id: contracts-compliance-controls
-name: Contrato — Cumplimiento, acciones de protección
+name: Contrato — Cumplimiento, controles
 description: Listar y ver los controles de un servicio, crear un control propio y proponer o decidir cambios de controles.
 type: contract
 ---
 
-# Cumplimiento — acciones de protección
+# Cumplimiento — controles
 
-**Estado: PROPUESTA (2026-10-14).** Ver `conventions.md` (sección «Cumplimiento: roles, vistas y decisiones») y `enums.md`. Tickets: MD-117, MD-118, MD-150, MD-156.
+**Estado: PROPUESTA (2026-10-14; D80 el 2026-10-15).** Ver `conventions.md` (sección «Cumplimiento: roles, vistas y decisiones») y `enums.md`. Tickets: MD-117, MD-118, MD-150, MD-156.
 
-**Qué es.** Una *acción de protección* es un **control del cliente** (`client_controls`, `modelo-datos.md` §7.1): el control del catálogo que el servicio heredó al contratar
+**Qué es.** Un *control* del servicio es un **control del cliente** (`client_controls`, `modelo-datos.md` §7.1): el control del catálogo que el servicio heredó al contratar
 un marco, o uno propio. Todo lo que se mide cuelga de él. **Entidades:** `client_controls`, `client_control_dimensions`, `client_control_changes`, `user_control_assignments`.
-**App:** Monkey Platform. En el cable se llama `controls` (así lo pide el modelo); las pantallas le dicen «acción de protección» (glosario, MD-109).
+**App:** Monkey Platform. En el cable se llama `controls` y las pantallas también le dicen «control» (D80: el vocabulario del dominio; el nombre «acción de protección» se retira).
 
 ## Quién puede qué
 
@@ -47,6 +47,8 @@ Lista paginada. Se omiten los dados de baja. Un servicio recién clonado trae un
     "items": [
       {
         "id": "3f1c…",
+        "code": "IAC-12",
+        "requirement_codes": ["CC6.1", "CC6.2"],
         "own_code": null,
         "name": "Gestión de accesos de usuarios",
         "origin": "catalog",
@@ -61,6 +63,8 @@ Lista paginada. Se omiten los dados de baja. Un servicio recién clonado trae un
       },
       {
         "id": "9d44…",
+        "code": "C01",
+        "requirement_codes": [],
         "own_code": "C01",
         "name": "Revisión trimestral de proveedores",
         "origin": "own",
@@ -79,7 +83,8 @@ Lista paginada. Se omiten los dados de baja. Un servicio recién clonado trae un
 }
 ```
 
-- `own_code` es la numeración **por servicio de los controles propios** (`C01`, `C02`…) y es `null` en uno del catálogo: el código del catálogo (`IAC-12`) es técnico y solo viaja en `technical.control_code` (D63). Los controles del catálogo se ubican por su `name`.
+- `code` es **el código que identifica al control y se muestra siempre** (D80): el del catálogo (`IAC-12`) en uno del catálogo y el `own_code` (`C01`) en uno propio. `requirement_codes` son los requisitos del marco que cubre (`CC6.1`); un control propio no cubre ninguno (D65), así que viene vacío. Antes (D63) estos códigos solo viajaban en `technical`.
+- `own_code` es la numeración **por servicio de los controles propios** (`C01`, `C02`…) y es `null` en uno del catálogo.
 - `name` de un control del catálogo sale del catálogo (hoy solo en español); el de uno propio lo escribe la empresa.
 - `approval` de un control del catálogo es siempre `approved`. Un control propio **cuenta en el avance desde que se crea, aunque esté `pending`**; si se rechaza, se da de baja y deja de contar (D65).
 - `trust_criteria` es un array: un control del catálogo puede servir a varias categorías y **cuenta una sola vez** en el marco.
@@ -87,8 +92,6 @@ Lista paginada. Se omiten los dados de baja. Un servicio recién clonado trae un
 
 ```json
 "technical": {
-  "control_code": "IAC-12",
-  "requirement_codes": ["CC6.1", "CC6.2"],
   "points_of_focus": ["CC6.1-POF1"],
   "control_state": "ineffective",
   "tests_count": 5
@@ -108,6 +111,8 @@ El detalle de una acción. Mismas reglas de acceso que la lista.
   "data": {
     "id": "3f1c…",
     "service_id": "55aa…",
+    "code": "IAC-12",
+    "requirement_codes": ["CC6.1", "CC6.2"],
     "own_code": null,
     "name": "Gestión de accesos de usuarios",
     "origin": "catalog",
@@ -144,7 +149,7 @@ El detalle de una acción. Mismas reglas de acceso que la lista.
 - `dimensions` lista **todas las que el control exige**; una que no aplica **se declara con su motivo**, nunca se omite.
 - `interpretation.is_customized` es `true` si la empresa la reescribió; si no, es el texto del catálogo.
 - `failing` dice **en qué falla**, por dimensión, con el activo o la prueba afectados (`kind`: `asset` · `test`, y un `display_name` en vez de `name` cuando es una prueba). Nunca el texto de la prueba.
-- Con `?view=technical` agrega `technical` (los mismos campos de la lista y, además, `tests`: `[ { "test_code": "T-CLD-001", "display_name": "Prueba de nube", "dimension": "cloud", "state": "compliant" } ]`, con `state` = `test_state`). El detalle completo de los tests está en `compliance-audit.md`.
+- Con `?view=technical` agrega `technical` (los mismos campos técnicos de la lista —puntos de enfoque, estado del control, número de pruebas— y, además, `tests`: `[ { "test_code": "T-CLD-001", "display_name": "Prueba de nube", "dimension": "cloud", "state": "compliant" } ]`, con `state` = `test_state`). El detalle completo de los tests está en `compliance-audit.md`.
 
 ## `POST /v1/services/{service_id}/controls` — crear un control propio
 
@@ -168,6 +173,8 @@ Solo `admin_empresa`. Un control propio es **solo documental** (su única dimens
   "data": {
     "id": "9d44…",
     "service_id": "55aa…",
+    "code": "C01",
+    "requirement_codes": [],
     "own_code": "C01",
     "name": "Revisión trimestral de proveedores",
     "origin": "own",
@@ -345,6 +352,8 @@ Todos con el mismo sobre (`conventions.md`); `message` es la clave i18n del erro
 Aprobar un cambio que altera lo que se mide deja además un `compliance_events` en la misma transacción.
 
 ## Estado de implementación
+
+**Pendiente por D80 (2026-10-15):** `code` y `requirement_codes` en la **vista de negocio** (lista, detalle y creación). El backend aún los devuelve solo dentro de `technical` (`control_code`, `requirement_codes`) y `403` para el resto de roles; hay que moverlos a la base y dejar en `technical` solo lo demás. Hasta entonces, el frontend muestra el código cuando llega y no lo inventa.
 
 **Construido (2026-10-14):** MD-117 (listar y ver), MD-150 (crear un control propio) y MD-118 (proponer cambios y listarlos). **No** MD-156: decidir una propuesta, la bandeja `GET /v1/control-changes` y `PATCH /v1/control-changes/{id}`.
 

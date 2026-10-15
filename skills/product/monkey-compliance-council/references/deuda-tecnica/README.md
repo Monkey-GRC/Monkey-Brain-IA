@@ -89,7 +89,7 @@ Limitan el producto o al equipo.
 | [DT-63](control-tecnico.md#dt-63--un-activo-descubierto-no-se-puede-editar) | Un activo descubierto no se puede editar | [Control técnico](control-tecnico.md) |
 | [DT-66](control-tecnico.md#dt-66--el-estado-de-preparación-de-un-activo-se-calcula-por-severidad) | El estado de preparación de un activo se calcula por severidad | [Control técnico](control-tecnico.md) |
 | [DT-69](control-tecnico.md#dt-69--las-dimensiones-de-cada-control-no-coinciden-con-las-que-define-el-comité) | Las dimensiones de cada control no coinciden con las que define el comité | [Control técnico](control-tecnico.md) |
-| [DT-71](transversal.md#dt-71--la-lectura-de-acciones-de-protección-fija-valores-que-el-modelo-ya-prevé) | La lectura de acciones de protección fija valores que el modelo ya prevé | [Transversal](transversal.md) |
+| [DT-71](transversal.md#dt-71--la-lectura-de-controles-fija-valores-que-el-modelo-ya-prevé) | La lectura de controles fija valores que el modelo ya prevé | [Transversal](transversal.md) |
 
 ### 🟡 Mejoras
 

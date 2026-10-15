@@ -356,8 +356,8 @@ elegir marco se **copian** a `client_risks` y `client_causes` (§7.2) y ahí el 
 edita, agrega o elimina. Lo que un cliente cambie **solo lo ve él**; el catálogo y los demás
 clientes no se enteran (decisión D28).
 
-> "Riesgo residual" es **jerga prohibida** en la superficie del producto (`philosophy.md`).
-> Existe como cálculo interno y en la vista técnica del auditor.
+> "Riesgo residual" es un término del dominio y **se muestra** en la superficie (D80), explicado: es el riesgo que
+> queda después del tratamiento, medido aparte del cumplimiento (D75).
 
 ### 3.5 Versionado del catálogo y qué se clona
 

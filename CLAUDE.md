@@ -54,14 +54,21 @@ Fuera de `references/`:
   «todo o nada» en cada nivel, y **lo pendiente no cuenta como cumplido** (`modelo-datos.md` §9, D68).
   El porcentaje es el **avance**: informa, nunca decide el cumplimiento.
 
-## Reglas de producto (de `philosophy.md`; ya se violaron una vez)
+## Reglas de producto (de `philosophy.md`; D80 reemplazó las de jerga y porcentaje)
 
-- **Nunca un % desnudo como métrica principal.** El readiness es cualitativo: Preparado = 100%,
-  Casi listo = 80% o más, Requiere trabajo = menos. El % es secundario.
-- **Nunca jerga técnica en la superficie** ("controles", "CC6.1", "matrices", "riesgo residual").
-  La vista técnica existe, pero **es la pantalla de los roles `auditor` y `consultor`**, no un modo
-  ni un botón. El cliente (`admin_empresa`, `funcional`) solo ve la vista de negocio (en qué falla y
-  su porcentaje). Consultoría prepara para la auditoría; auditoría certifica.
+- **Lenguaje de GRC.** Monkey es una herramienta seria de gobierno, riesgo y cumplimiento y habla como tal: la
+  superficie usa el vocabulario del dominio (**controles, riesgos, causas, evidencias, requisitos, marcos,
+  tratamiento, riesgo residual**) y **muestra siempre los códigos** (`CC6.1`, `IAC-12`). Nunca eufemismos que
+  oculten el término correcto («acción de protección», «lo que podría salir mal»). Lo que sí se exige es explicar:
+  junto al código va **en qué falla, qué impacto tiene y qué hacer** (plantilla de 7 campos de `philosophy.md`).
+- **Estado y porcentaje, juntos.** El estado cualitativo (Preparado = 100%, Casi listo = 80% o más, Requiere
+  trabajo = menos, Sin medir) y el **porcentaje de avance** se muestran **a la vez**, en el resumen y en cada
+  control, con la **cobertura al lado** (el avance «de lo medido» y cuánto se midió). Nunca un porcentaje solo,
+  nunca uno de «toda la empresa» (la unidad es servicio × marco) y el porcentaje **informa, no decide**.
+- **La vista técnica sigue siendo de los roles `auditor` y `consultor`**, no un modo ni un botón: añade lo que
+  solo ellos necesitan (estados del motor, pruebas, puntos de enfoque, matrices). El cliente (`admin_empresa`,
+  `funcional`) ve la vista de negocio, que ya usa el vocabulario y los códigos del dominio. Consultoría prepara
+  para la auditoría; auditoría certifica.
 - **La IA nunca certifica cumplimiento**, nunca presenta inferencia como hecho verificado sin
   mostrar evidencia, y siempre etiqueta lo que ella generó.
 - Para explicarle un hallazgo a un usuario final: plantilla de 7 campos de `philosophy.md`.
@@ -103,4 +110,6 @@ decisión de qué construir, sí.
 
 El 24 de agosto de 2026 se construyó la pantalla "Cumplimiento" copiando a Vanta sin pasar por
 `philosophy.md`: salieron porcentajes desnudos y códigos técnicos (`CC1.1-CC1.5`) en la vista por
-defecto. La skill se consulta ANTES de diseñar, no después de que el usuario lo señale.
+defecto. De ahí quedó la regla de que nada se muestra sin explicarlo; el 15 de octubre de 2026 (D80) se
+precisó: los códigos y el porcentaje **sí se muestran**, siempre acompañados del estado, la cobertura y la
+explicación. La skill se consulta ANTES de diseñar, no después de que el usuario lo señale.

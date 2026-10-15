@@ -1,13 +1,13 @@
 ---
 id: contracts-compliance-overview
 name: Contrato — Cumplimiento, resumen del servicio y evaluaciones
-description: El cumplimiento de un servicio por marco, categoría y acción que falla, y la evaluación que emiten el consultor y el auditor.
+description: El cumplimiento de un servicio por marco, categoría y control que falla, y la evaluación que emiten el consultor y el auditor.
 type: contract
 ---
 
 # Cumplimiento — resumen del servicio y evaluaciones
 
-**Estado: PROPUESTA (2026-10-14).** Ver `conventions.md` (sección «Cumplimiento») y `enums.md`. Tickets: MD-137, MD-138, MD-139, MD-155.
+**Estado: PROPUESTA (2026-10-14; D80 el 2026-10-15).** Ver `conventions.md` (sección «Cumplimiento») y `enums.md`. Tickets: MD-137, MD-138, MD-139, MD-155.
 
 **Qué es.** El cumplimiento se mide por **servicio × marco**; nunca existe un número de toda la empresa. Los estados salen del motor del comité (`modelo-datos.md` §9, D68) y **se derivan, no se guardan como atributo del marco**.
 **Entidades:** `service_frameworks` (la evaluación del servicio), `framework_assessments` (§7.5). **App:** Monkey Platform.
@@ -16,7 +16,7 @@ type: contract
 
 | Acción | `admin_empresa` | `funcional` | `consultor` | `auditor` |
 |---|---|---|---|---|
-| Ver el resumen (vista de negocio) | ✓ | **solo lo de sus acciones** | ✓ | ✓ |
+| Ver el resumen (vista de negocio) | ✓ | **solo lo de sus controles** | ✓ | ✓ |
 | Pedir `view=technical` | `403` | `403` | ✓ | ✓ |
 | Emitir una evaluación | `403` | `403` | ✓ **solo la suya** | ✓ **solo la suya** |
 | Ver las evaluaciones emitidas | `P3` | `P3` | ✓ | ✓ |
@@ -55,6 +55,8 @@ Un bloque por **marco contratado**. Dentro, solo las categorías **en alcance** 
             "failing_controls": [
               {
                 "control_id": "3f1c…",
+                "code": "IAC-12",
+                "requirement_codes": ["CC6.1", "CC6.2"],
                 "own_code": null,
                 "name": "Gestión de accesos de usuarios",
                 "readiness": "needs_work",
@@ -72,12 +74,12 @@ Un bloque por **marco contratado**. Dentro, solo las categorías **en alcance** 
 }
 ```
 
-- `readiness`: `ready` · `almost_ready` · `needs_work` · `not_measured` (`enums.md`). `progress` y `coverage` son conteos; **no hay porcentaje** (`conventions.md`). Un marco con todo lo medido cumpliendo pero cobertura baja **no** es `ready`.
+- `readiness`: `ready` · `almost_ready` · `needs_work` · `not_measured` (`enums.md`). `progress` y `coverage` son conteos; **el porcentaje no viaja**: la pantalla lo deriva y lo muestra junto al estado y a la cobertura (`conventions.md`, D80). Un marco con todo lo medido cumpliendo pero cobertura baja **no** es `ready`.
 - `progress` del marco cuenta **controles únicos** (un control compartido entre categorías cuenta una vez); el de la categoría, los controles de esa categoría.
-- `failing_controls` trae **solo lo que no cumple** (en qué falla, el activo o la prueba afectados). Un test aparece con `display_name`, nunca con el texto del comité ni con su código.
+- `failing_controls` trae **solo lo que no cumple**, con su `code` y los `requirement_codes` que cubre (D80), en qué falla, y el activo o la prueba afectados. Un test aparece con `display_name`, nunca con el texto del comité ni con su código.
 - `evaluation` es la evaluación del servicio: versión del catálogo, período auditado y fecha de corte. **Mientras no estén definidos** (`P26`), `evaluation` viene con esos campos en `null` y el marco con `readiness: "not_measured"`: el motor no ejecuta sin los cinco datos.
-- Un servicio recién clonado, sin resultados, responde `not_measured` y **no inventa ningún porcentaje**.
-- Un `funcional` ve el marco y las categorías completos, pero `failing_controls` solo con las acciones que tiene asignadas.
+- Un servicio recién clonado, sin resultados, responde `not_measured` y la pantalla **no inventa ningún porcentaje** (sin total no hay porcentaje).
+- Un `funcional` ve el marco y las categorías completos, pero `failing_controls` solo con los controles que tiene asignados.
 
 ### `?view=technical`
 

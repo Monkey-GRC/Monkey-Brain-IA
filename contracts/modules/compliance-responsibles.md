@@ -113,4 +113,4 @@ Todos con el mismo sobre (`conventions.md`); `message` es la clave i18n del erro
 
 ## Preguntas abiertas
 
-- **Asignar acciones de protección a una persona con cuenta** no es esto: es MD-158 (gestión de usuarios, otro sprint).
+- **Asignar controles a una persona con cuenta** no es esto: es MD-158 (gestión de usuarios, otro sprint).

@@ -23,6 +23,7 @@ Lo que sigue abierto, con lo más urgente arriba. 🚧 bloquea trabajo · ⚠️
 | [P24](#p24--quién-aprueba-una-exclusión-si-la-empresa-no-tiene-consultor) | Quién aprueba una exclusión si la empresa no tiene consultor | ⚠️ La pantalla de exclusiones (MD-144) | 2026-10-13 |
 | [P25](#p25--quién-valida-los-atributos-de-una-evidencia-y-cómo-se-relaciona-con-el-veredicto-del-consultor) | Quién valida los atributos de una evidencia y cómo se relaciona con el veredicto del consultor | ⚠️ El endpoint de validación y el veredicto (MD-155), y el estado de los tests documentales | 2026-10-14 |
 | [P26](#p26--quién-define-el-período-auditado-y-la-fecha-de-corte-de-una-evaluación) | Quién define el período auditado y la fecha de corte de una evaluación | 🚧 Que el motor ejecute: sin esos datos el resumen es «Sin medir» y no se emiten evaluaciones (MD-137, MD-155) | 2026-10-14 |
+| [P27](#p27--cómo-se-agrupan-los-controles-en-un-marco-sin-categorías) | Cómo se agrupan los controles en un marco sin categorías | 🚧 La agrupación de la lista de controles y del resumen para marcos distintos de SOC 2 | 2026-10-15 |
 | [P13](#p13--ratificar-lo-que-desarrollo-decidió-en-las-correcciones-del-2026-10-05-d50-d51) | Ratificar lo que desarrollo decidió el 2026-10-05 (D50, D51) | No bloquea: está construido y funcionando | 2026-10-06 |
 | [P15](#p15--cómo-se-mapean-los-checks-de-nube-que-quedan-fuera) | Cómo se mapean los checks de nube que quedan fuera | No bloquea: lo no mapeado no cuenta hasta responder | 2026-10-08 |
 
@@ -206,6 +207,17 @@ pero ningún formulario ni endpoint los llena: el onboarding solo pide un `evalu
 
 ---
 
+## P27 · Cómo se agrupan los controles en un marco sin categorías
+
+**Estado:** abierto desde 2026-10-15 (D80). La lista de controles y el resumen se agrupan por **categoría**, y en SOC 2 la categoría es el criterio de confianza (Seguridad, Disponibilidad, Integridad del procesamiento, Confidencialidad, Privacidad). **Otros marcos no tienen ese nivel** (ISO 27001, NIST CSF y PCI DSS agrupan distinto), y el modelo hoy solo tiene 	rust_criteria, que es de SOC 2. En cambio **cada control ya trae un domain** (27 valores literales del comité: «Gestión de Activos», «Monitoreo Continuo»…), que es **del control y no del marco** (D35), así que existe sea cual sea el marco.
+
+1. **¿Cuál es la agrupación principal?** *Recomendación: la categoría del marco cuando el marco la define (SOC 2); si no, el domain del control. El domain queda además siempre disponible como filtro.*
+2. **¿Se muestra el código de la categoría o su nombre?** *Recomendación: el nombre del marco para la categoría (el que figura en el marco) y, al lado, el código de cada control y de cada requisito (CC6.1, IAC-12), que sí existen en todos los marcos.*
+3. **¿Cómo se llama la agrupación en la pantalla?** *Recomendación: «Categoría» en SOC 2 y el nombre propio del marco en los demás (la API lo manda como etiqueta, no se escribe en el frontend).*
+
+**Qué depende:** la lista de controles (MD-120) y el resumen (MD-140) para cualquier marco que no sea SOC 2. Para el MVP (solo SOC 2) no bloquea nada. Si se adopta la recomendación, el contrato de controles añade domain a cada ítem.
+
+---
 ## Cómo se cierra un pendiente
 
 1. El comité responde.

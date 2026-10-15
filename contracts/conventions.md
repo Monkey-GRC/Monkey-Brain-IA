@@ -173,13 +173,13 @@ recalcule:
 { "completion": { "required_total": 9, "required_filled": 7, "optional_total": 1, "optional_filled": 0 } }
 ```
 
-El **porcentaje no se devuelve como métrica principal** en nada que vea el cliente: eso lo fija
-`philosophy.md`. Aquí es un contador de campos de un formulario, no un readiness de cumplimiento.
+Esto es un contador de campos de un formulario, **no un readiness ni un porcentaje de cumplimiento**
+(`philosophy.md`, D80): el cumplimiento se muestra con estado, porcentaje de avance y cobertura juntos.
 
 ## Textos
 
-- La API nunca devuelve jerga técnica de compliance en un `message` destinado al cliente final
-  (`philosophy.md`). Los códigos técnicos (`CC6.1`) viajan como dato en `data`, no como prosa.
+- Un `message` destinado al cliente final es una frase clara (`philosophy.md`). Los códigos (`CC6.1`, `IAC-12`)
+  viajan como dato en `data` y las pantallas los **muestran siempre** (D80).
 - Lo generado por IA viaja siempre con su marca: `"is_ai_generated": true` y `"ai_confidence"`.
   Nunca se presenta inferencia como hecho verificado.
 - Ningún campo ni mensaje nombra al proveedor del motor de monitoreo.
@@ -202,13 +202,15 @@ iniciar sesión, MD-160); el resto de roles, en la suya. El acceso de `admin_mon
 | El rol no puede hacer esa acción (p. ej. el auditor intenta proponer) | `403` |
 | Una lista que el `funcional` no puede ver completa | no falla: **devuelve solo lo suyo** (vacía si no tiene nada) |
 
-**Vista de negocio y vista técnica.** Por defecto, todo `GET` de Cumplimiento devuelve la **vista de negocio**: en qué falla, con un semáforo y sin códigos.
-Con **`?view=technical`** se agrega el objeto `technical` (códigos de requisito y de control, puntos de enfoque, estados de evaluación de
-`enums.md`). **Solo los roles `auditor` y `consultor` pueden pedirla; para cualquier otro, incluidos `admin_empresa` y `funcional`, responde `403`**
+**Vista de negocio y vista técnica.** Por defecto, todo `GET` de Cumplimiento devuelve la **vista de negocio**: en qué falla, con el estado cualitativo y **con los códigos**
+(`code` del control y `requirement_codes`, D80). Con **`?view=technical`** se agrega el objeto `technical` (puntos de enfoque, estados de evaluación de
+`enums.md`, pruebas). **Solo los roles `auditor` y `consultor` pueden pedirla; para cualquier otro, incluidos `admin_empresa` y `funcional`, responde `403`**
 (D63, D64, SEG-54). La vista técnica **agrega**, nunca quita: es la de negocio más `technical`.
 
-**Cómo se mide en la vista de negocio.** Siempre cualitativo primero (`readiness`: `ready` · `almost_ready` · `needs_work` · `not_measured`), con dos contadores
-separados y **ningún porcentaje**: el avance y la cobertura viajan como conteos y la pantalla los muestra debajo, nunca como métrica principal (`philosophy.md`).
+**Cómo se mide en la vista de negocio.** El estado cualitativo (`readiness`: `ready` · `almost_ready` · `needs_work` · `not_measured`) **y** el porcentaje de avance se muestran
+**juntos**, con la cobertura al lado (D80). La API manda conteos; **el porcentaje no viaja**, la pantalla lo deriva: avance = `done / total`, cobertura = `measured / applicable`.
+Reglas del cálculo en pantalla: se **trunca** a entero (nunca se redondea hacia arriba: 99,6 % no es 100 %, porque 100 % es lo único que cumple); si el total es 0 no hay porcentaje
+(se muestra solo el estado); y nunca hay uno de toda la empresa. El porcentaje **informa, no decide** (`philosophy.md`).
 
 ```json
 { "readiness": "almost_ready", "progress": { "done": 4, "total": 5 }, "coverage": { "measured": 5, "applicable": 5 } }

@@ -74,7 +74,7 @@ Lo que ve el cliente por defecto. **Cualitativo primero; el número es secundari
 - `readiness`: `ready` · `almost_ready` · `needs_work` · `not_measured`. **`not_measured` no es un fallo**: es un hueco de cobertura (§9, D68: lo sin medir queda pendiente y **no cuenta como cumplido**; `pending` ≠
   `non_compliant`).
 - `coverage` y `of_measured` son **dos números separados** (los dos son verdad): cuánto se midió y, de lo medido, cuánto cumple.
-  **No existe un porcentaje consolidado**; si la pantalla lo calcula para mostrarlo, va **debajo** y nunca como métrica principal.
+  **No existe un porcentaje consolidado de la empresa**; el de lo medido que cumple se muestra junto al estado y a la cobertura, nunca solo (D80).
 - `areas`: agrupa las pruebas del comité en lenguaje de negocio (`identity_access`, `data_network`, `logging_backup`; las claves y
   etiquetas, en `enums.md`). El mapeo área ← prueba no es del contrato.
 - `needs_manual_review`: lo que la sonda no puede decidir (`MANUAL` → `not_run`). Se cierra con evidencia que sube el cliente.

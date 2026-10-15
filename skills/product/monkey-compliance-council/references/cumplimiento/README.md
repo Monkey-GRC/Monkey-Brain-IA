@@ -20,4 +20,4 @@ en el producto.
 - **Cómo se calcula** (los niveles activo → test → control → categoría → marco, los estados, las reglas RN-01 a RN-25 del comité y los 8 casos de prueba; D68, que reemplaza la agregación de D62): [`../datos/modelo-datos.md`](../datos/modelo-datos.md) §9.
 - **Cómo se modela** (marco → requisito → punto de enfoque → control; el control es atómico e independiente del marco): `modelo-datos.md` §3.
 - **Cómo se mide el cumplimiento del cliente** (controles del cliente, riesgos, evidencias, evaluaciones): `modelo-datos.md` §7.
-- **Cómo se le habla al usuario final** (readiness cualitativo, sin jerga, plantilla de 7 campos): [`../producto/philosophy.md`](../producto/philosophy.md).
+- **Cómo se le habla al usuario final** (estado cualitativo con porcentaje de avance y cobertura, vocabulario y códigos del dominio, plantilla de 7 campos): [`../producto/philosophy.md`](../producto/philosophy.md).

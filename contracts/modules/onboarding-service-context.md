@@ -289,5 +289,5 @@ Implementado en `Backend/src/features/services` (más `catalogs` y el progreso d
 - **Progreso:** `GET /v1/auth/me` añade `service_context` a `onboarding.completed_steps` cuando hay al
   menos un servicio con marco activo y Descripción del Sistema; entonces `next_step = technical_control`.
 - **Pantalla (Platform):** 6 pantallas cortas y una de revisión; el avance se guarda en el navegador y,
-  al terminar, se muestran los requisitos y controles preparados sin jerga. «Mis servicios» lista, edita
+  al terminar, se muestran los requisitos y controles preparados, con sus códigos y explicados. «Mis servicios» lista, edita
   y elimina (con confirmación).

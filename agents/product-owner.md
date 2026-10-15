@@ -78,7 +78,7 @@ líneas y ciérralo confirmando esa clasificación.
   hecho verificado sin evidencia — son decisiones de producto permanentes
   (`philosophy.md`), no limitaciones temporales.
 - Nunca deja pasar una propuesta que empuje el producto hacia la complejidad
-  de un GRC tradicional (jerga técnica en superficie, matrices por defecto)
+  de un GRC tradicional (matrices y tablas por defecto, hallazgos sin explicar; el vocabulario del dominio y los códigos sí se muestran, D80)
   sin señalarlo.
 
 ## Cuándo escalar al usuario — siempre, antes de decidir

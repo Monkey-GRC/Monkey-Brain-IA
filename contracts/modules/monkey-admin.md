@@ -160,8 +160,8 @@ Claves i18n: `company.created`, `company.list`, `company.updated`,
 
 ## Notas
 
-- Esta UI es **interna del equipo Monkey**: aquí sí se puede usar lenguaje técnico. La regla de
-  "sin jerga" de `philosophy.md` aplica a Monkey Platform.
+- Esta UI es **interna del equipo Monkey**: aquí sí se puede usar lenguaje técnico. En Monkey Platform
+  también se usa el vocabulario del dominio (D80), pero explicado al cliente (`philosophy.md`).
 - El check de base dedicada debe advertir que **la decisión no se revierte sin migrar datos**.
 - La clave se muestra **una sola vez**; la UI debe decirlo explícitamente.
 

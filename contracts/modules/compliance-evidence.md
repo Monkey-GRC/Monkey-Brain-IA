@@ -1,7 +1,7 @@
 ---
 id: contracts-compliance-evidence
 name: Contrato — Cumplimiento, evidencias
-description: Qué evidencia exige cada acción de protección, subir un archivo con su huella y versión, descargarlo con enlace firmado, y aprobarlo o rechazarlo.
+description: Qué evidencia exige cada control, subir un archivo con su huella y versión, descargarlo con enlace firmado, y aprobarlo o rechazarlo.
 type: contract
 ---
 
@@ -9,7 +9,7 @@ type: contract
 
 **Estado: PROPUESTA (2026-10-14).** Ver `conventions.md` (sección «Cumplimiento») y `enums.md`. Tickets: MD-126, MD-127.
 
-**Qué es.** Cada acción de protección exige evidencias (`evidence_requirements`, que nacen de las plantillas del catálogo al clonar). Quien responde sube un archivo (`evidence_submissions`); el administrador de la empresa lo
+**Qué es.** Cada control exige evidencias (`evidence_requirements`, que nacen de las plantillas del catálogo al clonar). Quien responde sube un archivo (`evidence_submissions`); el administrador de la empresa lo
 aprueba o lo rechaza. **Entidades:** `evidence_requirements`, `evidence_submissions` (`modelo-datos.md` §7.3). **App:** Monkey Platform. En las pantallas: «lo que me toca aportar».
 
 **Dos cosas distintas, no se mezclan.** La **aprobación de la empresa** (`validation_status`: `pending` · `approved` · `rejected`) la da solo `admin_empresa` y es de este contrato. La **validación de la evidencia**

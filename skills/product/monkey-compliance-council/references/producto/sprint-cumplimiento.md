@@ -18,7 +18,7 @@ cambios con aprobación), §7.5 (el veredicto) y §7.6 (las observaciones).
 | Épico | Tickets |
 |---|---|
 | Fundación (MD-101) | MD-108 contratos (escritos en `contracts/modules/compliance-*.md`) · MD-109 glosario · MD-110 almacenamiento de evidencias · MD-113 rastro de auditoría (listo) · MD-114 idiomas en Platform · MD-115 componentes compartidos |
-| Acciones de protección (MD-102) | MD-117 listar y ver (**construido**) · MD-118 proponer edición o baja (**construido**) · MD-150 proponer un control propio (**construido**) |
+| Controles (MD-102) | MD-117 listar y ver (**construido**) · MD-118 proponer edición o baja (**construido**) · MD-150 proponer un control propio (**construido**) |
 | Riesgos y causas (MD-103) | MD-122 riesgos y causas (**construido**) · MD-123 evaluación 5×5 y tratamiento |
 | Evidencias (MD-104) | MD-126 subir · MD-127 aprobar o rechazar · MD-128 Descripción del Sistema como archivo (listo) |
 | Responsables de la organización (MD-105) | MD-133 cargos en la API (**construido**) · MD-135 cargos en pantalla |
@@ -48,7 +48,7 @@ reutilización de resultados entre marcos (REQ-013, REQ-033) y la evaluación de
 ## Qué quedó fuera (vuelve al backlog)
 
 - **Acceso y usuarios (MD-153):** invitar (MD-131), desactivar (MD-132), pantalla Equipo (MD-134), Monkey Admin heredado (MD-143), MFA para los 5 roles (MD-94),
-  asignar acciones de protección a personas (MD-158), crear y asignar consultores desde Monkey Admin (MD-159),
+  asignar controles a personas (MD-158), crear y asignar consultores desde Monkey Admin (MD-159),
   elegir la empresa de trabajo del consultor (MD-160), ver y suspender consultores asignados (MD-161).
 - **Monkey Admin:** catálogo maestro (MD-141, MD-142) y detalle de empresa (MD-146).
 - **Infraestructura y limpieza:** MD-112 (docker-compose y respaldo), MD-116 (limpieza de Platform), MD-87 (confidencialidad de la sonda).
@@ -61,7 +61,7 @@ Estos tickets **no se reescriben en Jira hasta que el comité entregue su Excel*
 | Ticket | Pantalla | Lo que ya está decidido |
 |---|---|---|
 | MD-119 | Estructura del módulo dentro del servicio | Cumplimiento vive dentro de cada servicio; no hay toggle de «modo auditor»: el cliente ve la vista de negocio y la técnica es de los roles auditor y consultor |
-| MD-120 | Lista de acciones de protección | Agrupada por categoría; estado primero, porcentaje y cobertura debajo |
+| MD-120 | Lista de controles | Agrupada por categoría; con el código del control, el estado cualitativo, el porcentaje de avance y la cobertura juntos (D80) |
 | MD-121 | Detalle y edición de una acción | Editar o dar de baja es una **propuesta** que aprueba el consultor |
 | MD-124 · MD-125 | Riesgos, evaluación 5×5 y tratamiento | Evalúa y trata el administrador de la empresa; el consultor y el auditor leen |
 | MD-129 · MD-130 | Bandeja de evidencias y su aprobación | Solo el administrador de la empresa aprueba o rechaza |

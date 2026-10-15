@@ -57,4 +57,4 @@ Mismo patrón (`public/i18n/{es,en}/<area>.json`, pipe `translate`), con estas d
   `translate` (ver `SCENARIO_HELP` en `technical-control.models.ts`).
 - Textos con variables: `"Paso {{current}} de {{total}}"` y `{{ 'CLAVE' | translate: { current: 1, total: 6 } }}`. No hay plurales ICU:
   dos claves (`..._ONE`, `..._MANY`) y se elige en la plantilla.
-- Los textos de Cumplimiento usan los términos del glosario aprobado (MD-109) en `compliance.json`, nunca palabras sueltas.
+- Los textos de Cumplimiento usan el vocabulario del dominio fijado en D80 (controles, riesgos, causas, evidencias, requisitos, marcos, tratamiento, riesgo residual) en `compliance.json`, nunca palabras sueltas ni eufemismos.

@@ -6,14 +6,16 @@ Esta es la constitución de producto. Cualquier feature, pantalla o respuesta de
 
 Monkey debe llevar a una empresa de **"no sabemos nada sobre compliance"** a **"estamos preparados para una auditoría"** siguiendo un flujo guiado, donde la IA se comporta como un consultor experto que acompaña — nunca como un chatbot genérico ni como una hoja de cálculo con IA encima.
 
-## Lo que el usuario final NUNCA debería tener que pensar (si no es necesario)
+## El lenguaje: el del dominio, con cada hallazgo explicado
 
-Controles, normativas, matrices, evidencias, requisitos, "trust", riesgo residual. La plataforma traduce todo eso a lenguaje entendible, siempre.
+Monkey es una plataforma de gobierno, riesgo y cumplimiento (GRC) y habla como tal (**D80**, 2026-10-15): **controles, riesgos, causas, evidencias, requisitos, marcos, tratamiento, riesgo residual**. Quien trabaja en compliance espera esos términos y desconfía de los eufemismos. Los **códigos** (`CC6.1`, `IAC-12`) se muestran siempre.
 
-**Mal**: "CC6.1 requiere MFA."
-**Bien**: "Encontramos que dos administradores aún pueden iniciar sesión sin autenticación multifactor. Esto representa un riesgo alto y puede afectar tu preparación para SOC 2. Te ayudamos a solucionarlo."
+Lo que no se acepta es dejar el hallazgo en el código: junto al término correcto va una frase concreta con lo que falla, su impacto y qué hacer.
 
-Esta traducción no es cosmética — es la propuesta de valor central de Monkey frente a Vanta/Drata/Secureframe/Sprinto, que muestran el hallazgo técnico primero y la explicación (si la hay) después.
+**Mal**: "CC6.1 requiere MFA." (el código solo, sin decir qué falla)
+**Bien**: "CC6.1 · Acceso lógico: dos administradores aún pueden iniciar sesión sin autenticación multifactor. Riesgo alto para tu preparación para SOC 2. Te ayudamos a solucionarlo."
+
+Esta explicación no es cosmética — es la propuesta de valor de Monkey frente a Vanta/Drata/Secureframe/Sprinto, que muestran el hallazgo técnico primero y la explicación (si la hay) después: Monkey muestra el término correcto **junto a** la explicación y el siguiente paso.
 
 ## Principios que sí priorizamos
 
@@ -21,7 +23,7 @@ Experiencia, simplicidad, automatización, IA, explicabilidad, readiness continu
 
 ## Principios que NO priorizamos
 
-Complejidad regulatoria expuesta al usuario, terminología técnica en la superficie del producto, pantallas llenas de tablas por defecto (la vista detallada existe, pero es secundaria, para el auditor o el usuario avanzado que la pida).
+Complejidad regulatoria sin explicar, eufemismos que ocultan el término correcto, pantallas llenas de tablas por defecto (la vista detallada existe, pero es secundaria, para el auditor o el usuario avanzado que la pida).
 
 ## El motor debe razonar, no solo responder
 
@@ -39,7 +41,7 @@ Estas no son limitaciones temporales de ingeniería — son decisiones de produc
 
 ## El onboarding se siente como configurar un iPhone nuevo, no como implementar un GRC
 
-Diez pasos, cada uno con una sola pregunta o acción clara, sin jerga, con la IA narrando qué está haciendo en cada momento (nunca un spinner mudo):
+Diez pasos, cada uno con una sola pregunta o acción clara, con el vocabulario del dominio explicado la primera vez que aparece, y con la IA narrando qué está haciendo en cada momento (nunca un spinner mudo):
 
 1. Conozcamos tu empresa
 2. ¿Qué hace tu producto o servicio?
@@ -47,21 +49,21 @@ Diez pasos, cada uno con una sola pregunta o acción clara, sin jerga, con la IA
 4. ¿Qué herramientas ya usan?
 5. Conectemos tus herramientas
 6. La IA analiza automáticamente (con progreso narrado)
-7. La IA identifica riesgos (en lenguaje de negocio desde el primer momento)
+7. La IA identifica riesgos (con su impacto de negocio explicado desde el primer momento)
 8. La IA propone qué framework(s) perseguir primero, con una razón concreta
-9. La IA muestra el nivel de preparación (cualitativo: Preparado = 100%, Casi listo = 80% o más, Requiere trabajo = menos — nunca solo un porcentaje desnudo)
+9. La IA muestra el nivel de preparación (el estado cualitativo: Preparado = 100%, Casi listo = 80% o más, Requiere trabajo = menos, **junto con** el porcentaje de avance y la cobertura — nunca el porcentaje solo)
 10. Comienza el monitoreo continuo, con la primera acción del día ya sugerida
 
 ## El dashboard responde 4 preguntas, nunca es una hoja de cálculo
 
-¿Estamos bien? ¿Qué es urgente? ¿Qué cambió? ¿Qué debemos hacer hoy? Todo lo demás (matrices, listas completas de controles, códigos técnicos) **no es una capa del cliente: es la pantalla de los roles `auditor` y `consultor`** (D63, D64). El cliente solo ve la vista de negocio, con lo que falla y su porcentaje.
+¿Estamos bien? ¿Qué es urgente? ¿Qué cambió? ¿Qué debemos hacer hoy? La vista de negocio responde con el estado cualitativo, el porcentaje de avance con su cobertura, lo que falla y los códigos de los controles y requisitos (D80). Lo que solo necesitan el auditor y el consultor (estados del motor, pruebas, puntos de enfoque, matrices) **no es una capa del cliente: es la pantalla de los roles `auditor` y `consultor`** (D63, D64).
 
 ## La plantilla de 7 campos para cada hallazgo
 
 Esta es la plantilla que Monkey usa para explicarle un hallazgo a un usuario final. Úsala cuando estés diseñando o redactando cómo el producto debe comunicar algo — no la fuerces en tu conversación con Nelson.
 
-> **Qué ocurrió**: descripción concreta y verificable, sin jerga.
-> **Por qué importa**: impacto de negocio, no cita textual de un control.
+> **Qué ocurrió**: descripción concreta y verificable, con el código del control o requisito.
+> **Por qué importa**: impacto de negocio, no solo la cita textual de un control.
 > **Cómo solucionarlo**: pasos accionables, lo más automatizado posible.
 > **Quién debería hacerlo**: rol o persona específica, no "el equipo de seguridad" en abstracto.
 > **Cuánto tiempo toma**: estimado realista.
@@ -90,6 +92,10 @@ Nunca presentes un porcentaje de cumplimiento sin decir sobre cuánto se midió.
 cliente que acaba de empezar no tiene "5% de cumplimiento": tiene **cobertura del
 12%, y de lo medido cumple el 80%**. Reportar solo lo primero es un número que
 asusta y que además es falso.
+
+Desde **D80** el porcentaje de avance **se muestra siempre**, en el resumen del servicio y en cada
+control, **junto al estado cualitativo y a la cobertura**. Lo que sigue prohibido es presentarlo solo
+y presentar uno de «toda la empresa» (no existe: la unidad es servicio × marco).
 
 Esto no es una preferencia de UX: viene argumentado por el comité sobre un caso
 real, y el argumento es de honestidad ante un auditor —

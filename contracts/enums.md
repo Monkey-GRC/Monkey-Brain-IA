@@ -461,7 +461,7 @@ Valores que usan `modules/compliance-*.md`. Los de las tablas ya existentes (`di
 ## Estados de evaluación (D68)
 
 Los **estados que el motor calcula** en cada nivel (`modelo-datos.md` §9). Se **derivan**, no son una columna que alguien edita. **La fuente (hoja `MODELO EVALUACIÓN MONKEY`) solo da las etiquetas en español**; los valores en
-`snake_case` en inglés son nuestra nomenclatura. Las etiquetas del cliente van en lenguaje de negocio (Preparado, Casi listo, Requiere trabajo, Sin medir: `philosophy.md`); estas son la **vista técnica** del consultor y el auditor.
+`snake_case` en inglés son nuestra nomenclatura. El cliente ve el estado cualitativo (Preparado, Casi listo, Requiere trabajo, Sin medir: `philosophy.md`) junto con su porcentaje de avance (D80); estos son los estados del motor, la **vista técnica** del consultor y el auditor.
 
 ### `evidence_state` — estado calculado de una evidencia
 `compliant` Cumple · `non_compliant` No cumple · `pending` Pendiente · `in_review` En revisión · `expired` Evidencia vencida · `not_applicable` No aplica.
