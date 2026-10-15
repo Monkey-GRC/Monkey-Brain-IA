@@ -12,7 +12,7 @@ type: contract
 **Qué es.** Al contratar un marco, cada servicio recibe **su propia copia** de los riesgos y causas del catálogo (D28): editarla no cambia el catálogo ni a otra empresa. Un *riesgo* es la
 probabilidad y el impacto de que algo ocurra o se pierda si una persona lo materializa; una *causa* es el riesgo materializado; un *control* es el paso a paso que lo evita o lo mitiga (vocabulario del comité,
 D76). **Entidades:** `client_risks`, `client_causes`, `client_risk_causes`, `client_cause_controls`, `risk_treatments`, `organization_responsibles` (`modelo-datos.md` §7.2).
-**App:** Monkey Platform. En las pantallas: «lo que podría salir mal» (riesgos) y «por qué podría pasar» (causas).
+**App:** Monkey Platform. En las pantallas se llaman «Riesgos» y «Causas» (D80: vocabulario del dominio; se retiran «lo que podría salir mal» y «por qué podría pasar»).
 
 **Fuera de este contrato.** La **mitigación** (estados de causa y riesgo) y el **riesgo residual** con sus dos matrices son vista del consultor y del auditor y esperan los datos y la fórmula del comité
 (`P22`, MD-151): cuando existan, se agregan como campos opcionales de la respuesta, sin romper nada de lo de aquí.
@@ -86,7 +86,7 @@ Un riesgo **sin evaluar** trae `likelihood`, `impact`, `inherent_risk_value` e `
         "name": "Cuentas sin dueño tras una salida de personal",
         "failure_category": "human_resource",
         "controls": [
-          { "control_id": "3f1c…", "own_code": null, "name": "Gestión de accesos de usuarios", "is_mandatory": true, "effect": null }
+          { "control_id": "3f1c…", "code": "IAC-12", "own_code": null, "name": "Gestión de accesos de usuarios", "is_mandatory": true, "effect": null }
         ]
       }
     ]
@@ -95,6 +95,7 @@ Un riesgo **sin evaluar** trae `likelihood`, `impact`, `inherent_risk_value` e `
 ```
 
 - `potential_impact` es una lista de `loss_type` (`enums.md`).
+- `controls[].code` es **el código que identifica al control y se muestra siempre** (D80): el del catálogo (`IAC-12`) o el propio (`C01`). Igual que en `compliance-controls.md`.
 - `controls[].is_mandatory` y `effect` (`cause_control_effect`) vienen del catálogo; **hoy solo 9 relaciones los traen**, el resto viaja con `effect: null` (`P22`) y todavía no participa de ningún cálculo.
 - Con `?view=technical` cada riesgo, causa y control agrega `technical` con sus códigos del catálogo (`catalog_code`).
 
@@ -136,7 +137,7 @@ Una causa tiene esta forma (los endpoints de la tabla devuelven este mismo objet
   "origin": "catalog",
   "is_active": true,
   "risks": [ { "id": "c1a7…", "code": "R001", "name": "Acceso no autorizado a información sensible" } ],
-  "controls": [ { "control_id": "3f1c…", "own_code": null, "name": "Gestión de accesos de usuarios", "is_mandatory": true, "effect": null } ]
+  "controls": [ { "control_id": "3f1c…", "code": "IAC-12", "own_code": null, "name": "Gestión de accesos de usuarios", "is_mandatory": true, "effect": null } ]
 }
 ```
 
@@ -302,6 +303,10 @@ Todos con el mismo sobre (`conventions.md`); `message` es la clave i18n del erro
 | `risk_treatment.create` | tratamiento |
 
 ## Estado de implementación
+
+**Pendiente por D80 (2026-10-15):** `code` en cada vínculo causa–control (`controls[]`), en el riesgo y en la causa. El backend aún devuelve el código del catálogo solo dentro de `technical` y deja `own_code` en `null` para los del catálogo.
+
+**Pendiente para las pantallas de alta y edición (MD-124):** el backend no sirve en `GET /v1/catalogs/{name}` las listas `risk_criterion` (11 valores), `risk_level`, `failure_category`, `loss_type` ni `cause_control_effect`; sin ellas el frontend no puede armar los formularios de crear y editar un riesgo o una causa sin escribir las listas a mano, que `contracts/enums.md` prohíbe. Hay que servirlas como catálogos.
 
 **Construido: MD-122** (riesgos, causas y vínculos; 2026-10-14). **No** MD-123: la evaluación 5×5 y el tratamiento (`treatment` sale `null` y los campos de la evaluación, `null`).
 
