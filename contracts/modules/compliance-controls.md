@@ -149,7 +149,7 @@ El detalle de una acción. Mismas reglas de acceso que la lista.
 - `dimensions` lista **todas las que el control exige**; una que no aplica **se declara con su motivo**, nunca se omite.
 - `interpretation.is_customized` es `true` si la empresa la reescribió; si no, es el texto del catálogo.
 - `failing` dice **en qué falla**, por dimensión, con el activo o la prueba afectados (`kind`: `asset` · `test`, y un `display_name` en vez de `name` cuando es una prueba). Nunca el texto de la prueba.
-- Con `?view=technical` agrega `technical` (los mismos campos técnicos de la lista —puntos de enfoque, estado del control, número de pruebas— y, además, `tests`: `[ { "test_code": "T-CLD-001", "display_name": "Prueba de nube", "dimension": "cloud", "state": "compliant" } ]`, con `state` = `test_state`). El detalle completo de los tests está en `compliance-audit.md`.
+- Con `?view=technical` agrega `technical` (los mismos campos técnicos de la lista —puntos de enfoque, estado del control, número de pruebas— y, además, `tests`: `[ { "test_code": "T-CLD-001", "display_name": "Prueba de nube", "display_description": "Verificar que…", "dimension": "cloud", "state": "compliant" } ]`, con `state` = `test_state` y `display_description` la descripción corta de la prueba o `null` si aún no se cargó, D82). El detalle completo de los tests está en `compliance-audit.md`.
 
 ## `POST /v1/services/{service_id}/controls` — crear un control propio
 
@@ -361,7 +361,7 @@ Aprobar un cambio que altera lo que se mide deja además un `compliance_events` 
 - `proposed_values` se guarda **normalizado**: en `edit_dimensions`, cada dimensión lleva `reason_not_applicable` (el motivo recortado si no aplica, `null` si aplica); en `edit_interpretation`, el texto recortado; `retire` guarda `{}`.
 - Una propuesta pendiente por tipo y por acción la impone la base (índice único parcial); una decidida lleva quién y cuándo, y rechazar exige motivo (restricciones de la base).
 - Crear un control propio deja, en la misma transacción, su rastro de auditoría y un evento de cumplimiento (cambia lo que se mide). Proponer un cambio deja solo el rastro: no cambia el estado hasta que se apruebe.
-- `display_name` de una prueba es el nombre neutro que escribe Monkey (D70); mientras una prueba no lo tenga, sale un texto genérico de su dimensión («Prueba de nube», «Revisión documental»…). **Nunca** el nombre del comité.
+- `display_name` de una prueba es el nombre neutro que escribe Monkey (D70); mientras una prueba no lo tenga, sale un texto genérico de su dimensión («Prueba de nube», «Revisión documental»…). **Nunca** el nombre del comité. `display_description` sigue la misma regla (D82): el objetivo del comité o su reescritura neutra, nunca el texto que nombra al proveedor.
 - **Sin resultados guardados todo sale «Sin medir».** El paso de lo que mide la sonda a `evaluations` no está construido (`DT-50`): una acción sube de «Sin medir» en cuanto existan evaluaciones de su test sobre los activos del servicio.
 - Un test de la dimensión documental cuenta siempre como pendiente hasta que se guarde su veredicto o la validación de sus evidencias (`P25`).
 - El `consultor` solo puede leer la empresa donde trabaja cuando exista la elección de empresa al iniciar sesión (MD-160); hasta entonces, los datos de un cliente los lee el `auditor`.
