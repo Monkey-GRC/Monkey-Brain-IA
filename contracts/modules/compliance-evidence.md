@@ -10,7 +10,7 @@ type: contract
 **Estado: PROPUESTA (2026-10-14).** Ver `conventions.md` (sección «Cumplimiento») y `enums.md`. Tickets: MD-126, MD-127.
 
 **Qué es.** Cada control exige evidencias (`evidence_requirements`, que nacen de las plantillas del catálogo al clonar). Quien responde sube un archivo (`evidence_submissions`); el administrador de la empresa lo
-aprueba o lo rechaza. **Entidades:** `evidence_requirements`, `evidence_submissions` (`modelo-datos.md` §7.3). **App:** Monkey Platform. En las pantallas: «lo que me toca aportar».
+aprueba o lo rechaza. **Entidades:** `evidence_requirements`, `evidence_submissions` (`modelo-datos.md` §7.3). **App:** Monkey Platform. En las pantallas (D80): lo que el control exige es la **evidencia requerida** y lo que se sube para cumplirlo es la **evidencia entregada** (una versión por subida). «Prueba» no se usa para esto: en el cerebro una prueba es el test que ejecuta el motor. La evidencia se aporta **desde el propio control** (su panel de detalle) y también desde la pestaña Evidencias, que reúne lo que le toca a cada persona; ambas usan los mismos endpoints.
 
 **Dos cosas distintas, no se mezclan.** La **aprobación de la empresa** (`validation_status`: `pending` · `approved` · `rejected`) la da solo `admin_empresa` y es de este contrato. La **validación de la evidencia**
 frente al test (los seis atributos y `review`) es otra cosa, de la vista técnica, y está en `compliance-audit.md`. La IA puede sugerir; **nunca aprueba ni cierra nada**.

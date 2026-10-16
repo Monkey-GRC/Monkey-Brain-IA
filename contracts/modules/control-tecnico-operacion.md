@@ -22,7 +22,7 @@ operación continua»): empieza cuando un activo ya está conectado y validado. 
 > al proveedor (D70, `P14` D3).
 >
 > ⚠️ **Lenguaje de la superficie** (`philosophy.md`). Nada de lo que ve el cliente por defecto lleva códigos de control ni de requisito.
-> Los códigos técnicos viajan solo en el objeto `technical` y solo si quien pide tiene el rol `auditor` o `consultor` y pide `view=technical`; para cualquier otro rol esa vista responde `403` (D63, D64, SEG-54).
+> Los códigos técnicos viajan solo en el objeto `technical` y solo si quien pide tiene el rol `admin_empresa` (D81), `auditor` o `consultor` y pide `view=technical`; para el `funcional` esa vista responde `403` (D63, D64, D81, SEG-54).
 
 ## Operación continua
 

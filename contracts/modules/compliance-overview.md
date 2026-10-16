@@ -17,7 +17,7 @@ type: contract
 | Acción | `admin_empresa` | `funcional` | `consultor` | `auditor` |
 |---|---|---|---|---|
 | Ver el resumen (vista de negocio) | ✓ | **solo lo de sus controles** | ✓ | ✓ |
-| Pedir `view=technical` | `403` | `403` | ✓ | ✓ |
+| Pedir `view=technical` | ✓ (D81) | `403` | ✓ | ✓ |
 | Emitir una evaluación | `403` | `403` | ✓ **solo la suya** | ✓ **solo la suya** |
 | Ver las evaluaciones emitidas | `P3` | `P3` | ✓ | ✓ |
 
@@ -171,7 +171,7 @@ Un valor del otro rol es `422 enum.invalid`. `rationale` es **obligatoria**.
 
 | HTTP | `error.code` | Cuándo |
 |---|---|---|
-| 403 | `FORBIDDEN` | El rol no puede; `view=technical` sin ser `auditor`/`consultor`; emitir la evaluación del otro rol |
+| 403 | `FORBIDDEN` | El rol no puede; `view=technical` sin ser `admin_empresa`, `auditor` o `consultor`; emitir la evaluación del otro rol |
 | 404 | `NOT_FOUND` | El servicio no existe para esta empresa, o el marco no está contratado por él |
 | 409 | `EVALUATION_NOT_DEFINED` | Faltan el período o la fecha de corte de la evaluación del servicio |
 | 422 | `VALIDATION_FAILED` | `required` (`rationale`), `enum.invalid` (`verdict`) |

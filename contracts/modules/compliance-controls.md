@@ -18,7 +18,7 @@ un marco, o uno propio. Todo lo que se mide cuelga de él. **Entidades:** `clien
 | Acción | `admin_empresa` | `funcional` | `consultor` | `auditor` |
 |---|---|---|---|---|
 | Listar y ver | todas | **solo las asignadas** | todas | todas |
-| Pedir `view=technical` | `403` | `403` | ✓ | ✓ |
+| Pedir `view=technical` | ✓ (D81) | `403` | ✓ | ✓ |
 | Crear un control propio | ✓ | `403` | `403` | `403` |
 | Proponer editar o dar de baja | ✓ cualquiera | solo uno suyo | `403` | `403` |
 | Aprobar o rechazar una propuesta | `403` | `403` | ✓ | `403` |
@@ -274,7 +274,7 @@ Responde `200` con la propuesta ya decidida (`decided_by`, `decided_at`). **Qué
 
 | HTTP | `error.code` | Cuándo |
 |---|---|---|
-| 403 | `FORBIDDEN` | El rol no puede; el `funcional` no tiene asignada la acción; `view=technical` sin ser `auditor`/`consultor`; el proponente intenta decidir |
+| 403 | `FORBIDDEN` | El rol no puede; el `funcional` no tiene asignada la acción; `view=technical` sin ser `admin_empresa`, `auditor` o `consultor`; el proponente intenta decidir |
 | 404 | `NOT_FOUND` | La acción, el servicio o la propuesta no existen para esta empresa |
 | 409 | `CHANGE_ALREADY_PENDING` | Ya hay una propuesta pendiente del mismo `change_type` sobre esa acción |
 | 409 | `CONTROL_RETIRED` | La acción ya está dada de baja |
@@ -290,7 +290,7 @@ Claves i18n: `control.list`, `control.read`, `control.created`, `control_change.
 
 Todos con el mismo sobre (`conventions.md`); `message` es la clave i18n del error.
 
-**`403` — un `admin_empresa` pide `?view=technical`**
+**`403` — un `funcional` pide `?view=technical`**
 
 ```json
 {

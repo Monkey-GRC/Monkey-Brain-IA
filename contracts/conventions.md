@@ -204,7 +204,7 @@ iniciar sesión, MD-160); el resto de roles, en la suya. El acceso de `admin_mon
 
 **Vista de negocio y vista técnica.** Por defecto, todo `GET` de Cumplimiento devuelve la **vista de negocio**: en qué falla, con el estado cualitativo y **con los códigos**
 (`code` del control y `requirement_codes`, D80). Con **`?view=technical`** se agrega el objeto `technical` (puntos de enfoque, estados de evaluación de
-`enums.md`, pruebas). **Solo los roles `auditor` y `consultor` pueden pedirla; para cualquier otro, incluidos `admin_empresa` y `funcional`, responde `403`**
+`enums.md`, pruebas). **Pueden pedirla los roles `auditor`, `consultor` y, desde D81, `admin_empresa`; para el `funcional` responde `403`**
 (D63, D64, SEG-54). La vista técnica **agrega**, nunca quita: es la de negocio más `technical`.
 
 **Cómo se mide en la vista de negocio.** El estado cualitativo (`readiness`: `ready` · `almost_ready` · `needs_work` · `not_measured`) **y** el porcentaje de avance se muestran

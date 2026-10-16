@@ -231,7 +231,7 @@ Solo `admin_empresa`. Agrega una decisión; la vigente es la última.
 
 | HTTP | `error.code` | Cuándo |
 |---|---|---|
-| 403 | `FORBIDDEN` | El rol no puede; `view=technical` sin ser `auditor`/`consultor` |
+| 403 | `FORBIDDEN` | El rol no puede; `view=technical` sin ser `admin_empresa`, `auditor` o `consultor` |
 | 404 | `NOT_FOUND` | El riesgo, la causa, la acción o el cargo no existen para esta empresa (incluye vincular algo de otra) |
 | 409 | `CODE_ALREADY_EXISTS` | `code` ya usado en el servicio |
 | 409 | `LINK_ALREADY_EXISTS` | El vínculo ya existe |
