@@ -13,7 +13,7 @@ type: contract
 conexión, validación, activación, programación). Este contrato es **otro módulo del comité** (`modelo-datos.md` §8, «Control Técnico — la
 operación continua»): empieza cuando un activo ya está conectado y validado. Lo que no está aquí: cómo se conecta un activo.
 
-**Entidades:** `executions`, `check_results`, `evaluations`, `findings`, `asset_resources` (`modelo-datos.md` §7.4, §8, §9). **Rol:** `admin_empresa` (y `funcional` en lo suyo); la vista técnica es solo del `auditor` y del `consultor`.
+**Entidades:** `executions`, `check_results`, `evaluations`, `findings`, `asset_resources` (`modelo-datos.md` §7.4, §8, §9). **Rol:** `admin_empresa` (y `funcional` en lo suyo); la vista técnica la piden `auditor`, `consultor` y, desde D81, `admin_empresa`.
 **App:** Monkey Platform.
 
 
@@ -110,9 +110,9 @@ Los siete textos son **claves i18n** que el backend resuelve con `Accept-Languag
 vienen `null` y `how_to_fix` cae a un texto neutro: **nunca se muestra el texto crudo del motor**. Cuando un texto lo redacta la IA,
 `is_ai_generated: true` (y `ai_confidence`), siempre.
 
-### `GET /v1/assets/{id}/results?view=technical` — vista técnica del auditor y del consultor
+### `GET /v1/assets/{id}/results?view=technical` — vista técnica
 
-Paginado, **solo para los roles `auditor` y `consultor`** (los demás reciben `403`). Ítems por check y recurso:
+Paginado, **para los roles `admin_empresa` (D81), `auditor` y `consultor`** (el `funcional` y `admin_monkey` reciben `403`). Ítems por check y recurso:
 
 ```json
 {

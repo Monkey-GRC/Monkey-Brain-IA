@@ -31,7 +31,7 @@ te toca. Si lo que vas a construir no está aquí, el contrato se acuerda primer
 | `modules/compliance-responsibles.md` | Cumplimiento: los cargos responsables de la organización |
 | `modules/compliance-overview.md` | Cumplimiento: el resumen del servicio por marco y categoría, y las evaluaciones del consultor y del auditor |
 | `modules/compliance-audit.md` | Cumplimiento: tests y veredictos, observaciones del auditor y del consultor, y exclusiones |
-| `modules/control-tecnico-operacion.md` | Módulo de operación continua (§8): ejecuciones, estado de preparación, hallazgos, vista técnica del auditor y API interna del trabajador. Empieza donde acaba el Componente 3 |
+| `modules/control-tecnico-operacion.md` | Módulo de operación continua (§8): ejecuciones, estado de preparación, hallazgos, vista técnica y API interna del trabajador. Empieza donde acaba el Componente 3 |
 
 ## Formato de cada módulo
 
