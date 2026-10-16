@@ -23,7 +23,7 @@ Experiencia, simplicidad, automatización, IA, explicabilidad, readiness continu
 
 ## Principios que NO priorizamos
 
-Complejidad regulatoria sin explicar, eufemismos que ocultan el término correcto, pantallas llenas de tablas por defecto (la vista detallada existe, pero es secundaria, para el auditor o el usuario avanzado que la pida).
+Complejidad regulatoria sin explicar, eufemismos que ocultan el término correcto, pantallas llenas de tablas por defecto (la vista detallada existe, pero es secundaria, para el auditor, el consultor o el administrador que la pida).
 
 ## El motor debe razonar, no solo responder
 
@@ -56,7 +56,7 @@ Diez pasos, cada uno con una sola pregunta o acción clara, con el vocabulario d
 
 ## El dashboard responde 4 preguntas, nunca es una hoja de cálculo
 
-¿Estamos bien? ¿Qué es urgente? ¿Qué cambió? ¿Qué debemos hacer hoy? La vista de negocio responde con el estado cualitativo, el porcentaje de avance con su cobertura, lo que falla y los códigos de los controles y requisitos (D80). Lo que solo necesitan el auditor y el consultor (estados del motor, pruebas, puntos de enfoque, matrices) **no es una capa del cliente: es la pantalla de los roles `auditor` y `consultor`** (D63, D64).
+¿Estamos bien? ¿Qué es urgente? ¿Qué cambió? ¿Qué debemos hacer hoy? La vista de negocio responde con el estado cualitativo, el porcentaje de avance con su cobertura, lo que falla y los códigos de los controles y requisitos (D80). Lo que solo necesitan el auditor y el consultor (estados del motor, pruebas, puntos de enfoque, matrices) **no es una capa del cliente ni un botón: es la pantalla de los roles `auditor` y `consultor` y, mientras no se definan los permisos por pantalla (`P3`), también del `admin_empresa`** (D63, D64, D81).
 
 ## La plantilla de 7 campos para cada hallazgo
 

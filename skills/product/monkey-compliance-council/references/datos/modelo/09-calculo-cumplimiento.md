@@ -146,8 +146,8 @@ o quede pendiente o en error, vuelve a romperlo. Las simulaciones 1 a 6 y las va
 
 ### Qué ve cada rol, y el semáforo
 
-Los estados de arriba (efectivo, incompleto, vencido…) y las listas de controles son **la vista técnica**: es la pantalla de los roles `auditor` y `consultor` (D63, D64). **El cliente** (`admin_empresa`, `funcional`)
-ve la vista de negocio (REQ-049): el semáforo cualitativo primero, y en qué falla y su avance (`philosophy.md`).
+Los estados de arriba (efectivo, incompleto, vencido…) y las listas de controles son **la vista técnica**: es la pantalla de los roles `auditor` y `consultor` y, desde D81, también la pide `admin_empresa` (mientras `P3` siga abierta). **El cliente** (`admin_empresa`, `funcional`)
+ve por defecto la vista de negocio (REQ-049): el semáforo cualitativo primero, y en qué falla y su avance (`philosophy.md`).
 
 | Semáforo | Cuándo (sobre el avance del nivel) |
 |---|---|

@@ -241,7 +241,7 @@ Claves i18n: `service.created`, `service.list`, `service.updated`, `service.dele
 - El cumplimiento de un marco **se deriva** recorriendo requisitos → puntos de enfoque →
   controles. No se devuelve como atributo del marco.
 - Nada de este contrato expone códigos técnicos (`CC6.1`) como prosa al cliente: viajan como
-  dato, y solo los muestra la vista técnica del rol `auditor` (`philosophy.md`, D63).
+  dato, y solo los muestra la vista técnica (`admin_empresa`, `consultor` y `auditor`; `philosophy.md`, D63, D81).
 
 ## Preguntas abiertas
 

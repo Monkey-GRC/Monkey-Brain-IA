@@ -102,7 +102,7 @@ apuntan a `client_control_id`. `control_id` es la plantilla de origen y es nulo 
 **Un control propio es solo documental** (su única dimensión es `policy`, tipo `manual`) y **lo ubica el cliente en una categoría** (`trust_criterion`). No tiene
 punto de enfoque (el puente `point_of_focus_controls` es del catálogo): cuenta para el porcentaje de su categoría y del marco, pero no cierra ningún requisito (D65).
 
-**`own_code`** es el código del catálogo (`IAC-12`) en un control clonado y la numeración propia (`C01…`) en uno que creó la empresa; el código del catálogo es técnico y la API no lo muestra al cliente (solo en la vista técnica). Un control propio lleva además `name` y `trust_criterion` (D79).
+**`own_code`** es el código del catálogo (`IAC-12`) en un control clonado y la numeración propia (`C01…`) en uno que creó la empresa; el código se muestra siempre, también al cliente (D80); el backend aún lo manda solo dentro de `technical` (ver el pendiente D80 de `compliance-controls.md`). Un control propio lleva además `name` y `trust_criterion` (D79).
 
 **Los cambios de controles los decide el consultor** (D65). Crear un control propio, darlo de baja y editar las dimensiones o la interpretación de un control —del
 catálogo o propio— son **propuestas** (`client_control_changes`) que la empresa hace y el consultor aprueba o rechaza:

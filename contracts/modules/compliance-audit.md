@@ -7,7 +7,7 @@ type: contract
 
 # Cumplimiento — consultoría y auditoría
 
-**Estado: PROPUESTA (2026-10-14).** Ver `conventions.md` (sección «Cumplimiento») y `enums.md`. Tickets: MD-144, MD-154, MD-155.
+**Estado: PROPUESTA (2026-10-14; D81 el 2026-10-16).** Ver `conventions.md` (sección «Cumplimiento») y `enums.md`. Tickets: MD-144, MD-154, MD-155.
 
 **Qué es.** El **consultor prepara** a la empresa y el **auditor certifica** (D63, D64). Aquí viven lo que hacen: el consultor da el veredicto de los tests documentales y manuales y decide las exclusiones; el consultor y el
 auditor escriben observaciones que la empresa debe atender. **Entidades:** `evaluations`, `evidence_submissions`, `audit_observations`, `exclusions` (`modelo-datos.md` §7.3 a §7.6). **App:** Monkey Platform.
@@ -17,7 +17,7 @@ Los cambios de controles que decide el consultor están en `compliance-controls.
 
 | Acción | `admin_empresa` | `funcional` | `consultor` | `auditor` |
 |---|---|---|---|---|
-| Ver los tests de un control (vista técnica) | `403` | `403` | ✓ | ✓ |
+| Ver los tests de un control (vista técnica, D81) | ✓ | `403` | ✓ | ✓ |
 | Dar el veredicto de un test | `403` | `403` | ✓ | `403` |
 | Validar una evidencia (atributos y revisión) | `403` | `403` | ✓ *(`P25`)* | `403` |
 | Escribir, editar y cerrar una observación | `403` | `403` | ✓ las suyas | ✓ las suyas |
@@ -31,7 +31,7 @@ Los cambios de controles que decide el consultor están en `compliance-controls.
 
 ### `GET /v1/controls/{id}/tests`
 
-La vista técnica de un control: los tests que lo verifican. Solo `consultor` y `auditor`; cualquier otro rol, `403`. Paginada.
+La vista técnica de un control: los tests que lo verifican, **todos con su estado**, también los que aún no tienen activos conectados («Sin activos»). La piden `admin_empresa` (D81, mientras los permisos por pantalla sigan abiertos: `P3`), `consultor` y `auditor`; el `funcional`, `403`. Ver no es hacer: el veredicto sigue siendo del consultor. Paginada.
 
 ```json
 {

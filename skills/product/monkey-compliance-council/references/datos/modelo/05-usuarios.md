@@ -40,7 +40,7 @@ Definido y cerrado por el comité en su modelo de gestión de usuarios, transcri
    excepción de aislamiento para él. Cuando termina su trabajo, la empresa lo desactiva (`status = inactive`, `CC6.3`).
 3. **Ve todo el cumplimiento de su empresa, en solo lectura**: todos los servicios, sus controles, tests, evidencias,
    evaluaciones y el audit trail, con la **vista técnica** (códigos de requisito y de control, resultados por check).
-4. **La vista técnica es del auditor.** `admin_empresa` y `funcional` solo ven la vista de negocio: en qué está
+4. **La vista técnica es del auditor** y del consultor y, desde D81 y mientras no se definan los permisos por pantalla (`P3`), también del `admin_empresa`. El `funcional` solo ve la vista de negocio: en qué está
    fallando y su porcentaje.
 5. **Escribe observaciones** (§7.6), descarga evidencias y exporta reportes. No aprueba evidencia, no crea ni edita
    controles ni riesgos, y no ejecuta tests.
@@ -236,7 +236,7 @@ permisos **por pantalla**; cuando llegue, esta matriz se ajusta a él (P3).
 | Ejecutar test | | ✓ | ✓ solo el suyo | | solo lectura |
 | Proponer una exclusión (de un activo, un test o un check) | | ✓ | | | |
 | Aprobar una exclusión | | | | ✓ | |
-| Vista técnica (códigos, requisitos, resultados por check) | | | | ✓ | ✓ |
+| Vista técnica (códigos, requisitos, todas las pruebas y resultados por check; D81) | | ✓ | | ✓ | ✓ |
 | Módulo de auditoría y registrar observaciones (§7.6) | | | | ✓ | ✓ |
 | Responder una observación | | ✓ | ✓ solo de su control | | |
 | Ver audit trail | ✓ | ✓ | limitado | ✓ | ✓ |
@@ -247,7 +247,7 @@ Cuatro cosas que se leen mal si no se dicen:
 
 - **`admin_monkey` no crea controles ni riesgos de un cliente**: administra la plataforma y el catálogo maestro, no el escenario de nadie.
 - **`funcional` está siempre acotado a lo que tiene asignado** vía `user_control_assignments`.
-- **El `auditor` ve toda su empresa y el `consultor` toda la empresa en la que trabaja** (D63, D64), sin restricción de asignación de controles. Ninguno aprueba evidencia, y el cliente nunca ve la vista técnica.
+- **El `auditor` ve toda su empresa y el `consultor` toda la empresa en la que trabaja** (D63, D64), sin restricción de asignación de controles. Ninguno aprueba evidencia. La vista técnica la ve también `admin_empresa` (D81); el `funcional`, nunca.
 - **La empresa propone y el consultor decide**: ni `admin_empresa` ni `funcional` pueden aplicar por sí solos un cambio de controles, una exclusión ni el veredicto de un test (D65, D78).
 
 > ⚠️ El material del comité habla de **"34 permisos"**, pero la matriz que entregó tiene 13 acciones. No repetir "34 permisos" como si estuviera documentado aquí.

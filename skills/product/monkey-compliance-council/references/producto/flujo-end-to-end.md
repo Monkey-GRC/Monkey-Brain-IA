@@ -122,7 +122,7 @@ servicio.
 En cualquier momento (no es un paso del onboarding): `admin_empresa` invita más
 usuarios, les asigna rol (`funcional`, `consultor` o `auditor`), y si son
 `funcional` les asigna qué `client_controls` les toca (`user_control_assignments`). Si
-son `auditor`, quedan como usuarios de **su empresa** (solo `admin_empresa` los crea): ven todo el cumplimiento con la vista técnica y escriben observaciones (D63). El `consultor`
+son `auditor`, quedan como usuarios de **su empresa** (solo `admin_empresa` los crea): ven todo el cumplimiento con la vista técnica y escriben observaciones (D63). La vista técnica la pide también `admin_empresa` (D81). El `consultor`
 no lo crea la empresa: lo crea y asigna `admin_monkey` desde Monkey Admin; la empresa ve los que tiene asignados y puede suspender a uno (D64).
 
 **Lo que falta cerrar:** el detalle de permisos por pantalla (P3).
