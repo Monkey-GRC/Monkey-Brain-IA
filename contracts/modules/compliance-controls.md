@@ -353,7 +353,7 @@ Aprobar un cambio que altera lo que se mide deja además un `compliance_events` 
 
 ## Estado de implementación
 
-**Pendiente por D80 (2026-10-15):** `code` y `requirement_codes` en la **vista de negocio** (lista, detalle y creación). El backend aún los devuelve solo dentro de `technical` (`control_code`, `requirement_codes`) y `403` para el resto de roles; hay que moverlos a la base y dejar en `technical` solo lo demás. Hasta entonces, el frontend muestra el código cuando llega y no lo inventa.
+**Pendiente por D80 (2026-10-15):** `code` y `requirement_codes` en la **vista de negocio** (lista, detalle y creación). El backend aún los devuelve solo dentro de `technical` (`control_code`, `requirement_codes`) y `403` para el resto de roles; hay que moverlos a la base y dejar en `technical` solo lo demás (**MD-166**). Hasta entonces, el frontend muestra el código cuando llega y no lo inventa.
 
 **Construido (2026-10-14):** MD-117 (listar y ver), MD-150 (crear un control propio) y MD-118 (proponer cambios y listarlos). **No** MD-156: decidir una propuesta, la bandeja `GET /v1/control-changes` y `PATCH /v1/control-changes/{id}`.
 

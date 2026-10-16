@@ -304,9 +304,9 @@ Todos con el mismo sobre (`conventions.md`); `message` es la clave i18n del erro
 
 ## Estado de implementación
 
-**Pendiente por D80 (2026-10-15):** `code` en cada vínculo causa–control (`controls[]`), en el riesgo y en la causa. El backend aún devuelve el código del catálogo solo dentro de `technical` y deja `own_code` en `null` para los del catálogo.
+**Pendiente por D80 (2026-10-15):** `code` en cada vínculo causa–control (`controls[]`), en el riesgo y en la causa. El backend aún devuelve el código del catálogo solo dentro de `technical` y deja `own_code` en `null` para los del catálogo (**MD-166**).
 
-**Pendiente para las pantallas de alta y edición (MD-124):** el backend no sirve en `GET /v1/catalogs/{name}` las listas `risk_criterion` (11 valores), `risk_level`, `failure_category`, `loss_type` ni `cause_control_effect`; sin ellas el frontend no puede armar los formularios de crear y editar un riesgo o una causa sin escribir las listas a mano, que `contracts/enums.md` prohíbe. Hay que servirlas como catálogos.
+**Pendiente para las pantallas de alta y edición (MD-124):** el backend no sirve en `GET /v1/catalogs/{name}` las listas `risk_criterion` (11 valores), `risk_level`, `failure_category`, `loss_type` ni `cause_control_effect`; sin ellas el frontend no puede armar los formularios de crear y editar un riesgo o una causa sin escribir las listas a mano, que `contracts/enums.md` prohíbe. Hay que servirlas como catálogos (**MD-167**), junto con `risk_treatment_decision`.
 
 **Construido: MD-122** (riesgos, causas y vínculos; 2026-10-14) y **MD-123** (evaluación 5×5, historial y tratamiento; 2026-10-16).
 

@@ -20,10 +20,10 @@ Lo que sigue abierto, con lo más urgente arriba. 🚧 bloquea trabajo · ⚠️
 | [P9](#p9--datos-del-excel-que-hay-que-corregir-o-confirmar) | Datos del Excel que hay que corregir o confirmar | ⚠️ La dimensión Aplicación del cálculo y las causas que ve el cliente | — |
 | [P21](#p21--el-uso-de-los-logos-de-marcas-de-terceros) | El uso de los logos de marcas de terceros en el marketplace | ⚠️ Publicar el marketplace con logos a clientes reales; no bloquea construirlo | 2026-10-10 |
 | [P22](#p22--motor-de-evaluación-lo-que-falta-para-calcular-el-riesgo) | Motor de evaluación: lo que falta para calcular el riesgo | 🚧 El riesgo residual y las dos matrices (MD-151, fuera del sprint); ⚠️ la periodicidad de los controles | 2026-10-10 |
-| [P24](#p24--quién-aprueba-una-exclusión-si-la-empresa-no-tiene-consultor) | Quién aprueba una exclusión si la empresa no tiene consultor | ⚠️ La pantalla de exclusiones (MD-144) | 2026-10-13 |
 | [P25](#p25--quién-valida-los-atributos-de-una-evidencia-y-cómo-se-relaciona-con-el-veredicto-del-consultor) | Quién valida los atributos de una evidencia y cómo se relaciona con el veredicto del consultor | ⚠️ El endpoint de validación y el veredicto (MD-155), y el estado de los tests documentales | 2026-10-14 |
 | [P26](#p26--quién-define-el-período-auditado-y-la-fecha-de-corte-de-una-evaluación) | Quién define el período auditado y la fecha de corte de una evaluación | 🚧 Que el motor ejecute: sin esos datos el resumen es «Sin medir» y no se emiten evaluaciones (MD-137, MD-155) | 2026-10-14 |
 | [P27](#p27--cómo-se-agrupan-los-controles-en-un-marco-sin-categorías) | Cómo se agrupan los controles en un marco sin categorías | 🚧 La agrupación de la lista de controles y del resumen para marcos distintos de SOC 2 | 2026-10-15 |
+| [P28](#p28--a-quién-contacta-la-empresa-para-que-le-asignen-un-consultor) | A quién contacta la empresa para que le asignen un consultor | ⚠️ La casilla de contacto de la pantalla de exclusiones (MD-169) | 2026-10-16 |
 | [P13](#p13--ratificar-lo-que-desarrollo-decidió-en-las-correcciones-del-2026-10-05-d50-d51) | Ratificar lo que desarrollo decidió el 2026-10-05 (D50, D51) | No bloquea: está construido y funcionando | 2026-10-06 |
 | [P15](#p15--cómo-se-mapean-los-checks-de-nube-que-quedan-fuera) | Cómo se mapean los checks de nube que quedan fuera | No bloquea: lo no mapeado no cuenta hasta responder | 2026-10-08 |
 
@@ -175,16 +175,6 @@ la **matriz inherente** muestra cada riesgo antes de aplicar controles y la **ma
 
 **Qué depende:** el riesgo residual y las dos matrices (MD-151) esperan el dato 1 y el Excel que viene. La periodicidad (2) condiciona cuándo se marca algo vencido y la carga sobre la sonda.
 
-## P24 · Quién aprueba una exclusión si la empresa no tiene consultor
-
-**Estado:** abierto desde 2026-10-13 (D78). La empresa propone excluir un activo y la aprueba el consultor. Pero el consultor lo asigna `admin_monkey` y una empresa puede no tener ninguno todavía, o haberlo suspendido.
-
-1. **Mientras no haya consultor, ¿la exclusión espera** (no cuenta hasta que lo haya) **o la puede aprobar otro rol**? *Recomendación: espera; el activo sigue contando. Una exclusión sin quien la apruebe no puede cambiar el resultado.*
-
-**Qué depende:** la pantalla de exclusiones (MD-144).
-
----
-
 ## P25 · Quién valida los atributos de una evidencia y cómo se relaciona con el veredicto del consultor
 
 **Estado:** abierto desde 2026-10-14 (MD-108). La regla del comité valora **seis atributos por evidencia** y dice que solo una evidencia «validada por un revisor humano» puede cumplir (RN-01 a RN-03, `modelo-datos.md` §9). No dice **quién** es ese revisor.
@@ -197,13 +187,12 @@ Hoy hay tres actos que se parecen: la empresa **aprueba** lo que sube (`validati
 
 ## P26 · Quién define el período auditado y la fecha de corte de una evaluación
 
-**Estado:** abierto desde 2026-10-14 (MD-108). El motor no ejecuta sin los cinco datos de la evaluación: servicio, marco, versión, **período auditado** y **fecha de corte** (REQ-004, §9). `service_frameworks` tiene `period_start`, `period_end` y `cutoff_date`,
-pero ningún formulario ni endpoint los llena: el onboarding solo pide un `evaluation_period` de texto.
+**Estado:** abierto desde 2026-10-14 (MD-108). El motor no ejecuta sin los cinco datos de la evaluación: servicio, marco, versión, **período auditado** y **fecha de corte** (REQ-004, §9). `service_frameworks` tiene `period_start`, `period_end` y `cutoff_date` (columnas desde MD-144), pero ningún formulario ni endpoint las llena: el onboarding solo pide un `evaluation_period` de texto.
 
 1. **¿Quién declara el período auditado y cuándo?** *Recomendación: `admin_empresa`, al contratar el marco o crear el servicio; editable mientras no se haya emitido una evaluación, y el consultor puede corregirlo.*
 2. **¿La fecha de corte es «hoy» mientras se monitorea y se congela al emitir una evaluación del consultor o del auditor?** *Recomendación: sí; así cada evaluación dice sobre qué datos se hizo.*
 
-**Qué depende:** el resumen del servicio (MD-137), las evaluaciones del consultor y del auditor (MD-155) y la vigencia de las exclusiones (MD-144). Mientras tanto la API responde `not_measured` y `409 EVALUATION_NOT_DEFINED`.
+**Qué depende:** el resumen del servicio (MD-137), las evaluaciones del consultor y del auditor (MD-155) y la vigencia de las exclusiones (MD-144). Mientras tanto la API responde `not_measured` y `409 EVALUATION_NOT_DEFINED`, también al proponer una exclusión (MD-144, construida y a la espera de esto). Cuando se responda, el ticket que lo construye es MD-168.
 
 ---
 
@@ -218,6 +207,19 @@ pero ningún formulario ni endpoint los llena: el onboarding solo pide un `evalu
 **Qué depende:** la lista de controles (MD-120) y el resumen (MD-140) para cualquier marco que no sea SOC 2. Para el MVP (solo SOC 2) no bloquea nada. Si se adopta la recomendación, el contrato de controles añade domain a cada ítem.
 
 ---
+
+## P28 · A quién contacta la empresa para que le asignen un consultor
+
+**Estado:** abierto desde 2026-10-16 (D83). Cuando una exclusión espera porque la empresa no tiene consultor, la pantalla le dice que hay que asignarle uno y le ofrece una casilla para contactar al equipo de mercadeo, o a quien esté a cargo de ese trámite. Falta definir a quién y cómo.
+
+1. **¿Quién es el contacto?** El equipo de mercadeo, la persona a cargo del trámite o un buzón. *Recomendación: un buzón de Monkey (un solo correo) que no dependa de una persona.*
+2. **¿Cómo se contacta?** Un enlace de correo, un formulario dentro de Platform o un mensaje que ya llegue con el nombre de la empresa. *Recomendación: un formulario simple que mande el nombre de la empresa y del servicio, para que el equipo no tenga que preguntarlo.*
+3. **¿El dato se configura o se escribe en la pantalla?** Si cambia de persona, ¿hay que desplegar? *Recomendación: una variable de configuración del Backend que la pantalla lea, no un texto escrito en el frontend.*
+
+**Qué depende:** la casilla de contacto de la pantalla de exclusiones (MD-169). No bloquea la API de MD-144.
+
+---
+
 ## Cómo se cierra un pendiente
 
 1. El comité responde.
@@ -248,3 +250,4 @@ Se quedan aquí como referencia; el detalle de cada una está en la decisión qu
 | **P19** | Un consultor que atiende a varias empresas, con el correo único | 2026-10-09 — D64: una sola cuenta de Next que asigna `admin_monkey` a varias empresas |
 | **P20** | Quién reactiva a un consultor que la empresa suspendió | 2026-10-09 — D64: solo la empresa |
 | **P23** | Cómo se guarda y se muestra la evaluación del consultor y la del auditor | 2026-10-13 — D77: la del auditor va aparte y no cambia el estado; el consultor suma un veredicto general; ambas ligadas a la evaluación del servicio |
+| **P24** | Quién aprueba una exclusión si la empresa no tiene consultor | 2026-10-16 — D83: la exclusión espera y el activo sigue contando; la pantalla avisa que hay que asignar un consultor y ofrece contactar al equipo que gestiona el trámite |

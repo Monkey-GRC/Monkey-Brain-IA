@@ -7,7 +7,7 @@ type: contract
 
 # Cumplimiento — consultoría y auditoría
 
-**Estado: PROPUESTA (2026-10-14; D81 el 2026-10-16).** Ver `conventions.md` (sección «Cumplimiento») y `enums.md`. Tickets: MD-144, MD-154, MD-155.
+**Estado: PROPUESTA (2026-10-14; D81 y D83 el 2026-10-16); construidas las exclusiones (MD-144).** Ver `conventions.md` (sección «Cumplimiento») y `enums.md`. Tickets: MD-144, MD-154, MD-155.
 
 **Qué es.** El **consultor prepara** a la empresa y el **auditor certifica** (D63, D64). Aquí viven lo que hacen: el consultor da el veredicto de los tests documentales y manuales y decide las exclusiones; el consultor y el
 auditor escriben observaciones que la empresa debe atender. **Entidades:** `evaluations`, `evidence_submissions`, `audit_observations`, `exclusions` (`modelo-datos.md` §7.3 a §7.6). **App:** Monkey Platform.
@@ -163,6 +163,7 @@ Excluir un **activo de un test** cambia lo que se mide (D74, D78). **La propone 
   "technical_justification": "Aislado de la red de producción desde el 2026-09-01.",
   "status": "pending",
   "is_expired": false,
+  "awaiting_consultant": false,
   "valid_from": "2026-10-14",
   "valid_until": "2026-12-31",
   "proposed_by": { "id": "a1b2…", "name": "Laura", "last_name": "Gómez" },
@@ -188,15 +189,16 @@ Excluir un **activo de un test** cambia lo que se mide (D74, D78). **La propone 
 - La vigencia **no la manda el cliente**: empieza hoy y termina en el `period_end` de la evaluación del servicio. Si esa evaluación no tiene período, `409 EVALUATION_NOT_DEFINED` (`P26`).
 - El activo debe pertenecer al servicio y el test aplicarle; si no, `404`. Repetir una exclusión pendiente o aprobada de lo mismo es `409 EXCLUSION_ALREADY_EXISTS`.
 - Responde `201`, `status: "pending"`: **el activo se sigue midiendo**.
+- **Sin consultor, la exclusión espera (P24, D83).** `awaiting_consultant` es `true` en una exclusión `pending` mientras la empresa no tenga ningún consultor **activo** (sin asignar, suspendido o retirado); en las ya decididas siempre es `false`. La pantalla lo usa para avisar que hace falta asignar un consultor que la apruebe y ofrecer contactar al equipo que gestiona ese trámite; la API no decide nada por su cuenta y el activo sigue contando.
 
 ### `GET /v1/services/{service_id}/exclusions`
 
-Paginada. Filtros `status` (`pending` · `approved` · `rejected`), `test_id`, `asset_id`, `expired` (`true`/`false`). Una aprobada cuya `valid_until` ya pasó trae `is_expired: true` y **el activo vuelve a contar**.
+Paginada, de la más reciente a la más antigua. Filtros `status` (`pending` · `approved` · `rejected`), `test_id`, `asset_id`, `expired` (`true`/`false`). Una aprobada cuya `valid_until` ya pasó trae `is_expired: true` y **el activo vuelve a contar**; para renovarla se propone una nueva (se revalida, no se hereda). La leen `admin_empresa`, `consultor` y `auditor`.
 
 ### `PATCH /v1/exclusions/{id}`
 
 Solo `consultor`. Patrón de decisiones de `conventions.md`: `{ "status": "approved" }` o `{ "status": "rejected", "decision_note": "…" }`. Aprobar hace que el activo salga del universo aplicable del test
-(su resultado pasa a `excluded`); rechazar lo deja midiéndose y conserva el motivo. `admin_empresa` y `auditor` reciben `403`.
+(su resultado pasa a `excluded`); rechazar lo deja midiéndose y conserva el motivo. `admin_empresa` y `auditor` reciben `403`. Rechazar sin `decision_note` es `422` (`note.required`).
 
 ## Errores
 
@@ -213,7 +215,7 @@ Solo `consultor`. Patrón de decisiones de `conventions.md`: `{ "status": "appro
 | 409 | `INVALID_TRANSITION` | Cerrar una que no está `answered`, o devolver a `open` una que no lo está |
 | 422 | `VALIDATION_FAILED` | Campos: `required`, `enum.invalid`, `closure_reason.required` (veredicto con observaciones abiertas), `note.required` (`decision_note` al rechazar) |
 
-Claves i18n: `control_test.list`, `verdict.issued`, `observation.*`, `exclusion.requested`, `exclusion.decided`.
+Claves i18n: `control_test.list`, `verdict.issued`, `observation.*`, `exclusion.list`, `exclusion.requested`, `exclusion.decided`.
 
 ## Ejemplos de error
 
@@ -287,10 +289,21 @@ Todos con el mismo sobre (`conventions.md`); `message` es la clave i18n del erro
 | `observation.create` · `.update` · `.answer` · `.close` · `.return` | ciclo de una observación | autor o empresa |
 | `exclusion.request` · `exclusion.decide` | propuesta y decisión (con `compliance_events` al aprobar o vencer) | `admin_empresa` · `consultor` |
 
+## Estado de implementación
+
+**Construido: MD-144** (exclusiones; 2026-10-16). Lo de abajo es lo que el contrato no dice y el código hace:
+
+- **Solo el activo de un test.** El contrato expone la exclusión de un activo; la de un check (`excluded_check_id`) existe en la tabla pero no tiene endpoint (**MD-170**, `DT-74`), y excluir un test completo se hace desactivándolo, no con una exclusión (D68).
+- **Cómo cambia lo que se mide.** Una exclusión `approved` y vigente (`valid_from` ≤ hoy ≤ `valid_until`) hace que el resultado del activo en ese test sea `excluded` **al leer**: se superpone al último resultado sin tocar el veredicto de la sonda, en todas las acciones del servicio que llevan ese test. La pendiente, la rechazada y la vencida no cambian nada. Aprobar deja un evento de cumplimiento (`exclusion.approve`).
+- **Vigencia.** Hoy hasta el `period_end` del servicio (el mayor de sus marcos activos). `service_frameworks` ya tiene `period_start`, `period_end` y `cutoff_date`, pero **nada los llena** (`P26`, **MD-168**): en cuanto no haya período, o ya haya terminado, proponer responde `409 EVALUATION_NOT_DEFINED`. Las pruebas fijan el período por SQL.
+- **Un vencimiento no deja evento.** «Vencida» se deriva al leer (`is_expired`); no hay un proceso que escriba el `compliance_events` de un vencimiento (`DT-72`, **MD-171**).
+- **Una pendiente por activo y test**, impuesto por un índice único parcial; la base también impone la forma de la decisión (quién y cuándo; el rechazo, con motivo) y la vigencia ordenada.
+- **El consultor todavía no puede decidir en la empresa de un cliente.** Su cuenta vive en la empresa interna de Monkey y elegir la empresa de trabajo es `MD-160` (SEG-55), sin asignar: hasta entonces `PATCH /v1/exclusions/{id}` solo se puede ejercer con una cuenta de consultor ubicada en la empresa, que es como lo prueban las e2e. Es el mismo límite de cualquier otro endpoint del consultor.
+- **No hay pantalla.** Falta la de proponer y ver exclusiones, con el aviso de que falta un consultor y la casilla para contactar a quien lleva el trámite (**MD-169**; a quién se contacta es `P28`).
+
 ## Preguntas abiertas
 
 - **`P25`**: quién valida los atributos de una evidencia y cómo se relaciona con el veredicto del consultor.
-- **`P24`**: si la empresa no tiene consultor, la exclusión espera y el activo sigue contando (recomendación; el contrato ya se comporta así).
-- **`P26`**: período y fecha de corte de la evaluación del servicio.
+- **`P26`**: período y fecha de corte de la evaluación del servicio. Mientras no se definan, proponer una exclusión responde `409 EVALUATION_NOT_DEFINED`.
 - **`P3`**: el detalle por pantalla puede ajustar la tabla de «Quién puede qué».
 - **Reportes en PDF y Excel** del auditor y del consultor: el contenido está por definir, no tienen contrato todavía.

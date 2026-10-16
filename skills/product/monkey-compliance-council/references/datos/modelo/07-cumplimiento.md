@@ -266,6 +266,7 @@ erDiagram
     }
     exclusions {
         uuid id PK
+        uuid service_id FK "la exclusión es de un activo en un test DE UN SERVICIO (D83)"
         uuid test_id FK
         uuid asset_id FK "nullable: si excluye un activo de ese test (D68, REQ-008)"
         uuid proposed_by FK "admin_empresa"

@@ -167,7 +167,7 @@ histórico es inmutable.
 El cliente la entrega con **un enlace, un archivo de su equipo, o los dos**; con uno basta para que el servicio esté
 completo. `system_descriptions` guarda `link_url` y `file_key` (los dos opcionales, al menos uno obligatorio por un `CHECK`):
 un enlace nuevo no borra el archivo ni al revés. El archivo vive en el almacenamiento S3 / minio
-(`FileStorage`, `src/infrastructure/storage`; variables `S3_*`), con una llave
+(`FileStorage`, `src/infrastructure/storage`; variables `S3_*`, y `S3_PUBLIC_ENDPOINT` para que el enlace firmado lleve la dirección que abre el navegador), con una llave
 `<empresa>/services/<servicio>/system-description/<uuid>/<nombre>`: **la llave nunca sale en un response**.
 
 Como el archivo necesita que el servicio exista, con archivo el flujo es: `POST /v1/services` **sin** `system_description`
@@ -220,7 +220,7 @@ No se puntúan ni entran al cálculo: se transcriben para el informe.
 | 409 | `FRAMEWORK_NOT_CONTRACTED` | Se eligió un marco que Monkey Admin no contrató para la empresa (`platform.company_frameworks`, D47). La pantalla muestra todos los marcos y, ante este caso, invita a hablar con mercadeo (D50) |
 | 409 | `SERVICE_HAS_EVALUATIONS` | `DELETE` sobre un servicio ya evaluado |
 | 409 | `FRAMEWORK_NOT_AVAILABLE` | El marco existe en el catálogo pero aún no está construido (`coming_soon`, D50) |
-| 413 | `FILE_TOO_LARGE` | La Descripción del Sistema pasa de 25 MB |
+| 413 | `FILE_TOO_LARGE` | La Descripción del Sistema pasa de 25 MB (un archivo de **exactamente** 25 MB es válido) |
 | 415 | `UNSUPPORTED_MEDIA_TYPE` | Tipo de archivo no permitido (ni extensión ni firma de PDF o .docx) |
 | 422 | `FILE_REQUIRED` | El multipart no trae el campo `file` o viene vacío |
 | 503 | `STORAGE_UNAVAILABLE` | Esta instalación no tiene almacenamiento configurado (`S3_*`): el cliente usa el enlace |
@@ -266,7 +266,7 @@ Implementado en `Backend/src/features/services` (más `catalogs` y el progreso d
 | `PATCH /v1/services/{id}` | ✅ Solo las claves presentes (`null` borra un opcional). Ampliar `trust_criteria` o `framework_codes` recalcula y clona lo que falte; no borra ni pisa nada |
 | `DELETE /v1/services/{id}` | ✅ `409 SERVICE_HAS_EVALUATIONS` con evaluaciones, evidencias entregadas o planes de acción; si no, borra todo lo del servicio |
 | `POST /v1/services/{id}/system-description` | ✅ El enlace (`http`/`https`); conserva el archivo si lo hay |
-| `POST /v1/services/{id}/system-description/file` | ✅ Multipart, 25 MB, PDF o .docx (D51). Con el adaptador S3 / minio; sin `S3_*` responde 503. **Sin probar contra el minio real** (DT-39) |
+| `POST /v1/services/{id}/system-description/file` | ✅ Multipart, 25 MB, PDF o .docx (D51). Con el adaptador S3 / minio; sin `S3_*` responde 503. Probado de punta a punta contra un servidor S3 compatible (SeaweedFS) y con un archivo de exactamente 25 MB; **falta correr `npm run storage:smoke` en el MinIO de la VPS** (MD-110, DT-39) |
 | `GET /v1/services/{id}/system-description/file` | ✅ Enlace temporal de 5 min |
 | `PUT .../csocs` y `PUT .../cuecs` | ❌ No se construyeron (salen de las secciones 7 y 8 de la Descripción del Sistema, que aún no se procesa) |
 | `GET /v1/catalogs/{name}` | ✅ Nuevos: `service_type`, `served_industry`, `active_client_count`, `service_country`, `data_type`, `trust_criterion`, `subservice_type`, `expected_availability`, `previous_certification` y `frameworks` (sale de `catalog.frameworks`: hoy solo `soc2`) |

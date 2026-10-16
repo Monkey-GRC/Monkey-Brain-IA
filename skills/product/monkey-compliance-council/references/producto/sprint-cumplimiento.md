@@ -23,7 +23,7 @@ cambios con aprobación), §7.5 (el veredicto) y §7.6 (las observaciones).
 | Evidencias (MD-104) | MD-126 subir · MD-127 aprobar o rechazar · MD-128 Descripción del Sistema como archivo (listo) |
 | Responsables de la organización (MD-105) | MD-133 cargos en la API (**construido**) · MD-135 cargos en pantalla |
 | Medición y resumen (MD-106) | MD-137 resumen del servicio · MD-138 motor de cálculo · MD-139 estado del activo |
-| Exclusiones y cierre (MD-107) | MD-144 exclusiones · MD-145 evaluaciones inmutables · MD-147 verificación del backend · MD-149 revisión de pantallas y demo |
+| Exclusiones y cierre (MD-107) | MD-144 exclusiones (**construido**; para usarlo de verdad faltan MD-168 —el período, `P26`— y MD-160 —que el consultor decida—; sin pantalla: MD-169; MD-170 exclusión de un check; MD-171 deuda) · MD-145 evaluaciones inmutables · MD-147 verificación del backend · MD-149 revisión de pantallas y demo |
 | Auditoría y consultoría (MD-152) | MD-154 observaciones · MD-155 veredicto del consultor · MD-156 aprobación de cambios de controles |
 | Acceso (MD-153), prerrequisito | MD-157 roles consultor y auditor en el backend: **construido**. Desbloquea MD-118, MD-144 y MD-154 a MD-156, que dependen del rol `consultor` |
 
@@ -36,7 +36,7 @@ El comité entregó la VF2 con el motor de evaluación completo. **Reemplaza la 
 | **MD-138** motor de cálculo | Se construye contra `modelo-datos.md` §9 (una comprobación automática se reintenta **tres veces** antes de quedar en `ERROR` con aviso, D76): funciones puras para activo, test, control, categoría y marco, con **los 8 casos del comité** (C1 a C8), las simulaciones 1 a 6 y las validaciones V01 a V15 como pruebas de aceptación. Lo pendiente bloquea; el marco se evalúa sobre controles únicos. Reemplaza al calculador anterior, que ya no existe |
 | **MD-139** estado del activo | El resultado de un activo en un test tiene 5 estados (cumple, no cumple, pendiente, error, excluido). El semáforo del activo sigue la lectura de D62 (`DT-66`) |
 | **MD-137** resumen del servicio | Muestra avance, cobertura y estado por separado (REQ-032); el cliente ve el semáforo y en qué falla, y el consultor y el auditor ven los estados técnicos (REQ-049) |
-| **MD-144** exclusiones | Incluye **excluir un activo** de un test con justificación, aprobador y vigencia (REQ-008). La propone la empresa, la aprueba el consultor y vence con el período: **cerrada en D74 y D78** |
+| **MD-144** exclusiones | Incluye **excluir un activo** de un test con justificación, aprobador y vigencia (REQ-008). La propone la empresa, la aprueba el consultor y vence con el período: **cerrada en D74, D78 y D83** (sin consultor, la exclusión espera y la pantalla avisa que hay que asignar uno) |
 | **MD-145** evaluaciones inmutables | La evaluación es servicio + marco + versión + período + fecha de corte (REQ-004) y cada cambio de estado deja un evento inmutable (REQ-044) |
 | **MD-155** veredicto del consultor | Se amplía con la evaluación del consultor y la del auditor: diseño cerrado en D77: veredicto general por servicio y marco (`ready`/`not_ready`), en `framework_assessments` |
 | **MD-151** mitigación y riesgo residual | **Sigue fuera.** El comité trae los estados de mitigación (RN-20, RN-21) y la fórmula del residual está adoptada (D75), pero falta el efecto (probabilidad o impacto) y la obligatoriedad de las 209 relaciones causa–control, y el comité entregará el detalle de la fórmula entre el 14 y el 15 de octubre: `P22`, D76 |
@@ -72,4 +72,4 @@ responder una observación desde la empresa, la pantalla de aprobación de cambi
 
 ## Preguntas abiertas que tocan este sprint
 
-`modelo-datos-pendientes.md`: **P3** (permisos por pantalla), **P22** (lo que falta para calcular el riesgo), **P24** (quién aprueba una exclusión sin consultor), **P25** (quién valida una evidencia) y **P26** (período y fecha de corte de una evaluación).
+`modelo-datos-pendientes.md`: **P3** (permisos por pantalla), **P22** (lo que falta para calcular el riesgo), **P25** (quién valida una evidencia) y **P26** (período y fecha de corte de una evaluación).

@@ -45,7 +45,7 @@ El registro está partido por épocas en `decisiones/`. **Busca el ID en el índ
 | [`decisiones/04-sonda-y-correcciones.md`](decisiones/04-sonda-y-correcciones.md) | **D48–D52** — Paso 3 provisional contra la sonda real, pool de conexiones, correcciones del comité, auditoría atómica. |
 | [`decisiones/05-control-tecnico-y-nube.md`](decisiones/05-control-tecnico-y-nube.md) | **D53–D61 y D67** — Conexión con la nube, sonda de servidores, trabajador del motor de nube y descubrimiento de activos. |
 | [`decisiones/06-cumplimiento-y-roles.md`](decisiones/06-cumplimiento-y-roles.md) | **D62–D68** — Cómo se calcula el cumplimiento, el auditor, los cinco roles, controles propios y MFA. |
-| [`decisiones/07-cierres-2026-10-10.md`](decisiones/07-cierres-2026-10-10.md) | **D69–D82** — Cierres del 2026-10-10, 13, 15 y 16: el paso 3, el nombre neutro de las pruebas, la lectura de la sonda, el Postgres de producción, los modelos de negocio, las exclusiones, la fórmula del riesgo residual y el lenguaje GRC de la superficie |
+| [`decisiones/07-cierres-2026-10-10.md`](decisiones/07-cierres-2026-10-10.md) | **D69–D83** — Cierres del 2026-10-10, 13, 15 y 16: el paso 3, el nombre neutro de las pruebas, la lectura de la sonda, el Postgres de producción, los modelos de negocio, las exclusiones, la fórmula del riesgo residual y el lenguaje GRC de la superficie |
 
 ### Índice
 
@@ -134,3 +134,4 @@ El registro está partido por épocas en `decisiones/`. **Busca el ID en el índ
 | D80 | La superficie habla el lenguaje del dominio GRC, los códigos se muestran siempre y el porcentaje de avance es visible | 07 |
 | D81 | El administrador de la empresa ve la vista técnica mientras no se definan los permisos por pantalla | 07 |
 | D82 | Cada prueba lleva, junto a su nombre neutro, una descripción corta que ve el cliente | 07 |
+| D83 | Sin consultor, la exclusión espera; y la exclusión lleva su servicio (cierra P24) | 07 |
