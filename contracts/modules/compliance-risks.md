@@ -7,7 +7,7 @@ type: contract
 
 # Cumplimiento — riesgos y causas
 
-**Estado: PROPUESTA (2026-10-14).** Ver `conventions.md` (sección «Cumplimiento») y `enums.md`. Tickets: MD-122, MD-123.
+**Estado: PROPUESTA (2026-10-14); construida: riesgos, causas, vínculos, evaluación 5×5 y tratamiento (MD-122 y MD-123).** Ver `conventions.md` (sección «Cumplimiento») y `enums.md`. Tickets: MD-122, MD-123.
 
 **Qué es.** Al contratar un marco, cada servicio recibe **su propia copia** de los riesgos y causas del catálogo (D28): editarla no cambia el catálogo ni a otra empresa. Un *riesgo* es la
 probabilidad y el impacto de que algo ocurra o se pierda si una persona lo materializa; una *causa* es el riesgo materializado; un *control* es el paso a paso que lo evita o lo mitiga (vocabulario del comité,
@@ -196,7 +196,7 @@ Niveles: Bajo 1–4 · Moderado 5–9 · Alto 10–16 · Crítico 17–25 (`risk
 
 ### `GET /v1/risks/{id}/evaluation-history`
 
-Paginada, de la más reciente a la más antigua. Cada ítem es el objeto de arriba. Se lee de la auditoría (`before_state` / `after_state`). La leen `admin_empresa`, `consultor` y `auditor`.
+Paginada, de la más reciente a la más antigua. Cada ítem es el objeto de arriba. Se lee de la auditoría (`before_state` / `after_state`). La leen `admin_empresa`, `consultor` y `auditor`; el `funcional` y `admin_monkey`, `403`.
 
 ## Tratamiento
 
@@ -225,21 +225,21 @@ Solo `admin_empresa`. Agrega una decisión; la vigente es la última.
 }
 ```
 
-`GET /v1/risks/{id}/treatments` lista el historial (paginado, más reciente primero).
+`GET /v1/risks/{id}/treatments` lista el historial (paginado, más reciente primero), con la forma de arriba. Lo leen `admin_empresa`, `consultor` y `auditor`; el `funcional`, solo si el riesgo llega a una acción que tiene asignada (si no, `403`). El riesgo, en su lista y su detalle, trae el vigente en `treatment` con `decision`, `due_date` y `responsible`.
 
 ## Errores
 
 | HTTP | `error.code` | Cuándo |
 |---|---|---|
-| 403 | `FORBIDDEN` | El rol no puede; `view=technical` sin ser `admin_empresa`, `auditor` o `consultor` |
-| 404 | `NOT_FOUND` | El riesgo, la causa, la acción o el cargo no existen para esta empresa (incluye vincular algo de otra) |
+| 403 | `FORBIDDEN` | El rol no puede (incluido el `funcional` en el historial de evaluaciones); `view=technical` sin ser `admin_empresa`, `auditor` o `consultor` |
+| 404 | `NOT_FOUND` | El riesgo, la causa, la acción o el cargo no existen para esta empresa (incluye vincular algo de otra, o tratar con un cargo de otra) |
 | 409 | `CODE_ALREADY_EXISTS` | `code` ya usado en el servicio |
 | 409 | `LINK_ALREADY_EXISTS` | El vínculo ya existe |
 | 409 | `RISK_INACTIVE` | Editar, vincular, evaluar o tratar un riesgo dado de baja |
 | 409 | `CAUSE_INACTIVE` | Editar o vincular una causa dada de baja |
-| 422 | `VALIDATION_FAILED` | Campos: `required`, `enum.invalid`, `number.range` (`likelihood`, `impact`), `date.past` (`due_date`), `array.min` |
+| 422 | `VALIDATION_FAILED` | Campos: `required`, `enum.invalid`, `number.invalid`, `number.range` (`likelihood`, `impact`, de 1 a 5), `date.invalid` y `date.past` (`due_date`: `AAAA-MM-DD`, hoy o después), `uuid.invalid`, `array.min` |
 
-Claves i18n: `risk.list`, `risk.read`, `risk.created`, `risk.updated`, `risk.evaluated`, `risk_treatment.created`, `cause.*`.
+Claves i18n: `risk.list`, `risk.read`, `risk.created`, `risk.updated`, `risk.evaluated`, `risk.evaluation_history`, `risk_treatment.created`, `risk_treatment.list`, `cause.*`.
 
 ## Ejemplos de error
 
@@ -308,12 +308,14 @@ Todos con el mismo sobre (`conventions.md`); `message` es la clave i18n del erro
 
 **Pendiente para las pantallas de alta y edición (MD-124):** el backend no sirve en `GET /v1/catalogs/{name}` las listas `risk_criterion` (11 valores), `risk_level`, `failure_category`, `loss_type` ni `cause_control_effect`; sin ellas el frontend no puede armar los formularios de crear y editar un riesgo o una causa sin escribir las listas a mano, que `contracts/enums.md` prohíbe. Hay que servirlas como catálogos.
 
-**Construido: MD-122** (riesgos, causas y vínculos; 2026-10-14). **No** MD-123: la evaluación 5×5 y el tratamiento (`treatment` sale `null` y los campos de la evaluación, `null`).
+**Construido: MD-122** (riesgos, causas y vínculos; 2026-10-14) y **MD-123** (evaluación 5×5, historial y tratamiento; 2026-10-16).
 
 - El impacto potencial se guarda como el **texto del comité** (`["Reputacional", …]`) y la API lo convierte a `loss_type` en los dos sentidos; un texto que no se reconoce se omite en la respuesta, no se pierde.
 - Quitar un vínculo que no existe responde `404`. Dar de baja dos veces es idempotente (`204`).
 - `is_mandatory` y `effect` del vínculo causa–acción viven en `client_cause_controls`; hoy `effect` es `null` en todas las que vienen del catálogo (`P22`).
-- **Para MD-123:** `risk_treatments.responsible_id` apunta hoy a `users`, y este contrato (y el ticket) dicen que es un **cargo** (`organization_responsibles`). Se corrige con una migración al construir el tratamiento.
+- **La evaluación** vive en `client_risks` (`likelihood`, `impact`, `inherent_risk_value`, `inherent_risk_level`) y cada llamada deja una fila de auditoría `client_risk.evaluate` con lo anterior y lo nuevo: de ahí sale el historial. La base impone la forma (`client_risks_evaluation_shape`): o los cuatro campos son nulos, o probabilidad e impacto van de 1 a 5 con el valor y el nivel que les corresponden. Si el cliente manda `inherent_risk_value` o `inherent_risk_level`, se ignoran.
+- **El tratamiento** vive en `risk_treatments`, una fila por decisión (`created_by`, `created_at`); la vigente es la última. `responsible_id` apunta a `organization_responsibles` (el cargo, D30) y es `RESTRICT`: un cargo que responde de un tratamiento no se puede quitar (`409 RESPONSIBLE_IN_USE`). La migración `20261016120000_risk_evaluation_and_treatment` repunta la clave desde `users` y se detiene si hay filas.
+- `due_date` se compara con el día UTC de hoy: hoy vale, ayer no.
 
 ## Preguntas abiertas
 

@@ -59,7 +59,7 @@ Solo cambia la persona (`type` no cambia). `200` con el cargo; **todo lo que apu
 
 ## `DELETE /v1/responsibles/{id}`
 
-`204`. Si el cargo está en uso, `409 RESPONSIBLE_IN_USE`: primero se reasigna lo que apunta a él. Hoy cuentan los activos y las evidencias requeridas; el tratamiento de un riesgo se suma con MD-123.
+`204`. Si el cargo está en uso, `409 RESPONSIBLE_IN_USE`: primero se reasigna lo que apunta a él. Cuentan los activos, las evidencias requeridas y los tratamientos de un riesgo (MD-123).
 
 ## Errores
 

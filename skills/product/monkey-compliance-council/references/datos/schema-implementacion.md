@@ -217,8 +217,8 @@ transacción que se revierte, con el rol dueño y con `monkey_app`.
   vivo por cliente y `admin_empresa` la edita; en catálogo, editarla cambiaría la de todos.
 - **`evidence_requirements`** → `tenant`, FK a `catalog.controls` y a `organization_responsibles`
   (el cargo, no la persona; D30).
-- **`action_plans`, `risk_treatments`, `residual_risks`** → su responsable apunta a `User`
-  (persona), no a `organization_responsibles`, como dibuja el ER.
+- **`risk_treatments`** → su responsable es un cargo: FK a `organization_responsibles`, no a `User` (D30, MD-123); `created_by` sí apunta a `User`, con `RESTRICT`.
+- **`action_plans`, `residual_risks`** → su responsable apunta a `User` (persona), no a `organization_responsibles`, como dibuja el ER (fuera del sprint: MD-151).
 - **`csocs`, `cuecs`** → no medibles (D11): sin relación hacia `evaluations`, con el comentario
   en el schema.
 

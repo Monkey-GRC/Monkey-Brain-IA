@@ -187,9 +187,11 @@ erDiagram
     risk_treatments {
         uuid id PK
         uuid client_risk_id FK
-        uuid responsible_id FK
+        uuid responsible_id FK "organization_responsibles: un cargo, no una persona (D30)"
         enum decision "mitigate|accept|transfer|avoid"
         date due_date
+        uuid created_by FK "quien registró la decisión"
+        datetime created_at "la decisión vigente es la última"
     }
     services ||--o{ client_risks : "expuesto a"
     services ||--o{ client_causes : "tiene"
