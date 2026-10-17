@@ -7,7 +7,7 @@ type: contract
 
 # Monkey Admin — catálogo maestro
 
-**Estado: PROPUESTA (2026-10-17). Nada de esto está construido.** Ver `conventions.md` y `enums.md`. Entidades: todo el schema `catalog` (`modelo-datos.md` §3). **App:** Monkey Admin. **Quién:** solo `admin_monkey`; cualquier otro rol recibe `403`.
+**Estado: PROPUESTA (2026-10-17). Construida la lectura (2026-10-17); la escritura sigue por construir.** Ver «Estado de implementación». Ver `conventions.md` y `enums.md`. Entidades: todo el schema `catalog` (`modelo-datos.md` §3). **App:** Monkey Admin. **Quién:** solo `admin_monkey`; cualquier otro rol recibe `403`.
 
 ## Para qué sirve este documento (léelo primero)
 
@@ -43,9 +43,10 @@ Todas paginadas (`conventions.md`), solo `admin_monkey`. Cada ítem trae `origin
 
 | Endpoint | Qué devuelve |
 |---|---|
-| `GET /v1/catalog/frameworks` | Marcos: `id`, `code`, `name`, `version`, `type`, `availability` y **conteos** (requisitos, controles, pruebas) |
+| `GET /v1/catalog/frameworks` | Marcos: `id`, `code`, `name`, `version`, `type`, `availability` y **conteos** (requisitos, controles, pruebas). Los controles son los vinculados a algún requisito: en SOC 2, **118** de los 119 del catálogo |
 | `GET /v1/catalog/frameworks/{id}` | El marco con sus criterios de confianza y requisitos (`code`, `criterion`, `controls_count`) |
 | `GET /v1/catalog/frameworks/{id}/controls` | Controles del marco. Filtros: `search`, `domain`, `requirement_code`, `has_evidence_template`, `is_active`. Cada uno: `code`, `name`, `domain`, `dimensions`, `tests_count`, `evidence_templates_count` |
+| `GET /v1/catalog/controls` | Controles de todo el catálogo, con los mismos filtros, más `framework_id` y `unlinked=true` (los que no cuelgan de ningún requisito: **CPL-1**, o uno recién creado sin vincular). Sin esto un control nuevo desaparecería de la lista del marco |
 | `GET /v1/catalog/controls/{id}` | Detalle: descripción, `source_ref`, puntos de enfoque (requisito + número), dimensiones, pruebas, plantillas de evidencia (con su `sequence`), políticas y causas que lo mitigan |
 | `GET /v1/catalog/risks` · `GET /v1/catalog/risks/{id}` | Riesgos globales; el detalle trae sus causas |
 | `GET /v1/catalog/causes` · `GET /v1/catalog/causes/{id}` | Causas globales; el detalle trae sus riesgos y controles |
@@ -101,3 +102,13 @@ Solo `admin_monkey`. Cada llamada deja su fila de auditoría, en la misma transa
 - **Versionado y propagación (A4):** fuera de esta entrega. Hasta que exista, lo que se agrega en Admin no llega a empresas que ya contrataron.
 - **Quién edita:** hoy cualquier `admin_monkey`. Si el comité quiere un rol propio de editor de catálogo, es parte de `P3`.
 - **Pruebas automáticas nuevas:** necesitan comprobaciones (`checks`) asociadas; este contrato no cubre cargarlas.
+
+## Estado de implementación
+
+**Lectura construida (2026-10-17)**, rama `feat/admin-catalog-read` del Backend: módulo `catalog-admin` (`GET /v1/catalog/…` de arriba) y la migración `20261017100000_catalog_origin_and_active`, que agrega `origin` (`committee`/`monkey_admin`) a controles, riesgos, causas, pruebas y plantillas de evidencia, e `is_active` a todas menos riesgos (ya lo tenían). Lo existente queda como `committee` y activo. Probado contra la base real (solo lectura) y con 15 pruebas e2e, cuyas cifras salen del JSON del catálogo.
+
+- **CPL-1** («SOC 2 - Descripción del Sistema») no cuelga de ningún requisito: es intencional del comité (`EXPECTED_UNASSIGNED_CONTROLS`). Por eso el marco cuenta 118 controles y el catálogo 119; ``unlinked=true`` lo encuentra.
+- ``GET /v1/catalog/controls`` no estaba en la propuesta original: se agregó al ver CPL-1.
+- Los listados filtran por ``is_active`` y ``origin``, pero hoy ninguna fila está dada de baja ni viene de Monkey Admin.
+
+**Por construir:** todo el apartado «Escritura», la auditoría ``catalog.*``, el ajuste de ``catalog:load`` para distinguir lo editado desde Admin, y la sección de Monkey Admin (el frontend).
