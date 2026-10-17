@@ -111,4 +111,6 @@ Solo `admin_monkey`. Cada llamada deja su fila de auditoría, en la misma transa
 - ``GET /v1/catalog/controls`` no estaba en la propuesta original: se agregó al ver CPL-1.
 - Los listados filtran por ``is_active`` y ``origin``, pero hoy ninguna fila está dada de baja ni viene de Monkey Admin.
 
-**Por construir:** todo el apartado «Escritura», la auditoría ``catalog.*``, el ajuste de ``catalog:load`` para distinguir lo editado desde Admin, y la sección de Monkey Admin (el frontend).
+**Monkey Admin, solo lectura (2026-10-17)**, rama `feat/admin-catalog-ui` del Frontend (Admin): entrada «Catálogo maestro» en el menú (ruta `/catalog`, solo `admin_monkey`). Los marcos como tarjetas con sus conteos; cinco pestañas (controles, riesgos, causas, pruebas, evidencias requeridas) con búsqueda y filtros de origen y estado; en controles, el ámbito (del marco · todo el catálogo · sin requisito) y «sin evidencia requerida»; en pruebas, la dimensión. Un panel lateral muestra el detalle de un control, riesgo, causa o prueba; el de la prueba separa lo que ve el cliente de los textos internos del comité. Las plantillas de evidencia no tienen detalle propio.
+
+**Por construir:** todo el apartado «Escritura», la auditoría `catalog.*`, el ajuste de `catalog:load` para distinguir lo editado desde Admin, y los formularios de Monkey Admin para agregar, editar y dar de baja.
