@@ -21,6 +21,7 @@ te toca. Si lo que vas a construir no está aquí, el contrato se acuerda primer
 | `conventions.md` | Lo transversal: sobre de respuesta, forma del error, i18n, multi-select, fechas, paginación |
 | `enums.md` | Tabla única `valor` ↔ etiqueta es ↔ etiqueta en, para todos los enums del onboarding |
 | `modules/monkey-admin.md` | Registro del tenant y clave de acceso (`companies`, `access_keys`) |
+| `modules/monkey-admin-catalog.md` | Monkey Admin: ver y gestionar el catálogo maestro (marcos, controles, riesgos, causas, pruebas y evidencias) |
 | `modules/auth.md` | Canje de la clave, login, refresh |
 | `modules/onboarding-organizational-context.md` | Componente 1 — 10 campos |
 | `modules/onboarding-service-context.md` | Componente 2 — 16 campos, repetible por servicio |
