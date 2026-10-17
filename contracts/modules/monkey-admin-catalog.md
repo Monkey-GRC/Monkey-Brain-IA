@@ -99,6 +99,10 @@ Apoyo para elegir a qué se vincula un control: `GET /v1/catalog/frameworks/{id}
 - `409 CATALOG_ITEM_IN_USE` cuando el cambio dejaría a un control activo sin nada que medir: desvincular o dar de baja **la única prueba** de un control activo, o quitar una dimensión de la que el control todavía usa pruebas.
 - **Lo dado de baja deja de ofrecerse a los servicios nuevos** (el clonado salta controles, pruebas, plantillas, riesgos y causas inactivos), pero **no cambia las copias que las empresas ya clonaron** (D28). La propagación a las existentes (A4) sigue fuera de esta entrega.
 
+## Listas de opciones del Admin
+
+Los selects del formulario (`dimension`, `control_type`, `risk_criterion`, `failure_category`) y los filtros (`dimension`, `catalog_origin`) se llenan con `GET /v1/catalogs/{name}`, igual que en Platform (`enums.md`); el Admin no tiene listas propias. El `Accept-Language` lo manda el interceptor de autenticación.
+
 ## Seed y auditoría
 
 - `catalog:load` y `catalog:verify` **solo miran lo del comité** (`origin = committee`). Lo agregado desde Admin y sus vínculos se ignoran; el cargador lo cuenta aparte («Ignoradas…»).
