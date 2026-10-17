@@ -234,6 +234,19 @@ Todos con el mismo sobre (`conventions.md`); `message` es la clave i18n del erro
 |---|---|
 | `framework_assessment.issue` | se emite una evaluación (con el veredicto y la evaluación del servicio) |
 
+## Estado de implementación
+
+**Construido: `GET /v1/services/{service_id}/compliance-overview` (MD-137, 2026-10-17)**, con la vista de negocio y `?view=technical`. Lo calcula con el motor del comité (`domain/engine/`) sobre los mismos datos que la lista de controles.
+
+- **Qué cae en cada categoría.** Un control del catálogo, por los requisitos a los que sirve (marco y categoría del requisito); uno propio, en la categoría que eligió la empresa y en todos los marcos del servicio. Una categoría está en alcance si es obligatoria (Seguridad en SOC 2) o si el servicio la contrató; solo salen las que tienen controles, salvo la obligatoria.
+- **Semáforo del marco y de la categoría.** `not_measured` si nada se pudo decidir; `ready` si todos los controles son efectivos; `almost_ready` si nada falla (solo falta decidir) o el avance llega al 80 %; `needs_work` si no. Son los cortes de un control (D62). **El estado técnico manda sobre el semáforo**: con un solo control que no cumple, `technical.state` es `non_compliant` aunque el semáforo diga «Casi listo».
+- **`progress` y `coverage`** son conteos de controles (el del marco, únicos). `coverage.measured` cuenta los controles ya decididos (efectivos, no efectivos y vencidos).
+- **`evaluation` sin definir (`P26`).** Si falta el período, el inicio o la fecha de corte, `evaluation` va con sus cuatro campos en `null`, el marco y sus categorías en `not_measured`, `progress.done` y `coverage.measured` en 0 y `failing_controls` vacío: el motor no ejecuta. Hoy nadie llena esos datos, así que **todo servicio real responde «Sin medir»** hasta que se defina `P26`.
+- **`catalog_version`** viaja como texto del número de versión del catálogo (`"3"`), no como `"2026.10"` del ejemplo.
+- **Códigos (D80).** `failing_controls[].code` es siempre visible (el del catálogo o el propio) y `requirement_codes` también; `own_code` solo en un control propio. El nombre de un test sale neutro, nunca con el texto del comité; en la vista técnica sí viaja `test_code`.
+- **Vista técnica.** `auditor`, `consultor` y `admin_empresa` (D81); el `funcional` y `admin_monkey` reciben `403`. `assessments` va `{ consultant: null, auditor: null }` hasta que exista `framework_assessments` (MD-155). `blocking_tests` son los tests del control que no cumplen ni están fuera de alcance.
+- **`funcional`.** Ve el marco y las categorías completos; en `failing_controls` solo los que tiene asignados.
+- **Pendiente:** el endpoint de evaluaciones (`POST/GET …/assessments`, MD-155) y `DT-50` (guardar los resultados de la sonda como `evaluations`); sin él, el resumen no tiene resultados que mostrar.
 ## Preguntas abiertas
 
 - **`P26`**: quién define el período auditado y la fecha de corte, y cuándo. Mientras tanto el resumen responde `not_measured` y emitir una evaluación responde `409`.

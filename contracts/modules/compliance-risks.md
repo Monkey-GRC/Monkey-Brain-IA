@@ -120,6 +120,16 @@ Solo las claves presentes: `name`, `description`, `trust_criterion`, `potential_
 
 Baja lógica: `204`. El riesgo deja de aparecer en las listas, pero su historial y sus evaluaciones se conservan.
 
+### `GET /v1/risk-matrix`
+
+La matriz 5×5 completa, con el valor y el nivel de **cada casilla**. La leen los cuatro roles de la empresa; no depende de ningún servicio.
+
+```json
+{ "min": 1, "max": 5, "cells": [ { "likelihood": 1, "impact": 1, "value": 1, "level": "low" }, …, { "likelihood": 5, "impact": 5, "value": 25, "level": "critical" } ] }
+```
+
+`value` es probabilidad × impacto y `level` sale de la **misma función** que la evaluación de un riesgo (Bajo 1–4 · Moderado 5–9 · Alto 10–16 · Crítico 17–25): una casilla vacía tiene exactamente el nivel que tendría un riesgo evaluado ahí. Sirve para pintar el mapa de calor (verde, amarillo, naranja, rojo) sin escribir los cortes en el frontend (`contracts/enums.md`). Las 25 casillas vienen siempre, en orden de probabilidad e impacto crecientes; ordenar y colocar los ejes es cosa de la pantalla.
+
 ## Causas
 
 Misma forma que los riesgos, con `failure_category` (6 valores) en lugar de `trust_criterion` y sin evaluación.
@@ -306,7 +316,7 @@ Todos con el mismo sobre (`conventions.md`); `message` es la clave i18n del erro
 
 **Pendiente por D80 (2026-10-15):** `code` en cada vínculo causa–control (`controls[]`), en el riesgo y en la causa. El backend aún devuelve el código del catálogo solo dentro de `technical` y deja `own_code` en `null` para los del catálogo (**MD-166**).
 
-**Pendiente para las pantallas de alta y edición (MD-124):** el backend no sirve en `GET /v1/catalogs/{name}` las listas `risk_criterion` (11 valores), `risk_level`, `failure_category`, `loss_type` ni `cause_control_effect`; sin ellas el frontend no puede armar los formularios de crear y editar un riesgo o una causa sin escribir las listas a mano, que `contracts/enums.md` prohíbe. Hay que servirlas como catálogos (**MD-167**), junto con `risk_treatment_decision`.
+**Resuelto (2026-10-17): las listas de las pantallas de alta y edición (MD-124).** `GET /v1/catalogs/{name}` sirve ahora `risk_criterion`, `failure_category`, `risk_level`, `risk_treatment_decision`, `responsible_type`, `cause_control_effect`, `exclusion_status`, `dimension`, `control_type`, `catalog_origin`, `loss_type` y `risk_scale` (la escala 1–5 de la matriz), todas con etiqueta es/en. Salen de los enums de la base, en su orden, así que añadir un valor no obliga a tocar el frontend; una prueba del backend (`compliance-catalogs.spec.ts`) compara las listas con el esquema de Prisma. Platform y Monkey Admin las piden y ya no escriben ninguna a mano; solo el texto de algunos enums sigue duplicado en el i18n del frontend (se unifica pantalla a pantalla).
 
 **Construido: MD-122** (riesgos, causas y vínculos; 2026-10-14) y **MD-123** (evaluación 5×5, historial y tratamiento; 2026-10-16).
 

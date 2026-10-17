@@ -432,7 +432,9 @@ Ya definidos en `modelo-datos.md` (§7 y §8): `mitigate|accept|transfer|avoid`,
 
 ## Cumplimiento — contratos de endpoints (MD-108)
 
-Valores que usan `modules/compliance-*.md`. Los de las tablas ya existentes (`dimension`, `trust_criterion`, `risk_criterion`, `risk_level`, `failure_category`, `risk_treatment_decision`, `evidence_review`,
+**Qué listas sirve `GET /v1/catalogs/{name}` (2026-10-17).** Además de las del onboarding, sirve las de cumplimiento y las del catálogo maestro: `risk_criterion`, `failure_category`, `risk_level`, `risk_treatment_decision`, `responsible_type`, `cause_control_effect`, `exclusion_status`, `dimension`, `control_type`, `catalog_origin`, `loss_type` y `risk_scale` (valores `1`–`5`, de la matriz 5×5). La respuesta es la de siempre (`value` + `label` según `Accept-Language`), en el orden del enum. **Ningún cliente escribe estas listas a mano**; la fuente es el enum de la base y la etiqueta, `i18n/<idioma>/catalogs.json` del backend.
+
+Valores que usan `modules/compliance-*.md`. Los de las tablas ya existentes (`dimension`, `trust_criterion`, `risk_criterion`, `risk_level`, `failure_category`, `risk_treatment_decision`, `evidence_validation_status`,
 `audit_observation_*`, `control_change_*`) no se repiten.
 
 ### `control_type` — `client_controls.type`
