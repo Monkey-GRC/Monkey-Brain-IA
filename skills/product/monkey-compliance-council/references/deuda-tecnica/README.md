@@ -47,7 +47,6 @@ Pueden causar daño o engaño si se ignoran.
 | [DT-1](control-tecnico.md#dt-1--la-sonda-es-simulada-o-no-está-disponible) | La sonda es simulada o no está disponible | [Control técnico](control-tecnico.md) |
 | [DT-32](control-tecnico.md#dt-32--no-hay-vínculo-activo--agente) | No hay vínculo activo ↔ agente | [Control técnico](control-tecnico.md) |
 | [DT-33](control-tecnico.md#dt-33--aislamiento-entre-empresas-sin-imponer) | Aislamiento entre empresas sin imponer | [Control técnico](control-tecnico.md) |
-| [DT-39](onboarding.md#dt-39--el-adaptador-de-almacenamiento-s3--minio-no-se-ha-probado-contra-el-minio-de-la-vps) | El adaptador de almacenamiento (S3 / minio) no se ha probado contra el minio de la VPS | [Onboarding](onboarding.md) |
 | [DT-43](control-tecnico.md#dt-43--el-motor-de-nube-se-probó-en-el-mismo-servidor-que-la-sonda-y-con-llaves-estáticas-del-cliente-guardadas-allí) | El motor de nube se probó en el mismo servidor que la sonda y con llaves estáticas del cliente guardadas allí | [Control técnico](control-tecnico.md) |
 
 ### 🟠 Importantes

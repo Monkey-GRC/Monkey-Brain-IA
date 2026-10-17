@@ -248,7 +248,7 @@ Claves i18n: `service.created`, `service.list`, `service.updated`, `service.dele
 | Qué | Estado |
 |---|---|
 | **Regulación a nivel de servicio** | ✅ Cerrada (D51, 2026-10-05, a petición del comité): **se retira**. Las leyes aplican a la empresa (Componente 1). Revierte D45 y elimina `service_regulations` |
-| **Descripción del Sistema: enlace o archivo** | ✅ Cerrada (D51): enlace, archivo o los dos. El archivo se guarda en S3 / minio. Falta **probarlo contra el minio real** (DT-12, DT-39) y procesar las 10 secciones |
+| **Descripción del Sistema: enlace o archivo** | ✅ Cerrada (D51): enlace, archivo o los dos. El archivo se guarda en S3 / minio. Probado contra el minio real de la VPS (MD-110, 2026-10-17). Falta procesar las 10 secciones (DT-12) |
 | **Categorías de cada marco** | ✅ Decidido (D50): cada marco usa sus **categorías nativas**, no las 5 de SOC 2. No se migra el schema hasta sembrar el primer marco que no sea SOC 2 (DT-38) |
 | **`business_model` y `services.type`** | El Excel gana sobre el modelo (11 tipos de servicio, no 5). Hay que corregir el enum en `modelo-datos.md` §6.2 |
 | **Dimensiones de los controles clonados** | Ya sembradas (D39, cerró P10): el clonado copia las dimensiones del control con su tipo y sus banderas. Cuáles exige cada control las define el comité en `Controles Monkey` L a P y hoy no coinciden con lo sembrado (`DT-69`) |
@@ -266,7 +266,7 @@ Implementado en `Backend/src/features/services` (más `catalogs` y el progreso d
 | `PATCH /v1/services/{id}` | ✅ Solo las claves presentes (`null` borra un opcional). Ampliar `trust_criteria` o `framework_codes` recalcula y clona lo que falte; no borra ni pisa nada |
 | `DELETE /v1/services/{id}` | ✅ `409 SERVICE_HAS_EVALUATIONS` con evaluaciones, evidencias entregadas o planes de acción; si no, borra todo lo del servicio |
 | `POST /v1/services/{id}/system-description` | ✅ El enlace (`http`/`https`); conserva el archivo si lo hay |
-| `POST /v1/services/{id}/system-description/file` | ✅ Multipart, 25 MB, PDF o .docx (D51). Con el adaptador S3 / minio; sin `S3_*` responde 503. Probado de punta a punta contra un servidor S3 compatible (SeaweedFS) y con un archivo de exactamente 25 MB; **falta correr `npm run storage:smoke` en el MinIO de la VPS** (MD-110, DT-39) |
+| `POST /v1/services/{id}/system-description/file` | ✅ Multipart, 25 MB, PDF o .docx (D51). Con el adaptador S3 / minio; sin `S3_*` responde 503. Probado de punta a punta contra un servidor S3 compatible (SeaweedFS) y con un archivo de exactamente 25 MB; `npm run storage:smoke` pasa 7/7 en el MinIO de la VPS (MD-110, 2026-10-17) |
 | `GET /v1/services/{id}/system-description/file` | ✅ Enlace temporal de 5 min |
 | `PUT .../csocs` y `PUT .../cuecs` | ❌ No se construyeron (salen de las secciones 7 y 8 de la Descripción del Sistema, que aún no se procesa) |
 | `GET /v1/catalogs/{name}` | ✅ Nuevos: `service_type`, `served_industry`, `active_client_count`, `service_country`, `data_type`, `trust_criterion`, `subservice_type`, `expected_availability`, `previous_certification` y `frameworks` (sale de `catalog.frameworks`: hoy solo `soc2`) |

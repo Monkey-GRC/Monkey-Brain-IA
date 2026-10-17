@@ -273,8 +273,8 @@ desechable, ver §13):
   `nginx_proxy_manager`, en la red `proxy_net`.
 - **Staging:** stack `~/postgres-staging/` (imagen `postgres:17.10`) en `proxy_net`, **sin exponer
   puertos**: solo lo alcanzan otros contenedores por `postgres-staging`. La carpeta `monkey-dev` de la
-  VPS cumple hoy el rol de staging: es el destino del deploy automático. No se montó en otro servidor
-  ni en un servicio administrado, por simplicidad y costo.
+  VPS cumple hoy el rol de staging: es el destino del deploy automático y el **único** entorno desplegado. No se montó en otro servidor
+  ni en un servicio administrado, por simplicidad y costo. **No existe un backend de staging propio** (D86): hay un solo entorno desplegado, y lo que solo tendría sentido con un staging (bucket, cuenta de servicio y `.env` aparte, repetir las pruebas) está congelado hasta que se necesite.
 - **CI** (`ci.yml`, PR #17 del Backend): en cada PR a `develop`/`main` levanta un Postgres vacío y corre lint, build, pruebas
   unitarias, migraciones desde cero, carga de catálogos, los verificadores (`catalog`, `reference`, `clone`, `audit`) y las pruebas
   de aislamiento (`npm run test:e2e`, ver `seguridad/requisitos.md`). **No bloquea el merge ni el despliegue** mientras la
@@ -317,8 +317,10 @@ desechable, ver §13):
   4. Poner las `S3_*` en `~/monkey-dev/.env` con `set-env.sh`, reiniciar el backend y correr `SMOKE_API_URL=https://<api>/v1 npm run storage:smoke`: sube y baja un archivo
      de 25 MB, comprueba el 401/403 sin firma, que un enlace de 2 segundos vence y que el proxy no responde 413.
   `check-env.sh` **avisa** (no detiene el despliegue) si falta alguna `S3_*`. Hay además una prueba e2e opcional contra un S3 real
-  (`test/almacenamiento`, con `S3_TEST_*`) que CI no corre. **Estado:** el código y las pruebas están contra un S3 compatible; los pasos 1 a 4 en la VPS siguen
-  sin hacerse (DT-39, MD-110).
+  (`test/almacenamiento`, con `S3_TEST_*`) que CI no corre. **Estado (2026-10-17):** los pasos 1 a 4 están hechos en la VPS y `npm run storage:smoke` pasa 7/7 contra el MinIO real. La limpieza de seguridad
+  de la VPS (secretos rotados, puertos de MinIO solo en `127.0.0.1`, red de MinIO en su compose, credenciales fuera de los compose y consola restringida) se cerró el 2026-10-17 (MD-179).
+  MD-110 queda cerrado; la vista previa incrustada se prueba con la pantalla (MD-178). Los archivos se guardan en el disco de la VPS (75 GB), que comparte con el backend, las bases locales y
+  Docker, y **no hay cuota ni alerta**: se vigila a mano con `df -h /` y limpiando imágenes y contenedores de Docker sin uso (la deuda del espacio, DT-76, se cerró el 2026-10-17 tras esa limpieza).
 
 ## 9. Lo que sigue pendiente (operativo, no del modelo)
 

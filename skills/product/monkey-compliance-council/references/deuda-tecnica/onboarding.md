@@ -8,7 +8,7 @@ Parches de los Componentes 1 y 2 del onboarding y del registro de empresa. Conte
 
 🟠 Importante
 
-- **Qué está parchado:** No se leen las 10 secciones AICPA (`sections` queda vacío) y por eso **no existen `PUT csocs` / `PUT cuecs`**. La carga de archivo (multipart, 25 MB, PDF/docx) ya existe y se probó contra un S3 compatible, no contra el minio de la VPS (DT-39)
+- **Qué está parchado:** No se leen las 10 secciones AICPA (`sections` queda vacío) y por eso **no existen `PUT csocs` / `PUT cuecs`**. La carga de archivo (multipart, 25 MB, PDF/docx) ya existe y se probó contra un S3 compatible y contra el minio de la VPS (MD-110)
 - **Por qué:** Falta el procesamiento del documento
 - **Qué lo cierra:** Procesar el documento (IA) y sembrar `sections`, `csocs` y `cuecs`
 
@@ -78,14 +78,6 @@ Parches de los Componentes 1 y 2 del onboarding y del registro de empresa. Conte
 - **Qué está parchado:** El comité confirmó (opción 2, D50) que cada marco use sus categorías nativas (ISO 27001: 4 temas; PCI DSS: 12 requisitos; NIST CSF: 6 funciones…), pero `requirements.trust_criterion_id` es una FK a `trust_criteria` (enum de los 5 TSC) y `service_trust_criteria` filtra con ellas. Hoy no estorba porque solo SOC 2 está construido
 - **Por qué:** Sin segundo marco construido, migrar el modelo sería un cambio grande sin uso
 - **Qué lo cierra:** Al sembrar el primer marco que no sea SOC 2: generalizar `trust_criteria` a **dominios por marco** (`framework_id`, `code`, `name`, `is_mandatory`) y `service_trust_criteria` a `service_framework_domains`. Mientras tanto, la pantalla pregunta por «categorías de SOC 2»
-
-### DT-39 · El adaptador de almacenamiento (S3 / minio) no se ha probado contra el minio de la VPS
-
-🔴 Crítica
-
-- **Qué está parchado:** *2026-10-16 (MD-110):* el adaptador ya se probó de punta a punta contra un servidor S3 compatible con credenciales (SeaweedFS, porque MinIO dejó de publicar imágenes en Docker Hub): un PDF de 25 MB se sube por la API y se descarga idéntico con su enlace firmado, sin firma el acceso responde 403, y un enlace de 2 segundos vence. Esa prueba encontró y cerró un error de un byte (un archivo de exactamente 25 MB recibía 413). **Lo que sigue sin probarse** es el MinIO de la VPS: se desconoce si el stack `minio` está arriba con un bucket de evidencias y una cuenta de servicio limitada a él, y falta la ruta pública en `nginx_proxy_manager`. Sin `S3_*` la subida responde 503 y se usa el enlace; `check-env.sh` avisa si faltan.
-- **Por qué:** faltan los datos de acceso del MinIO de la VPS y la ruta pública del proxy, que solo existen en el servidor.
-- **Qué lo cierra:** el recorrido de `Backend/scripts/deploy/setup-storage.sh` y `npm run storage:smoke` **en el servidor** (§8 de `schema-implementacion.md`): bucket privado, cuenta de servicio de solo ese bucket, `S3_*` y `S3_PUBLIC_ENDPOINT` en el `.env`, y el límite de 25 MB en el proxy. Después, política de bucket por empresa (`<empresa>/…`) y cifrado en reposo. Ticket: MD-110.
 
 ### DT-40 · La lista de 18 normas de protección de datos la depuró desarrollo, no el comité
 
