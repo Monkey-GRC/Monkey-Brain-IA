@@ -7,7 +7,7 @@ type: contract
 
 # Cumplimiento — riesgos y causas
 
-**Estado: PROPUESTA (2026-10-14); construida: riesgos, causas, vínculos, evaluación 5×5 y tratamiento (MD-122 y MD-123).** Ver `conventions.md` (sección «Cumplimiento») y `enums.md`. Tickets: MD-122, MD-123.
+**Estado: ACORDADO (2026-10-17); construida: riesgos, causas, vínculos, evaluación 5×5 y tratamiento (MD-122 y MD-123).** Ver `conventions.md` (sección «Cumplimiento») y `enums.md`. Tickets: MD-122, MD-123.
 
 **Qué es.** Al contratar un marco, cada servicio recibe **su propia copia** de los riesgos y causas del catálogo (D28): editarla no cambia el catálogo ni a otra empresa. Un *riesgo* es la
 probabilidad y el impacto de que algo ocurra o se pierda si una persona lo materializa; una *causa* es el riesgo materializado; un *control* es el paso a paso que lo evita o lo mitiga (vocabulario del comité,
@@ -321,4 +321,4 @@ Todos con el mismo sobre (`conventions.md`); `message` es la clave i18n del erro
 
 - **Funcional y edición**: ver «Quién puede qué» (`P3`).
 - **`effect` e `is_mandatory`** de las 209 relaciones causa–control: `P22`.
-- **Tipos de pérdida** (`potential_impact`): el Excel trae «Interrupción de la operación» e «Interrupción o cierre de la operación»; el contrato las trata como un solo valor hasta que el comité confirme (`P9`).
+- **Tipos de pérdida** (`potential_impact`): el Excel trae «Interrupción de la operación» e «Interrupción o cierre de la operación»; el contrato las trata como un solo valor (decisión de desarrollo del 2026-10-17; el comité lo ratifica, `P9`).

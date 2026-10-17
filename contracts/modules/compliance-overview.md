@@ -7,7 +7,7 @@ type: contract
 
 # Cumplimiento — resumen del servicio y evaluaciones
 
-**Estado: PROPUESTA (2026-10-14; D80 el 2026-10-15).** Ver `conventions.md` (sección «Cumplimiento») y `enums.md`. Tickets: MD-137, MD-138, MD-139, MD-155.
+**Estado: ACORDADO (2026-10-17; D80 el 2026-10-15), salvo lo que espera `P26` (período y fecha de corte) y `P3` (qué ve el cliente de las evaluaciones).** Ver `conventions.md` (sección «Cumplimiento») y `enums.md`. Tickets: MD-137, MD-138, MD-139, MD-155.
 
 **Qué es.** El cumplimiento se mide por **servicio × marco**; nunca existe un número de toda la empresa. Los estados salen del motor del comité (`modelo-datos.md` §9, D68) y **se derivan, no se guardan como atributo del marco**.
 **Entidades:** `service_frameworks` (la evaluación del servicio), `framework_assessments` (§7.5). **App:** Monkey Platform.
@@ -83,7 +83,7 @@ Un bloque por **marco contratado**. Dentro, solo las categorías **en alcance** 
 
 ### `?view=technical`
 
-Solo `auditor` y `consultor`. Agrega `technical` a cada nivel, con los estados de evaluación de `enums.md`:
+`auditor`, `consultor` y, desde D81, `admin_empresa`; el `funcional`, `403`. Agrega `technical` a cada nivel, con los estados de evaluación de `enums.md`:
 
 ```json
 {

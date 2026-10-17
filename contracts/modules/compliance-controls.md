@@ -7,7 +7,7 @@ type: contract
 
 # Cumplimiento — controles
 
-**Estado: PROPUESTA (2026-10-14; D80 el 2026-10-15).** Ver `conventions.md` (sección «Cumplimiento: roles, vistas y decisiones») y `enums.md`. Tickets: MD-117, MD-118, MD-150, MD-156.
+**Estado: ACORDADO (2026-10-17; D80 el 2026-10-15), salvo el detalle por pantalla de `P3`.** Ver `conventions.md` (sección «Cumplimiento: roles, vistas y decisiones») y `enums.md`. Tickets: MD-117, MD-118, MD-150, MD-156.
 
 **Qué es.** Un *control* del servicio es un **control del cliente** (`client_controls`, `modelo-datos.md` §7.1): el control del catálogo que el servicio heredó al contratar
 un marco, o uno propio. Todo lo que se mide cuelga de él. **Entidades:** `client_controls`, `client_control_dimensions`, `client_control_changes`, `user_control_assignments`.
@@ -130,7 +130,7 @@ El detalle de una acción. Mismas reglas de acceso que la lista.
         "requirement_id": "e07a…",
         "description": "Política de control de accesos aprobada",
         "responsible": { "id": "c9d0…", "type": "compliance", "person_name": "Marta Ruiz" },
-        "latest_submission": { "id": "b310…", "version": 2, "validation_status": "pending" }
+        "latest_submission": { "id": "b310…", "version": 2, "evidence_state": "pending" }
       }
     ],
     "causes": [ { "id": "7c2e…", "name": "Cuentas sin dueño tras una salida de personal" } ],

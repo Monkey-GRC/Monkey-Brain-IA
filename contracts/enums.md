@@ -421,10 +421,6 @@ Asistida por IA (revisión documental)
 ### `severity` — `findings.severity` y `vulnerabilities.severity`
 `low` Baja · `medium` Media · `high` Alta · `critical` Crítica
 
-### `evidence_validation_status` — `evidence_submissions.validation_status`
-`pending` Pendiente · `approved` Aprobada · `rejected` Rechazada. Solo `admin_empresa` cambia el
-estado; la IA sugiere (`ai_verdict`) pero no decide.
-
 ### `action_plan_status` — `action_plans.status`
 `open` Abierto · `in_progress` En curso · `done` Hecho · `cancelled` Cancelado. "Vencido" no es un
 estado: se deriva de `due_date`.
@@ -436,7 +432,7 @@ Ya definidos en `modelo-datos.md` (§7 y §8): `mitigate|accept|transfer|avoid`,
 
 ## Cumplimiento — contratos de endpoints (MD-108)
 
-Valores que usan `modules/compliance-*.md`. Los de las tablas ya existentes (`dimension`, `trust_criterion`, `risk_criterion`, `risk_level`, `failure_category`, `risk_treatment_decision`, `evidence_validation_status`,
+Valores que usan `modules/compliance-*.md`. Los de las tablas ya existentes (`dimension`, `trust_criterion`, `risk_criterion`, `risk_level`, `failure_category`, `risk_treatment_decision`, `evidence_review`,
 `audit_observation_*`, `control_change_*`) no se repiten.
 
 ### `control_type` — `client_controls.type`
@@ -453,7 +449,7 @@ Valores que usan `modules/compliance-*.md`. Los de las tablas ya existentes (`di
 
 ### `loss_type` — tipos de pérdida de `client_risks.potential_impact` *(provisional, `P9`)*
 `reputational` Reputacional · `financial_loss` Pérdida financiera · `regulatory_sanction` Sanción regulatoria · `litigation` Litigios · `customer_trust_loss` Pérdida de confianza de clientes ·
-`operation_interruption` Interrupción de la operación. El Excel trae dos variantes de la última («…de la operación» y «…o cierre de la operación»); se tratan como un valor hasta que el comité confirme.
+`operation_interruption` Interrupción de la operación. El Excel trae dos variantes de la última («…de la operación» y «…o cierre de la operación»); se tratan como un valor (decisión de desarrollo del 2026-10-17; el comité lo ratifica, `P9`).
 
 ### `verdict_result` — el veredicto de un test (`modules/compliance-audit.md`)
 `compliant` Cumple · `non_compliant` No cumple. Es el subconjunto de `asset_result` que puede dar una persona.
@@ -466,8 +462,10 @@ Los **estados que el motor calcula** en cada nivel (`modelo-datos.md` §9). Se *
 ### `evidence_state` — estado calculado de una evidencia
 `compliant` Cumple · `non_compliant` No cumple · `pending` Pendiente · `in_review` En revisión · `expired` Evidencia vencida · `not_applicable` No aplica.
 
-### `evidence_review` — `evidence_submissions.review`
+### `evidence_review` — `evidence_reviews.review` (D84)
 `pending_review` Pendiente de revisión · `ai_prevalidated` Pre-validada por IA · `human_validated` Validada por una persona. Solo `human_validated` permite `compliant`; la IA nunca produce «cumple» (RN-03).
+**Lo guarda una persona solo como `pending_review` o `human_validated`; `ai_prevalidated` lo deriva el servidor** (la entrega tiene `ai_verdict` y ninguna revisión humana) y nunca se acepta de un cliente.
+`reviewer_role` (`evidence_reviews.reviewer_role`): `consultor` · `auditor`. La empresa no aprueba ni rechaza la evidencia (D84).
 
 ### `asset_result` — el resultado de un activo en un test (`evaluations.result`)
 `compliant` Cumple · `non_compliant` No cumple · `pending` Pendiente · `error` Error · `excluded` Excluido (más `not_applicable`).

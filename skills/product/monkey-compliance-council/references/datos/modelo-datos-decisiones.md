@@ -135,3 +135,5 @@ El registro está partido por épocas en `decisiones/`. **Busca el ID en el índ
 | D81 | El administrador de la empresa ve la vista técnica mientras no se definan los permisos por pantalla | 07 |
 | D82 | Cada prueba lleva, junto a su nombre neutro, una descripción corta que ve el cliente | 07 |
 | D83 | Sin consultor, la exclusión espera; y la exclusión lleva su servicio (cierra P24) | 07 |
+| D84 | La empresa solo aporta la evidencia: la revisan el consultor y el auditor, cada uno en su momento (cierra parte de P25) | 07 |
+| D85 | El veredicto de un test manual o documental vale para todos los controles que lo usan | 07 |

@@ -20,7 +20,7 @@ Lo que sigue abierto, con lo más urgente arriba. 🚧 bloquea trabajo · ⚠️
 | [P9](#p9--datos-del-excel-que-hay-que-corregir-o-confirmar) | Datos del Excel que hay que corregir o confirmar | ⚠️ La dimensión Aplicación del cálculo y las causas que ve el cliente | — |
 | [P21](#p21--el-uso-de-los-logos-de-marcas-de-terceros) | El uso de los logos de marcas de terceros en el marketplace | ⚠️ Publicar el marketplace con logos a clientes reales; no bloquea construirlo | 2026-10-10 |
 | [P22](#p22--motor-de-evaluación-lo-que-falta-para-calcular-el-riesgo) | Motor de evaluación: lo que falta para calcular el riesgo | 🚧 El riesgo residual y las dos matrices (MD-151, fuera del sprint); ⚠️ la periodicidad de los controles | 2026-10-10 |
-| [P25](#p25--quién-valida-los-atributos-de-una-evidencia-y-cómo-se-relaciona-con-el-veredicto-del-consultor) | Quién valida los atributos de una evidencia y cómo se relaciona con el veredicto del consultor | ⚠️ El endpoint de validación y el veredicto (MD-155), y el estado de los tests documentales | 2026-10-14 |
+| [P25](#p25--quién-valida-los-atributos-de-una-evidencia-y-cómo-se-relaciona-con-el-veredicto-del-consultor) | Quién valida los atributos de una evidencia y cómo se relaciona con el veredicto del consultor | ⚠️ Si validar la evidencia de un test documental es lo mismo que dar su veredicto (MD-155) | 2026-10-14 |
 | [P26](#p26--quién-define-el-período-auditado-y-la-fecha-de-corte-de-una-evaluación) | Quién define el período auditado y la fecha de corte de una evaluación | 🚧 Que el motor ejecute: sin esos datos el resumen es «Sin medir» y no se emiten evaluaciones (MD-137, MD-155) | 2026-10-14 |
 | [P27](#p27--cómo-se-agrupan-los-controles-en-un-marco-sin-categorías) | Cómo se agrupan los controles en un marco sin categorías | 🚧 La agrupación de la lista de controles y del resumen para marcos distintos de SOC 2 | 2026-10-15 |
 | [P28](#p28--a-quién-contacta-la-empresa-para-que-le-asignen-un-consultor) | A quién contacta la empresa para que le asignen un consultor | ⚠️ La casilla de contacto de la pantalla de exclusiones (MD-169) | 2026-10-16 |
@@ -67,7 +67,7 @@ Inconsistencias **dentro del propio archivo del comité**, que el seed carga tal
 - **Diez causas sin riesgo.** F003, F004, F016, F020, F026, F034, F042, F045, F053 y F054 no aparecen en ninguna
   de las 92 relaciones riesgo↔causa. ¿A qué riesgo(s) pertenecen o se descartan?
 
-- **Tipos de pérdida de un riesgo.** La hoja *Riesgos* usa «Interrupción de la operación» en dos riesgos e «Interrupción o cierre de la operación» en otros dos. ¿Son el mismo tipo de pérdida? El contrato los trata como uno solo (`operation_interruption`).
+- **Tipos de pérdida de un riesgo.** La hoja *Riesgos* usa «Interrupción de la operación» en dos riesgos e «Interrupción o cierre de la operación» en otros dos. ¿Son el mismo tipo de pérdida? El contrato los trata como uno solo (`operation_interruption`): **decisión de desarrollo del 2026-10-17**; el comité lo ratifica al revisar el Excel.
 
 **Qué depende:** la dimensión Aplicación del cálculo (§2, §9) qué causas ve el cliente al clonar (§7.2) y los valores de `loss_type`.
 
@@ -178,12 +178,12 @@ la **matriz inherente** muestra cada riesgo antes de aplicar controles y la **ma
 ## P25 · Quién valida los atributos de una evidencia y cómo se relaciona con el veredicto del consultor
 
 **Estado:** abierto desde 2026-10-14 (MD-108). La regla del comité valora **seis atributos por evidencia** y dice que solo una evidencia «validada por un revisor humano» puede cumplir (RN-01 a RN-03, `modelo-datos.md` §9). No dice **quién** es ese revisor.
-Hoy hay tres actos que se parecen: la empresa **aprueba** lo que sube (`validation_status`, solo `admin_empresa`); alguien **valida** sus atributos (`review = human_validated`); y el consultor da el **veredicto** de un test documental (D64, R-03).
+Hoy hay dos actos que se parecen: alguien **valida** los atributos de la entrega (`review = human_validated`) y el consultor da el **veredicto** de un test documental (D64, R-03). **La empresa ya no aprueba nada** (D84).
 
-1. **¿Quién marca los seis atributos y la validación humana de cada evidencia?** *Recomendación: el consultor, que prepara a la empresa; la empresa solo aporta y aprueba lo suyo.*
+1. ~~¿Quién marca los seis atributos y la validación humana de cada evidencia?~~ **Cerrada el 2026-10-17 (D84):** el consultor y el auditor, cada uno la suya y en su momento; la empresa solo aporta.
 2. **¿Validar las evidencias de un test documental es lo mismo que dar su veredicto, o son dos pasos?** *Recomendación: es el mismo acto; el endpoint de veredicto queda para los tests manuales sin archivo.*
 
-**Qué depende:** `PATCH /v1/evidence-submissions/{id}/review` y el veredicto de MD-155 (`contracts/modules/compliance-audit.md`), y cómo se calcula un test documental con datos reales.
+**Qué depende:** `PUT /v1/evidence-submissions/{id}/review` (solo la pregunta 2) y el veredicto de MD-155 (`contracts/modules/compliance-audit.md`), y cómo se calcula un test documental con datos reales.
 
 ## P26 · Quién define el período auditado y la fecha de corte de una evaluación
 

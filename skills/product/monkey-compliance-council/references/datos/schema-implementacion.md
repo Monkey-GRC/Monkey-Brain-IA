@@ -259,6 +259,11 @@ desechable, ver §13):
 - **Se aplicó bien pero hace daño** (borró o cambió algo que no debía). Primero **corregir hacia adelante** con una
   migración nueva que lo repare. Si hubo pérdida de datos, **restaurar el respaldo previo** (el script lo guarda en
   `~/backups/monkey/` antes de cada migración, últimas 14): `pg_restore` a una base nueva, comprobar y reemplazar.
+- **Se renombró una migración que staging ya había aplicado** (2026-10-16: `20261016130000_test_display_description` pasó a llamarse `20261016120000_…` después de un deploy). Prisma identifica una
+  migración por su **nombre**: ve una nueva, intenta aplicarla otra vez, falla (`P3018`, «la columna ya existe») y deja una fila fallida que **bloquea los deploys siguientes** (`P3009`). Como el
+  SQL ya está aplicado, se marca como aplicada sin correrla, en el servidor y con el rol dueño: `docker run --rm --network proxy_net -e DATABASE_URL monkey-backend-tools npx prisma migrate resolve
+  --applied <nombre_nuevo>`. La fila con el nombre viejo queda en la base sin carpeta; es inofensiva. **No renombrar una migración después de que `develop` se desplegó**: si dos migraciones comparten el
+  prefijo de fecha no pasa nada (se ordenan por nombre completo), así que no hace falta renombrar.
 - **Nunca** editar una migración ya aplicada ni borrar filas de `_prisma_migrations` a mano.
 
 ## 8. Infraestructura y despliegue

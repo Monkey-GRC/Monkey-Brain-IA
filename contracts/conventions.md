@@ -226,7 +226,7 @@ Reglas del cálculo en pantalla: se **trunca** a entero (nunca se redondea hacia
 
 **Lo generado por IA** viaja marcado: `"is_ai_generated": true` y `"ai_confidence"`. Una sugerencia de la IA **nunca** decide nada.
 
-**Decisiones sobre una propuesta.** Aprobar o rechazar algo que otro propuso (un cambio de control, una exclusión, una evidencia) es un `PATCH` sobre ese recurso:
+**Decisiones sobre una propuesta.** Aprobar o rechazar algo que otro propuso (un cambio de control o una exclusión) es un `PATCH` sobre ese recurso. La evidencia no entra aquí: la empresa no la aprueba (D84):
 
 ```json
 { "status": "rejected", "decision_note": "La interpretación no cubre el acceso remoto." }

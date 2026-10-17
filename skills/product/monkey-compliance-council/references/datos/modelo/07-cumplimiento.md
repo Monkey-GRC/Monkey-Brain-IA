@@ -243,26 +243,30 @@ erDiagram
     evidence_submissions {
         uuid id PK
         uuid evidence_requirement_id FK
-        uuid submitted_by FK
-        uuid approved_by FK "solo admin_empresa"
+        uuid submitted_by FK "admin_empresa o funcional: solo aportan (D84)"
         datetime submitted_at "D79"
-        datetime approved_at "nullable, D79"
-        text decision_note "nullable, obligatoria al rechazar (D79)"
         string file_path
         string file_type
         int file_size
         string storage_location
         string integrity_hash
         string version
-        enum validation_status
         text ai_verdict "etiquetado como generado por IA"
+    }
+    evidence_reviews {
+        uuid id PK
+        uuid evidence_submission_id FK
+        enum reviewer_role "consultor|auditor: una fila por entrega y por rol (D84)"
+        uuid reviewed_by FK
+        datetime reviewed_at
         boolean type_ok "atributos de la evidencia (RN-01); nulo = sin revisar"
         boolean period_ok "la fecha cae dentro del periodo"
         boolean valid_ok "vigente; en No es EVIDENCIA VENCIDA (RN-02)"
         boolean approved_ok "aprobacion del documento"
         boolean signed_ok "firma o autorizacion"
         boolean content_ok "contenido obligatorio"
-        enum review "pending_review|ai_prevalidated|human_validated (RN-03)"
+        enum review "pending_review|human_validated (RN-03); ai_prevalidated se deriva"
+        text note "nullable"
     }
     exclusions {
         uuid id PK
@@ -283,12 +287,13 @@ erDiagram
     }
     client_controls ||--o{ evidence_requirements : "exige"
     evidence_requirements ||--o{ evidence_submissions : "se cumple con"
+    evidence_submissions ||--o{ evidence_reviews : "la revisan consultor y auditor"
     tests ||--o{ exclusions : "excluye checks por"
 ```
 
-**Lo que D68 agrega a estas tablas** (la regla está en §9): `client_control_tests` lleva *obligatorio*, *vigente*, fechas y la justificación de una desactivación; `evidence_submissions` guarda los seis atributos que se
-validan por evidencia y la **revisión** (`pending_review`, `ai_prevalidated`, `human_validated`), de donde se **deriva** su estado (`evidence_state`). **`validation_status` sigue siendo la aprobación de la empresa**
-(solo `admin_empresa`) y no es el estado de cumplimiento de la evidencia. `exclusions` puede excluir un **activo** de un test además de un check, siempre con justificación, aprobador y vigencia. Un `evaluations.result` ahora
+**Lo que D68 agrega a estas tablas** (la regla está en §9): `client_control_tests` lleva *obligatorio*, *vigente*, fechas y la justificación de una desactivación; `evidence_reviews` guarda los seis atributos que se
+validan por evidencia y la **revisión** (`pending_review`, `human_validated`; `ai_prevalidated` se **deriva** cuando la entrega tiene `ai_verdict` y ninguna revisión humana), de donde se **deriva** su estado (`evidence_state`). **La empresa no
+aprueba ni rechaza** (D84): ya no hay `validation_status` en la entrega. `exclusions` puede excluir un **activo** de un test además de un check, siempre con justificación, aprobador y vigencia. Un `evaluations.result` ahora
 distingue `error` y `excluded`.
 
 **El responsable de la evidencia es cargo *y* persona, en planos distintos** (decisión A1):
@@ -306,7 +311,8 @@ por una fecha de caducidad fija.
 exclusión sin justificación aprobada no cambia el denominador — y un check que sale por
 omisión es un agujero, no una exclusión.
 
-**Solo `admin_empresa` aprueba evidencia.** La IA puede sugerir un veredicto (`ai_verdict`),
+**La empresa solo aporta la evidencia; la revisan el consultor y el auditor, cada uno la suya** (D84). Son dos momentos: ninguna revisión depende de la otra, el auditor no ve la del consultor,
+y el estado que consume el motor sale de la del consultor (la del auditor no lo mueve, D77). Cada entrega tiene a lo sumo una revisión por rol. La IA puede sugerir un veredicto (`ai_verdict`),
 siempre etiquetado como generado por IA, pero **nunca cierra un control**.
 
 ### 7.4 Evaluaciones y hallazgos (el histórico)
