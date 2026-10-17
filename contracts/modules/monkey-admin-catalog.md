@@ -47,7 +47,7 @@ Todas paginadas (`conventions.md`), solo `admin_monkey`. Cada ítem trae `origin
 | `GET /v1/catalog/frameworks/{id}` | El marco con sus criterios de confianza y requisitos (`code`, `criterion`, `controls_count`) |
 | `GET /v1/catalog/frameworks/{id}/controls` | Controles del marco. Filtros: `search`, `domain`, `requirement_code`, `has_evidence_template`, `is_active`. Cada uno: `code`, `name`, `domain`, `dimensions`, `tests_count`, `evidence_templates_count` |
 | `GET /v1/catalog/controls` | Controles de todo el catálogo, con los mismos filtros, más `framework_id` y `unlinked=true` (los que no cuelgan de ningún requisito: **CPL-1**, o uno recién creado sin vincular). Sin esto un control nuevo desaparecería de la lista del marco |
-| `GET /v1/catalog/controls/{id}` | Detalle: descripción, `source_ref`, puntos de enfoque (requisito + número), dimensiones, pruebas, plantillas de evidencia (con su `sequence`), políticas y causas que lo mitigan |
+| `GET /v1/catalog/controls/{id}` | Detalle: descripción, `source_ref`, puntos de enfoque (`id`, requisito y número; el `id` es el que se usa para desvincularlo), dimensiones, pruebas, plantillas de evidencia (con su `sequence`), políticas y causas que lo mitigan |
 | `GET /v1/catalog/risks` · `GET /v1/catalog/risks/{id}` | Riesgos globales; el detalle trae sus causas |
 | `GET /v1/catalog/causes` · `GET /v1/catalog/causes/{id}` | Causas globales; el detalle trae sus riesgos y controles |
 | `GET /v1/catalog/tests` · `GET /v1/catalog/tests/{id}` | Pruebas; el detalle trae los campos del comité, `display_name`, `display_description` y los controles que la usan |
