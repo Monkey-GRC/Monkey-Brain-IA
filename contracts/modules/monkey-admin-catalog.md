@@ -7,7 +7,7 @@ type: contract
 
 # Monkey Admin — catálogo maestro
 
-**Estado: PROPUESTA (2026-10-17). Construida la lectura (2026-10-17); la escritura sigue por construir.** Ver «Estado de implementación». Ver `conventions.md` y `enums.md`. Entidades: todo el schema `catalog` (`modelo-datos.md` §3). **App:** Monkey Admin. **Quién:** solo `admin_monkey`; cualquier otro rol recibe `403`.
+**Estado: PROPUESTA (2026-10-17). Construidas la lectura y la escritura del backend (2026-10-17); faltan los formularios de Monkey Admin.** Ver «Estado de implementación». Ver `conventions.md` y `enums.md`. Entidades: todo el schema `catalog` (`modelo-datos.md` §3). **App:** Monkey Admin. **Quién:** solo `admin_monkey`; cualquier otro rol recibe `403`.
 
 ## Para qué sirve este documento (léelo primero)
 
@@ -57,33 +57,52 @@ Todas paginadas (`conventions.md`), solo `admin_monkey`. Cada ítem trae `origin
 
 ## Escritura
 
-Solo `admin_monkey`. Cada llamada deja su fila de auditoría, en la misma transacción.
+Solo `admin_monkey`. Cada llamada deja su fila de auditoría `catalog.*` en la misma transacción (SEG-36). **Dar de baja no borra**: `DELETE` y `PATCH { "is_active": false }` hacen lo mismo (baja lógica, idempotente) y `PATCH { "is_active": true }` reactiva. Todo lo que se crea nace con `origin: "monkey_admin"` y activo. Un `PATCH` sin ningún campo es `422`. Las respuestas de `POST`/`PATCH` traen el elemento ya actualizado.
+
+### Elementos
 
 | Endpoint | Cuerpo | Notas |
 |---|---|---|
-| `POST /v1/catalog/frameworks/{id}/controls` | `code`, `name`, `description`, `domain`, `point_of_focus_ids[]` | `201`; `origin: "monkey_admin"` |
-| `PATCH /v1/catalog/controls/{id}` | claves presentes: `name`, `description`, `domain` | |
-| `DELETE /v1/catalog/controls/{id}` | — | **Baja lógica** (`is_active=false`) → `204` |
-| `POST` · `PATCH` · `DELETE` sobre `/v1/catalog/risks`, `/causes`, `/evidence-templates`, `/tests` | los campos de cada una | Mismas reglas. Una **prueba nueva** exige además `display_name` y `display_description` |
-| `POST` / `DELETE /v1/catalog/controls/{id}/evidence-templates` | `evidence_template_id`, `sequence` | La secuencia queda contigua desde 1 |
-| `POST` / `DELETE /v1/catalog/controls/{id}/tests` | `test_id` | |
-| `POST` / `DELETE /v1/catalog/causes/{id}/controls` · `/risks/{id}/causes` | `control_id` · `cause_id` | |
-| `POST` / `DELETE /v1/catalog/controls/{id}/dimensions` | `dimension`, `type`, `requires_probe`… | |
+| `POST /v1/catalog/controls` | `code`, `name`, `description`, `domain`, `source_ref?` | `201`. Nace **sin requisito** (no cuelga de ningún marco) hasta que se vincula a un punto de enfoque |
+| `PATCH` · `DELETE /v1/catalog/controls/{id}` | `name`, `description`, `domain`, `source_ref`, `is_active` | |
+| `POST /v1/catalog/risks` | `name`, `description`, `trust_criterion`, `potential_impact[]`, `code?` | Sin `code`, el servidor asigna el siguiente `R0NN` |
+| `PATCH` · `DELETE /v1/catalog/risks/{id}` | las mismas, más `is_active` | |
+| `POST /v1/catalog/causes` | `name`, `description`, `failure_category`, `code?` | Sin `code`, el siguiente `F0NN` |
+| `PATCH` · `DELETE /v1/catalog/causes/{id}` | las mismas, más `is_active` | |
+| `POST /v1/catalog/evidence-templates` | `code`, `description`, `dimension?` (por defecto `policy`) | |
+| `PATCH` · `DELETE /v1/catalog/evidence-templates/{id}` | `description`, `is_active` | `GET /v1/catalog/evidence-templates/{id}` devuelve una |
+| `POST /v1/catalog/tests` | `code`, `dimension`, `name`, `display_name`, `display_description`, `objective`, `type` y, opcionales, los demás textos del comité | El prefijo del código dice la dimensión: `T-DOC`, `T-SRV`, `T-BD`, `T-APP`, `T-CLD` |
+| `PATCH` · `DELETE /v1/catalog/tests/{id}` | los mismos menos `code` y `dimension`, más `is_active` | |
 
-**Reglas que el servidor impone** (las mismas que hoy valida `catalog:load` con `validateCatalog`):
-- `code` único dentro de su tipo → `409 CODE_ALREADY_EXISTS`.
-- Ningún nombre ni descripción visible para el cliente nombra al proveedor de la sonda (`[confidencialidad]`, SEG-39) → `422`.
-- Una prueba pertenece a **una sola dimensión**. Las secuencias de evidencia son contiguas.
-- Dar de baja algo que otro elemento activo del catálogo necesita (p. ej. la única prueba de un control) → `409 CATALOG_ITEM_IN_USE`.
-- Nada de esto cambia las copias que ya tienen las empresas (D28).
+### Vínculos
 
-## Qué hay que construir que hoy no existe
+`POST` responde `201` con el elemento padre ya actualizado; `DELETE` responde `204` y borra solo la relación, nunca los elementos.
 
-1. **Columnas** `origin` (`committee`/`monkey_admin`) en `controls`, `risks`, `causes`, `tests`, `evidence_templates`; `is_active` en las que no lo tienen (hoy solo `risks`).
-2. **Endpoints** de las dos tablas de arriba.
-3. **Seed:** `catalog:load` hoy aborta si una fila difiere. Debe distinguir lo editado desde Admin (no lo trata como conflicto con el Excel, lo reporta aparte) y no tocar filas `monkey_admin`.
-4. **Auditoría** `catalog.*` (`control.create`, `control.update`, `control.deactivate`, …).
-5. **Monkey Admin:** la sección completa (hoy solo tiene Empresas y Usuarios).
+| Endpoint | Cuerpo |
+|---|---|
+| `POST` · `DELETE /v1/catalog/controls/{id}/points-of-focus[/{pof_id}]` | `point_of_focus_id` (así un control entra a un marco) |
+| `POST` · `DELETE /v1/catalog/controls/{id}/tests[/{test_id}]` | `test_id` |
+| `POST` · `DELETE /v1/catalog/controls/{id}/evidence-templates[/{template_id}]` | `evidence_template_id`, `sequence?` (1…N+1; sin ella, al final) |
+| `POST` · `DELETE /v1/catalog/controls/{id}/dimensions[/{dimension}]` | `dimension`, `type`, `requires_probe?`, `requires_ai?`, `requires_compliance_confirmation?` |
+| `POST` · `DELETE /v1/catalog/causes/{id}/controls[/{control_id}]` | `control_id` |
+| `POST` · `DELETE /v1/catalog/risks/{id}/causes[/{cause_id}]` | `cause_id` |
+
+Apoyo para elegir a qué se vincula un control: `GET /v1/catalog/frameworks/{id}/points-of-focus?requirement_code=` → `{ items: [{ id, framework_code, requirement_code, number, description, controls_count }] }`.
+
+### Reglas que el servidor impone
+
+- `code` único dentro de su tipo → `409 CODE_ALREADY_EXISTS`; un vínculo repetido → `409 LINK_ALREADY_EXISTS`.
+- Lo que ve el cliente de una prueba (`display_name`, `display_description`) **nunca nombra al proveedor de la sonda** (SEG-39, D70) → `422` con `text.names_provider`. Es la misma regla que valida `catalog:load`.
+- El prefijo del código de una prueba corresponde a su dimensión → `422` `code.dimension_mismatch`.
+- Una prueba solo se vincula a un control que tenga su dimensión → `422` `dimension.not_in_control`.
+- Las secuencias de evidencia de un control son únicas y **contiguas desde 1**: al insertar en medio se corren las siguientes; al quitar una se cierra el hueco. Una posición fuera de rango → `422` `sequence.range`.
+- `409 CATALOG_ITEM_IN_USE` cuando el cambio dejaría a un control activo sin nada que medir: desvincular o dar de baja **la única prueba** de un control activo, o quitar una dimensión de la que el control todavía usa pruebas.
+- **Lo dado de baja deja de ofrecerse a los servicios nuevos** (el clonado salta controles, pruebas, plantillas, riesgos y causas inactivos), pero **no cambia las copias que las empresas ya clonaron** (D28). La propagación a las existentes (A4) sigue fuera de esta entrega.
+
+## Seed y auditoría
+
+- `catalog:load` y `catalog:verify` **solo miran lo del comité** (`origin = committee`). Lo agregado desde Admin y sus vínculos se ignoran; el cargador lo cuenta aparte («Ignoradas…»).
+- Una fila del **comité que se editó desde Admin** aparece como conflicto (el seed nunca sobrescribe), marcada **«[editado desde Monkey Admin]»** gracias al rastro `catalog.*.update|deactivate|reactivate` de `audit.audit_logs`. Qué versión queda es una decisión con el comité al cargar el Excel nuevo.
 
 ## Errores
 
@@ -92,12 +111,13 @@ Solo `admin_monkey`. Cada llamada deja su fila de auditoría, en la misma transa
 | 403 | `FORBIDDEN` | El rol no es `admin_monkey` |
 | 404 | `NOT_FOUND` | El elemento no existe |
 | 409 | `CODE_ALREADY_EXISTS` | `code` repetido |
+| 409 | `LINK_ALREADY_EXISTS` | El vínculo ya existe |
 | 409 | `CATALOG_ITEM_IN_USE` | Dar de baja o desenlazar lo que otro elemento activo necesita |
-| 422 | `VALIDATION_FAILED` | `required`, `enum.invalid`, `uuid.invalid`, y el que nombra al proveedor |
+| 422 | `VALIDATION_FAILED` | `required`, `enum.invalid`, `uuid.invalid`, `text.names_provider`, `code.dimension_mismatch`, `dimension.not_in_control`, `sequence.range` |
 
 ## Preguntas abiertas
 
-- **Editar una fila del comité desde Admin.** ¿Se marca como modificada (para que el seed la reporte), o se pierde su procedencia? Propuesta: conservar `origin: committee` y registrar la edición en la auditoría; el seed la muestra en un diff aparte.
+- ~~Editar una fila del comité desde Admin~~ **Decidido (2026-10-17):** conserva su `origin: committee`, queda en la auditoría y el seed la marca como editada al cargar el Excel nuevo (ver «Seed y auditoría»).
 - **Cuánto se reutiliza en el siguiente marco:** los riesgos y las causas son compartidos (decidido); falta saber cuántos controles de SOC 2 cubren los requisitos del próximo marco. El Excel de SOC 2 es específico de SOC 2 (códigos y dominios): el comité entregará el mapeo del siguiente.
 - **Versionado y propagación (A4):** fuera de esta entrega. Hasta que exista, lo que se agrega en Admin no llega a empresas que ya contrataron.
 - **Quién edita:** hoy cualquier `admin_monkey`. Si el comité quiere un rol propio de editor de catálogo, es parte de `P3`.
@@ -113,4 +133,6 @@ Solo `admin_monkey`. Cada llamada deja su fila de auditoría, en la misma transa
 
 **Monkey Admin, solo lectura (2026-10-17)**, rama `feat/admin-catalog-ui` del Frontend (Admin): entrada «Catálogo maestro» en el menú (ruta `/catalog`, solo `admin_monkey`). Los marcos como tarjetas con sus conteos; cinco pestañas (controles, riesgos, causas, pruebas, evidencias requeridas) con búsqueda y filtros de origen y estado; en controles, el ámbito (del marco · todo el catálogo · sin requisito) y «sin evidencia requerida»; en pruebas, la dimensión. Un panel lateral muestra el detalle de un control, riesgo, causa o prueba; el de la prueba separa lo que ve el cliente de los textos internos del comité. Las plantillas de evidencia no tienen detalle propio.
 
-**Por construir:** todo el apartado «Escritura», la auditoría `catalog.*`, el ajuste de `catalog:load` para distinguir lo editado desde Admin, y los formularios de Monkey Admin para agregar, editar y dar de baja.
+**Escritura construida (2026-10-17)**, rama `feat/admin-catalog-write` del Backend: los `POST`/`PATCH`/`DELETE` y los vínculos de arriba, la auditoría `catalog.*`, la regla de baja en el clonado (`clone-catalog.service.ts`), `GET /v1/catalog/evidence-templates/{id}` y `GET /v1/catalog/frameworks/{id}/points-of-focus`, y el ajuste de `catalog:load` / `catalog:verify`. Probada con 22 pruebas e2e nuevas (y las 15 de lectura, ahora restringidas a `origin=committee` porque las de escritura agregan filas a la misma base); la suite completa pasa dos veces seguidas.
+
+**Por construir:** los formularios de Monkey Admin para agregar, editar, dar de baja y vincular, y la propagación a las copias de las empresas (A4).
