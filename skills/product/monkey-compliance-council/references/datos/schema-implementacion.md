@@ -264,6 +264,10 @@ desechable, ver §13):
   SQL ya está aplicado, se marca como aplicada sin correrla, en el servidor y con el rol dueño: `docker run --rm --network proxy_net -e DATABASE_URL monkey-backend-tools npx prisma migrate resolve
   --applied <nombre_nuevo>`. La fila con el nombre viejo queda en la base sin carpeta; es inofensiva. **No renombrar una migración después de que `develop` se desplegó**: si dos migraciones comparten el
   prefijo de fecha no pasa nada (se ordenan por nombre completo), así que no hace falta renombrar.
+  **Estado al 2026-10-17:** el renombre quedó con el nombre nuevo (`20261016120000_test_display_description`, PR #40) y su carpeta **existe**, así que la fila fallida sigue bloqueando todos los deploys
+  (siete seguidos sin que nada llegara a la VPS) hasta que se resuelva **una vez a mano** en el servidor, como arriba: primero comprobar si la columna `catalog.tests.display_description` ya existe; si existe,
+  `--applied`; si no, `--rolled-back` (el siguiente deploy la aplica). El paso 2b de `migrate.sh` (`resolve-orphan-migrations.sh`, MD-181) no sustituye eso: solo marca como revertida una fallida cuya
+  carpeta **ya no existe** (se borró o se renombró de nuevo); una fallida **con** carpeta no se toca, porque no se puede saber desde el script si su SQL ya está aplicado.
 - **Nunca** editar una migración ya aplicada ni borrar filas de `_prisma_migrations` a mano.
 
 ## 8. Infraestructura y despliegue
