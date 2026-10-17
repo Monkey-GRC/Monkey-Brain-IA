@@ -120,6 +120,16 @@ Solo las claves presentes: `name`, `description`, `trust_criterion`, `potential_
 
 Baja lógica: `204`. El riesgo deja de aparecer en las listas, pero su historial y sus evaluaciones se conservan.
 
+### `GET /v1/risk-matrix`
+
+La matriz 5×5 completa, con el valor y el nivel de **cada casilla**. La leen los cuatro roles de la empresa; no depende de ningún servicio.
+
+```json
+{ "min": 1, "max": 5, "cells": [ { "likelihood": 1, "impact": 1, "value": 1, "level": "low" }, …, { "likelihood": 5, "impact": 5, "value": 25, "level": "critical" } ] }
+```
+
+`value` es probabilidad × impacto y `level` sale de la **misma función** que la evaluación de un riesgo (Bajo 1–4 · Moderado 5–9 · Alto 10–16 · Crítico 17–25): una casilla vacía tiene exactamente el nivel que tendría un riesgo evaluado ahí. Sirve para pintar el mapa de calor (verde, amarillo, naranja, rojo) sin escribir los cortes en el frontend (`contracts/enums.md`). Las 25 casillas vienen siempre, en orden de probabilidad e impacto crecientes; ordenar y colocar los ejes es cosa de la pantalla.
+
 ## Causas
 
 Misma forma que los riesgos, con `failure_category` (6 valores) en lugar de `trust_criterion` y sin evaluación.
