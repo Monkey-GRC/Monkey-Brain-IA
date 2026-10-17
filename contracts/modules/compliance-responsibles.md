@@ -7,7 +7,7 @@ type: contract
 
 # Cumplimiento — cargos responsables
 
-**Estado: PROPUESTA (2026-10-14).** Ver `conventions.md` y `enums.md`. Ticket: MD-133.
+**Estado: ACORDADO (2026-10-17); construido (MD-133).** Ver `conventions.md` y `enums.md`. Ticket: MD-133.
 
 **Qué es.** Cada evidencia, riesgo y activo debe tener un responsable. Un **cargo** (COO, TI, Cumplimiento…) y la **persona** que lo ocupa son cosas distintas: si la persona cambia, lo que apunta al cargo no se toca
 (A1, D30). El cargo **no es el rol** en el sistema: el cargo responde ante el auditor; el rol dice qué puede hacer la persona en Monkey. Un cargo **no exige** que la persona tenga cuenta.

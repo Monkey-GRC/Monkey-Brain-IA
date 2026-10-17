@@ -117,6 +117,30 @@ Lo que no pertenece a un solo módulo (pruebas, CI, auditoría, traducciones, en
 - **Por qué:** MD-117 se construyó antes que la desactivación controlada de tests y la validación de evidencias. *(2026-10-14: MD-118 y MD-150 ya reemplazaron los valores fijos de `approval` y `has_pending_change`.)*
 - **Qué lo cierra:** la migración de `client_control_tests` (obligatorio, vigente, fechas) con la desactivación controlada, y `P25` con su endpoint. Cada uno reemplaza su valor fijo en `control.prisma.repository.ts` y `control-readout.ts`
 
+### DT-72 · El vencimiento de una exclusión no deja evento de cumplimiento
+
+🟡 Mejora
+
+- **Qué está parchado:** una exclusión aprobada «vence» solo al leerse (`is_expired`, y el activo vuelve a contar), pero nada escribe el `compliance_events` de ese cambio. `compliance-audit.md` pide el evento al aprobar **o vencer**; hoy solo se escribe al aprobar.
+- **Por qué:** no hay un proceso periódico en el Backend (el trabajador de nube solo ejecuta pruebas); MD-144 se construyó sin él.
+- **Qué lo cierra:** un proceso diario que marque las exclusiones que acaban de vencer y escriba su evento (con idempotencia: una vez por exclusión), o decidir que el vencimiento derivado basta y quitarlo del contrato. Se decide al tener el período del servicio (`P26`). Ticket: MD-171.
+
+### DT-73 · `evaluations.result` no distingue `error` ni `excluded`
+
+🟡 Mejora
+
+- **Qué está parchado:** el enum `evaluation_result` de la base tiene `compliant`, `non_compliant`, `pending` y `not_applicable`, pero D68 dice que un resultado también puede ser `error` y `excluded`. `excluded` se resuelve **al leer**, superponiendo las exclusiones aprobadas y vigentes al último resultado de cada activo (`control.prisma.repository.ts`); un fallo de la sonda todavía no se guarda como `error`.
+- **Por qué:** MD-144 necesitaba el efecto de una exclusión sin reescribir el histórico inmutable de evaluaciones.
+- **Qué lo cierra:** ampliar el enum con `error` y `excluded` cuando se persista el resultado de la sonda con el reintento de D76; la superposición en lectura se queda para las exclusiones que cambian después de la evaluación. Ticket: MD-171.
+
+### DT-74 · La exclusión de un check no tiene endpoint
+
+🟡 Mejora
+
+- **Qué está parchado:** la tabla `exclusions` admite excluir un check (`excluded_check_id`, con `asset_id` nulo), pero el contrato y la API solo exponen la exclusión de **un activo en un test**. MD-144 decía «activo, test o check».
+- **Por qué:** el contrato (`compliance-audit.md`) solo define la del activo, y `excluded_check_id` es un texto libre sin catálogo contra el que validarlo.
+- **Qué lo cierra:** decidir cómo se identifica un check dentro de un servicio, ampliar el contrato y construir el endpoint con las mismas reglas (MD-170). Excluir un test completo no es una exclusión: se hace desactivándolo (D68).
+
 ## Funcionalidad que el brain menciona y aún no tiene contrato
 
 ### DT-25 · Ver el catálogo maestro SOC 2 en Monkey Admin y poder crear un control, riesgo o causa nuevos

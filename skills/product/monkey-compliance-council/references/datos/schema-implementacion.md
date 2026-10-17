@@ -259,6 +259,11 @@ desechable, ver §13):
 - **Se aplicó bien pero hace daño** (borró o cambió algo que no debía). Primero **corregir hacia adelante** con una
   migración nueva que lo repare. Si hubo pérdida de datos, **restaurar el respaldo previo** (el script lo guarda en
   `~/backups/monkey/` antes de cada migración, últimas 14): `pg_restore` a una base nueva, comprobar y reemplazar.
+- **Se renombró una migración que staging ya había aplicado** (2026-10-16: `20261016130000_test_display_description` pasó a llamarse `20261016120000_…` después de un deploy). Prisma identifica una
+  migración por su **nombre**: ve una nueva, intenta aplicarla otra vez, falla (`P3018`, «la columna ya existe») y deja una fila fallida que **bloquea los deploys siguientes** (`P3009`). Como el
+  SQL ya está aplicado, se marca como aplicada sin correrla, en el servidor y con el rol dueño: `docker run --rm --network proxy_net -e DATABASE_URL monkey-backend-tools npx prisma migrate resolve
+  --applied <nombre_nuevo>`. La fila con el nombre viejo queda en la base sin carpeta; es inofensiva. **No renombrar una migración después de que `develop` se desplegó**: si dos migraciones comparten el
+  prefijo de fecha no pasa nada (se ordenan por nombre completo), así que no hace falta renombrar.
 - **Nunca** editar una migración ya aplicada ni borrar filas de `_prisma_migrations` a mano.
 
 ## 8. Infraestructura y despliegue
@@ -268,8 +273,8 @@ desechable, ver §13):
   `nginx_proxy_manager`, en la red `proxy_net`.
 - **Staging:** stack `~/postgres-staging/` (imagen `postgres:17.10`) en `proxy_net`, **sin exponer
   puertos**: solo lo alcanzan otros contenedores por `postgres-staging`. La carpeta `monkey-dev` de la
-  VPS cumple hoy el rol de staging: es el destino del deploy automático. No se montó en otro servidor
-  ni en un servicio administrado, por simplicidad y costo.
+  VPS cumple hoy el rol de staging: es el destino del deploy automático y el **único** entorno desplegado. No se montó en otro servidor
+  ni en un servicio administrado, por simplicidad y costo. **No existe un backend de staging propio** (D86): hay un solo entorno desplegado, y lo que solo tendría sentido con un staging (bucket, cuenta de servicio y `.env` aparte, repetir las pruebas) está congelado hasta que se necesite.
 - **CI** (`ci.yml`, PR #17 del Backend): en cada PR a `develop`/`main` levanta un Postgres vacío y corre lint, build, pruebas
   unitarias, migraciones desde cero, carga de catálogos, los verificadores (`catalog`, `reference`, `clone`, `audit`) y las pruebas
   de aislamiento (`npm run test:e2e`, ver `seguridad/requisitos.md`). **No bloquea el merge ni el despliegue** mientras la
@@ -283,8 +288,8 @@ desechable, ver §13):
   trabajador, y rechaza un `runner.env` que traiga secretos del backend (SEG-49).
 - **El `.env` de runtime** solo lleva `APP_DATABASE_URL` (no `DATABASE_URL`), más JWT, Wazuh, S3 y
   CORS cuando `auth` y los conectores lo usen. Para la Descripción del Sistema como archivo (D51): `S3_ENDPOINT`, `S3_REGION`,
-  `S3_BUCKET`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY` y `S3_FORCE_PATH_STYLE` (con minio, `true`); sin bucket la app arranca y
-  subir un archivo responde `503`.
+  `S3_BUCKET`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `S3_FORCE_PATH_STYLE` (con minio, `true`) y `S3_PUBLIC_ENDPOINT` (la dirección que abre el navegador); sin
+  bucket la app arranca y subir un archivo responde `503`.
 - **El deploy migra solo** (MD-91, D42): antes de levantar el backend nuevo, `backend/scripts/deploy/migrate.sh`
   construye la etapa `build` del Dockerfile (trae el CLI de Prisma y tsx; la imagen de runtime no), **respalda** la
   base con `pg_dump` y corre `prisma migrate deploy` en un contenedor desechable con el rol dueño. Ese rol llega por el
@@ -299,6 +304,23 @@ desechable, ver §13):
   trabajador recibe un entorno **aparte** (`runner.env`, en el servidor; ejemplo en `Backend/deploy/runner.env.example`), nunca el
   `.env` del backend. El workflow solo lo levanta si el compose ya lo define. Los contenedores del motor corren en la red por defecto de Docker, no
   en la de `monkey-dev`.
+
+- **Almacenamiento privado de archivos** (MD-110: Descripción del Sistema hoy, evidencias con MD-126). Un bucket **privado** por entorno en el `minio` de la VPS; el
+  backend sube por la red interna (`S3_ENDPOINT=http://minio:9000`) y entrega el archivo solo con un **enlace firmado de 5 minutos**. Como la firma incluye el host y el
+  navegador no resuelve `minio`, los enlaces se firman con `S3_PUBLIC_ENDPOINT` (una dirección pública de MinIO detrás de `nginx_proxy_manager`, que debe pasar el
+  encabezado `Host` sin cambiarlo). Para dejarlo listo en un entorno:
+  1. En MinIO, crear una **cuenta de servicio limitada al bucket** (no la clave raíz).
+  2. `S3_ENDPOINT=… S3_ACCESS_KEY_ID=… S3_SECRET_ACCESS_KEY=… bash backend/scripts/deploy/setup-storage.sh`: crea el bucket, quita cualquier política pública, activa el
+     versionado y comprueba que un acceso sin firma responde 401/403. Imprime la línea de `set-env.sh` con las variables.
+  3. En `nginx_proxy_manager`: el host público de MinIO (el de `S3_PUBLIC_ENDPOINT`) y, en el host de la API, `client_max_body_size` de al menos 30 MB para que pase una
+     subida de 25 MB.
+  4. Poner las `S3_*` en `~/monkey-dev/.env` con `set-env.sh`, reiniciar el backend y correr `SMOKE_API_URL=https://<api>/v1 npm run storage:smoke`: sube y baja un archivo
+     de 25 MB, comprueba el 401/403 sin firma, que un enlace de 2 segundos vence y que el proxy no responde 413.
+  `check-env.sh` **avisa** (no detiene el despliegue) si falta alguna `S3_*`. Hay además una prueba e2e opcional contra un S3 real
+  (`test/almacenamiento`, con `S3_TEST_*`) que CI no corre. **Estado (2026-10-17):** los pasos 1 a 4 están hechos en la VPS y `npm run storage:smoke` pasa 7/7 contra el MinIO real. La limpieza de seguridad
+  de la VPS (secretos rotados, puertos de MinIO solo en `127.0.0.1`, red de MinIO en su compose, credenciales fuera de los compose y consola restringida) se cerró el 2026-10-17 (MD-179).
+  MD-110 queda cerrado; la vista previa incrustada se prueba con la pantalla (MD-178). Los archivos se guardan en el disco de la VPS (75 GB), que comparte con el backend, las bases locales y
+  Docker, y **no hay cuota ni alerta**: se vigila a mano con `df -h /` y limpiando imágenes y contenedores de Docker sin uso (la deuda del espacio, DT-76, se cerró el 2026-10-17 tras esa limpieza).
 
 ## 9. Lo que sigue pendiente (operativo, no del modelo)
 

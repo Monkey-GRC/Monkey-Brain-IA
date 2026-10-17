@@ -47,7 +47,6 @@ Pueden causar daño o engaño si se ignoran.
 | [DT-1](control-tecnico.md#dt-1--la-sonda-es-simulada-o-no-está-disponible) | La sonda es simulada o no está disponible | [Control técnico](control-tecnico.md) |
 | [DT-32](control-tecnico.md#dt-32--no-hay-vínculo-activo--agente) | No hay vínculo activo ↔ agente | [Control técnico](control-tecnico.md) |
 | [DT-33](control-tecnico.md#dt-33--aislamiento-entre-empresas-sin-imponer) | Aislamiento entre empresas sin imponer | [Control técnico](control-tecnico.md) |
-| [DT-39](onboarding.md#dt-39--el-adaptador-de-almacenamiento-s3--minio-no-se-ha-probado-contra-un-minio-real) | El adaptador de almacenamiento (S3 / minio) no se ha probado contra un minio real | [Onboarding](onboarding.md) |
 | [DT-43](control-tecnico.md#dt-43--el-motor-de-nube-se-probó-en-el-mismo-servidor-que-la-sonda-y-con-llaves-estáticas-del-cliente-guardadas-allí) | El motor de nube se probó en el mismo servidor que la sonda y con llaves estáticas del cliente guardadas allí | [Control técnico](control-tecnico.md) |
 
 ### 🟠 Importantes
@@ -120,3 +119,6 @@ Pendientes sin urgencia.
 | [DT-62](control-tecnico.md#dt-62--no-se-ha-verificado-que-el-identificador-de-un-recurso-descubierto-coincida-con-el-que-trae-la-evaluación) | No se ha verificado que el identificador de un recurso descubierto coincida con el que trae la evaluación | [Control técnico](control-tecnico.md) |
 | [DT-64](control-tecnico.md#dt-64--la-preparación-por-servicio-no-tiene-pantalla) | La preparación por servicio no tiene pantalla | [Control técnico](control-tecnico.md) |
 | [DT-68](control-tecnico.md#dt-68--los-logos-no-vienen-del-kit-de-cada-marca) | Los logos no vienen del kit de cada marca | [Control técnico](control-tecnico.md) |
+| [DT-72](transversal.md#dt-72--el-vencimiento-de-una-exclusión-no-deja-evento-de-cumplimiento) | El vencimiento de una exclusión no deja evento de cumplimiento | [Transversal](transversal.md) |
+| [DT-73](transversal.md#dt-73--evaluationsresult-no-distingue-error-ni-excluded) | `evaluations.result` no distingue `error` ni `excluded` | [Transversal](transversal.md) |
+| [DT-74](transversal.md#dt-74--la-exclusión-de-un-check-no-tiene-endpoint) | La exclusión de un check no tiene endpoint | [Transversal](transversal.md) |

@@ -8,7 +8,7 @@ Parches de los Componentes 1 y 2 del onboarding y del registro de empresa. Conte
 
 🟠 Importante
 
-- **Qué está parchado:** No se leen las 10 secciones AICPA (`sections` queda vacío) y por eso **no existen `PUT csocs` / `PUT cuecs`**. La carga de archivo (multipart, 25 MB, PDF/docx) ya existe, sin probar contra el minio real (DT-39)
+- **Qué está parchado:** No se leen las 10 secciones AICPA (`sections` queda vacío) y por eso **no existen `PUT csocs` / `PUT cuecs`**. La carga de archivo (multipart, 25 MB, PDF/docx) ya existe y se probó contra un S3 compatible y contra el minio de la VPS (MD-110)
 - **Por qué:** Falta el procesamiento del documento
 - **Qué lo cierra:** Procesar el documento (IA) y sembrar `sections`, `csocs` y `cuecs`
 
@@ -78,14 +78,6 @@ Parches de los Componentes 1 y 2 del onboarding y del registro de empresa. Conte
 - **Qué está parchado:** El comité confirmó (opción 2, D50) que cada marco use sus categorías nativas (ISO 27001: 4 temas; PCI DSS: 12 requisitos; NIST CSF: 6 funciones…), pero `requirements.trust_criterion_id` es una FK a `trust_criteria` (enum de los 5 TSC) y `service_trust_criteria` filtra con ellas. Hoy no estorba porque solo SOC 2 está construido
 - **Por qué:** Sin segundo marco construido, migrar el modelo sería un cambio grande sin uso
 - **Qué lo cierra:** Al sembrar el primer marco que no sea SOC 2: generalizar `trust_criteria` a **dominios por marco** (`framework_id`, `code`, `name`, `is_mandatory`) y `service_trust_criteria` a `service_framework_domains`. Mientras tanto, la pantalla pregunta por «categorías de SOC 2»
-
-### DT-39 · El adaptador de almacenamiento (S3 / minio) no se ha probado contra un minio real
-
-🔴 Crítica
-
-- **Qué está parchado:** El código está (`FileStorage`, `S3FileStorage`, `UnavailableFileStorage`) y compila, y la lógica de validación se probó aparte, pero no se ha subido un objeto de verdad: se desconoce si el stack `minio` de la VPS está arriba, su endpoint, su bucket y si hay credenciales. Sin `S3_*` la subida responde 503 y se usa el enlace
-- **Por qué:** Faltan los datos de acceso al minio
-- **Qué lo cierra:** Datos del minio (endpoint, bucket, usuario de solo ese bucket), `S3_*` en el `.env` y un recorrido real de subir / descargar / reemplazar / eliminar. Política de bucket por empresa (`<empresa>/…`) y cifrado en reposo
 
 ### DT-40 · La lista de 18 normas de protección de datos la depuró desarrollo, no el comité
 

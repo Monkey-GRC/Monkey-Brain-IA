@@ -7,7 +7,7 @@ type: contract
 
 # Cumplimiento — riesgos y causas
 
-**Estado: PROPUESTA (2026-10-14); construida: riesgos, causas, vínculos, evaluación 5×5 y tratamiento (MD-122 y MD-123).** Ver `conventions.md` (sección «Cumplimiento») y `enums.md`. Tickets: MD-122, MD-123.
+**Estado: ACORDADO (2026-10-17); construida: riesgos, causas, vínculos, evaluación 5×5 y tratamiento (MD-122 y MD-123).** Ver `conventions.md` (sección «Cumplimiento») y `enums.md`. Tickets: MD-122, MD-123.
 
 **Qué es.** Al contratar un marco, cada servicio recibe **su propia copia** de los riesgos y causas del catálogo (D28): editarla no cambia el catálogo ni a otra empresa. Un *riesgo* es la
 probabilidad y el impacto de que algo ocurra o se pierda si una persona lo materializa; una *causa* es el riesgo materializado; un *control* es el paso a paso que lo evita o lo mitiga (vocabulario del comité,
@@ -314,7 +314,7 @@ Todos con el mismo sobre (`conventions.md`); `message` es la clave i18n del erro
 
 ## Estado de implementación
 
-**Pendiente por D80 (2026-10-15):** `code` en cada vínculo causa–control (`controls[]`), en el riesgo y en la causa. El backend aún devuelve el código del catálogo solo dentro de `technical` y deja `own_code` en `null` para los del catálogo.
+**Pendiente por D80 (2026-10-15):** `code` en cada vínculo causa–control (`controls[]`), en el riesgo y en la causa. El backend aún devuelve el código del catálogo solo dentro de `technical` y deja `own_code` en `null` para los del catálogo (**MD-166**).
 
 **Resuelto (2026-10-17): las listas de las pantallas de alta y edición (MD-124).** `GET /v1/catalogs/{name}` sirve ahora `risk_criterion`, `failure_category`, `risk_level`, `risk_treatment_decision`, `responsible_type`, `cause_control_effect`, `exclusion_status`, `dimension`, `control_type`, `catalog_origin`, `loss_type` y `risk_scale` (la escala 1–5 de la matriz), todas con etiqueta es/en. Salen de los enums de la base, en su orden, así que añadir un valor no obliga a tocar el frontend; una prueba del backend (`compliance-catalogs.spec.ts`) compara las listas con el esquema de Prisma. Platform y Monkey Admin las piden y ya no escriben ninguna a mano; solo el texto de algunos enums sigue duplicado en el i18n del frontend (se unifica pantalla a pantalla).
 
@@ -331,4 +331,4 @@ Todos con el mismo sobre (`conventions.md`); `message` es la clave i18n del erro
 
 - **Funcional y edición**: ver «Quién puede qué» (`P3`).
 - **`effect` e `is_mandatory`** de las 209 relaciones causa–control: `P22`.
-- **Tipos de pérdida** (`potential_impact`): el Excel trae «Interrupción de la operación» e «Interrupción o cierre de la operación»; el contrato las trata como un solo valor hasta que el comité confirme (`P9`).
+- **Tipos de pérdida** (`potential_impact`): el Excel trae «Interrupción de la operación» e «Interrupción o cierre de la operación»; el contrato las trata como un solo valor (decisión de desarrollo del 2026-10-17; el comité lo ratifica, `P9`).

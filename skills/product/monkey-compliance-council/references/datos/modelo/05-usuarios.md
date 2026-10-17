@@ -19,7 +19,7 @@ Definido y cerrado por el comité en su modelo de gestión de usuarios, transcri
 | Rol | Quién es | Alcance | MFA |
 |---|---|---|---|
 | `admin_monkey` | Equipo Monkey | Global: acceso de todos los tenants **y el catálogo maestro** | Sí |
-| `admin_empresa` | CISO, Compliance Leader | Su empresa. **Único que aprueba evidencia** | Sí |
+| `admin_empresa` | CISO, Compliance Leader | Su empresa. **Aporta la evidencia; no la aprueba** (D84) | Sí |
 | `funcional` | Control Owners | **Solo los controles asignados** | Sí |
 | `consultor` | Consultor de Next (la empresa dueña de Monkey) que **prepara al cliente para la auditoría**. Una sola cuenta, que **crea y asigna `admin_monkey`** a las empresas que atiende | Todo el cumplimiento de **todos** los servicios de la empresa **en la que trabaja** (elige una de las asignadas), con vista técnica. **Da el veredicto de los tests documentales y manuales y aprueba los cambios de controles** | Sí |
 | `auditor` | Quien audita el cumplimiento de la empresa dentro de Monkey (suele ser una persona externa a la empresa, pero su cuenta **pertenece a la empresa**) | Lectura de **todo** el cumplimiento de **todos** los servicios de su empresa + módulo de auditoría. **Registra observaciones**, igual que el consultor | Sí |
@@ -42,7 +42,7 @@ Definido y cerrado por el comité en su modelo de gestión de usuarios, transcri
    evaluaciones y el audit trail, con la **vista técnica** (códigos de requisito y de control, resultados por check).
 4. **La vista técnica es del auditor** y del consultor y, desde D81 y mientras no se definan los permisos por pantalla (`P3`), también del `admin_empresa`. El `funcional` solo ve la vista de negocio: en qué está
    fallando y su porcentaje.
-5. **Escribe observaciones** (§7.6), descarga evidencias y exporta reportes. No aprueba evidencia, no crea ni edita
+5. **Escribe observaciones** (§7.6), descarga evidencias y exporta reportes. Revisa la evidencia por su cuenta, en el momento de la auditoría (D84); no crea ni edita
    controles ni riesgos, y no ejecuta tests.
 6. **MFA TOTP obligatoria** (§5.3). Entra al MVP; su ticket está aplazado de sprint, no descartado.
 
@@ -247,7 +247,7 @@ Cuatro cosas que se leen mal si no se dicen:
 
 - **`admin_monkey` no crea controles ni riesgos de un cliente**: administra la plataforma y el catálogo maestro, no el escenario de nadie.
 - **`funcional` está siempre acotado a lo que tiene asignado** vía `user_control_assignments`.
-- **El `auditor` ve toda su empresa y el `consultor` toda la empresa en la que trabaja** (D63, D64), sin restricción de asignación de controles. Ninguno aprueba evidencia. La vista técnica la ve también `admin_empresa` (D81); el `funcional`, nunca.
+- **El `auditor` ve toda su empresa y el `consultor` toda la empresa en la que trabaja** (D63, D64), sin restricción de asignación de controles. Cada uno revisa la evidencia por su lado y ninguno depende del otro; el auditor no ve la revisión del consultor (D84). La vista técnica la ve también `admin_empresa` (D81); el `funcional`, nunca.
 - **La empresa propone y el consultor decide**: ni `admin_empresa` ni `funcional` pueden aplicar por sí solos un cambio de controles, una exclusión ni el veredicto de un test (D65, D78).
 
 > ⚠️ El material del comité habla de **"34 permisos"**, pero la matriz que entregó tiene 13 acciones. No repetir "34 permisos" como si estuviera documentado aquí.
