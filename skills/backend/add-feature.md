@@ -86,4 +86,8 @@ interior de otra:
   del contrato. Las pruebas viven en el repo (`Backend/test/`, `npm run test:e2e`, y se corren en el CI) contra un
   **Postgres desechable** (nunca la base compartida de dev): añade el recorrido de tu feature, el aislamiento entre
   empresas y, si audita, la prueba de que el rastro falla junto con la acción (ver `test/auditoria/`).
-- Confirmar en Swagger (`/v1/docs`) que los endpoints aparecen.
+- Documentar cada endpoint en Swagger (MD-182) y confirmarlo en `/v1/docs`, que **solo existe en local** (`API_DOCS_ENABLED=true`; SEG-62):
+  grupo (`@ApiTags(API_TAGS.<grupo>)`, con título y descripción en `common/swagger/api-docs.config.ts`), `@ApiOperation` en español,
+  la respuesta con `@ApiData` / `@ApiPaged` / `@ApiItems` / `@ApiEmpty` / `@ApiNoBody` (el modelo es una clase solo de documentación
+  `*.responses.ts` junto al mapper), los errores de negocio con `@ApiDomainErrors` y `@ApiProperty({ description, example, enum, enumName })`
+  en cada campo del DTO. Los roles salen solos de `@Roles`/`@Public`. `npm test` falla si falta algo (`api-docs.spec.ts`).

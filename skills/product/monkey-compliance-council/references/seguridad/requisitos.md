@@ -47,8 +47,8 @@ Estado de un vistazo (contado el 2026-10-10 a partir de la columna Estado; los e
 | D. Datos y secretos | 7 | 3 | 2 | 5 | 3 | 20 |
 | E. Auditoría y trazabilidad | 3 | 1 | 2 | · | · | 6 |
 | F. Confidencialidad del proveedor del motor | · | · | 1 | · | · | 1 |
-| G. Desarrollo y entrega | 1 | 1 | · | 1 | · | 3 |
-| **Total** | **25** | **6** | **12** | **12** | **3** | **58** |
+| G. Desarrollo y entrega | 2 | 1 | · | 1 | · | 4 |
+| **Total** | **26** | **6** | **12** | **12** | **3** | **59** |
 
 ---
 
@@ -154,6 +154,7 @@ Estado de un vistazo (contado el 2026-10-10 a partir de la columna Estado; los e
 | **SEG-40** | ✅ | Lint, build, pruebas unitarias, migraciones desde cero, verificadores y pruebas de aislamiento corren en cada PR | `.github/workflows/ci.yml` | El propio CI | DT-20 |
 | **SEG-41** | 🔴 `DT-46` | Un PR en rojo no se puede mergear, y un despliegue no sale si el CI falla | Exige el plan GitHub Team (protección de rama) o que el deploy dependa del CI | — | DT-46 |
 | **SEG-42** | 🟡 | Las migraciones desplegadas se respaldan antes y no se editan una vez aplicadas | `scripts/deploy/migrate.sh` | Probado a mano, no en GitHub Actions | `schema-implementacion.md` §7 y §13 |
+| **SEG-62** | ✅ `MD-182` | La documentación de la API (Swagger, `/v1/docs` y `/v1/docs-json`) **solo existe en la máquina de quien desarrolla**: en el dominio desplegado responde 404, porque revela cada ruta, rol y error | Solo se registra con `API_DOCS_ENABLED=true`, que no va en el `.env` del servidor (el despliegue no fija `NODE_ENV`, así que no se confía en él); con `NODE_ENV=production` queda apagada aunque la variable esté puesta | `src/common/swagger/api-docs.spec.ts` (CI): apagada, `/v1/docs` y `/v1/docs-json` dan 404, también con producción y variable en `true` | `Backend/README.md`, MD-182 |
 
 ---
 
