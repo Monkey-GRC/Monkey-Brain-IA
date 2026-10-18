@@ -7,7 +7,7 @@ type: contract
 
 # Cumplimiento — evidencias
 
-**Estado: ACORDADO (2026-10-17; D84 y D85).** Ver `conventions.md` (sección «Cumplimiento») y `enums.md`. Tickets: MD-126 y MD-127 (la revisión por consultor y auditor, que está en `compliance-audit.md`).
+**Estado: ACORDADO (2026-10-17; D84 y D85); construido: listar, subir, versiones y descargar (MD-126).** Ver `conventions.md` (sección «Cumplimiento») y `enums.md`. Tickets: MD-126 y MD-127 (la revisión por consultor y auditor, que está en `compliance-audit.md`).
 
 **Qué es.** Cada control exige evidencias (`evidence_requirements`, que nacen de las plantillas del catálogo al clonar). Quien responde sube un archivo (`evidence_submissions`); **la empresa solo aporta** (D84): lo revisan el consultor y el auditor, cada uno por su lado.
 **Entidades:** `evidence_requirements`, `evidence_submissions`, `evidence_reviews` (`modelo-datos.md` §7.3). **App:** Monkey Platform. En las pantallas (D80): lo que el control exige es la **evidencia requerida** y lo que se sube para cumplirlo es la **evidencia entregada** (una versión por subida). «Prueba» no se usa para esto: en el cerebro una prueba es el test que ejecuta el motor. La evidencia se aporta **desde el propio control** (su panel de detalle) y también desde la pestaña Evidencias, que reúne lo que le toca a cada persona; ambas usan los mismos endpoints.
@@ -173,13 +173,15 @@ Solo se quitan requerimientos **propios** y **sin entregas**: uno del catálogo 
 | 403 | `FORBIDDEN` | El rol no puede; el `funcional` no tiene asignada la acción |
 | 404 | `NOT_FOUND` | El requerimiento, la entrega o el cargo no existen para esta empresa |
 | 409 | `REQUIREMENT_NOT_REMOVABLE` | Es del catálogo o ya tiene entregas |
+| 409 | `CONTROL_RETIRED` | Subir evidencia a un control dado de baja |
+| 409 | `EVIDENCE_VERSION_CONFLICT` | Dos subidas a la vez pidieron la misma versión; se reintenta (no debería verse: el servidor las ordena) |
 | 413 | `FILE_TOO_LARGE` | El archivo pasa del máximo |
 | 415 | `UNSUPPORTED_MEDIA_TYPE` | Tipo no permitido o contenido que no coincide con el declarado |
 | 422 | `FILE_REQUIRED` | El multipart no trae `file` o viene vacío |
 | 422 | `VALIDATION_FAILED` | Campos: `enum.invalid`, `dimension.not_in_control`, `disposition.not_supported` (`inline` con un tipo que no se muestra en pantalla) |
 | 503 | `STORAGE_UNAVAILABLE` | El almacenamiento privado no está configurado |
 
-Claves i18n: `evidence.list`, `evidence.test_list`, `evidence.submitted`, `evidence.download`, `evidence_requirement.updated`, `file.required`, `file.too_large`, `file.unsupported_type`, `file.storage_unavailable`.
+Claves i18n: `evidence.list`, `evidence.test_list`, `evidence.submission_list`, `evidence.submitted`, `evidence.download`, `evidence.version_conflict`, `evidence_requirement.updated`, `file.required`, `file.too_large`, `file.unsupported_type`, `file.storage_unavailable`.
 
 ## Ejemplos de error
 
@@ -225,6 +227,21 @@ Todos con el mismo sobre (`conventions.md`); `message` es la clave i18n del erro
 | `evidence.submit` | se sube una entrega (con la huella, nunca el contenido) |
 | `evidence.download` | se genera un enlace de descarga o de vista (`disposition` en el detalle; nunca la URL firmada) |
 | `evidence_requirement.update` · `.create` · `.delete` | cambia un requerimiento |
+
+## Estado de implementación
+
+**Construido: MD-126** (2026-10-18): `GET /v1/controls/{id}/evidence`, `POST` y `GET /v1/evidence-requirements/{id}/submissions` y `GET /v1/evidence-submissions/{id}/download`. Lo que el contrato no dice y el código hace:
+
+- **Versión.** Se calcula dentro de la transacción, bloqueando la fila del requerimiento (`select … for update`); un índice único `(requerimiento, versión)` es la red de seguridad. En la tabla es texto (`"1"`, `"2"`…) y se ordena como número. Tres subidas a la vez reciben tres versiones distintas.
+- **Una entrega es histórico.** La app (`monkey_app`) no tiene `UPDATE` ni `DELETE` sobre `evidence_submissions` (`REVOKE` en la migración `20261018100000_evidence_submissions_provide_only`): solo inserta y lee, como el rastro de auditoría.
+- **Orden al subir.** Primero se comprueba el requerimiento y a quién le toca (`404`/`403`/`409`), luego el contenido del archivo (SEG-60), luego se guarda en el bucket y por último se inserta la fila con su rastro en la misma transacción. Si la base o el rastro fallan, el objeto se borra del bucket.
+- **La llave del objeto no sale.** Es `<empresa>/services/<servicio>/evidence/<requerimiento>/<uuid>/<nombre>`; `file_name` es su último tramo (el nombre ya limpio: sin acentos ni espacios). `storage_location` guarda `s3`.
+- **`evidence_state`.** Hoy es `pending` (o `in_review` si la IA ya sugirió algo): no hay revisiones hasta MD-127. En `?view=technical` la revisión de quien pregunta viene vacía (`pending_review`, atributos en `null`).
+- **`ai`.** `ai_confidence` va `null`: la confianza no se guarda todavía.
+- **Descarga.** Genera el enlace (5 minutos) y lo registra en el rastro **de mejor esfuerzo**, sin la URL firmada; no hay un cambio de datos con el que ser atómico. Si no hay almacenamiento responde `503` y no registra una descarga que no ocurrió.
+- **Tipos y tamaño.** PDF, DOCX, XLSX, PNG y JPG, hasta 25 MB. Un DOCX o un XLSX se reconoce mirando el directorio central del zip (`[Content_Types].xml` y `word/` o `xl/`); un zip cualquiera renombrado se rechaza con `415`.
+- **Pruebas.** Unitaria del validador y e2e `test/cumplimiento/evidencias.e2e-spec.ts` (almacenamiento en memoria); y `test/almacenamiento/evidencia.e2e-spec.ts` contra un S3 real, opcional como la de la Descripción del Sistema.
+- **Sin construir:** el modo `?disposition=inline`, la lista por test (MD-177), la revisión (MD-127) y la gestión de requerimientos (cambiar el responsable, agregar o quitar).
 
 ## Preguntas abiertas
 
