@@ -29,7 +29,7 @@ dedicada por cliente no está construida y el registro la rechaza (`DEDICATED_DA
 ## Stack
 
 NestJS (Express), TypeScript, Prisma 7 (`prisma-client`, `moduleFormat = "cjs"`, `@prisma/adapter-pg`),
-PostgreSQL, `class-validator`, `@nestjs/swagger` (`/v1/docs`), `nestjs-i18n` (`/i18n/{en,es}`), Jest +
+PostgreSQL, `class-validator`, `@nestjs/swagger` (`/v1/docs`, **solo local** con `API_DOCS_ENABLED=true`; SEG-62), `nestjs-i18n` (`/i18n/{en,es}`), Jest +
 supertest, ESLint 9 + Prettier. Versiones exactas: `package.json`.
 
 - **Roles:** cinco (`admin_monkey`, `admin_empresa`, `funcional`, `consultor`, `auditor`); no hay roles personalizados. El consultor es de Next y entra a cada empresa solo por una asignación activa (`consultant_assignments`, D64, SEG-57); el auditor pertenece a su empresa (D63).
