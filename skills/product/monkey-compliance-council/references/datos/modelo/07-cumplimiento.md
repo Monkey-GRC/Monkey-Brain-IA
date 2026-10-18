@@ -312,7 +312,7 @@ exclusión sin justificación aprobada no cambia el denominador — y un check q
 omisión es un agujero, no una exclusión.
 
 **La empresa solo aporta la evidencia; la revisan el consultor y el auditor, cada uno la suya** (D84). Son dos momentos: ninguna revisión depende de la otra, el auditor no ve la del consultor,
-y el estado que consume el motor sale de la del consultor (la del auditor no lo mueve, D77). Cada entrega tiene a lo sumo una revisión por rol. La IA puede sugerir un veredicto (`ai_verdict`),
+y el estado que consume el motor sale de la del consultor (la del auditor no lo mueve, D77). Cada entrega tiene a lo sumo una revisión por rol. Una entrega es histórico: la app solo la inserta y la lee (sin `UPDATE` ni `DELETE`) y `(evidence_requirement_id, version)` es único (MD-126). La IA puede sugerir un veredicto (`ai_verdict`),
 siempre etiquetado como generado por IA, pero **nunca cierra un control**.
 
 ### 7.4 Evaluaciones y hallazgos (el histórico)
