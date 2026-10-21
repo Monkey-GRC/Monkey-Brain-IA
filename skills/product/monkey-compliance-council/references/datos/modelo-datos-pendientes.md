@@ -21,7 +21,7 @@ Lo que sigue abierto, con lo más urgente arriba. 🚧 bloquea trabajo · ⚠️
 | [P21](#p21--el-uso-de-los-logos-de-marcas-de-terceros) | El uso de los logos de marcas de terceros en el marketplace | ⚠️ Publicar el marketplace con logos a clientes reales; no bloquea construirlo | 2026-10-10 |
 | [P22](#p22--motor-de-evaluación-lo-que-falta-para-calcular-el-riesgo) | Motor de evaluación: lo que falta para calcular el riesgo | 🚧 El riesgo residual y las dos matrices (MD-151, fuera del sprint); ⚠️ la periodicidad de los controles | 2026-10-10 |
 | [P25](#p25--quién-valida-los-atributos-de-una-evidencia-y-cómo-se-relaciona-con-el-veredicto-del-consultor) | Quién valida los atributos de una evidencia y cómo se relaciona con el veredicto del consultor | ⚠️ Si validar la evidencia de un test documental es lo mismo que dar su veredicto (MD-155) | 2026-10-14 |
-| [P26](#p26--quién-define-el-período-auditado-y-la-fecha-de-corte-de-una-evaluación) | Quién define el período auditado y la fecha de corte de una evaluación | 🚧 Que el motor ejecute: sin esos datos el resumen es «Sin medir» y no se emiten evaluaciones (MD-137, MD-155) | 2026-10-14 |
+| [P26](#p26--quién-define-el-período-auditado-y-la-fecha-de-corte-de-una-evaluación) | Quién define el período auditado y la fecha de corte de una evaluación | 🚧 Respondida **provisionalmente** (D87, 2026-10-20): falta que el comité la ratifique (Tipo I, período siguiente, nombre) | 2026-10-14 |
 | [P27](#p27--cómo-se-agrupan-los-controles-en-un-marco-sin-categorías) | Cómo se agrupan los controles en un marco sin categorías | 🚧 La agrupación de la lista de controles y del resumen para marcos distintos de SOC 2 | 2026-10-15 |
 | [P28](#p28--a-quién-contacta-la-empresa-para-que-le-asignen-un-consultor) | A quién contacta la empresa para que le asignen un consultor | ⚠️ La casilla de contacto de la pantalla de exclusiones (MD-169) | 2026-10-16 |
 | [P13](#p13--ratificar-lo-que-desarrollo-decidió-en-las-correcciones-del-2026-10-05-d50-d51) | Ratificar lo que desarrollo decidió el 2026-10-05 (D50, D51) | No bloquea: está construido y funcionando | 2026-10-06 |
@@ -192,7 +192,9 @@ Hoy hay dos actos que se parecen: alguien **valida** los atributos de la entrega
 1. **¿Quién declara el período auditado y cuándo?** *Recomendación: `admin_empresa`, al contratar el marco o crear el servicio; editable mientras no se haya emitido una evaluación, y el consultor puede corregirlo.*
 2. **¿La fecha de corte es «hoy» mientras se monitorea y se congela al emitir una evaluación del consultor o del auditor?** *Recomendación: sí; así cada evaluación dice sobre qué datos se hizo.*
 
-**Qué depende:** el resumen del servicio (MD-137), las evaluaciones del consultor y del auditor (MD-155) y la vigencia de las exclusiones (MD-144). Mientras tanto la API responde `not_measured` y `409 EVALUATION_NOT_DEFINED`, también al proponer una exclusión (MD-144, construida y a la espera de esto). Cuando se responda, el ticket que lo construye es MD-168.
+**Respuesta provisional (D87, 2026-10-20):** se adoptaron las dos recomendaciones para poder construirlo (el criterio de desarrollo no sustituye al comité): `admin_empresa` declara el período (el consultor podrá corregirlo cuando trabaje sobre la empresa del cliente); la fecha de corte es «hoy» mientras se monitorea y se congela al emitir una evaluación. Inicio y fin pueden coincidir (Tipo I). **Sigue abierto para el comité:** si se vende Tipo I, qué pasa al llegar el período siguiente (hoy una sola fila por servicio y marco) y el nombre (el Excel dice «fecha de evaluación»).
+
+**Qué depende:** el resumen del servicio (MD-137), las evaluaciones del consultor y del auditor (MD-155) y la vigencia de las exclusiones (MD-144). Sin período la API responde `not_measured` y `409 EVALUATION_NOT_DEFINED`, también al proponer una exclusión (MD-144). **MD-168 está construido (2026-10-20, D87)**: `PUT …/evaluation-period`.
 
 ---
 

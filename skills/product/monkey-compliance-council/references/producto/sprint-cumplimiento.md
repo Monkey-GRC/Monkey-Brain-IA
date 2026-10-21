@@ -23,7 +23,7 @@ cambios con aprobación), §7.5 (el veredicto) y §7.6 (las observaciones).
 | Evidencias (MD-104) | MD-126 subir (**construido**) · MD-127 revisión de la evidencia por consultor y auditor (D84; antes «aprobar o rechazar») · MD-128 Descripción del Sistema como archivo (listo) |
 | Responsables de la organización (MD-105) | MD-133 cargos en la API (**construido**) · MD-135 cargos en pantalla |
 | Medición y resumen (MD-106) | MD-137 resumen del servicio · MD-138 motor de cálculo · MD-139 estado del activo |
-| Exclusiones y cierre (MD-107) | MD-144 exclusiones (**construido**; para usarlo de verdad faltan MD-168 —el período, `P26`— y MD-160 —que el consultor decida—; sin pantalla: MD-169; MD-170 exclusión de un check; MD-171 deuda) · MD-145 evaluaciones inmutables · MD-147 verificación del backend · MD-149 revisión de pantallas y demo |
+| Exclusiones y cierre (MD-107) | MD-144 exclusiones (**construido**; para usarlo de verdad faltan MD-168 —el período, `P26`; **API construida 2026-10-20 (D87)**, falta su pantalla— y MD-160 —que el consultor decida—; sin pantalla: MD-169; MD-170 exclusión de un check; MD-171 deuda) · MD-145 evaluaciones inmutables · MD-147 verificación del backend · MD-149 revisión de pantallas y demo |
 | Auditoría y consultoría (MD-152) | MD-154 observaciones · MD-155 veredicto del consultor · MD-156 aprobación de cambios de controles |
 | Acceso (MD-153), prerrequisito | MD-157 roles consultor y auditor en el backend: **construido**. Desbloquea MD-118, MD-144 y MD-154 a MD-156, que dependen del rol `consultor` |
 
