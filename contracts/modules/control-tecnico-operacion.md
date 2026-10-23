@@ -216,6 +216,7 @@ encuentra la ejecución y responde `409 EXECUTION_NOT_RUNNING`**: no puede escri
 | `POST /v1/assets/{id}/executions` (202), `GET …/executions` (paginado, con `failure_message`), `GET …/readiness` | ✅ |
 | API interna del trabajador: `claim` (con `kind`), `results`, `validated`, `fail` | ✅ Probada contra el backend real, Docker real y AWS real (D57, D58) |
 | `GET …/findings`, `GET …/results?view=technical` | ❌ Sin construir (necesitan la redacción de los siete campos, `P14` E2) |
+| `GET /v1/controls/{control_id}/tests/{test_id}/findings` | ✅ **Qué falló y cómo corregirlo** de una prueba de nube de un control (D90, `compliance-audit.md`): título, recursos y guía de corrección traducida con IA. No es la plantilla de siete campos: esa sigue pendiente (`P14` E2) |
 
 - El historial de evaluaciones **no incluye las validaciones** (las de conexión, ver `onboarding-technical-control.md`); cada ítem trae `failure_reason` y `failure_message`.
 - Un claim del trabajador acepta `{ "kind": "validation" | "assessment" }` y devuelve `kind`; `POST /internal/runner/executions/{id}/validated` cierra una validación.

@@ -61,6 +61,38 @@ La vista técnica de un control: los tests que lo verifican, **todos con su esta
 `state` es `test_state`. `shared_with` son los **otros** controles del servicio que llevan el test: su veredicto vale en todos (D85). **En un test documental (`dimension: "policy"`) va siempre vacío:** su estado es de este control y sale de las
 evidencias de este control que le aplican (D88); `state` ya no es fijo `pending`. `display_name` es el nombre neutro (D70); el texto del comité no sale. `ai_suggestion` es `null` o una sugerencia **marcada como de la IA**: nunca decide.
 
+### `GET /v1/controls/{control_id}/tests/{test_id}/findings` — qué falló y cómo corregirlo (D90)
+
+De una **prueba automática de nube** de un control: las comprobaciones que fallaron, en qué recursos y cómo corregirlas. Es la vista técnica (D81): `admin_empresa`, `consultor` y `auditor`; el `funcional` y `admin_monkey`, `403`. Paginada (`page`, `page_size`), de la más grave a la menos.
+Lo que lee: la **última corrida completada** de cada conexión de nube del servicio, solo los resultados `failed`, de los checks que alimentan esa prueba **con la misma regla que las evaluaciones** (los ratificados por el comité; con `READINESS_INCLUDE_PROPOSED=true`, también los propuestos). Un recurso descubierto que no es del servicio no se cuenta.
+
+```json
+{
+  "statusCode": 200,
+  "message": "finding.list",
+  "data": {
+    "test_id": "21ab…",
+    "measured_at": "2026-10-22T23:40:00Z",
+    "items": [
+      {
+        "id": "5c1e…",
+        "title": "IAM Access Analyzer está habilitado",
+        "severity": "high",
+        "resources": [ { "name": "analizador-principal", "uid": "arn:aws:accessanalyzer:us-east-1:123456789012:analyzer/…", "region": "us-east-1" } ],
+        "resources_total": 1,
+        "remediation": { "text": "Habilita IAM Access Analyzer en todas las cuentas y regiones activas…", "language": "es", "is_ai_generated": true }
+      }
+    ],
+    "page": 1, "page_size": 25, "total": 1, "total_pages": 1
+  }
+}
+```
+
+- `title` es la comprobación en positivo («lo que debería cumplirse»). `remediation` es **la guía de corrección** de esa comprobación, igual para todos los recursos; `null` si no hay una que se pueda mostrar.
+- **Idioma y procedencia.** Sale en el idioma de la sesión. El catálogo trae el texto original en inglés; Monkey lo **traduce con IA** (`is_ai_generated: true`, la pantalla lo etiqueta como traducción automática hasta que alguien la revise). Si un check aún no tiene traducción, sale el original con `language: "en"`.
+- **Nada nombra al motor (D70).** Ningún identificador del motor sale (ni el código del check ni el tipo de recurso del motor). Un título o una guía que nombre al proveedor se omite (`null`, y el título cae a un texto neutro): es una red de seguridad, no una revisión. El mensaje por recurso que escribe el motor (`status_detail`) **no sale**: es texto crudo y en inglés (ver «Estado de implementación»).
+- `resources` trae hasta 50 recursos por comprobación; `resources_total` dice cuántos son. `404` si el control no lleva la prueba o si la prueba no es de nube; sin corrida, `items: []` y `measured_at: null`.
+
 ### `POST /v1/controls/{control_id}/tests/{test_id}/verdicts` — el veredicto
 
 Solo `consultor`; cualquier otro rol, `403`. Aplica a las pruebas **manuales que no son documentales** (p. ej. la validación manual complementaria de una prueba técnica); una automática la resuelve la sonda (`409 TEST_NOT_MANUAL`) y una **documental se resuelve revisando
