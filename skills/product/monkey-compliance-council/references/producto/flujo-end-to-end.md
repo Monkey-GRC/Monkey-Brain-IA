@@ -60,7 +60,7 @@ declarar su servicio (Componente 2).
 **Entidad:** `organizations`.
 **Fuente:** `modulos/onboarding.md`, Componente 1.
 
-## 4. Onboarding — Componente 2: Contexto del Servicio
+## 4. Contexto del Servicio (antes, Componente 2 del onboarding; desde D89 se hace cuando el cliente quiera)
 
 Una vez por servicio (repetible). Dieciséis campos, incluida la Descripción del Sistema
 (documento AICPA de 10 secciones) → `services` y lo que cuelga de él.
@@ -86,7 +86,7 @@ porque son texto de un estándar y viven en la misma base (§3.5, D25).
 `points_of_focus` (referenciados, no clonados).
 **Fuente:** `modelo-datos.md` §3.5, decisión D23.
 
-## 6. Onboarding — Componente 3: Control Técnico
+## 6. Control Técnico (antes, Componente 3 del onboarding; desde D89 va después de evaluar los riesgos del servicio)
 
 > **Provisional (D48):** la parte de «conectar» no coincide con cómo funciona la sonda real (el cliente instala un agente y
 > Monkey lee lo que el agente reporta; no se entregan credenciales). Se rediseña con D71 (DT-32 a DT-36).

@@ -90,6 +90,7 @@ Limitan el producto o al equipo.
 | [DT-69](control-tecnico.md#dt-69--las-dimensiones-de-cada-control-no-coinciden-con-las-que-define-el-comité) | Las dimensiones de cada control no coinciden con las que define el comité | [Control técnico](control-tecnico.md) |
 | [DT-71](transversal.md#dt-71--la-lectura-de-controles-fija-valores-que-el-modelo-ya-prevé) | La lectura de controles fija valores que el modelo ya prevé | [Transversal](transversal.md) |
 | [DT-76](transversal.md#dt-76--las-plantillas-de-evidencia-del-catálogo-no-dicen-a-qué-prueba-sirve-cada-documento-y-el-estado-documental-por-control-se-apartó-de-rn-13) | Las plantillas de evidencia del catálogo no dicen a qué prueba sirve cada documento, y el estado documental por control se apartó de RN-13 | [Transversal](transversal.md) |
+| [DT-77](transversal.md#dt-77--evaluar-los-riesgos-antes-de-declarar-activos-se-exige-solo-en-la-pantalla) | Evaluar los riesgos antes de declarar activos se exige solo en la pantalla | [Transversal](transversal.md) |
 
 ### 🟡 Mejoras
 
