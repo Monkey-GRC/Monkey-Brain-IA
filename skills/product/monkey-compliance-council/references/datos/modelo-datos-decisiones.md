@@ -45,7 +45,7 @@ El registro está partido por épocas en `decisiones/`. **Busca el ID en el índ
 | [`decisiones/04-sonda-y-correcciones.md`](decisiones/04-sonda-y-correcciones.md) | **D48–D52** — Paso 3 provisional contra la sonda real, pool de conexiones, correcciones del comité, auditoría atómica. |
 | [`decisiones/05-control-tecnico-y-nube.md`](decisiones/05-control-tecnico-y-nube.md) | **D53–D61 y D67** — Conexión con la nube, sonda de servidores, trabajador del motor de nube y descubrimiento de activos. |
 | [`decisiones/06-cumplimiento-y-roles.md`](decisiones/06-cumplimiento-y-roles.md) | **D62–D68** — Cómo se calcula el cumplimiento, el auditor, los cinco roles, controles propios y MFA. |
-| [`decisiones/07-cierres-2026-10-10.md`](decisiones/07-cierres-2026-10-10.md) | **D69–D89** — Cierres del 2026-10-10 al 20: el paso 3, el nombre neutro de las pruebas, la lectura de la sonda, el Postgres de producción, los modelos de negocio, las exclusiones, la fórmula del riesgo residual y el lenguaje GRC de la superficie |
+| [`decisiones/07-cierres-2026-10-10.md`](decisiones/07-cierres-2026-10-10.md) | **D69–D90** — Cierres del 2026-10-10 al 20: el paso 3, el nombre neutro de las pruebas, la lectura de la sonda, el Postgres de producción, los modelos de negocio, las exclusiones, la fórmula del riesgo residual y el lenguaje GRC de la superficie |
 
 ### Índice
 
@@ -139,5 +139,6 @@ El registro está partido por épocas en `decisiones/`. **Busca el ID en el índ
 | D85 | El veredicto de un test manual o documental vale para todos los controles que lo usan | 07 |
 | D86 | No hay un staging propio: un solo entorno desplegado, y lo que dependa de un staging se congela | 07 |
 | D87 | El período auditado lo declara la empresa y la fecha de corte es «hoy» hasta que se congela (responde P26, provisional) | 07 |
+| D90 | De una prueba técnica el cliente ve qué falló y cómo corregirlo, con la guía del catálogo traducida con IA y sin nombrar al proveedor | 07 |
 | D89 | El onboarding es solo el contexto de la empresa; los servicios se declaran después y sus riesgos se evalúan antes de declarar activos (ajusta D23, reemplaza D69) | 07 |
 | D88 | Una prueba documental se valida en su control, con la evidencia que se sube para esa prueba (ajusta D85, cierra P25) | 07 |

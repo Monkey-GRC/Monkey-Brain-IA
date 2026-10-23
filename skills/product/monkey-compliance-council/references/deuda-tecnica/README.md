@@ -91,6 +91,7 @@ Limitan el producto o al equipo.
 | [DT-71](transversal.md#dt-71--la-lectura-de-controles-fija-valores-que-el-modelo-ya-prevé) | La lectura de controles fija valores que el modelo ya prevé | [Transversal](transversal.md) |
 | [DT-76](transversal.md#dt-76--las-plantillas-de-evidencia-del-catálogo-no-dicen-a-qué-prueba-sirve-cada-documento-y-el-estado-documental-por-control-se-apartó-de-rn-13) | Las plantillas de evidencia del catálogo no dicen a qué prueba sirve cada documento, y el estado documental por control se apartó de RN-13 | [Transversal](transversal.md) |
 | [DT-77](transversal.md#dt-77--evaluar-los-riesgos-antes-de-declarar-activos-se-exige-solo-en-la-pantalla) | Evaluar los riesgos antes de declarar activos se exige solo en la pantalla | [Transversal](transversal.md) |
+| [DT-78](transversal.md#dt-78--la-guía-de-corrección-de-una-prueba-técnica-es-una-traducción-automática-sin-revisar-y-el-filtro-del-proveedor-es-una-red-de-seguridad) | La guía de corrección de una prueba técnica es una traducción automática sin revisar, y el filtro del proveedor es una red de seguridad | [Transversal](transversal.md) |
 
 ### 🟡 Mejoras
 

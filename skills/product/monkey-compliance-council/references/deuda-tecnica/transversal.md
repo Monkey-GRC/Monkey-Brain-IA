@@ -132,6 +132,14 @@ Lo que no pertenece a un solo módulo (pruebas, CI, auditoría, traducciones, en
 - **Por qué:** se construyó primero en Frontend para verlo funcionar y ajustar la regla antes de fijarla en la API; el Backend exige tocar las e2e que crean un servicio y un activo de seguidas.
 - **Qué lo cierra:** `409 RISKS_NOT_EVALUATED` al crear una conexión o asignar activos a un servicio con riesgos vigentes sin probabilidad o impacto. Debe aplicar solo a conexiones **nuevas** (los servicios que ya tienen activos no se tocan) y la regla de «cuántos faltan» (`riskProgress` en Platform) debe vivir en un solo sitio. Contrato: `onboarding-technical-control.md`.
 
+### DT-78 · La guía de corrección de una prueba técnica es una traducción automática sin revisar, y el filtro del proveedor es una red de seguridad
+
+🟠 Importante
+
+- **Qué está parchado:** `catalog.checks.remediation_es` y `title_es` los escribió la IA a partir del texto original del motor (D90); nadie los ha revisado. La respuesta los marca `is_ai_generated` y la pantalla los etiqueta como traducción automática. Que ningún texto nombre al proveedor lo garantiza una expresión regular que **omite** el texto si lo encuentra (no lo reescribe) y la revisión al escribir las traducciones; no es una revisión humana. El mensaje por recurso del motor (`status_detail`) no se muestra (crudo, en inglés).
+- **Por qué:** sin esto una prueba que falla no decía cómo arreglarla (B33/B34). Hacerlo bien exige la plantilla de siete campos (`P14` E2) y que el comité redacte cada hallazgo.
+- **Qué lo cierra:** revisión humana de las 558 guías ligadas a una prueba (`translation_origin = reviewed`), la plantilla de siete campos y, si el comité la quiere, la redacción propia de Monkey por hallazgo. Mientras tanto, solo hay traducción para los checks ligados a una prueba; el resto sale en inglés.
+
 ### DT-72 · El vencimiento de una exclusión no deja evento de cumplimiento
 
 🟡 Mejora
