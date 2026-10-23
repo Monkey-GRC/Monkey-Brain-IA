@@ -237,6 +237,7 @@ erDiagram
         int sequence
         text description
         enum dimension
+        uuid test_id FK "nullable: prueba documental PARA la que se entrega; null = documento sugerido por el catalogo, no cuenta (D88)"
         string validity_within_period
         string source_ref "nullable: codigo de la plantilla; null si la creo el cliente"
     }
@@ -255,6 +256,7 @@ erDiagram
     }
     evidence_reviews {
         uuid id PK
+        uuid tenant_id FK "RLS (D31)"
         uuid evidence_submission_id FK
         enum reviewer_role "consultor|auditor: una fila por entrega y por rol (D84)"
         uuid reviewed_by FK
@@ -307,6 +309,8 @@ plantilla, `sequence` = su orden en el control y `validity_within_period` = el p
 **La evidencia es válida si cae dentro del periodo de evaluación** del marco (decisión C1), no
 por una fecha de caducidad fija.
 
+**La evidencia de una prueba documental es de esa prueba en su control (D88).** La persona sube su documento bajo la prueba y el servidor lo guarda en el requerimiento de esa prueba (`evidence_requirements.test_id`), que crea en la primera entrega. `test_id` nulo es un documento que el catálogo
+sugiere para el control sin decir a qué prueba sirve (las 89 asignaciones del Excel): no cuenta para ninguna prueba. El estado de la prueba en ese control sale solo de lo entregado para ella (§9); el de un requerimiento, de su **entrega más reciente**.
 **La exclusión la propone la empresa (`admin_empresa`) y la aprueba el consultor (rol `consultor`), y vence** (D78, que invirtió A3). Una
 exclusión sin justificación aprobada no cambia el denominador — y un check que sale por
 omisión es un agujero, no una exclusión.

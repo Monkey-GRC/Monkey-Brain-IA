@@ -114,6 +114,7 @@ erDiagram
         uuid control_id FK
         uuid evidence_template_id FK
         int sequence "orden en el control"
+        uuid test_id FK "nullable: prueba documental a la que sirve el documento; null = sugerencia sin asignar (D88)"
     }
     controls ||--o{ point_of_focus_controls : "satisface"
     points_of_focus ||--o{ point_of_focus_controls : "satisfecho por"
@@ -387,7 +388,7 @@ puede cambiar solo — ya pasó una vez con la reclasificación de 223 checks.
 | `control_dimensions` → `client_control_dimensions` | **Sí** (D36): un control propio declara las suyas y cualquiera puede justificar `reason_not_applicable` |
 | `risks` y `causes` → `client_risks` y `client_causes` | **Sí, en dos momentos distintos**, y con tablas propias del cliente (D28). El set base se clona **automáticamente** al elegir marco en el Componente 2 (§6.2), junto con sus relaciones (`client_risk_causes`, `client_cause_controls`); la **personalización** pasa después, en el módulo de Cumplimiento (§7.2), sin bloquear nada. Editar una copia jamás toca el catálogo ni a otro cliente |
 | **`requirements` y `points_of_focus`** | **No se clonan — se referencian con FK real.** Viven en la misma base; `client_controls` y `service_frameworks` apuntan directo a ellos. Es texto de un estándar, no hace falta copiarlo |
-| `evidence_templates` → `evidence_requirements` | **Sí** (D36): cada plantilla ligada al control se clona por control del cliente, con `source_ref` = código de la plantilla y responsable vacío. La evidencia de un control propio la define el cliente |
+| `evidence_templates` → `evidence_requirements` | **Sí** (D36): cada plantilla ligada al control se clona por control del cliente, con `source_ref` = código de la plantilla, responsable vacío y el `test_id` de la asignación (D88; hoy nulo en las 89 del Excel: quedan como sugerencia y no cuentan para ninguna prueba). La evidencia de un control propio la define el cliente |
 | `tests` | **No: se referencian con FK real** (`evaluations.test_id`, `exclusions.test_id`). El cliente no reescribe un test |
 | `control_tests` → `client_control_tests` | **Sí** (D36): se copia el **vínculo** control ↔ test, no el test. Lo necesita un control propio y es lo que "cambiar los tests de un control requiere aceptación" (abajo) da por hecho |
 | `control_measurements` | **No** (D2: peso lineal, sin configuración). Ausencia de fila = peso 1. Si D2 se revisa, se clonan entonces |

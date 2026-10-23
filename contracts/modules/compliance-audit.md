@@ -7,7 +7,7 @@ type: contract
 
 # Cumplimiento — consultoría y auditoría
 
-**Estado: ACORDADO (2026-10-17; D84 y D85), salvo lo que espera `P26`; construidas las exclusiones (MD-144).** Ver `conventions.md` (sección «Cumplimiento») y `enums.md`. Tickets: MD-144, MD-154, MD-155, MD-127.
+**Estado: ACORDADO (2026-10-17; D84 y D85; ajustado por D88 el 2026-10-22 para las pruebas documentales), salvo lo que espera `P26`; construidas las exclusiones (MD-144).** Ver `conventions.md` (sección «Cumplimiento») y `enums.md`. Tickets: MD-144, MD-154, MD-155, MD-127.
 
 **Qué es.** El **consultor prepara** a la empresa y el **auditor certifica** (D63, D64). Aquí viven lo que hacen: el consultor da el veredicto de los tests documentales y manuales y decide las exclusiones; el consultor y el
 auditor escriben observaciones que la empresa debe atender. **Entidades:** `evaluations`, `evidence_submissions`, `evidence_reviews`, `audit_observations`, `exclusions` (`modelo-datos.md` §7.3 a §7.6). **App:** Monkey Platform.
@@ -58,11 +58,13 @@ La vista técnica de un control: los tests que lo verifican, **todos con su esta
 }
 ```
 
-`state` es `test_state`. `shared_with` son los **otros** controles del servicio que llevan el test: su veredicto vale en todos (D85). `display_name` es el nombre neutro (D70); el texto del comité no sale. `ai_suggestion` es `null` o una sugerencia **marcada como de la IA**: nunca decide.
+`state` es `test_state`. `shared_with` son los **otros** controles del servicio que llevan el test: su veredicto vale en todos (D85). **En un test documental (`dimension: "policy"`) va siempre vacío:** su estado es de este control y sale de las
+evidencias de este control que le aplican (D88); `state` ya no es fijo `pending`. `display_name` es el nombre neutro (D70); el texto del comité no sale. `ai_suggestion` es `null` o una sugerencia **marcada como de la IA**: nunca decide.
 
 ### `POST /v1/controls/{control_id}/tests/{test_id}/verdicts` — el veredicto
 
-Solo `consultor`; cualquier otro rol, `403`. Aplica a tests **documentales y manuales**; uno automático lo resuelve la sonda (`409 TEST_NOT_MANUAL`).
+Solo `consultor`; cualquier otro rol, `403`. Aplica a las pruebas **manuales que no son documentales** (p. ej. la validación manual complementaria de una prueba técnica); una automática la resuelve la sonda (`409 TEST_NOT_MANUAL`) y una **documental se resuelve revisando
+su evidencia** (`PUT /v1/evidence-submissions/{id}/review`): sobre ella responde `409 TEST_DECIDED_BY_EVIDENCE` (D88).
 **El veredicto es del test en el servicio, no del control** (D85, RN-13): `control_id` es el control desde el que se da (el de origen) y el veredicto cuenta en **todos los controles del servicio que llevan ese test**. La evidencia que lo sustenta es la de `GET /v1/controls/{control_id}/tests/{test_id}/evidence` (`compliance-evidence.md`).
 
 ```json
@@ -103,7 +105,7 @@ Un test sin veredicto está `pending` y **no cuenta como cumplido**. `GET /v1/co
 ### `PUT /v1/evidence-submissions/{id}/review` — revisar una evidencia (D84)
 
 Los seis atributos de una evidencia y la validación por una persona (RN-01 a RN-03). La hacen el **`consultor` y el `auditor`, cada uno la suya**: son dos momentos distintos (consultoría prepara, auditoría certifica) y ninguna depende de la otra;
-una evidencia no necesita las dos para cumplir. El rol lo pone el servidor desde la base (`reviewer_role`); el cuerpo no lo lleva. Cada entrega tiene a lo sumo una revisión por rol y `PUT` la crea o la reemplaza (queda en el rastro). `admin_empresa` y `funcional`, `403`.
+una evidencia no necesita las dos para cumplir. **De la revisión del consultor sale el estado de las pruebas documentales a las que sirve la evidencia, en su control (D88): no hay un segundo paso de veredicto.** El rol lo pone el servidor desde la base (`reviewer_role`); el cuerpo no lo lleva. Cada entrega tiene a lo sumo una revisión por rol y `PUT` la crea o la reemplaza (queda en el rastro). `admin_empresa` y `funcional`, `403`.
 
 ```json
 { "type_ok": true, "period_ok": true, "valid_ok": true, "approved_ok": true, "signed_ok": true, "content_ok": true, "review": "human_validated", "note": "El acta está firmada por la dirección." }
@@ -215,6 +217,7 @@ Solo `consultor`. Patrón de decisiones de `conventions.md`: `{ "status": "appro
 | 403 | `FORBIDDEN` | El rol no puede; cerrar una observación que no escribió; el `funcional` no tiene asignada la acción |
 | 404 | `NOT_FOUND` | El control, el test, el activo, la observación o la exclusión no existen para esta empresa |
 | 409 | `TEST_NOT_MANUAL` | Dar un veredicto sobre un test automático |
+| 409 | `TEST_DECIDED_BY_EVIDENCE` | Dar un veredicto sobre un test documental: se resuelve revisando su evidencia (D88) |
 | 409 | `ALREADY_DECIDED` | La exclusión ya fue aprobada o rechazada |
 | 409 | `EXCLUSION_ALREADY_EXISTS` | Ya hay una pendiente o aprobada del mismo activo en el mismo test |
 | 409 | `EVALUATION_NOT_DEFINED` | La evaluación del servicio no tiene período o fecha de corte |
@@ -299,7 +302,11 @@ Todos con el mismo sobre (`conventions.md`); `message` es la clave i18n del erro
 
 ## Estado de implementación
 
-**Construido: MD-144** (exclusiones; 2026-10-16). Lo de abajo es lo que el contrato no dice y el código hace:
+**Construido: MD-144** (exclusiones; 2026-10-16) y **MD-127** (la revisión de una evidencia; 2026-10-22, D88). Lo de abajo es lo que el contrato no dice y el código hace:
+
+- **Revisión de la evidencia (MD-127).** `PUT /v1/evidence-submissions/{id}/review` guarda una fila por entrega y por rol en `evidence_reviews` (lleva `tenant_id` para RLS; la app no puede borrarlas). El rol sale de la sesión. Un atributo ausente o `null` queda sin valorar; `ai_prevalidated` y un cuerpo sin `review` responden `422 enum.invalid`. Responde con la entrega y el bloque `technical` de **quien revisó**. El rastro (`evidence_review.update`) lleva quién, qué entrega y el resultado global, sin los atributos.
+- **Pruebas documentales por control (D88).** El estado de un test `policy` en un control sale de las evidencias entregadas PARA ESE TEST en ESE control (`test_id` igual; las sugeridas por el catálogo, de `test_id` nulo, no cuentan), con la agregación de RN-04, tomando la entrega más reciente de cada requerimiento y la revisión del **consultor** (la del auditor no mueve el cálculo, D77). Lo hace `control-readout.ts` con una consulta por servicio. Sin evidencias o sin revisar, `pending`.
+- **Aún sin construir:** `POST …/tests/{test_id}/verdicts` (MD-155) para las pruebas manuales **no documentales**; cuando exista responderá `409 TEST_DECIDED_BY_EVIDENCE` sobre una documental.
 
 - **Solo el activo de un test.** El contrato expone la exclusión de un activo; la de un check (`excluded_check_id`) existe en la tabla pero no tiene endpoint (**MD-170**, `DT-74`), y excluir un test completo se hace desactivándolo, no con una exclusión (D68).
 - **Cómo cambia lo que se mide.** Una exclusión `approved` y vigente (`valid_from` ≤ hoy ≤ `valid_until`) hace que el resultado del activo en ese test sea `excluded` **al leer**: se superpone al último resultado sin tocar el veredicto de la sonda, en todas las acciones del servicio que llevan ese test. La pendiente, la rechazada y la vencida no cambian nada. Aprobar deja un evento de cumplimiento (`exclusion.approve`).
@@ -311,7 +318,6 @@ Todos con el mismo sobre (`conventions.md`); `message` es la clave i18n del erro
 
 ## Preguntas abiertas
 
-- **`P25`** (solo su segunda pregunta): si validar las evidencias de un test documental es lo mismo que dar su veredicto. Quién revisa la evidencia ya está decidido (D84).
 - **`P26`**: período y fecha de corte de la evaluación del servicio. Mientras no se definan, proponer una exclusión responde `409 EVALUATION_NOT_DEFINED`.
 - **`P3`**: el detalle por pantalla puede ajustar la tabla de «Quién puede qué».
 - **Reportes en PDF y Excel** del auditor y del consultor: el contenido está por definir, no tienen contrato todavía.
