@@ -83,8 +83,9 @@ Cuarenta y cinco de cincuenta conformes y cinco sin evaluar **no es CUMPLE**: es
 firma o autorización, contenido obligatorio). Algún atributo en «No» ⇒ `NO CUMPLE`; vigencia en «No» ⇒ `EVIDENCIA VENCIDA`; algún atributo vacío ⇒ `PENDIENTE`. **Solo una evidencia
 validada por una persona puede ser `CUMPLE`**: la pre-validada por IA queda `EN REVISIÓN` (RN-03). El test documental agrega sus evidencias con la prioridad
 `NO CUMPLE` > `VENCIDA` > `EN REVISIÓN` > `PENDIENTE` > `CUMPLE`; sin evidencias es `PENDIENTE`. Cada evidencia conserva origen, fecha, responsable, versión y hash, y una versión nueva
-**no sobrescribe** la anterior.
-
+**no sobrescribe** la anterior (en el cálculo cuenta la **más reciente** de cada requerimiento).
+**Un test documental se calcula por control (D88):** sus evidencias son las que la persona entregó PARA ESE TEST en ese control (`test_id` igual); un documento que el catálogo sugiere sin prueba (`test_id` nulo) y las de otro control o de otra prueba nunca cuentan. La revisión del consultor es el veredicto (no hay un segundo paso). Esto ajusta RN-13 para lo documental: el resultado sigue siendo único por
+test × **control** × período × versión, porque el documento cambia de un control a otro.
 **Relación control–test** (RN-12, REQ-019 a REQ-021): es N:M y lleva *obligatorio*, *vigente*, fecha de alta y de baja, y justificación. Un test no obligatorio, no vigente o `NO APLICA`
 **no cuenta** para el control; desactivarlo exige justificación y deja rastro. **Agregar un test obligatorio nuevo** lo hace entrar `PENDIENTE` y puede volver no efectivo a un control que era efectivo.
 

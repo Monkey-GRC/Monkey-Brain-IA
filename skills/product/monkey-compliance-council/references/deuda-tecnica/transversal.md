@@ -113,10 +113,17 @@ Lo que no pertenece a un solo módulo (pruebas, CI, auditoría, traducciones, en
 
 🟠 Importante
 
-- **Qué está parchado:** `ControlPrismaRepository` marca todo test vinculado a un control como obligatorio y vigente, porque `client_control_tests` aún no guarda esos datos (D68); y un test documental cuenta siempre como pendiente, porque las evidencias no guardan los atributos que lo deciden (`P25`)
-- **Por qué:** MD-117 se construyó antes que la desactivación controlada de tests y la validación de evidencias. *(2026-10-14: MD-118 y MD-150 ya reemplazaron los valores fijos de `approval` y `has_pending_change`.)*
-- **Qué lo cierra:** la migración de `client_control_tests` (obligatorio, vigente, fechas) con la desactivación controlada, y `P25` con su endpoint. Cada uno reemplaza su valor fijo en `control.prisma.repository.ts` y `control-readout.ts`
+- **Qué está parchado:** `ControlPrismaRepository` marca todo test vinculado a un control como obligatorio y vigente, porque `client_control_tests` aún no guarda esos datos (D68). *(2026-10-22, D88: la parte documental —un test documental fijo en pendiente— ya no está parchada; sale de la revisión de las evidencias.)*
+- **Por qué:** MD-117 se construyó antes que la desactivación controlada de tests. *(2026-10-14: MD-118 y MD-150 ya reemplazaron los valores fijos de `approval` y `has_pending_change`.)*
+- **Qué lo cierra:** la migración de `client_control_tests` (obligatorio, vigente, fechas) con la desactivación controlada. Reemplaza su valor fijo en `control.prisma.repository.ts` y `control-readout.ts`
 
+### DT-76 · Las plantillas de evidencia del catálogo no dicen a qué prueba sirve cada documento, y el estado documental por control se apartó de RN-13
+
+🟠 Importante
+
+- **Qué está parchado:** las 89 asignaciones control↔documento del Excel no dicen a qué prueba sirve cada documento, así que llegan con `test_id` nulo (D88): se muestran como **sugerencia** y **no cuentan para ninguna prueba**; la evidencia que sí cuenta es la que la persona sube bajo cada prueba. Además D88 calcula una prueba documental **por control** (revisión de lo entregado para ella), lo que se aparta de RN-13 y del punto 1 de D85, que el comité fijó por prueba y servicio.
+- **Por qué:** el Excel no trae ese vínculo y un documento distinto en cada control no se puede validar una sola vez para todo el servicio; desarrollo lo decidió con autorización del responsable de producto (2026-10-22).
+- **Qué lo cierra:** que el comité defina, para cada asignación, a qué prueba (diseño u operación) sirve el documento y se cargue `catalog.control_evidence_templates.test_id` (o se afine en Monkey Admin) —entonces el documento deja de ser sugerencia y pasa a ser el lugar de esa prueba—, y que ratifique el ajuste a RN-13 para lo documental.
 ### DT-72 · El vencimiento de una exclusión no deja evento de cumplimiento
 
 🟡 Mejora
