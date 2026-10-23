@@ -174,6 +174,18 @@ Repetir un vínculo existente es `409 LINK_ALREADY_EXISTS`. Quitar un vínculo b
 
 ## Evaluar un riesgo (matriz 5×5)
 
+**Cuándo y dónde se evalúa por primera vez (D89).** Al declarar un servicio, en la misma pantalla de crear el servicio, con un asistente que pregunta por cada riesgo (uno a uno) **qué tan probable es que ocurra en el servicio** y **qué tan grave sería si ocurriera**, ambas de 1 a 5. Hasta que todos los riesgos vigentes del servicio estén evaluados no se declaran sus activos (`DT-77`: hoy lo exige solo la pantalla). La pestaña Riesgos de Cumplimiento sirve para verlos y corregirlos después.
+
+**Las escalas que ve el cliente** son las del comité (Excel `TSC INTEGRAL SOC 2 DETALLADO VF2`, hoja `Riesgos`, bloques «Escala de probabilidad» y «Escala de impacto»). Hoy viven en las traducciones de Platform (`COMPLIANCE.RISK_WIZARD.LIKELIHOOD/IMPACT`), no en una lista que sirva el Backend:
+
+| Nivel | Probabilidad | Impacto |
+|---|---|---|
+| 1 | **Raro** — puede ocurrir solo en circunstancias excepcionales | **Insignificante** — efecto mínimo, sin consecuencias relevantes |
+| 2 | **Improbable** — podría ocurrir en algún momento | **Menor** — impacto leve, manejable con recursos normales |
+| 3 | **Posible** — podría ocurrir ocasionalmente | **Moderado** — impacto notable, requiere gestión específica |
+| 4 | **Probable** — ocurre en la mayoría de las circunstancias | **Mayor** — impacto significativo en la operación o el cumplimiento |
+| 5 | **Casi seguro** — se espera que ocurra en la mayoría de los casos | **Crítico** — impacto severo, amenaza la continuidad o genera sanciones graves |
+
 ### `POST /v1/risks/{id}/evaluation`
 
 Solo `admin_empresa`. Cada llamada **agrega** una evaluación; la anterior no se pisa.

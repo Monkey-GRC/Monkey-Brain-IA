@@ -248,6 +248,8 @@ Postgres, no con un `WHERE tenant_id = ?` que cada desarrollador tiene que recor
 
 ## D23 (Cumplimiento) · No es un 4º componente del onboarding
 
+> **Ajustada por D89 (2026-10-23):** Cumplimiento sigue siendo un módulo aparte y fuera del onboarding, pero evaluar los riesgos de un servicio es ahora el paso previo a **declarar sus activos** (no a usar el producto).
+
 > ✅ **Confirmada por el comité el 2026-09-26.** Estuvo abierta como P1 en
 > `modelo-datos-pendientes.md` desde el 2026-09-20 a la espera de ese visto bueno. El comité
 > confirmó que el módulo de Cumplimiento queda fuera del onboarding, así que la decisión que

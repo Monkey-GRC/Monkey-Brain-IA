@@ -1,5 +1,7 @@
 # Onboarding — los 3 componentes que capturan el contexto del cliente
 
+> **Desde D89 (2026-10-23) el onboarding es solo el Componente 1** (contexto de la empresa). Los Componentes 2 y 3 siguen siendo lo que son —qué se captura de un servicio y cómo se conectan sus activos—, pero **ya no son pasos del onboarding**: el cliente declara servicios cuando quiera (desde «Mis servicios» o desde Cumplimiento) y, **antes de declarar los activos de un servicio, evalúa sus riesgos** (probabilidad e impacto cambian de un servicio a otro). Orden por servicio: declarar el servicio (se clona el catálogo) → evaluar sus riesgos → declarar sus activos.
+
 El onboarding es donde entran los datos que alimentan todo el modelo. Está compuesto por
 **3 componentes** (no confundir con los componentes técnicos de `skills/backend/` o
 `skills/frontend/`): cada uno es un bloque de preguntas al cliente, y cada respuesta se
