@@ -60,7 +60,7 @@ Estos tickets **no se reescriben en Jira hasta que el comité entregue su Excel*
 
 | Ticket | Pantalla | Lo que ya está decidido |
 |---|---|---|
-| MD-119 | Estructura del módulo dentro del servicio | Cumplimiento vive dentro de cada servicio; no hay toggle de «modo auditor»: el cliente ve la vista de negocio y la técnica es de los roles auditor y consultor y, desde D81, también del administrador de la empresa |
+| MD-119 | Estructura del módulo dentro del servicio | Cumplimiento vive dentro de cada servicio; no hay toggle de «modo auditor»: el cliente ve la vista de negocio y la técnica es de los roles auditor y consultor y, desde D81, también del administrador de la empresa. **Con más de un servicio, el menú «Cumplimiento» abre «General» (2026-10-22): para cada marco, una fila por servicio con su propio estado, avance y cobertura, y entras al detalle desde ahí; el encabezado del servicio trae un selector con «General» y los servicios. «General» no suma ni promedia servicios (§9, D68), y no hay chip «Vista técnica» en el encabezado: la vista técnica es del rol, no una señal en pantalla** |
 | MD-120 | Lista de controles | Agrupada por categoría; con el código del control, el estado cualitativo, el porcentaje de avance y la cobertura juntos (D80) |
 | MD-121 | Detalle y edición de una acción | Editar o dar de baja es una **propuesta** que aprueba el consultor |
 | MD-124 · MD-125 | Riesgos, evaluación 5×5 y tratamiento | Evalúa y trata el administrador de la empresa; el consultor y el auditor leen |

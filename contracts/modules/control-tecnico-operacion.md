@@ -220,5 +220,7 @@ encuentra la ejecución y responde `409 EXECUTION_NOT_RUNNING`**: no puede escri
 - El historial de evaluaciones **no incluye las validaciones** (las de conexión, ver `onboarding-technical-control.md`); cada ítem trae `failure_reason` y `failure_message`.
 - Un claim del trabajador acepta `{ "kind": "validation" | "assessment" }` y devuelve `kind`; `POST /internal/runner/executions/{id}/validated` cierra una validación.
 
-**Configuración:** `RUNNER_TOKEN` (sin él, `/internal/runner` no existe) y `READINESS_INCLUDE_PROPOSED` (solo desarrollo y demostración).
+- **Al cerrar una corrida de nube** (`results` del trabajador o importación) se escriben también las `evaluations` de cada servicio que tiene el activo: una por control, test de nube y activo (`DT-50`). Es lo que alimenta los controles, el resumen y el marco. Necesita el catálogo de checks cargado (`npm run cloud:load -- --apply`): sin él, el motor descarta todos los resultados («Comprobaciones fuera del catálogo») y el cumplimiento sale «Sin medir».
+
+**Configuración:** `RUNNER_TOKEN` (sin él, `/internal/runner` no existe) y `READINESS_INCLUDE_PROPOSED` (solo desarrollo y demostración: cuenta los vínculos check→prueba que el comité aún no ratificó, tanto en la preparación del activo como en las `evaluations`; **sin ella y sin vínculos ratificados no se escribe ninguna**).
 

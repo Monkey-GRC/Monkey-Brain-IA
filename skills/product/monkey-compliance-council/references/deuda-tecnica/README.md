@@ -78,7 +78,7 @@ Limitan el producto o al equipo.
 | [DT-46](transversal.md#dt-46--el-ci-no-bloquea-el-merge-ni-el-despliegue) | El CI no bloquea el merge ni el despliegue | [Transversal](transversal.md) |
 | [DT-48](transversal.md#dt-48--check_results-no-tiene-política-de-retención-ni-de-partición) | `check_results` no tiene política de retención ni de partición | [Transversal](transversal.md) |
 | [DT-49](transversal.md#dt-49--el-módulo-de-operación-continua-no-tiene-contrato) | El módulo de operación continua no tiene contrato | [Transversal](transversal.md) |
-| [DT-50](transversal.md#dt-50--el-intérprete-check_results--evaluations-no-está-especificado) | El intérprete `check_results → evaluations` no está especificado | [Transversal](transversal.md) |
+| [DT-50](transversal.md#dt-50--el-intérprete-check_results--evaluations-solo-cubre-el-motor-de-nube) | El intérprete `check_results → evaluations` solo cubre el motor de nube | [Transversal](transversal.md) |
 | [DT-51](control-tecnico.md#dt-51--el-trabajador-usa-un-proxy-de-docker-que-filtra-por-ruta-no-por-contenido) | El trabajador usa un proxy de Docker que filtra por ruta, no por contenido | [Control técnico](control-tecnico.md) |
 | [DT-54](transversal.md#dt-54--el-backend-el-ci-y-el-dockerfile-corren-en-node-20) | El Backend, el CI y el `Dockerfile` corren en Node 20 | [Transversal](transversal.md) |
 | [DT-57](control-tecnico.md#dt-57--el-canal-de-agente-solo-existe-como-diseño) | El canal de agente solo existe como diseño: | [Control técnico](control-tecnico.md) |

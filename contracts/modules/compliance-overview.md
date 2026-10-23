@@ -286,7 +286,7 @@ Todos con el mismo sobre (`conventions.md`); `message` es la clave i18n del erro
 - **Códigos (D80).** `failing_controls[].code` es siempre visible (el del catálogo o el propio) y `requirement_codes` también; `own_code` solo en un control propio. El nombre de un test sale neutro, nunca con el texto del comité; en la vista técnica sí viaja `test_code`.
 - **Vista técnica.** `auditor`, `consultor` y `admin_empresa` (D81); el `funcional` y `admin_monkey` reciben `403`. `assessments` va `{ consultant: null, auditor: null }` hasta que exista `framework_assessments` (MD-155). `blocking_tests` son los tests del control que no cumplen ni están fuera de alcance.
 - **`funcional`.** Ve el marco y las categorías completos; en `failing_controls` solo los que tiene asignados.
-- **Pendiente:** el endpoint de evaluaciones (`POST/GET …/assessments`, MD-155) y `DT-50` (guardar los resultados de la sonda como `evaluations`); sin él, el resumen no tiene resultados que mostrar.
+- **Pendiente:** el endpoint de evaluaciones (`POST/GET …/assessments`, MD-155) y lo que resta de `DT-50` (la sonda de servidores aún no escribe `evaluations`). **El motor de nube ya los escribe (2026-10-22):** tras una corrida de la cuenta, el resumen sale con el avance, la cobertura y los controles que fallan; sin corrida, «Sin medir».
 ## Preguntas abiertas
 
 - **`P26`**: respondida **provisionalmente** (D87). Falta que el comité ratifique: si se vende SOC 2 **Tipo I**, qué pasa cuando **llega el período siguiente** (hoy una sola fila por servicio y marco) y el nombre («fecha de corte» aquí, «fecha de evaluación» en el Excel).
