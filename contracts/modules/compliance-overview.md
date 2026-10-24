@@ -156,7 +156,7 @@ La respuesta es el mismo bloque `evaluation` del resumen (con `framework_code`).
 - Una `cutoff_date` explícita debe caer **dentro del período** (`cutoff.out_of_period`) y **no estar en el futuro** (`cutoff.in_future`): no hay datos de un día que no ha llegado.
 - El marco debe estar contratado y activo en el servicio; si no, `404 NOT_FOUND` (igual que si el servicio no es de la empresa).
 - Con el período definido deja de responder `409 EVALUATION_NOT_DEFINED` proponer una exclusión (vence en el `period_end`) y el resumen deja de responder `not_measured` por esta causa.
-- **Cuando exista emitir una evaluación (MD-155)**, cambiar el período de una ya emitida responderá `409` (`EVALUATION_ALREADY_ISSUED`); hoy no hay nada que lo bloquee.
+- **Con una evaluación del consultor o del auditor emitida (MD-155)**, cambiar el período o la fecha de corte responde `409 EVALUATION_ALREADY_ISSUED` y no toca nada; repetir exactamente lo mismo se acepta.
 
 ## Evaluaciones del consultor y del auditor (D77)
 
@@ -176,7 +176,7 @@ El rol de quien emite lo pone el servidor (`assessor_role`); el cuerpo no lo lle
 | `consultor` | `ready` Lista para la auditoría · `not_ready` No lista |
 | `auditor` | `certified` Certifica · `not_certified` No certifica |
 
-Un valor del otro rol es `422 enum.invalid`. `rationale` es **obligatoria**.
+Emitir el valor del otro rol es `403`; un valor que no existe, `422 enum.invalid`. `rationale` es **obligatoria**.
 
 ```json
 {
@@ -211,15 +211,29 @@ Un valor del otro rol es `422 enum.invalid`. `rationale` es **obligatoria**.
 | 403 | `FORBIDDEN` | El rol no puede; `view=technical` sin ser `admin_empresa`, `auditor` o `consultor`; emitir la evaluación del otro rol |
 | 404 | `NOT_FOUND` | El servicio no existe para esta empresa, o el marco no está contratado por él |
 | 409 | `EVALUATION_NOT_DEFINED` | Faltan el período o la fecha de corte de la evaluación del servicio |
-| 422 | `VALIDATION_FAILED` | `required` (`rationale`), `enum.invalid` (`verdict`); en el período: `required`, `date.invalid`, `period.invalid_range`, `cutoff.out_of_period`, `cutoff.in_future` |
+| 409 | `EVALUATION_ALREADY_ISSUED` | Cambiar el período o la fecha de corte de una evaluación del servicio sobre la que el consultor o el auditor ya emitió |
+| 422 | `VALIDATION_FAILED` | `required` (`rationale`), `enum.invalid` (`verdict`, solo si el valor no existe); en el período: `required`, `date.invalid`, `period.invalid_range`, `cutoff.out_of_period`, `cutoff.in_future` |
 
-Claves i18n: `compliance.overview`, `assessment.issued`, `assessment.list`, `evaluation_period.updated`.
+Claves i18n: `compliance.overview`, `assessment.issued`, `assessment.list`, `evaluation_period.updated`, `evaluation_period.already_issued`.
 
 ## Ejemplos de error
 
 Todos con el mismo sobre (`conventions.md`); `message` es la clave i18n del error.
 
-**`422` — el auditor emite un valor que es del consultor**
+**`403` — el auditor emite un valor que es del consultor**
+
+```json
+{
+  "statusCode": 403,
+  "message": "common.forbidden",
+  "data": null,
+  "error": {
+    "code": "FORBIDDEN"
+  }
+}
+```
+
+**`422` — un valor que no existe**
 
 ```json
 {
@@ -281,12 +295,13 @@ Todos con el mismo sobre (`conventions.md`); `message` es la clave i18n del erro
 - **`progress` y `coverage`** son conteos de controles (el del marco, únicos). `coverage.measured` cuenta los controles ya decididos (efectivos, no efectivos y vencidos).
 - **`evaluation` sin definir (D87).** Si falta el período (inicio o fin), `evaluation` va con sus cinco campos en `null`, el marco y sus categorías en `not_measured`, `progress.done` y `coverage.measured` en 0 y `failing_controls` vacío: el motor no ejecuta. **Un servicio nuevo nace sin período**: hasta que `admin_empresa` lo declare con `PUT …/evaluation-period`, responde «Sin medir».
 - **Período y fecha de corte (MD-168, construido 2026-10-20).** `PUT /v1/services/{service_id}/frameworks/{framework_code}/evaluation-period`, solo `admin_empresa` (los demás roles y `admin_monkey`, `403`). Se guarda en `service_frameworks` (`period_start`, `period_end`, `cutoff_date`); lo del servicio de otra empresa o un marco no contratado o inactivo responde `404`. **«Definido» es inicio y fin**: la fecha de corte guardada ya no hace falta. `cutoff_date` guardada = congelada; vacía = **hoy** (UTC), sin salirse del período: si el período ya terminó, es el fin; si aún no empieza, el inicio. `cutoff_frozen` lo dice. Hoy la fecha de corte **no filtra ningún cálculo** (el motor no la usa): es la etiqueta de la evaluación. Cada cambio deja `evaluation_period.set` en el rastro con el valor anterior y el nuevo, en la misma transacción. Las pruebas: `test/cumplimiento/periodo.e2e-spec.ts` y la lógica pura en `domain/evaluation-period.ts`.
-- **Sin construir de esto:** congelar la fecha de corte al emitir una evaluación y el `409 EVALUATION_ALREADY_ISSUED` (MD-155); que el consultor lo corrija (B6); y pedir el período al contratar el marco o crear el servicio (hoy el onboarding solo pide `evaluation_period`, un texto, DT-16).
+- **Sin construir de esto:** que el consultor lo corrija (B6); y pedir el período al contratar el marco o crear el servicio (hoy el onboarding solo pide `evaluation_period`, un texto, DT-16).
 - **`catalog_version`** viaja como texto del número de versión del catálogo (`"3"`), no como `"2026.10"` del ejemplo.
 - **Códigos (D80).** `failing_controls[].code` es siempre visible (el del catálogo o el propio) y `requirement_codes` también; `own_code` solo en un control propio. El nombre de un test sale neutro, nunca con el texto del comité; en la vista técnica sí viaja `test_code`.
-- **Vista técnica.** `auditor`, `consultor` y `admin_empresa` (D81); el `funcional` y `admin_monkey` reciben `403`. `assessments` va `{ consultant: null, auditor: null }` hasta que exista `framework_assessments` (MD-155). `blocking_tests` son los tests del control que no cumplen ni están fuera de alcance.
+- **Vista técnica.** `auditor`, `consultor` y `admin_empresa` (D81); el `funcional` y `admin_monkey` reciben `403`. `assessments` va `{ consultant: null, auditor: null }`: la tabla ya existe (MD-155), pero qué ve el cliente de ellas lo decide `P3` y esta vista también la pide `admin_empresa` (D81). Las leen `consultor` y `auditor` en `GET …/assessments`. `blocking_tests` son los tests del control que no cumplen ni están fuera de alcance.
 - **`funcional`.** Ve el marco y las categorías completos; en `failing_controls` solo los que tiene asignados.
-- **Pendiente:** el endpoint de evaluaciones (`POST/GET …/assessments`, MD-155) y lo que resta de `DT-50` (la sonda de servidores aún no escribe `evaluations`). **El motor de nube ya los escribe (2026-10-22):** tras una corrida de la cuenta, el resumen sale con el avance, la cobertura y los controles que fallan; sin corrida, «Sin medir».
+- **Evaluaciones del consultor y del auditor (MD-155, construido 2026-10-23).** `POST` y `GET …/assessments` (D77, `SEG-56`). El rol sale de la sesión y emitir el valor del otro rol es `403` (un valor inexistente, `422 enum.invalid`); `rationale` se recorta y no puede quedar vacía (también la base lo impone). Sin período, `409 EVALUATION_NOT_DEFINED`. **Emitir congela la fecha de corte** del marco si no lo estaba (`cutoff_date` y `cutoff_frozen: true` en el resumen) y la respuesta lleva esa fecha. `catalog_version` viaja como texto del número. `is_current` es la última de **ese rol** sobre la evaluación del servicio; `GET` filtra por `assessor_role` y `current=true`. No cambia el estado calculado: el resumen es idéntico antes y después. Rastro: `framework_assessment.issue`.
+- **Pendiente:** lo que resta de `DT-50` (la sonda de servidores aún no escribe `evaluations`). **El motor de nube ya los escribe (2026-10-22):** tras una corrida de la cuenta, el resumen sale con el avance, la cobertura y los controles que fallan; sin corrida, «Sin medir».
 ## Preguntas abiertas
 
 - **`P26`**: respondida **provisionalmente** (D87). Falta que el comité ratifique: si se vende SOC 2 **Tipo I**, qué pasa cuando **llega el período siguiente** (hoy una sola fila por servicio y marco) y el nombre («fecha de corte» aquí, «fecha de evaluación» en el Excel).

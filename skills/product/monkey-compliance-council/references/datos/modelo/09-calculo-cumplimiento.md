@@ -170,7 +170,7 @@ Qué ve el cliente de ellas queda en `P3`.
 ### Cómo se guarda
 
 El cumplimiento de un marco **se deriva** recorriendo requisitos → controles y **nunca se almacena como atributo del marco**. El comité pide recálculo incremental por eventos y un rastro de cada cambio
-de estado (REQ-043, REQ-044): se cumple con el historial inmutable de evaluaciones y de eventos (§7.4); lo que el motor materialice es un registro de **esa evaluación en esa fecha**, reconstruible, no una columna del marco.
+de estado (REQ-043, REQ-044): se cumple con el historial inmutable de evaluaciones y de eventos (§7.4, D91): cada cambio de estado de un control deja un evento con el estado anterior y el nuevo, y lo que el motor materialice es un registro de **esa evaluación en esa fecha**, reconstruible, no una columna del marco.
 
 ### La trazabilidad de una falla
 

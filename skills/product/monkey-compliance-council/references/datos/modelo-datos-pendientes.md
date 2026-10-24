@@ -183,7 +183,7 @@ la **matriz inherente** muestra cada riesgo antes de aplicar controles y la **ma
 
 **Respuesta provisional (D87, 2026-10-20):** se adoptaron las dos recomendaciones para poder construirlo (el criterio de desarrollo no sustituye al comité): `admin_empresa` declara el período (el consultor podrá corregirlo cuando trabaje sobre la empresa del cliente); la fecha de corte es «hoy» mientras se monitorea y se congela al emitir una evaluación. Inicio y fin pueden coincidir (Tipo I). **Sigue abierto para el comité:** si se vende Tipo I, qué pasa al llegar el período siguiente (hoy una sola fila por servicio y marco) y el nombre (el Excel dice «fecha de evaluación»).
 
-**Qué depende:** el resumen del servicio (MD-137), las evaluaciones del consultor y del auditor (MD-155) y la vigencia de las exclusiones (MD-144). Sin período la API responde `not_measured` y `409 EVALUATION_NOT_DEFINED`, también al proponer una exclusión (MD-144). **MD-168 está construido (2026-10-20, D87)**: `PUT …/evaluation-period`.
+**Qué depende:** el resumen del servicio (MD-137), las evaluaciones del consultor y del auditor (MD-155, construido) y la vigencia de las exclusiones (MD-144). Sin período la API responde `not_measured` y `409 EVALUATION_NOT_DEFINED`, también al proponer una exclusión (MD-144). **MD-168 está construido (2026-10-20, D87)**: `PUT …/evaluation-period`.
 
 ---
 

@@ -122,7 +122,7 @@ Baja lógica: `204`. El riesgo deja de aparecer en las listas, pero su historial
 
 ### `GET /v1/risk-matrix`
 
-La matriz 5×5 completa, con el valor y el nivel de **cada casilla**. La leen los cuatro roles de la empresa; no depende de ningún servicio.
+La matriz 5×5 completa, con el valor y el nivel de **cada casilla**. La leen `admin_empresa`, `funcional`, `consultor` y `auditor`; no depende de ningún servicio.
 
 ```json
 { "min": 1, "max": 5, "cells": [ { "likelihood": 1, "impact": 1, "value": 1, "level": "low" }, …, { "likelihood": 5, "impact": 5, "value": 25, "level": "critical" } ] }
