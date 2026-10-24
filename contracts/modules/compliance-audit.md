@@ -7,7 +7,7 @@ type: contract
 
 # Cumplimiento — consultoría y auditoría
 
-**Estado: ACORDADO (2026-10-17; D84 y D85; ajustado por D88 el 2026-10-22 para las pruebas documentales), salvo lo que espera `P26`; construidas las exclusiones (MD-144).** Ver `conventions.md` (sección «Cumplimiento») y `enums.md`. Tickets: MD-144, MD-154, MD-155, MD-127.
+**Estado: ACORDADO (2026-10-17; D84 y D85; ajustado por D88 el 2026-10-22 para las pruebas documentales), salvo lo que espera `P26`; construidos: las exclusiones (MD-144), la revisión de la evidencia (MD-127) y el veredicto de un test manual (MD-155).** Ver `conventions.md` (sección «Cumplimiento») y `enums.md`. Tickets: MD-144, MD-154, MD-155, MD-127.
 
 **Qué es.** El **consultor prepara** a la empresa y el **auditor certifica** (D63, D64). Aquí viven lo que hacen: el consultor da el veredicto de los tests documentales y manuales y decide las exclusiones; el consultor y el
 auditor escriben observaciones que la empresa debe atender. **Entidades:** `evaluations`, `evidence_submissions`, `evidence_reviews`, `audit_observations`, `exclusions` (`modelo-datos.md` §7.3 a §7.6). **App:** Monkey Platform.
@@ -250,6 +250,7 @@ Solo `consultor`. Patrón de decisiones de `conventions.md`: `{ "status": "appro
 | 404 | `NOT_FOUND` | El control, el test, el activo, la observación o la exclusión no existen para esta empresa |
 | 409 | `TEST_NOT_MANUAL` | Dar un veredicto sobre un test automático |
 | 409 | `TEST_DECIDED_BY_EVIDENCE` | Dar un veredicto sobre un test documental: se resuelve revisando su evidencia (D88) |
+| 409 | `TEST_HAS_NO_ASSETS` | El servicio no tiene activos de la dimensión del test: no hay sobre qué dar el veredicto |
 | 409 | `ALREADY_DECIDED` | La exclusión ya fue aprobada o rechazada |
 | 409 | `EXCLUSION_ALREADY_EXISTS` | Ya hay una pendiente o aprobada del mismo activo en el mismo test |
 | 409 | `EVALUATION_NOT_DEFINED` | La evaluación del servicio no tiene período o fecha de corte |
@@ -258,7 +259,7 @@ Solo `consultor`. Patrón de decisiones de `conventions.md`: `{ "status": "appro
 | 409 | `INVALID_TRANSITION` | Cerrar una que no está `answered`, o devolver a `open` una que no lo está |
 | 422 | `VALIDATION_FAILED` | Campos: `required`, `enum.invalid`, `closure_reason.required` (veredicto con observaciones abiertas), `note.required` (`decision_note` al rechazar) |
 
-Claves i18n: `control_test.list`, `verdict.issued`, `observation.*`, `exclusion.list`, `exclusion.requested`, `exclusion.decided`.
+Claves i18n: `control_test.list`, `verdict.issued`, `verdict.list`, `observation.*`, `exclusion.list`, `exclusion.requested`, `exclusion.decided`.
 
 ## Ejemplos de error
 
@@ -327,7 +328,7 @@ Todos con el mismo sobre (`conventions.md`); `message` es la clave i18n del erro
 
 | `action` | Cuándo | Quién |
 |---|---|---|
-| `test_verdict.issue` | veredicto de un test (también deja `compliance_events`) | `consultor` |
+| `test_verdict.issue` | veredicto de un test (también deja el evento `control.state` de cada control que cambie de estado, D91) | `consultor` |
 | `evidence_review.update` | se revisa una evidencia (crear o reemplazar la propia; sin los atributos en el detalle) | `consultor` · `auditor` |
 | `observation.create` · `.update` · `.answer` · `.close` · `.return` | ciclo de una observación | autor o empresa |
 | `exclusion.request` · `exclusion.decide` | propuesta y decisión (con `compliance_events` al aprobar o vencer) | `admin_empresa` · `consultor` |
@@ -338,7 +339,7 @@ Todos con el mismo sobre (`conventions.md`); `message` es la clave i18n del erro
 
 - **Revisión de la evidencia (MD-127).** `PUT /v1/evidence-submissions/{id}/review` guarda una fila por entrega y por rol en `evidence_reviews` (lleva `tenant_id` para RLS; la app no puede borrarlas). El rol sale de la sesión. Un atributo ausente o `null` queda sin valorar; `ai_prevalidated` y un cuerpo sin `review` responden `422 enum.invalid`. Responde con la entrega y el bloque `technical` de **quien revisó**. El rastro (`evidence_review.update`) lleva quién, qué entrega y el resultado global, sin los atributos.
 - **Pruebas documentales por control (D88).** El estado de un test `policy` en un control sale de las evidencias entregadas PARA ESE TEST en ESE control (`test_id` igual; las sugeridas por el catálogo, de `test_id` nulo, no cuentan), con la agregación de RN-04, tomando la entrega más reciente de cada requerimiento y la revisión del **consultor** (la del auditor no mueve el cálculo, D77). Lo hace `control-readout.ts` con una consulta por servicio. Sin evidencias o sin revisar, `pending`.
-- **Aún sin construir:** `POST …/tests/{test_id}/verdicts` (MD-155) para las pruebas manuales **no documentales**; cuando exista responderá `409 TEST_DECIDED_BY_EVIDENCE` sobre una documental.
+- **Veredicto de un test manual (MD-155, construido 2026-10-23).** `POST` y `GET /v1/controls/{control_id}/tests/{test_id}/verdicts`. Cuenta como **manual** una prueba cuya dimensión el control resuelve como `manual` o `technical_manual` (`client_control_dimensions.type`); `automated` e `hybrid` las mide la sonda y responden `409 TEST_NOT_MANUAL` (el tipo de la prueba en el catálogo es texto libre y no sirve para decidirlo, `DT-80`). Una documental responde `409 TEST_DECIDED_BY_EVIDENCE`. **Queda una evaluación inmutable por cada control vigente del servicio que lleva el test y por cada activo vigente de su dimensión** (`origin: manual`, `confirmed_by`, `consultant_assessment` = `note`), que es lo que el motor ya lee; sin activos de la dimensión, `409 TEST_HAS_NO_ASSETS`. El `id` de la respuesta es el de la evaluación del control de origen. La respuesta trae `test_state` (el del test en el control de origen) y `applies_to_controls` (con los códigos); `ai_suggestion` **no** se guarda ni se devuelve: la IA no escribe aquí. `closure_observation_reason` se acepta y se guarda, pero **todavía no es obligatoria** cuando el control de origen tiene observaciones abiertas, porque las observaciones no existen (MD-154, `DT-80`). El historial (`GET`) lo leen `consultor` y `auditor`, paginado, del más reciente al más antiguo. Si el veredicto mueve el estado de algún control, queda su evento (D91).
 
 - **Solo el activo de un test.** El contrato expone la exclusión de un activo; la de un check (`excluded_check_id`) existe en la tabla pero no tiene endpoint (**MD-170**, `DT-74`), y excluir un test completo se hace desactivándolo, no con una exclusión (D68).
 - **Cómo cambia lo que se mide.** Una exclusión `approved` y vigente (`valid_from` ≤ hoy ≤ `valid_until`) hace que el resultado del activo en ese test sea `excluded` **al leer**: se superpone al último resultado sin tocar el veredicto de la sonda, en todas las acciones del servicio que llevan ese test. La pendiente, la rechazada y la vencida no cambian nada. Aprobar deja un evento de cumplimiento (`exclusion.approve`).

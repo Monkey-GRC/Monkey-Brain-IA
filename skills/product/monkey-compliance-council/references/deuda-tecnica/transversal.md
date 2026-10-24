@@ -146,7 +146,7 @@ Lo que no pertenece a un solo módulo (pruebas, CI, auditoría, traducciones, en
 
 - **Qué está parchado:** una exclusión aprobada «vence» solo al leerse (`is_expired`, y el activo vuelve a contar), pero nada escribe el `compliance_events` de ese cambio. `compliance-audit.md` pide el evento al aprobar **o vencer**; hoy solo se escribe al aprobar.
 - **Por qué:** no hay un proceso periódico en el Backend (el trabajador de nube solo ejecuta pruebas); MD-144 se construyó sin él.
-- **Qué lo cierra:** un proceso diario que marque las exclusiones que acaban de vencer y escriba su evento (con idempotencia: una vez por exclusión), o decidir que el vencimiento derivado basta y quitarlo del contrato. Se decide al tener el período del servicio (`P26`). Ticket: MD-171.
+- **Qué lo cierra:** un proceso diario que marque las exclusiones que acaban de vencer y escriba su evento (con idempotencia: una vez por exclusión) —y que, si el vencimiento mueve el estado de un control, deje también su evento `control.state` (D91, `DT-79`)—, o decidir que el vencimiento derivado basta y quitarlo del contrato. Se decide al tener el período del servicio (`P26`). Ticket: MD-171.
 
 ### DT-73 · `evaluations.result` no distingue `error` ni `excluded`
 
@@ -172,3 +172,19 @@ Lo que no pertenece a un solo módulo (pruebas, CI, auditoría, traducciones, en
 
 - **Qué:** El principio está en `modelo-datos.md` §3 y D9/D31, pero no hay contrato, pantallas ni épico
 - **Nota:** Primero un contrato en `contracts/modules/` (qué campos, cómo se vincula un control nuevo, cuándo se publica la versión, A4)
+
+### DT-79 · Solo algunas escrituras dejan el evento de cambio de estado de un control
+
+🟠 Importante
+
+- **Qué está parchado:** el evento `control.state` (D91) lo escriben el veredicto de un test manual, la entrega y la revisión de una evidencia, aprobar una exclusión y lo que mide la sonda. **No lo escriben** otras escrituras que también pueden mover el estado de un control: conectar, dar de baja o reactivar un activo (cambia el universo de sus pruebas), desactivar un test, dar de baja un control o decidir un cambio de control (MD-156, aún sin construir), y el **vencimiento** de una exclusión, que se deriva al leer (`DT-72`).
+- **Por qué:** cada escritura tiene que tomar la foto de antes y llamar a `recordControlStateChanges`; se cableó en las que el ticket construía. Los activos viven en otra feature (`technical-control`) y el vencimiento no tiene un proceso que lo escriba.
+- **Qué lo cierra:** llamar al mismo registrador desde cada una de esas escrituras (con su causa) y, para el vencimiento, el proceso diario de `DT-72`. Mientras tanto el historial de un control puede omitir un cambio causado por una de ellas; el estado que se muestra siempre es el correcto porque se deriva.
+
+### DT-80 · El veredicto manual usa el tipo de la dimensión del control y no exige explicar las observaciones abiertas
+
+🟡 Mejora
+
+- **Qué está parchado:** `catalog.tests.type` es texto libre del comité («Manual», «Mixta», «Prueba de diseño…»), así que no sirve para saber si una prueba la resuelve una persona. El veredicto (MD-155) usa el tipo de la **dimensión del control** (`client_control_dimensions.type`): `manual` y `technical_manual` admiten veredicto; `automated` e `hybrid`, no (`409 TEST_NOT_MANUAL`). Además `closure_observation_reason` se acepta y se guarda, pero no se exige cuando el control de origen tiene observaciones abiertas (D85), porque las observaciones (MD-154) no existen.
+- **Por qué:** es el único dato estructurado que distingue lo manual de lo medido; las observaciones se construyen en otro ticket.
+- **Qué lo cierra:** que el comité clasifique cada prueba como manual o automática (o fijar el criterio y normalizar `tests.type`) y exigir la razón de cierre al construir las observaciones (MD-154).

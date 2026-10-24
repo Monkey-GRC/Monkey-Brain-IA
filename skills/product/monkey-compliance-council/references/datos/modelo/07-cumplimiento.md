@@ -356,7 +356,7 @@ erDiagram
     }
     compliance_events {
         uuid id PK
-        uuid user_id FK
+        uuid user_id FK "nullable: nulo = lo cambió el sistema (D91)"
         string changed_field
         json previous_value
         json new_value
@@ -394,9 +394,10 @@ inequívoca.
 **Cuatro reglas que no se negocian:**
 
 - **La evaluación es inmutable.** Una nueva se agrega, no pisa la anterior. Es lo que permite
-  demostrar cumplimiento **durante un periodo**, requisito de SOC 2 Tipo II. La base lo impone:
-  el rol de la app **no puede `DELETE`** y solo puede hacer `UPDATE` de `confirmed_by` y
-  `closure_observation_reason` — el cierre humano de §7.5, que no cambia lo medido (D27).
+  demostrar cumplimiento **durante un periodo**, requisito de SOC 2 Tipo II. La base lo impone
+  **para todos los roles**, también el dueño de la tabla (triggers, `SEG-38`): no hay `DELETE` ni
+  `TRUNCATE`, y solo se puede hacer `UPDATE` de `confirmed_by` y `closure_observation_reason` — el
+  cierre humano de §7.5, que no cambia lo medido (D27).
 - **El estado no puede vivir en la definición.** Hoy `ManualCheckItem` lleva `status` y
   `evaluated_at` en la misma fila que la definición: evaluar pisa la evaluación anterior. Eso
   se corrige separando definición de evaluación.
@@ -409,6 +410,12 @@ inequívoca.
 **`compliance_events` y `audit_logs` son dos tablas distintas.** `audit_logs` (§5.2) registra
 acciones sobre la plataforma (quién cambió qué en el sistema); `compliance_events` registra
 cambios en el estado de cumplimiento. Las dos son **append-only, 7 años, inmutables**.
+
+**Todo cambio de estado de un control deja un evento** (D91, REQ-044): `changed_field = 'control.state'`,
+con el estado y el semáforo anteriores en `previous_value` y los nuevos —más el control, el servicio y la
+causa— en `new_value`. Lo escribe, en la misma transacción, la escritura que lo mueve: el veredicto de un
+test manual, la entrega de una evidencia, la revisión del consultor, aprobar una exclusión y lo que mide la
+sonda. Si lo causa el sistema (la sonda), `user_id`, `ip_address` y `user_agent` van nulos.
 
 **Las vulnerabilidades son solo insumo en el MVP** (decisión D7): alimentan los hallazgos de
 los controles de gestión de vulnerabilidades y parches (`CC7.1` / `A.8.8`). El módulo con

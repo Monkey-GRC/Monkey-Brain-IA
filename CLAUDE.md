@@ -12,27 +12,33 @@ arquitectura, UX, modelo de datos o priorización: invoca la skill `monkey-compl
 (`skills/product/monkey-compliance-council/SKILL.md`, sección "Cómo operar") y sigue su ruteo al
 archivo correcto. Mapa por carpetas: `skills/product/monkey-compliance-council/references/README.md`.
 
+**Cómo se activa.** Es el comando `/monkey-compliance-council` (`.claude/commands/monkey-compliance-council.md`
+enlaza a `SKILL.md`): ejecútalo con la herramienta `Skill` **antes** de diseñar o construir, en el repo que sea
+(`Backend`, `Frontend`, `Frontend-Platform`…), no solo cuando el usuario lo pida. Si el comando no está disponible
+en la sesión, lee `skills/product/monkey-compliance-council/SKILL.md` y sigue su "Cómo operar"; nunca decidas de
+memoria.
+
 ## Qué leer según la tarea
 
 Rutas relativas a `skills/product/monkey-compliance-council/references/`.
 
-| Si vas a… | Lee |
-|---|---|
-| Tocar el schema o una entidad | `datos/modelo-datos.md` (índice) y solo el módulo que toques en `datos/modelo/` |
-| Tocar un cálculo o pantalla de cumplimiento (%) | `datos/modelo/09-calculo-cumplimiento.md` (§9) |
-| Tocar una migración, RLS, roles o `.env` | `datos/schema-implementacion.md` |
-| Diseñar texto o pantalla que verá un usuario final | `producto/philosophy.md` |
-| Decidir qué se construye ahora vs. después | `producto/mvp-roadmap.md` |
-| Tocar el onboarding (Contexto Org., Servicio, Control Técnico) | `modulos/onboarding.md` |
-| Entender el recorrido de un cliente de punta a punta | `producto/flujo-end-to-end.md` |
-| Saber qué exige un marco (SOC 2, ISO 27001…) | `cumplimiento/frameworks/<marco>.md` — no inventes citas ni cifras |
-| Integrar la sonda o el motor de nube | `control-tecnico/README.md` |
-| Revisar seguridad de un endpoint, tabla o flujo | `seguridad/requisitos.md` (`SEG-n`; añade fila si hay requisito nuevo) |
-| Construir algo que dependa de una pregunta abierta | `datos/modelo-datos-pendientes.md` (`P-n`): si sigue ahí, **pregunta, no resuelvas** |
-| Usar un atajo o parche | regístralo en `deuda-tecnica/README.md` (`DT-n`); si cierras uno, bórralo |
-| Reabrir algo ya cerrado | `datos/modelo-datos-decisiones.md` (índice de `D-n`; abre solo el archivo de `decisiones/` que indica) — se consulta para reabrir, no para construir |
-| Resolver un desacuerdo de diseño | `producto/council.md` |
-| Arquitectura, motores, stack | `arquitectura/architecture.md` |
+| Si vas a…                                                      | Lee                                                                                                                                                  |
+| -------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Tocar el schema o una entidad                                  | `datos/modelo-datos.md` (índice) y solo el módulo que toques en `datos/modelo/`                                                                      |
+| Tocar un cálculo o pantalla de cumplimiento (%)                | `datos/modelo/09-calculo-cumplimiento.md` (§9)                                                                                                       |
+| Tocar una migración, RLS, roles o `.env`                       | `datos/schema-implementacion.md`                                                                                                                     |
+| Diseñar texto o pantalla que verá un usuario final             | `producto/philosophy.md`                                                                                                                             |
+| Decidir qué se construye ahora vs. después                     | `producto/mvp-roadmap.md`                                                                                                                            |
+| Tocar el onboarding (Contexto Org., Servicio, Control Técnico) | `modulos/onboarding.md`                                                                                                                              |
+| Entender el recorrido de un cliente de punta a punta           | `producto/flujo-end-to-end.md`                                                                                                                       |
+| Saber qué exige un marco (SOC 2, ISO 27001…)                   | `cumplimiento/frameworks/<marco>.md` — no inventes citas ni cifras                                                                                   |
+| Integrar la sonda o el motor de nube                           | `control-tecnico/README.md`                                                                                                                          |
+| Revisar seguridad de un endpoint, tabla o flujo                | `seguridad/requisitos.md` (`SEG-n`; añade fila si hay requisito nuevo)                                                                               |
+| Construir algo que dependa de una pregunta abierta             | `datos/modelo-datos-pendientes.md` (`P-n`): si sigue ahí, **pregunta, no resuelvas**                                                                 |
+| Usar un atajo o parche                                         | regístralo en `deuda-tecnica/README.md` (`DT-n`); si cierras uno, bórralo                                                                            |
+| Reabrir algo ya cerrado                                        | `datos/modelo-datos-decisiones.md` (índice de `D-n`; abre solo el archivo de `decisiones/` que indica) — se consulta para reabrir, no para construir |
+| Resolver un desacuerdo de diseño                               | `producto/council.md`                                                                                                                                |
+| Arquitectura, motores, stack                                   | `arquitectura/architecture.md`                                                                                                                       |
 
 Fuera de `references/`:
 
