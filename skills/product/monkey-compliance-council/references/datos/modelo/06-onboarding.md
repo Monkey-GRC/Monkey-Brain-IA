@@ -98,7 +98,7 @@ erDiagram
         json countries
         json data_types "pii|payment|phi"
         enum expected_availability
-        enum deployment_scenario "nullable, lo captura el Componente 3"
+        enum deployment_scenario "nullable; sin uso desde D92, lo retira DT-81"
         enum previous_certification "nullable"
         datetime created_at
         datetime updated_at
@@ -189,8 +189,7 @@ marco, cada marco usará las suyas (ISO 27001: 4 temas, PCI DSS: 12 requisitos, 
 generaliza a dominios por marco (DT-38).
 
 **`deployment_scenario` y el detalle del subservicio son opcionales al declarar el servicio** (D45):
-el escenario de despliegue se captura en el Componente 3, así que no puede ser obligatorio al
-crear el servicio; y de un proveedor solo el `type` es obligatorio (el "detalle" del Excel lo es).
+el escenario de despliegue **ya no se captura en ningún lado** (D92: el cliente elige la plataforma al conectar) y la columna queda nula hasta que `DT-81` la retire; y de un proveedor solo el `type` es obligatorio (el "detalle" del Excel lo es).
 
 **`csocs` y `cuecs` son tablas propias marcadas como no medibles por Monkey** (decisión D11).
 Salen de las secciones 7 y 8 de la Descripción del Sistema. Existen porque el auditor los
@@ -286,7 +285,7 @@ erDiagram
     }
     deployment_scenario_capabilities {
         uuid id PK
-        enum deployment_scenario "cloud_managed_only|cloud_with_servers|on_premise|hybrid; unico con la capacidad"
+        enum deployment_scenario "sin uso desde D92 (DT-81): cloud_managed_only|cloud_with_servers|on_premise|hybrid; unico con la capacidad"
         uuid automated_capability_id FK
     }
     services ||--o{ service_assets : "usa"
@@ -317,7 +316,7 @@ opcional porque las conexiones agentless no guardan credenciales.
 **`operational_status` es un enum, no un booleano:** 🟢 `operational` · 🟡 `warning` ·
 🔴 `error` · ⚪ **`not_monitored`**. Regla del comité: **"Automatizado ≠ Operativo"**.
 
-**El `deployment_scenario` del servicio determina qué conexiones se le ofrecen:**
+**Se ofrecen las seis conexiones, sin filtrar (D92).** Antes el `deployment_scenario` del servicio decidía cuáles (`deployment_scenario_capabilities`); ya no se pregunta ni se usa:
 
 | Código | Categoría | Plataformas que el cliente elige | Método | Frecuencia |
 |---|---|---|---|---|
@@ -329,10 +328,9 @@ opcional porque las conexiones agentless no guardan credenciales.
 | `ac_06` | **Endpoints / estaciones de trabajo** | Windows, macOS, Linux | Agente ligero | Continuo |
 
 **El cliente elige una plataforma, no una categoría (D67).** Es lo que muestra la pantalla, como un marketplace: cada plataforma con su logo y su propio paso a paso. En servidores y
-equipos la plataforma es el **sistema operativo**; en bases de datos, el **motor**. Dónde vive (EC2, Azure VM, RDS, Cloud SQL, Atlas, un VPS) lo dice el escenario, no la plataforma:
-así lo define la hoja del comité. Cada plataforma tiene `availability`: solo las `available` se pueden elegir, las `coming_soon` se muestran **bloqueadas**. Hoy solo AWS está disponible.
+equipos la plataforma es el **sistema operativo**; en bases de datos, el **motor**. Dónde vive (EC2, Azure VM, RDS, Cloud SQL, Atlas, un VPS) no se pregunta: lo dice la plataforma que el cliente elige (D92; la hoja del comité lo resolvía con el escenario de despliegue). Cada plataforma tiene `availability`: solo las `available` se pueden elegir, las `coming_soon` se muestran **bloqueadas**. Hoy solo AWS está disponible.
 
-**Las reglas del paso 3 son datos, no constantes de código (D67):** qué conexiones ofrece cada escenario (`deployment_scenario_capabilities`; «híbrido» son sus seis filas), con qué
+**Las reglas del paso 3 son datos, no constantes de código (D67):** con qué
 frecuencia corre cada una (`capability_frequencies`), qué canales admite cada plataforma (`platform_connection_methods`; el recomendado va marcado), qué regiones puede declarar el
 cliente (`platform_regions`) y qué tipo de activo produce cada conexión (`automated_capabilities.asset_type`). Todas viven en `catalog`: se leen libre y solo `admin_monkey` las escribe
 (SEG-06), y nacen con las políticas del catálogo (SEG-05). Los enums que comparten catálogo y tenant (`connection_method`, `schedule_frequency`, `asset_type`) son del Backend: dónde se

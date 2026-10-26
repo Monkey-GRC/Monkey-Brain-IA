@@ -94,6 +94,8 @@ Limitan el producto o al equipo.
 | [DT-78](transversal.md#dt-78--la-guía-de-corrección-de-una-prueba-técnica-es-una-traducción-automática-sin-revisar-y-el-filtro-del-proveedor-es-una-red-de-seguridad) | La guía de corrección de una prueba técnica es una traducción automática sin revisar, y el filtro del proveedor es una red de seguridad | [Transversal](transversal.md) |
 | [DT-79](transversal.md#dt-79--solo-algunas-escrituras-dejan-el-evento-de-cambio-de-estado-de-un-control) | Solo algunas escrituras dejan el evento de cambio de estado de un control | [Transversal](transversal.md) |
 | [DT-80](transversal.md#dt-80--el-veredicto-manual-usa-el-tipo-de-la-dimensión-del-control-y-no-exige-explicar-las-observaciones-abiertas) | El veredicto manual usa el tipo de la dimensión del control y no exige explicar las observaciones abiertas | [Transversal](transversal.md) |
+| [DT-81](control-tecnico.md#dt-81--el-escenario-de-despliegue-ya-no-se-pregunta-pero-su-columna-y-sus-tablas-siguen-en-la-base) | El escenario de despliegue ya no se pregunta, pero su columna y sus tablas siguen en la base | [Control técnico](control-tecnico.md) |
+| [DT-82](transversal.md#dt-82--la-lista-de-servicios-lee-cada-servicio-por-separado-y-solo-aguanta-porque-se-alargó-el-tiempo-de-la-transacción) | La lista de servicios lee cada servicio por separado y solo aguanta porque se alargó el tiempo de la transacción | [Transversal](transversal.md) |
 
 ### 🟡 Mejoras
 

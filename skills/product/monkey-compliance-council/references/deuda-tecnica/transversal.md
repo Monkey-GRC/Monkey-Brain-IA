@@ -188,3 +188,11 @@ Lo que no pertenece a un solo módulo (pruebas, CI, auditoría, traducciones, en
 - **Qué está parchado:** `catalog.tests.type` es texto libre del comité («Manual», «Mixta», «Prueba de diseño…»), así que no sirve para saber si una prueba la resuelve una persona. El veredicto (MD-155) usa el tipo de la **dimensión del control** (`client_control_dimensions.type`): `manual` y `technical_manual` admiten veredicto; `automated` e `hybrid`, no (`409 TEST_NOT_MANUAL`). Además `closure_observation_reason` se acepta y se guarda, pero no se exige cuando el control de origen tiene observaciones abiertas (D85), porque las observaciones (MD-154) no existen.
 - **Por qué:** es el único dato estructurado que distingue lo manual de lo medido; las observaciones se construyen en otro ticket.
 - **Qué lo cierra:** que el comité clasifique cada prueba como manual o automática (o fijar el criterio y normalizar `tests.type`) y exigir la razón de cierre al construir las observaciones (MD-154).
+
+### DT-82 · La lista de servicios lee cada servicio por separado y solo aguanta porque se alargó el tiempo de la transacción
+
+🟠 Importante
+
+- **Qué está parchado:** `GET /v1/services` lee los servicios de uno en uno dentro de una sola transacción, y cada lectura son varias consultas seguidas (criterios, marcos, proveedores, conexiones y dos conteos). Contra la base remota (~100 ms por consulta) unos cuantos servicios pasaban de los 5 s de Prisma y la lista (y el detalle) respondían 500 con `P2028`. Se subió el límite de esas dos lecturas a 30 s.
+- **Por qué:** es lo mínimo que lo arregla sin reescribir la lectura; el costo crece con el número de servicios y con la latencia a la base.
+- **Qué lo cierra:** leer la página entera en pocas consultas (los conteos de requisitos y controles con un `groupBy` para todos los servicios de la página, y las relaciones con un solo `findMany`), de modo que el tiempo no dependa de cuántos servicios haya. Al cerrarla, bórrese esta entrada y `READ_TRANSACTION`.

@@ -1,7 +1,7 @@
 ---
 id: contracts-onboarding-c3
 name: Contrato — Onboarding Componente 3 (Control Técnico)
-description: Escenario de despliegue y flujo de conexión de activos (conexiones) sobre el catálogo ac_01 a ac_06.
+description: Catálogo de plataformas y flujo de conexión de activos (conexiones) sobre el catálogo ac_01 a ac_06.
 type: contract
 ---
 
@@ -10,7 +10,7 @@ type: contract
 El cliente conecta su infraestructura real. Ver `conventions.md` y `enums.md`.
 
 **Entidades:** `assets`, `service_assets`, `automated_capabilities`, `asset_provisionings` y, desde D67, el catálogo de plataformas:
-`capability_platforms`, `platform_connection_methods`, `platform_regions`, `capability_frequencies`, `deployment_scenario_capabilities` (`modelo-datos.md` §6.3, §8).
+`capability_platforms`, `platform_connection_methods`, `platform_regions`, `capability_frequencies` (`modelo-datos.md` §6.3, §8). `deployment_scenario_capabilities` y `services.deployment_scenario` siguen en la base sin uso hasta que `DT-81` las retire.
 **Rol:** `admin_empresa`. **App:** Monkey Platform.
 
 > ⚠️ **Confidencialidad, no negociable.** Ningún campo, valor de enum, mensaje de error ni
@@ -20,39 +20,31 @@ El cliente conecta su infraestructura real. Ver `conventions.md` y `enums.md`.
 > response**. Es criterio de aceptación del sprint: en ninguna pantalla, log o mensaje del
 > Componente 3 aparece.
 
-## Paso 1 — Escenario de despliegue
+## Paso 1 — Las conexiones que se ofrecen (D92)
 
-`services.deployment_scenario` determina qué conexiones se le ofrecen al cliente.
+**El cliente no declara dónde vive su servicio.** Antes (D46, D60) tenía que elegir un *escenario de despliegue* (`cloud_managed_only`, `cloud_with_servers`, `on_premise`, `hybrid`) y de él dependía qué conexiones se le ofrecían. D92 lo retira: el cliente **elige la plataforma** en el catálogo (AWS, Azure, un sistema operativo, un motor de base de datos…) y eso ya dice dónde vive lo que conecta. Preguntar lo mismo antes era una pregunta sin nada que la usara.
 
-| Valor | Conexiones |
-|---|---|
-| `cloud_managed_only` | `ac_01` |
-| `cloud_with_servers` | `ac_01`, `ac_02`, `ac_03` |
-| `on_premise` | `ac_04`, `ac_05`, `ac_06` |
-| `hybrid` | las seis (`ac_01` a `ac_06`): el cliente usa las que le sirvan (D46) |
+Se ofrecen **siempre las seis conexiones** (`ac_01` a `ac_06`), sin filtrar por ningún escenario. Ya no existen `PUT /v1/services/{id}/deployment-scenario`, el catálogo `deployment_scenario`, la acción de auditoría `service.deployment_scenario` ni los errores `DEPLOYMENT_SCENARIO_NOT_SET` y `CAPABILITY_NOT_APPLICABLE`.
 
-### `PUT /v1/services/{id}/deployment-scenario`
-
-```json
-{ "deployment_scenario": "cloud_with_servers" }
-```
+### `GET /v1/services/{id}/technical-control`
 
 ```json
 {
   "statusCode": 200,
-  "message": "deployment_scenario.saved",
+  "message": "technical_control.state",
   "data": {
-    "deployment_scenario": "cloud_with_servers",
     "applicable_capabilities": [
       { "catalog_code": "ac_01", "category": "Servicios en nube (gestionados, sin servidor)", "method": "Autorización API / rol de solo lectura u OAuth", "required_permissions": ["Rol de solo lectura", "Consentimiento OAuth"], "base_frequency": "cada 6-24 h", "platforms": [{ "code": "aws", "name": "Amazon Web Services", "logo_key": "aws", "availability": "available", "connection_methods": ["readonly_role", "access_keys"] }, { "code": "azure", "name": "Azure", "logo_key": "azure", "availability": "coming_soon", "connection_methods": [] }, "…"], "generated_evidence": "Postura de configuración y registros de actividad de la nube" },
       { "catalog_code": "ac_02", "category": "Servidores en nube / VPS", "method": "Instalar agente ligero de Monkey (o agentless SSH/WinRM)", "required_permissions": ["sudo o administrador para la instalación"], "base_frequency": "continuo", "platforms": [{ "code": "linux", "name": "Linux", "logo_key": "linux", "availability": "coming_soon", "connection_methods": ["agent"] }, "…"] },
-      { "catalog_code": "ac_03", "category": "Bases de datos en nube", "method": "Agente en host + usuario de solo lectura", "required_permissions": ["Usuario de solo lectura de auditoría"], "base_frequency": "continuo", "platforms": [{ "code": "postgresql", "name": "PostgreSQL", "logo_key": "postgresql", "availability": "coming_soon", "connection_methods": ["agent"] }, "…"] }
-    ]
+      "… ac_03 a ac_06"
+    ],
+    "probe_mode": "runner"
   }
 }
 ```
 
-`GET /v1/catalogs/automated-capabilities` devuelve las 6 sin filtrar, con los mismos campos
+`applicable_capabilities` conserva su nombre por compatibilidad, pero ya son **todas**. Dejan de venir `deployment_scenario` e `is_complete`. En el servicio (`technical_control` de `GET /v1/services` y `/{id}`), `deployment_scenario` desaparece y `is_complete` pasa a significar «tiene al menos una conexión» (el paso 3 ya no es del onboarding, D89).
+`GET /v1/catalogs/automated-capabilities` devuelve las mismas 6, con los mismos campos
 (`catalog_code`, `category`, `platforms`, `method`, `required_permissions`,
 `base_frequency`, `generated_evidence`). `platforms` reemplaza al antiguo `supported_platforms` (nombres sueltos): cada plataforma trae `code`, `name` (la marca, no se traduce), `logo_key`, `availability` (`available` | `coming_soon`) y sus `connection_methods` (el primero es el recomendado; vacío si aún no tiene canal), en el orden de la hoja del comité (D67). **`provider` no aparece en ninguna de las dos
 respuestas**: es la única columna de `automated_capabilities` que nunca sale.
@@ -74,18 +66,17 @@ Las plataformas y sus atributos salen de la base (`platforms` en `GET /v1/catalo
 | Base de datos | `ac_03`, `ac_05` | el **motor** | `agent` (solo diseño, `DT-57`) |
 
 **Disponibilidad.** `availability = available` solo si el flujo existe: **hoy solo AWS**. Las `coming_soon` **se muestran bloqueadas**. Dónde vive un servidor o una base (EC2, RDS, un VPS…)
-no se pregunta aquí: lo dice el escenario (paso 1).
+no se pregunta: lo dice la plataforma que el cliente elige (D92).
 
 **Pantalla** (`/services/{id}/connections/new`; las plataformas disponibles llevan a `/services/{id}/connections/new/{catalog_code}/{platform}`):
 
-- **Un grupo por tipo** que aplica al escenario del servicio, con el nombre de la categoría en lenguaje de negocio (nunca `ac_01`) y, debajo, una **tarjeta por plataforma** en el orden del catálogo.
+- **Un grupo por tipo de conexión** del catálogo, con el nombre de la categoría en lenguaje de negocio (nunca `ac_01`) y, debajo, una **tarjeta por plataforma** en el orden del catálogo.
   Título «Nueva conexión»; «Elige a qué quieres conectarte. Al terminar, Monkey te muestra los activos que encontró.»
 - **Tarjeta:** logo, nombre de la plataforma y, si está bloqueada, un candado y el texto «Próximamente». Una tarjeta disponible navega a su paso a paso; una bloqueada **no navega**.
 - **Logos:** un **icono cuadrado a todo color y sin fondo**, del mismo tamaño para todas las plataformas (así ninguna se ve más grande), desde `Frontend-Platform/public/providers/`. Cada `logo_key` tiene dos archivos: `<logo_key>.svg` (tema claro) y `<logo_key>-dark.svg` (oscuro, donde se aclaran solo los colores muy oscuros). Se muestra con `<img>`, nunca se inyecta SVG como HTML. No son de los kits de marca (`DT-68`); uso de marcas de terceros: `P21`.
 - **Accesibilidad (WCAG 2.2 AA):** el nombre va siempre como **texto visible** y el logo es decorativo (`alt=""`); cada grupo es una sección con su encabezado y una lista; la tarjeta es un enlace o
   botón con foco visible y área táctil de al menos 44 px; la tarjeta bloqueada se anuncia como «no disponible, próximamente» (`aria-disabled="true"`) y **no se distingue solo por opacidad**;
   contraste de 4,5:1 para el texto y 3:1 para el logo, el icono y el borde, en tema claro y oscuro (por eso el logo tiene su variante oscura, no una baldosa de fondo).
-- Sin escenario elegido: `409 DEPLOYMENT_SCENARIO_NOT_SET` y la pantalla lleva a «dónde vive».
 
 El cliente **elige** el canal entre los de **su plataforma**. `GET /v1/catalogs/connection_method` y `GET /v1/catalogs/aws_region` dan las opciones (desde D67 se leen de
 `platform_connection_methods` y `platform_regions`; una plataforma nueva con regiones suma su propio `<code>_region`); `GET /v1/catalogs/automated-capabilities` añade `connection_methods` a cada
@@ -296,8 +287,6 @@ trae `code`, `name`, `connection_category`, `operational_status`, `technical_cov
 
 | HTTP | `error.code` | Cuándo |
 |---|---|---|
-| 409 | `DEPLOYMENT_SCENARIO_NOT_SET` | Se registra un activo antes de elegir escenario |
-| 409 | `CAPABILITY_NOT_APPLICABLE` | La `connection_category` no aplica al escenario del servicio |
 | 409 | `ASSET_NOT_VALIDATED` | Se activa sin validar |
 | 409 | `ASSET_ALREADY_ACTIVE` | Se activa o se valida un activo ya activo |
 | 409 | `ASSET_NOT_ACTIVE` | Se programa un activo que aún no está activo *(añadido, D46)* |
@@ -307,9 +296,9 @@ trae `code`, `name`, `connection_category`, `operational_status`, `technical_cov
 | 422 | `FREQUENCY_NOT_SUPPORTED` | Frecuencia que la capacidad no admite |
 | 422 | `VALIDATION_FAILED` | Enum inválido, `regions` vacío o fuera del catálogo, `external_account_id` o `role_arn` mal formados, sin `service_ids` |
 
-Claves i18n: `deployment_scenario.saved`, `asset.created`, `asset.list`,
+Claves i18n: `asset.created`, `asset.list`,
 `asset.validated`, `asset.activated`, `asset.scheduled`, `asset.connection_failed`,
-`asset.not_validated`, `asset.already_active`, `capability.not_applicable`,
+`asset.not_validated`, `asset.already_active`,
 `connection.permission_denied`, `frequency.not_supported`, `validation.failed`.
 
 **Ningún texto de esta lista, ni su traducción en `i18n/es` e `i18n/en`, nombra al proveedor.**
@@ -346,7 +335,7 @@ El marketplace y el catálogo de conexiones en la base están implementados en `
 | Pieza | Estado |
 |---|---|
 | Tablas `capability_platforms`, `platform_connection_methods`, `platform_regions`, `capability_frequencies`, `deployment_scenario_capabilities`; `automated_capabilities.asset_type`; `assets.platform_id` | ✅ Migraciones `20261010150000` y `…150100` (RLS del catálogo). Siembra en la propia migración y en `reference:load` (verificados idénticos) |
-| Constantes de `technical-catalogs.ts` y `onboarding-catalogs.ts` (escenario → conexiones, frecuencias, tipo, canales, regiones) | ✅ Retiradas; se leen de la base. Una prueba lo demuestra: agregar una región o quitar una conexión de un escenario en la base cambia lo que la API ofrece y acepta |
+| Constantes de `technical-catalogs.ts` y `onboarding-catalogs.ts` (frecuencias, tipo, canales, regiones) | ✅ Retiradas; se leen de la base. Una prueba lo demuestra: agregar una región en la base cambia lo que la API ofrece y acepta. Qué conexiones ofrecía cada escenario dejó de ser una regla (D92) |
 | `platforms` en `GET /v1/catalogs/automated-capabilities` y en `applicable_capabilities` | ✅ Reemplaza a `supported_platforms` |
 | `platform` obligatorio en `POST /v1/assets`, con `connection.provider_not_supported` y `platform.not_in_category` | ✅ Servidores, bases y equipos quedan bloqueados: no se pueden registrar |
 | `GET /v1/catalogs/aws_region` | ✅ Sale de `platform_regions`; la etiqueta, de i18n si existe |
@@ -361,8 +350,8 @@ Implementado en `Backend/src/features/technical-control` (más `catalogs` y el p
 
 | Endpoint | Estado |
 |---|---|
-| `PUT /v1/services/{id}/deployment-scenario` | ✅ Devuelve las conexiones que aplican. `409 CAPABILITY_NOT_APPLICABLE` si dejaría fuera un activo ya registrado |
-| `GET /v1/services/{id}/technical-control` | ➕ **No está en el contrato original.** Escenario, conexiones aplicables, `is_complete` y `probe_mode` en una sola lectura |
+| `PUT /v1/services/{id}/deployment-scenario` | ❌ **Retirado por D92.** Se ofrecen las seis conexiones sin declarar nada |
+| `GET /v1/services/{id}/technical-control` | ➕ **No está en el contrato original.** Las conexiones disponibles y `probe_mode` en una sola lectura (D92: ya no trae escenario ni `is_complete`) |
 | `GET /v1/catalogs/automated-capabilities` | ✅ Las 6, sin `provider` |
 | `POST /v1/assets` | ✅ Tipo deducido de la conexión; código `AST-0001` por empresa; credenciales validadas por conexión y **cifradas** |
 | `GET /v1/assets` · `GET /v1/assets/{id}` | ✅ Paginado con filtros `service_id`, `connection_category`, `operational_status`. El detalle es **adición** (DT-11) |
@@ -376,13 +365,13 @@ Implementado en `Backend/src/features/technical-control` (más `catalogs` y el p
 - **Credenciales:** en nube solo el canal `access_keys` las pide (`access_key_id` + `secret_access_key`, cifradas). El canal de rol no entrega secretos. Los formularios de contraseña por conexión de servidores/bases (SSH, DB) se retiraron (D67).
 - **Seguridad:** las credenciales no vuelven en ningún response, no se escriben en logs ni en `audit_logs`.
   La comprobación corre fuera de la transacción de base de datos.
-- **Auditoría:** `service.deployment_scenario`, `asset.create`, `asset.validate`
+- **Auditoría:** `asset.create`, `asset.validate`
   (también el fallo, con `result = error`), `asset.activate` y `asset.schedule`, con el estado antes y después.
 - **Progreso:** `GET /v1/auth/me` añade `technical_control` a `onboarding.completed_steps` cuando algún servicio
-  tiene escenario (D60: el scope declarado se retiró); entonces `next_step` es `null`. El servicio trae `technical_control`
-  (`deployment_scenario`, `is_complete`, `connection_count`).
+  tiene al menos una conexión (D92; antes bastaba el escenario, D60); entonces `next_step` es `null`. El servicio trae `technical_control`
+  (`is_complete`, `connection_count`).
 - **Confidencialidad:** el tipo `Capability` del backend no tiene `provider`; el catálogo y las respuestas lo
   omiten, y una prueba revisa respuestas, i18n, `src/`, logs y el bundle de la aplicación en cada recorrido.
 - **Variables de entorno:** `CREDENTIALS_ENCRYPTION_KEY` (obligatoria), `PROBE_MODE` (`runner` | `simulated` | `unavailable`; `simulated` no arranca en producción), `MONKEY_AWS_PRINCIPAL_ARN` y `VALIDATION_WAIT_SECONDS`.
-- **Pantallas (Platform, D60):** `/services/{id}` es el servicio (su información, «dónde vive» y la lista de conexiones); `/services/{id}/connections/new` propone los métodos
+- **Pantallas (Platform, D60):** `/services/{id}` es el servicio (su información y la lista de conexiones); `/services/{id}/connections/new` propone los métodos
   de conexión (el marketplace de plataformas, D67); `/services/{id}/connections/{id}` muestra la conexión y los **activos que encontró** (D59). «Mis servicios» lista los servicios con su número de conexiones.

@@ -301,7 +301,7 @@
       },
       {
         "path": "contracts/modules/onboarding-technical-control.md",
-        "description": "Componente 3: escenario de despliegue, scope declarado y flujo conectar-validar-activar-programar sobre ac_01 a ac_06. El proveedor del motor de monitoreo NO aparece."
+        "description": "Componente 3: catálogo de plataformas y flujo conectar-validar-activar-programar sobre ac_01 a ac_06. El proveedor del motor de monitoreo NO aparece."
       },
       {
         "path": "contracts/modules/control-tecnico-operacion.md",

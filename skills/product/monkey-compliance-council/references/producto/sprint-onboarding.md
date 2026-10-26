@@ -26,7 +26,7 @@ ellas. La forma exacta de cada endpoint está en `contracts/modules/`.
 |---|---|---|
 | 1 — Contexto Organizacional | Formulario de 10 campos, una vez por empresa | `organizations` |
 | 2 — Contexto del Servicio | Formulario de 16 campos por servicio (repetible), incluida la carga de la Descripción del Sistema | `services`, `service_trust_criteria`, `subservice_organizations`, `service_frameworks`, `system_descriptions` |
-| 3 — Control Técnico | Escenario de despliegue + flujo de conexión de activos (conectar → validar → activar → programar) sobre el catálogo `ac_01`…`ac_06` | `assets`, `automated_capabilities`, `asset_provisionings` |
+| 3 — Control Técnico | Flujo de conexión de activos (conectar → validar → activar → programar) sobre el catálogo `ac_01`…`ac_06` | `assets`, `automated_capabilities`, `asset_provisionings` |
 | Clonado del catálogo | Al elegir marco en el Componente 2 el catálogo queda disponible sin acción manual: los **controles se clonan** a `client_controls` (con sus dimensiones, el vínculo a sus tests y las evidencias requeridas), y los **requisitos, puntos de enfoque y tests se referencian con FK** (son texto del estándar, decisión D3) | — |
 
 ## Fuera de alcance, explícitamente
