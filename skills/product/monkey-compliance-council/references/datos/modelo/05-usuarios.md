@@ -193,7 +193,7 @@ no negociable:
 | IP whitelist | opcional, configurable | Control adicional de acceso |
 | Bloqueo de cuenta | 5 intentos fallidos, 15 min | Previene fuerza bruta |
 
-> **MFA es un requisito de seguridad sin excepciones.** Su implementación va en el sprint de acceso y usuarios (MD-94), no en el de Cumplimiento, y mientras no esté es deuda conocida (DT-23).
+> **MFA es un requisito de seguridad sin excepciones.** Es TOTP con 10 códigos de recuperación y se exige en el ingreso de los 5 roles (D94); `MFA_REQUIRED=false` solo se admite fuera de producción.
 
 La autorización se verifica **en cada request** (*"no confiar en el frontend"*), con caché de
 5 min.

@@ -1,4 +1,4 @@
-# Modelo de datos — registro de decisiones
+﻿# Modelo de datos — registro de decisiones
 
 Bitácora de las decisiones que cerraron el modelo relacional, desde el 15 de
 septiembre de 2026, con la fuente y el razonamiento de cada una.
@@ -45,7 +45,7 @@ El registro está partido por épocas en `decisiones/`. **Busca el ID en el índ
 | [`decisiones/04-sonda-y-correcciones.md`](decisiones/04-sonda-y-correcciones.md) | **D48–D52** — Paso 3 provisional contra la sonda real, pool de conexiones, correcciones del comité, auditoría atómica. |
 | [`decisiones/05-control-tecnico-y-nube.md`](decisiones/05-control-tecnico-y-nube.md) | **D53–D61 y D67** — Conexión con la nube, sonda de servidores, trabajador del motor de nube y descubrimiento de activos. |
 | [`decisiones/06-cumplimiento-y-roles.md`](decisiones/06-cumplimiento-y-roles.md) | **D62–D68** — Cómo se calcula el cumplimiento, el auditor, los cinco roles, controles propios y MFA. |
-| [`decisiones/07-cierres-2026-10-10.md`](decisiones/07-cierres-2026-10-10.md) | **D69–D90** — Cierres del 2026-10-10 al 20: el paso 3, el nombre neutro de las pruebas, la lectura de la sonda, el Postgres de producción, los modelos de negocio, las exclusiones, la fórmula del riesgo residual y el lenguaje GRC de la superficie |
+| [`decisiones/07-cierres-2026-10-10.md`](decisiones/07-cierres-2026-10-10.md) | **D69–D94** — Cierres del 2026-10-10 al 20: el paso 3, el nombre neutro de las pruebas, la lectura de la sonda, el Postgres de producción, los modelos de negocio, las exclusiones, la fórmula del riesgo residual y el lenguaje GRC de la superficie |
 
 ### Índice
 
@@ -145,3 +145,4 @@ El registro está partido por épocas en `decisiones/`. **Busca el ID en el índ
 | D91 | Todo cambio de estado de un control deja un evento inmutable (cumple REQ-043 y REQ-044) | 07 |
 | D92 | El cliente no declara dónde vive su servicio: elige la plataforma del catálogo y se le ofrecen las seis conexiones (ajusta D46 y D60; se aparta del bloque 2A del Excel, por ratificar) | 07 |
 | D93 | Al evaluar los riesgos de un servicio nuevo se puede retirar el que no aplica (con motivo) o volver a incluirlo, y agregar un riesgo propio con sus causas; retirar un riesgo no retira causas ni controles (amplía D89) | 07 |
+| D94 | Segundo factor TOTP con 10 códigos de recuperación para los 5 roles; ingreso en dos pasos con desafío de 5 min; QR dibujado en el navegador; el admin de la empresa restablece a su equipo y Monkey al admin por script; cierra DT-23 | 07 |

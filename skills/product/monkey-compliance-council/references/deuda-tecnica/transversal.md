@@ -76,14 +76,6 @@ Lo que no pertenece a un solo módulo (pruebas, CI, auditoría, traducciones, en
 - **Por qué:** P2(b)(c)(d)
 - **Qué lo cierra:** Respuestas del comité y el aprovisionamiento
 
-### DT-23 · Sin MFA
-
-🟠 Importante
-
-- **Qué está parchado:** para ninguno de los 5 roles (MD-94, sprint de acceso y usuarios)
-- **Por qué:** Fuera del alcance de MD-64
-- **Qué lo cierra:** Su propio ticket
-
 ### DT-29 · `auth.login_failed` se guarda con `tenant_id` nulo
 
 🟡 Mejora

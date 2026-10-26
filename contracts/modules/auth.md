@@ -6,7 +6,7 @@ type: contract
 ---
 # Auth — canje de la clave, login y sesión
 
-Es la **auth mínima** del sprint: login con JWT y refresh, sin segundo factor. Ver
+Login con JWT y refresh, y **segundo factor TOTP obligatorio** (D94). Ver
 `conventions.md` para el sobre y los errores.
 
 **Entidades:** `access_keys`, `users` (`modelo-datos.md` §4.2, §5.2, §5.3).
@@ -17,9 +17,7 @@ contraseña. En los responses `name` y `last_name` pueden venir `null`; la UI mu
 **App:** Monkey Platform (`Frontend-Platform`) y Monkey Admin (`Frontend`) comparten estos
 endpoints.
 
-> **MFA TOTP está aplazada a MD-94.** La exige como obligatoria para los 5 roles
-> (`modelo-datos.md` §5.3, D66): es deuda conocida, no una decisión
-> revertida. Cuando entre, el login devolverá un paso intermedio y este contrato cambia.
+> **Segundo factor (D94, SEG-16).** Con MFA_REQUIRED activo (por defecto), ni login ni edeem abren la sesión: devuelven un **paso intermedio** y la sesión se abre en mfa/verify o mfa/setup/confirm. Ver «Segundo factor» más abajo.
 
 ## Activación de la cuenta: dos pasos (D51)
 
@@ -111,7 +109,7 @@ complejidad**. Se valida en el servidor, y el error va por campo.
 { "email": "ana.perez@ejemplo.com", "password": "UnaClaveLarga123!" }
 ```
 
-`200` con el mismo objeto `user` + `company` del canje. La sesión va en cookie `httpOnly`.
+`200` con el mismo objeto `user` + `company` del canje. La sesión va en cookie `httpOnly`. **Con el segundo factor obligatorio, `200` con `data: { next_step, expires_at }` y sin sesión** (ver «Segundo factor»). El cliente distingue por la presencia de `next_step`.
 
 Política de sesión (§5.3): **30 min de inactividad, 8 h máximo**. Bloqueo a los **5 intentos
 fallidos, por 15 min**.
@@ -120,6 +118,22 @@ fallidos, por 15 min**.
 cuadra con la política ni consigo mismo. El contrato fija: access token **15 min**, refresh
 hasta el máximo de 8 h de sesión.
 
+## Segundo factor (D94)
+
+**Desafío.** Contraseña correcta (o canje de la clave) → `data: { next_step, expires_at }` y la cookie `httpOnly` `mnk_mfa` (5 minutos, un solo uso, ruta `/v1/auth/mfa`). `next_step` es `mfa_verify` (ya tiene el factor) o `mfa_setup` (debe configurarlo; también lo devuelve `redeem`, con `201`). Sin cookie `mnk_mfa` válida, los endpoints `mfa/*` de abajo responden `401 MFA_CHALLENGE_INVALID` y el cliente vuelve a la pantalla de ingreso.
+
+| Endpoint | Cuerpo | Respuesta |
+| --- | --- | --- |
+| `POST /v1/auth/mfa/verify` | `{ "code": "123456" }` **o** `{ "recovery_code": "K7QWM-3PZ9T" }` | `200` con `user` + `company` + `onboarding` (como el login) y las cookies de sesión; con un código de recuperación, además `recovery_codes_left` |
+| `POST /v1/auth/mfa/setup` | — | `200` `{ secret, otpauth_uri, issuer, account }`. Idempotente: devuelve el mismo secreto mientras el desafío viva. **El QR se dibuja en el navegador** con `otpauth_uri`; el secreto no se manda a ningún servicio externo |
+| `POST /v1/auth/mfa/setup/confirm` | `{ "code": "123456" }` | `200` como el login **más `recovery_codes`** (10, `XXXXX-XXXXX`, **se muestran una sola vez**); abre la sesión |
+| `POST /v1/auth/mfa/recovery-codes` | `{ "code": "123456" }` (con sesión) | `200` `{ recovery_codes }`; los anteriores dejan de servir |
+| `DELETE /v1/users/{id}/mfa` | — | `204`. Solo `admin_empresa`, sobre `funcional`/`consultor`/`auditor` de su empresa y nunca sobre sí mismo. Borra el secreto y los códigos y cierra las sesiones de esa persona |
+
+- **Reglas:** TOTP RFC 6238 (SHA-1, 6 dígitos, 30 s, ±1 paso); un código ya usado no sirve otra vez; un código equivocado suma al bloqueo de la cuenta (5 intentos, 15 min) y al del desafío (5, luego hay que reingresar).
+- **Restablecer al `admin_empresa`:** no hay endpoint; Monkey lo hace con `npm run mfa:reset` (D94, punto 8).
+- **`MFA_REQUIRED`** (variable de entorno, por defecto `true`): en `false` el login abre la sesión directo. En producción el Backend no arranca con `false`.
+- **`is_mfa_enabled`** del `user` indica si la persona ya configuró su factor.
 ## `POST /v1/auth/refresh`
 
 Sin cuerpo; usa la cookie de refresh. `200` con `data: null` y cookies renovadas. Pasado el
@@ -148,12 +162,16 @@ llama al arrancar para saber si hay sesión y dónde continuar.
 | 409  | `EMAIL_TAKEN`             | Ese email ya existe (`users.email` es único global y se guarda en minúsculas, D29)             |
 | 422  | `VALIDATION_FAILED`       | Contraseña que no cumple la política, email inválido                                |
 | 422  | `ACCESS_KEY_EMAIL_MISMATCH` | El correo del canje no es el `admin_email` registrado para la empresa (D43). La clave sigue pendiente |
+| 401  | `MFA_CHALLENGE_INVALID` | No hay desafío, expiró, ya se usó o se agotaron sus 5 intentos. El cliente vuelve al ingreso |
+| 401  | `MFA_CODE_INVALID`      | El código (o el de recuperación) es incorrecto o ya se usó. Cuenta como intento fallido |
+| 409  | `MFA_SETUP_NOT_STARTED` | Se confirmó la configuración sin haber pedido el QR (`mfa/setup`) |
+| 409  | `MFA_NOT_ENABLED`       | Se pidió regenerar códigos o restablecer a alguien que no tiene el segundo factor |
 | 429  | `RATE_LIMITED`            | Límite por IP en los endpoints de auth                                                |
 | 429  | `ACCESS_KEY_RATE_LIMITED` | 10 intentos fallidos con la clave en 15 min desde una misma dirección (`redeem` y `redeem/lookup`; D51, DT-37) |
 
 Claves i18n: `auth.account_created`, `auth.logged_in`, `auth.logged_out`,
 `auth.invalid_credentials`, `auth.session_expired`, `auth.account_locked`,
-`auth.account_inactive`, `access_key.invalid`, `access_key.already_used`,
+`auth.account_inactive`, `auth.mfa_required`, `auth.mfa_setup_required`, `auth.mfa_setup_started`, `auth.mfa_enabled`, `auth.mfa_recovery_regenerated`, `access_key.invalid`, `access_key.already_used`,
 `access_key.expired`, `auth.access_key_found`, `auth.access_key_rate_limited`, `user.email_taken`, `validation.failed`.
 
 ## Notas

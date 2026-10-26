@@ -1,4 +1,4 @@
-# Deuda técnica — lo que está parchado y hay que revisar
+﻿# Deuda técnica — lo que está parchado y hay que revisar
 
 Aquí vive lo que **se construyó a medias, con un supuesto o con un atajo** para no detener el
 sprint, y que debe volver a revisarse. No es una lista de errores: cada deuda es una decisión
@@ -65,7 +65,6 @@ Limitan el producto o al equipo.
 | [DT-20](transversal.md#dt-20--las-pruebas-automáticas-están-a-medias-en-los-repositorios) | Las pruebas automáticas están a medias en los repositorios | [Transversal](transversal.md) |
 | [DT-21](transversal.md#dt-21--traducciones-al-inglés-hechas-por-desarrollo) | Traducciones al inglés hechas por desarrollo | [Transversal](transversal.md) |
 | [DT-22](transversal.md#dt-22--base-de-datos-dedicada--no-disponible) | Base de datos dedicada → «no disponible» | [Transversal](transversal.md) |
-| [DT-23](transversal.md#dt-23--sin-mfa) | Sin MFA | [Transversal](transversal.md) |
 | [DT-25](transversal.md#dt-25--ver-el-catálogo-maestro-soc-2-en-monkey-admin-y-poder-crear-un-control-riesgo-o-causa-nuevos) | Ver el catálogo maestro SOC 2 en Monkey Admin y poder crear un control, riesgo o causa nuevos | [Transversal](transversal.md) |
 | [DT-26](onboarding.md#dt-26--los-marcos-se-contratan-solo-al-registrar-la-empresa) | Los marcos se contratan solo al registrar la empresa | [Onboarding](onboarding.md) |
 | [DT-34](control-tecnico.md#dt-34--cobertura-honesta-de-plataformas) | Cobertura honesta de plataformas | [Control técnico](control-tecnico.md) |
