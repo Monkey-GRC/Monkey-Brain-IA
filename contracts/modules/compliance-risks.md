@@ -118,7 +118,13 @@ Solo las claves presentes: `name`, `description`, `trust_criterion`, `potential_
 
 ### `DELETE /v1/risks/{id}`
 
-Baja lógica: `204`. El riesgo deja de aparecer en las listas, pero su historial y sus evaluaciones se conservan.
+Baja lógica: `204`. El riesgo deja de aparecer en las listas, pero su historial y sus evaluaciones se conservan. **Sus causas y los controles de esas causas no se tocan**: quitar un riesgo no retira nada más (las causas se comparten entre riesgos, y un control lo exige un requisito del marco aunque su riesgo ya no esté, D93).
+
+Cuerpo opcional `{ "reason": "No usamos portátiles; todo es remoto." }` (máx. 500): por qué el riesgo no aplica al servicio. No tiene columna propia: queda en el rastro de auditoría (`client_risk.deactivate`, `after_state.retirement_reason`). El asistente de alta del servicio lo pide siempre; la API lo deja opcional para no romper a quien ya la usa. Más de 500 caracteres: `422 VALIDATION_FAILED`.
+
+### `POST /v1/risks/{id}/reactivation`
+
+Solo `admin_empresa`. Devuelve al servicio un riesgo que se había dado de baja (D93): `200` con el objeto del detalle, que conserva su evaluación anterior. Si ya estaba vigente no hace nada (`200`, sin rastro). Deja `client_risk.reactivate` en la auditoría. Lo usa el asistente de alta del servicio para «Volver a incluir».
 
 ### `GET /v1/risk-matrix`
 

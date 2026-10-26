@@ -91,12 +91,12 @@ porque son texto de un estándar y viven en la misma base (§3.5, D25).
 > **Provisional (D48):** la parte de «conectar» no coincide con cómo funciona la sonda real (el cliente instala un agente y
 > Monkey lee lo que el agente reporta; no se entregan credenciales). Se rediseña con D71 (DT-32 a DT-36).
 
-El cliente conecta su infraestructura real. Elige escenario de despliegue, y por cada
+El cliente conecta su infraestructura real. Elige la plataforma del catálogo (no declara dónde vive, D92), y por cada
 conexión del catálogo AC-01…AC-06 corre conectar → validar → activar → programar. El
 cliente nunca ve el nombre real del motor de monitoreo detrás ("sonda",
 "capacidad automática").
 
-El paso se da por hecho con el **escenario y el scope**; conectar sistemas se recomienda pero se puede dejar
+El paso ya no es del onboarding (D89) y se da por hecho con la primera conexión (D92); conectar sistemas se recomienda pero se puede dejar
 para después (D46). Hoy no hay conectores reales: la comprobación es `unavailable` o `simulated` y **nunca se
 finge una conexión** (Automatizado ≠ Operativo).
 

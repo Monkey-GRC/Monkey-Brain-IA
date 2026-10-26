@@ -143,3 +143,5 @@ El registro está partido por épocas en `decisiones/`. **Busca el ID en el índ
 | D89 | El onboarding es solo el contexto de la empresa; los servicios se declaran después y sus riesgos se evalúan antes de declarar activos (ajusta D23, reemplaza D69) | 07 |
 | D88 | Una prueba documental se valida en su control, con la evidencia que se sube para esa prueba (ajusta D85, cierra P25) | 07 |
 | D91 | Todo cambio de estado de un control deja un evento inmutable (cumple REQ-043 y REQ-044) | 07 |
+| D92 | El cliente no declara dónde vive su servicio: elige la plataforma del catálogo y se le ofrecen las seis conexiones (ajusta D46 y D60; se aparta del bloque 2A del Excel, por ratificar) | 07 |
+| D93 | Al evaluar los riesgos de un servicio nuevo se puede retirar el que no aplica (con motivo) o volver a incluirlo, y agregar un riesgo propio con sus causas; retirar un riesgo no retira causas ni controles (amplía D89) | 07 |

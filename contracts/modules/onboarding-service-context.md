@@ -10,8 +10,8 @@ type: contract
 Se llena **una vez por servicio**; un cliente puede declarar varios. Ver `conventions.md` y
 `enums.md`.
 
-`services.deployment_scenario` también es columna de `services`, pero se captura en el
-Componente 3 — ver `onboarding-technical-control.md`.
+`services.deployment_scenario` sigue siendo columna de `services`, pero **ya no se captura en ningún lado** (D92):
+el cliente elige la plataforma al conectar — ver `onboarding-technical-control.md`.
 
 **Entidades:** `services`, `service_trust_criteria`, `service_frameworks`,
 `subservice_organizations`, `csocs`, `cuecs`, `system_descriptions`

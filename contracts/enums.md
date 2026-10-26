@@ -233,9 +233,9 @@ falta, se añade un valor al enum.
 
 ## Componente 3 — scope y activos
 
-### `deployment_scenario` — `services.deployment_scenario` · 4 valores
+### `deployment_scenario` — `services.deployment_scenario` · 4 valores · **ya no se pregunta (D92)**
 
-⚠️ `modelo-datos.md` no declara valores. Se derivan del bloque 2A del Excel.
+⚠️ **Retirado de la API y de la pantalla por D92 (2026-10-25):** el cliente elige la plataforma del catálogo y se le ofrecen las seis conexiones; `GET /v1/catalogs/deployment_scenario` ya no existe. El enum y la columna siguen en la base sin uso hasta `DT-81`. **Se aparta del bloque 2A del Excel del comité**, que define estos escenarios: queda por ratificar con el comité (ver D92). Valores, por si se reabre:
 
 | Valor | es | Conexiones que aplican |
 |---|---|---|

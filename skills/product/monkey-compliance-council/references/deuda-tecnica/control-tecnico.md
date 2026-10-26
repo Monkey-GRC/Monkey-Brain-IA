@@ -277,3 +277,11 @@ Parches del Componente 3 del onboarding (conexión de activos, la sonda) y del p
 - **Qué está parchado:** D39 derivó las dimensiones de cada control de las pruebas y sembró **210** filas en `control_dimensions` (118 documentales, 43 de servidores, 18 de bases de datos, 31 de nube, ninguna de aplicación). El comité las define en la hoja `Controles Monkey`, columnas L a P (D68): **191** (118, 25, 17 y 31; aplicación «NO APLICA» en los 118 controles). La hoja `Análisis TEST x Control` da otra cifra y las dos hojas no coinciden en 6 celdas (IAC-1, IAC-7, IAC-8, IAC-9, IAC-12 en servidores y MON-3 en bases de datos)
 - **Por qué:** Se derivaron de las pruebas antes de que el comité entregara el motor de evaluación (D68). Una dimensión de más o de menos cambia qué controles quedan `INCOMPLETO`
 - **Qué lo cierra:** Cargar `control_dimensions` desde `Controles Monkey` L a P, reconciliar las 6 celdas con el comité y actualizar `catalog:verify`
+
+### DT-81 · El escenario de despliegue ya no se pregunta, pero su columna y sus tablas siguen en la base
+
+🟡 Mejora
+
+- **Qué está parchado:** D92 retiró la pregunta «dónde vive tu servicio» y todo el código que la usaba, pero `services.deployment_scenario`, la tabla `catalog.deployment_scenario_capabilities`, su siembra en `reference:load` y el enum `tenant.deployment_scenario` siguen en la base y en el schema de Prisma, sin ningún uso.
+- **Por qué:** quitarlos es una migración destructiva (`DROP COLUMN`, `DROP TABLE`, `DROP TYPE`) sobre la base compartida y pierde los valores que algunos servicios ya declararon. Se hace aparte, cuando el comité haya ratificado D92: si lo rechazara, el escenario se restituye sin recargar nada.
+- **Qué lo cierra:** una migración que borre la columna, la tabla y el enum; quitar `deployment_scenario_capabilities` de `seed-reference.ts` y de `reference/data.ts`, y borrar `DEPLOYMENT_SCENARIO` de los modelos de Prisma. Al cerrarla, bórrese esta entrada.
