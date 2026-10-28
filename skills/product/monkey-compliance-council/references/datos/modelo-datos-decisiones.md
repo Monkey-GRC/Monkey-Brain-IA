@@ -1,4 +1,4 @@
-﻿# Modelo de datos — registro de decisiones
+# Modelo de datos — registro de decisiones
 
 Bitácora de las decisiones que cerraron el modelo relacional, desde el 15 de
 septiembre de 2026, con la fuente y el razonamiento de cada una.
@@ -44,7 +44,7 @@ El registro está partido por épocas en `decisiones/`. **Busca el ID en el índ
 | [`decisiones/03-onboarding.md`](decisiones/03-onboarding.md) | **D43–D47** — Clave de acceso y los 3 componentes del onboarding; el marco se contrata al registrar. |
 | [`decisiones/04-sonda-y-correcciones.md`](decisiones/04-sonda-y-correcciones.md) | **D48–D52** — Paso 3 provisional contra la sonda real, pool de conexiones, correcciones del comité, auditoría atómica. |
 | [`decisiones/05-control-tecnico-y-nube.md`](decisiones/05-control-tecnico-y-nube.md) | **D53–D61 y D67** — Conexión con la nube, sonda de servidores, trabajador del motor de nube y descubrimiento de activos. |
-| [`decisiones/06-cumplimiento-y-roles.md`](decisiones/06-cumplimiento-y-roles.md) | **D62–D68, D95 y D96** — Cómo se calcula el cumplimiento, el auditor, los cinco roles, controles propios, MFA y la entrada del consultor. |
+| [`decisiones/06-cumplimiento-y-roles.md`](decisiones/06-cumplimiento-y-roles.md) | **D62–D68, D95, D96 y D97** — Cómo se calcula el cumplimiento, el auditor, los cinco roles, controles propios, MFA y la entrada del consultor. |
 | [`decisiones/07-cierres-2026-10-10.md`](decisiones/07-cierres-2026-10-10.md) | **D69–D94** — Cierres del 2026-10-10 al 20: el paso 3, el nombre neutro de las pruebas, la lectura de la sonda, el Postgres de producción, los modelos de negocio, las exclusiones, la fórmula del riesgo residual y el lenguaje GRC de la superficie |
 
 ### Índice
@@ -148,3 +148,4 @@ El registro está partido por épocas en `decisiones/`. **Busca el ID en el índ
 | D94 | Segundo factor TOTP con 10 códigos de recuperación para los 5 roles; ingreso en dos pasos con desafío de 5 min; QR dibujado en el navegador; el admin de la empresa restablece a su equipo y Monkey al admin por script; cierra DT-23 | 07 |
 | D95 | El consultor se activa con un código de un solo uso y entra a sus empresas asignadas eligiendo de una lista, sin token por empresa (cierra P29 y P30; **reemplazada en parte por D96**: solo sobrevive el código de activación) | 06 |
 | D96 | Cuatro roles: el administrador de la empresa es el experto en compliance, valida y decide; el `funcional` ejecuta por dimensión; el auditor revisa sin calificar (reemplaza D64, D65, D78, D83, D84, D85, D88; pausa D77; cierra P28 y P31) | 06 |
+| D97 | El funcional atiende todo lo de sus especialidades; toda cuenta lleva nombre; un administrador crea a otro | 06 |
