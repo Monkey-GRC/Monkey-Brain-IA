@@ -409,7 +409,7 @@ inequívoca.
 
 **`compliance_events` y `audit_logs` son dos tablas distintas.** `audit_logs` (§5.2) registra
 acciones sobre la plataforma (quién cambió qué en el sistema); `compliance_events` registra
-cambios en el estado de cumplimiento. Las dos son **append-only, 7 años, inmutables**.
+cambios en el estado de cumplimiento. Las dos son **append-only, 7 años, inmutables** (salvo una empresa dada de baja, D95).
 
 **Todo cambio de estado de un control deja un evento** (D91, REQ-044): `changed_field = 'control.state'`,
 con el estado y el semáforo anteriores en `previous_value` y los nuevos —más el control, el servicio y la

@@ -141,10 +141,34 @@ Solo mientras la clave esté `pending`. Con la clave `used`, `409 CONFLICT`
 `201` con el mismo bloque `access_key` del registro, código en claro incluido. La anterior pasa
 a `revoked`.
 
+## `POST /v1/companies/{id}/deactivation` — archivar (D95)
+
+Solo `admin_monkey`. **Archiva** la empresa; el borrado definitivo ocurre solo al vencer `archive_until`.
+
+```json
+{ "confirm_name": "Next Audit & Consulting S.A.S.", "reason_code": "non_payment", "reason": "Dos facturas vencidas.", "retention_days": 180, "totp_code": "123456" }
+```
+
+`reason_code` = `non_payment` · `client_request` · `other` (`enums.md`); `reason` 5 a 500; `retention_days` por defecto 180 (6 meses), mínimo 7; `totp_code` es el del propio `admin_monkey`. `200` con el detalle (`status: "deactivated"`, `deactivated_at`, `archive_until`). Efectos: se toma una copia cifrada de la empresa (si no se puede guardar, no se archiva) y, en una transacción, la empresa pasa a `deactivated`, se cierran todas sus sesiones y los desafíos de segundo factor abiertos, y se cancelan las evaluaciones en cola o en curso. El ingreso, la renovación de sesión, el canje de clave y el trabajador comprueban el estado de la empresa. Las claves y credenciales no se reescriben; usuarios y datos se conservan. La pantalla muestra el aviso de consecuencias **antes** de confirmar. Deja `company.deactivate`. Empresa interna: `404`.
+
+Errores: `422 CONFIRMATION_MISMATCH`, `422 VALIDATION_FAILED` (motivo o plazo fuera de rango), `401 MFA_CODE_INVALID`, `403` para otro rol, `409 COMPANY_ALREADY_DEACTIVATED`.
+
+## `POST /v1/companies/{id}/reactivation` — reactivar (D95)
+
+Solo `admin_monkey` y solo antes de `archive_until`. Cuerpo `{ "reason", "totp_code" }`. Devuelve la empresa a `active`, **borra el plazo** y deja `company.reactivate`. Las sesiones se reinician; las claves y credenciales vuelven a servir si no vencieron. La copia se borra. Fuera de plazo, `409 COMPANY_ARCHIVE_EXPIRED`; no archivada, `409 COMPANY_NOT_DEACTIVATED`; ya borrada, `404`.
+
+## Borrado definitivo y aviso (D95)
+
+No es un endpoint: lo ejecuta una tarea programada al vencer `archive_until`, con un rol propio, y elimina **todo** lo de la empresa (datos, archivos, credenciales, auditoría y su copia de respaldo). Deja en `company_purge_log` solo nombre, fecha y hora y quién (`company.purge`). **3 días antes** (como mínimo) se avisa a todos los `admin_monkey` por correo y por notificación en la app, (DT-83: aún no existen; el aviso es informativo y no condiciona la purga). `GET /v1/companies/pending-purge` lista las empresas por vencer, con `archive_until` y días restantes, para la notificación. Tras restaurar un respaldo se vuelve a purgar con `company_purge_log`.
+
 ## Errores
 
 | HTTP | `error.code` | Cuándo |
 |---|---|---|
+| 422 | `CONFIRMATION_MISMATCH` | La razón social escrita para archivar no coincide con la de la empresa (D95) |
+| 409 | `COMPANY_ALREADY_DEACTIVATED` | La empresa ya está archivada (D95) |
+| 409 | `COMPANY_NOT_DEACTIVATED` | Se reactiva una empresa que no está archivada (D95) |
+| 409 | `COMPANY_ARCHIVE_EXPIRED` | Se reactiva una empresa cuyo plazo ya venció (D95) |
 | 409 | `COMPANY_NAME_TAKEN` | Ya existe una empresa activa con esa razón social |
 | 409 | `ADMIN_EMAIL_TAKEN` | Ese `admin_email` ya es administrativo de otra empresa |
 | 409 | `COMPANY_ALREADY_ONBOARDED` | Se intenta editar tras el canje de la clave |
@@ -189,6 +213,7 @@ Implementado en `Backend/src/features/companies` y `Frontend/src/app/features/co
 | `GET /v1/companies` | ✅ Paginado, `sort` = `created_at`/`name` (± ), filtro `status`. **Excluye la empresa interna de Monkey** (la del `admin_monkey`), que no es un cliente |
 | `GET /v1/companies/{id}` | ✅ Con historial de claves. La empresa interna responde `404` |
 | `PATCH /v1/companies/{id}` | ❌ Espera a P2(c) |
+| `POST /v1/companies/{id}/deactivation` · `/reactivation` · `GET /v1/companies/pending-purge` · borrado definitivo | ✅ D95. `GET /v1/companies` oculta las archivadas por defecto (`status=deactivated` las muestra). La tarea del borrado corre cada `COMPANY_PURGE_INTERVAL_MINUTES` (60 por defecto; `0` la apaga) |
 | `POST /v1/companies/{id}/access-key/regenerate` | ❌ Espera a P2(b) |
 
 Decisiones de implementación, dentro de lo que el contrato ya asumía:

@@ -230,7 +230,7 @@ Se quedan aquí como referencia; el detalle de cada una está en la decisión qu
 | **P4** | `responsible_id` sin catálogo de cargos | 2026-09-29 — cerrada por desarrollo en D30: el cargo es `organization_responsibles`. **Falta ratificarla con el comité**; no bloquea nada |
 | **P5** | Dos cifras de la documentación de la sonda | 2026-10-08 — las cifras («869 checks, 646 nativos, 223 inferidos») no tenían universo y se quitaron de `wazuh.md`; la versión de referencia es la del manager que corre en desarrollo, 4.14.6 (D55) |
 | **P6** | La lista completa de `business_model` | 2026-10-10 — D73: son las 19 del Excel más `other`; si el comité entrega más, se agregan con una migración |
-| **P7** | Dónde se aloja el Postgres de producción | 2026-10-10 — D72: servidor o servicio administrado separado de la app, con respaldos que sostengan los 7 años del audit trail |
+| **P7** | Dónde se aloja el Postgres de producción | 2026-10-10 — D72: servidor o servicio administrado separado de la app, con respaldos a un punto en el tiempo y rotación de 35 días (D95) |
 | **P8** | ¿Un control que crea el cliente cuenta para el marco? | 2026-10-09 — D65: sí cuenta para el porcentaje; es solo documental, va en la categoría que elige el cliente y lo aprueba el consultor |
 | **P10** | Origen de `control_dimensions` y qué es `policies` | 2026-10-01 — cerrada por desarrollo en D39: la dimensión aplica si el control tiene una prueba de ella; `policies` es una plantilla. **Falta ratificar con el comité el tipo y las banderas derivados**; no bloquea nada |
 | **P11** | El nombre del proveedor en los textos de las pruebas | 2026-10-10 — D70: el cliente ve el resultado y un nombre neutro que escribe Monkey; los textos del comité son internos |
