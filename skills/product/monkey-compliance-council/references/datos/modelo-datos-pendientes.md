@@ -22,7 +22,9 @@ Lo que sigue abierto, con lo más urgente arriba. 🚧 bloquea trabajo · ⚠️
 | [P22](#p22--motor-de-evaluación-lo-que-falta-para-calcular-el-riesgo) | Motor de evaluación: lo que falta para calcular el riesgo | 🚧 El riesgo residual y las dos matrices (MD-151, fuera del sprint); ⚠️ la periodicidad de los controles | 2026-10-10 |
 | [P26](#p26--quién-define-el-período-auditado-y-la-fecha-de-corte-de-una-evaluación) | Quién define el período auditado y la fecha de corte de una evaluación | 🚧 Respondida **provisionalmente** (D87, 2026-10-20): falta que el comité la ratifique (Tipo I, período siguiente, nombre) | 2026-10-14 |
 | [P27](#p27--cómo-se-agrupan-los-controles-en-un-marco-sin-categorías) | Cómo se agrupan los controles en un marco sin categorías | 🚧 La agrupación de la lista de controles y del resumen para marcos distintos de SOC 2 | 2026-10-15 |
-| [P28](#p28--a-quién-contacta-la-empresa-para-que-le-asignen-un-consultor) | A quién contacta la empresa para que le asignen un consultor | ⚠️ La casilla de contacto de la pantalla de exclusiones (MD-169) | 2026-10-16 |
+| [P33](#p33--advertencias-y-confirmación-al-editar-o-dar-de-baja-un-control-un-riesgo-o-una-causa) | Advertencias y confirmación al editar o dar de baja un control, un riesgo o una causa | ⚠️ Las pantallas de edición del administrador (D96); la API no espera | 2026-10-27 |
+| [P34](#p34--quien-sube-la-evidencia-y-quien-la-valida-son-la-misma-persona) | Quien sube la evidencia y quien la valida son la misma persona | No bloquea: LATER | 2026-10-27 |
+| [P35](#p35--la-calificación-del-auditor) | La calificación del auditor | No bloquea: LATER, según el Excel | 2026-10-27 |
 | [P13](#p13--ratificar-lo-que-desarrollo-decidió-en-las-correcciones-del-2026-10-05-d50-d51) | Ratificar lo que desarrollo decidió el 2026-10-05 (D50, D51) | No bloquea: está construido y funcionando | 2026-10-06 |
 | [P15](#p15--cómo-se-mapean-los-checks-de-nube-que-quedan-fuera) | Cómo se mapean los checks de nube que quedan fuera | No bloquea: lo no mapeado no cuenta hasta responder | 2026-10-08 |
 
@@ -178,12 +180,12 @@ la **matriz inherente** muestra cada riesgo antes de aplicar controles y la **ma
 
 **Estado:** abierto desde 2026-10-14 (MD-108). El motor no ejecuta sin los cinco datos de la evaluación: servicio, marco, versión, **período auditado** y **fecha de corte** (REQ-004, §9). `service_frameworks` tiene `period_start`, `period_end` y `cutoff_date` (columnas desde MD-144), pero ningún formulario ni endpoint las llena: el onboarding solo pide un `evaluation_period` de texto.
 
-1. **¿Quién declara el período auditado y cuándo?** *Recomendación: `admin_empresa`, al contratar el marco o crear el servicio; editable mientras no se haya emitido una evaluación, y el consultor puede corregirlo.*
-2. **¿La fecha de corte es «hoy» mientras se monitorea y se congela al emitir una evaluación del consultor o del auditor?** *Recomendación: sí; así cada evaluación dice sobre qué datos se hizo.*
+1. **¿Quién declara el período auditado y cuándo?** *Recomendación: `admin_empresa`, al contratar el marco o crear el servicio; editable mientras no se haya congelado.*
+2. **¿La fecha de corte es «hoy» mientras se monitorea y se congela al emitir una evaluación del servicio (hoy en pausa, D96)?** *Recomendación: sí; así cada evaluación dice sobre qué datos se hizo.*
 
 **Respuesta provisional (D87, 2026-10-20):** se adoptaron las dos recomendaciones para poder construirlo (el criterio de desarrollo no sustituye al comité): `admin_empresa` declara el período (el consultor podrá corregirlo cuando trabaje sobre la empresa del cliente); la fecha de corte es «hoy» mientras se monitorea y se congela al emitir una evaluación. Inicio y fin pueden coincidir (Tipo I). **Sigue abierto para el comité:** si se vende Tipo I, qué pasa al llegar el período siguiente (hoy una sola fila por servicio y marco) y el nombre (el Excel dice «fecha de evaluación»).
 
-**Qué depende:** el resumen del servicio (MD-137), las evaluaciones del consultor y del auditor (MD-155, construido) y la vigencia de las exclusiones (MD-144). Sin período la API responde `not_measured` y `409 EVALUATION_NOT_DEFINED`, también al proponer una exclusión (MD-144). **MD-168 está construido (2026-10-20, D87)**: `PUT …/evaluation-period`.
+**Qué depende:** el resumen del servicio (MD-137), las evaluaciones del servicio (en pausa, D96) y la vigencia de las exclusiones (MD-144). Sin período la API responde `not_measured` y `409 EVALUATION_NOT_DEFINED`, también al proponer una exclusión (MD-144). **MD-168 está construido (2026-10-20, D87)**: `PUT …/evaluation-period`.
 
 ---
 
@@ -199,18 +201,35 @@ la **matriz inherente** muestra cada riesgo antes de aplicar controles y la **ma
 
 ---
 
-## P28 · A quién contacta la empresa para que le asignen un consultor
+## P33 · Advertencias y confirmación al editar o dar de baja un control, un riesgo o una causa
 
-**Estado:** abierto desde 2026-10-16 (D83). Cuando una exclusión espera porque la empresa no tiene consultor, la pantalla le dice que hay que asignarle uno y le ofrece una casilla para contactar al equipo de mercadeo, o a quien esté a cargo de ese trámite. Falta definir a quién y cómo.
+**Estado:** abierto desde 2026-10-27 (D96). El `admin_empresa` los cambia directamente, con advertencia y confirmación. Falta definir **qué** advierte la pantalla y **cuándo**: darlo de baja cambia lo que se mide y, por tanto, el avance del servicio.
 
-1. **¿Quién es el contacto?** El equipo de mercadeo, la persona a cargo del trámite o un buzón. *Recomendación: un buzón de Monkey (un solo correo) que no dependa de una persona.*
-2. **¿Cómo se contacta?** Un enlace de correo, un formulario dentro de Platform o un mensaje que ya llegue con el nombre de la empresa. *Recomendación: un formulario simple que mande el nombre de la empresa y del servicio, para que el equipo no tenga que preguntarlo.*
-3. **¿El dato se configura o se escribe en la pantalla?** Si cambia de persona, ¿hay que desplegar? *Recomendación: una variable de configuración del Backend que la pantalla lea, no un texto escrito en el frontend.*
+1. **¿Qué se le muestra antes de confirmar?** *Recomendación: lo que cambia de verdad —cuántas pruebas dejan de contar, qué riesgos y causas quedan sin ese control y cómo se mueve el avance y la cobertura del servicio—, no un «¿está seguro?» genérico.*
+2. **¿Pide un motivo?** *Recomendación: sí en la baja y en quitar una dimensión; opcional en una edición de texto. Queda en la auditoría.*
+3. **¿Un control con resultados ya emitidos se puede dar de baja?** *Recomendación: sí, como baja (nunca borrado); el historial y las evaluaciones inmutables se conservan.*
 
-**Qué depende:** la casilla de contacto de la pantalla de exclusiones (MD-169). No bloquea la API de MD-144.
+**Qué depende:** las pantallas de edición del administrador. No bloquea la API.
 
 ---
 
+## P34 · Quien sube la evidencia y quien la valida son la misma persona
+
+**Estado:** abierto desde 2026-10-27 (D96). El `admin_empresa` valida la evidencia y también puede subirla. Aunque su foco no es subirla, puede pasar, y entonces se califica a sí mismo.
+
+*Recomendación: no bloquear por ahora; que cada validación quede en el rastro con quien subió y quien validó, y que el `auditor` externo sea el contrapeso. Si hace falta, más adelante: que no pueda validar lo que él mismo subió, o que un segundo administrador lo confirme.*
+
+**Qué depende:** nada del código inmediato. Es `LATER`.
+
+---
+
+## P35 · La calificación del auditor
+
+**Estado:** abierto desde 2026-10-27 (D96). La evaluación del auditor (certificar o no, D77) queda en pausa. Cuando vuelva, se diseña según lo que pida el Excel del comité, sin cambiar el estado calculado del servicio.
+
+**Qué depende:** nada del código inmediato. Es `LATER`.
+
+---
 ## Cómo se cierra un pendiente
 
 1. El comité responde.
@@ -242,3 +261,6 @@ Se quedan aquí como referencia; el detalle de cada una está en la decisión qu
 | **P20** | Quién reactiva a un consultor que la empresa suspendió | 2026-10-09 — D64: solo la empresa |
 | **P23** | Cómo se guarda y se muestra la evaluación del consultor y la del auditor | 2026-10-13 — D77: la del auditor va aparte y no cambia el estado; el consultor suma un veredicto general; ambas ligadas a la evaluación del servicio |
 | **P24** | Quién aprueba una exclusión si la empresa no tiene consultor | 2026-10-16 — D83: la exclusión espera y el activo sigue contando; la pantalla avisa que hay que asignar un consultor y ofrece contactar al equipo que gestiona el trámite |
+| **P28** | A quién contacta la empresa para que le asignen un consultor | 2026-10-27 — D96: obsoleta; no hay consultor |
+| **P31** | El Excel y el cerebro no coinciden en los roles | 2026-10-27 — D96: gana el Excel (cuatro roles; el `admin_empresa` valida la evidencia); la MFA sigue en los cuatro roles (D66) || **P29** | Cómo activa su cuenta un consultor | 2026-10-27 — D95: un código de activación de un solo uso, ligado a su correo, que `admin_monkey` le entrega; con él pone su contraseña y configura el segundo factor |
+| **P30** | Dónde vive el consultor y cómo se aísla cuando trabaja en un cliente | 2026-10-27 — D95: su cuenta vive en la empresa interna (la crea `bootstrap:admin`); la transacción se abre con la empresa activa de la sesión, con la asignación comprobada en cada petición, y el autor es el consultor |

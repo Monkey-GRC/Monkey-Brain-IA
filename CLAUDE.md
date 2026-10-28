@@ -71,10 +71,9 @@ Fuera de `references/`:
   trabajo = menos, Sin medir) y el **porcentaje de avance** se muestran **a la vez**, en el resumen y en cada
   control, con la **cobertura al lado** (el avance «de lo medido» y cuánto se midió). Nunca un porcentaje solo,
   nunca uno de «toda la empresa» (la unidad es servicio × marco) y el porcentaje **informa, no decide**.
-- **La vista técnica es de los roles `auditor` y `consultor` y, mientras no se definan los permisos por pantalla
-  (P3), también del `admin_empresa` (D81)**, no un modo ni un botón: añade lo que necesitan para ver todo lo que
+- **La vista técnica es de los roles `auditor` y `admin_empresa` (D81, D96; mientras no se definan los permisos por pantalla, P3)**, no un modo ni un botón: añade lo que necesitan para ver todo lo que
   pide cada control (estados del motor, pruebas, puntos de enfoque, matrices). El `funcional` ve la vista de negocio,
-  que ya usa el vocabulario y los códigos del dominio. Consultoría prepara para la auditoría; auditoría certifica.
+  que ya usa el vocabulario y los códigos del dominio. El `admin_empresa` es el experto en compliance de su empresa y quien valida; el `funcional` ejecuta lo de su dimensión; el `auditor` revisa y no califica por ahora (D96).
 - **La IA nunca certifica cumplimiento**, nunca presenta inferencia como hecho verificado sin
   mostrar evidencia, y siempre etiqueta lo que ella generó.
 - Para explicarle un hallazgo a un usuario final: plantilla de 7 campos de `philosophy.md`.

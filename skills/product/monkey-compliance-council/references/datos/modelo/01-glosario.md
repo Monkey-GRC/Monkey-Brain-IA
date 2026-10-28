@@ -44,13 +44,14 @@ que les corresponde.
 | **Evaluación** | `evaluations` | Un test o check aplicado a **un activo**, con su resultado. **Inmutable** |
 | **Exclusión** | `exclusions` | Decisión de no medir un check, con justificación aprobada y vigencia |
 | **Evidencia requerida** / **entregada** | `evidence_requirements` / `evidence_submissions` | Qué se exige y quién responde / el archivo concreto, con hash de integridad |
-| **Consultoría** · **Auditoría** | — | Consultoría es preparar al cliente para la auditoría (lo que hace Monkey); auditoría es el examen final que da la certificación del marco |
+| **Auditoría** | — | El examen final que da la certificación del marco. En Monkey la empresa llama a un auditor y le crea un perfil `auditor` para que revise cómo lleva sus cuentas (D63, D96). No hay rol de consultor: el experto en compliance es el `admin_empresa` |
 | **Hallazgo** | `findings` | Una falla concreta que **detecta el sistema**: qué falló, en qué dimensión, sobre qué insumo |
 | **Observación del auditor** | `audit_observations` | Lo que escribe el rol `auditor` (observación, recomendación o solicitud de información) y que la empresa debe atender — §7.6. **No es un hallazgo** |
 | **Mitigación** · **Riesgo residual** | `mitigations` · `residual_risks` | Indicadores **separados** del cumplimiento (§9). La mitigación (causa, riesgo) y la fórmula del residual ya tienen reglas (D68, D75); faltan datos y quién define el apetito (`P22`) |
 | **Evaluación del servicio** | `service_frameworks` | Un servicio frente a un marco, en una versión, un período auditado y una fecha de corte (D68, REQ-004). No es `evaluations`, que son los resultados |
 | **Avance** · **Cobertura** · **Estado** | — | **Avance**: lo cumplido sobre el total del nivel. **Cobertura**: qué parte de lo aplicable ya se evaluó. **Estado**: si cumple (efectivo, cumple…); lo decide la regla «todo o nada», nunca el porcentaje (§9) |
-| **Evaluación del consultor** · **del auditor** | — | Cada uno evalúa el cumplimiento con distinto enfoque: el consultor prepara, el auditor certifica (D68, D77): cada una emite su veredicto sobre una evaluación del servicio (`framework_assessments`); el del auditor no cambia el estado |
+| **Evaluación del consultor** · **del auditor** | — | **En pausa (D96).** Cada una emitía su veredicto sobre una evaluación del servicio (`framework_assessments`, D77). La del auditor volverá según el Excel (`P35`); la del consultor desapareció |
+| **Responsable por dimensión** | — | El `funcional` a quien se le asigna el trabajo de una dimensión (documental, aplicación, servidores, bases de datos o nube) en un servicio, con excepciones por control (D96, `modelo/05-usuarios.md`) |
 | **Cobertura técnica** | — | Cuánto del scope se puede medir automáticamente. **Número aparte** del cumplimiento |
 
 ### De la capa técnica

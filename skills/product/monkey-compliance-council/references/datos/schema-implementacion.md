@@ -118,6 +118,7 @@ JWT_ACCESS_EXPIRES_IN=900         # access token: 15 min
 SESSION_IDLE_TIMEOUT=1800         # cierre a los 30 min sin actividad
 SESSION_MAX_DURATION=28800        # tope absoluto: 8 h
 TOKEN_HASH_PEPPER="..."           # HMAC de refresh tokens y claves de acceso; cambiarlo cierra todas las sesiones
+ACTIVATION_CODE_TTL_HOURS=168       # horas que sirve un código de activación de cuenta (D95, D96). Opcional: 168 (7 días). Aún no la lee nadie: la usará el módulo de equipo al emitir el código
 
 # Componente 3 (D46)
 CREDENTIALS_ENCRYPTION_KEY="..."  # 32 bytes en base64 (AES-256-GCM): cifra las credenciales de los sistemas que
@@ -177,18 +178,20 @@ filtrarían a otra petición del pool): `app.tenant_id`, `app.user_id`, `app.use
    propio. **Se escribe sin `RETURNING`**: un `INSERT … RETURNING` exige que la fila nueva pase
    también la política de lectura, y una acción de plataforma sin tenant no la pasa. **Se escribe dentro de la transacción de la
    acción** (`insertAuditLog(tx, …)`, D52): el repositorio recibe un `AuditIntent` y, si el rastro falla, la acción se revierte.
-5. `consultant_assignments`: la política lee `company_id = app.tenant_id OR consultant_user_id = app.user_id`, porque un consultor ve sus asignaciones sin importar el tenant activo
+5. *(Sin uso desde D96: no hay consultor.)* `consultant_assignments`: la política lee `company_id = app.tenant_id OR consultant_user_id = app.user_id`, porque un consultor ve sus asignaciones sin importar el tenant activo
    (D64). Fija `app.tenant_id` solo después de comprobar que la asignación está `active`.
 6. `evaluations`: `REVOKE UPDATE, DELETE, TRUNCATE` y `GRANT UPDATE (confirmed_by,
    closure_observation_reason)` para la app, y los triggers `evaluations_immutable` (por fila) y
    `evaluations_no_truncate` (por sentencia) para **todos los roles**, también el dueño de la tabla:
    inmutable salvo el cierre humano. El `UPDATE` se compara sin esas dos columnas, así que una
    columna nueva de `evaluations` queda protegida sin tocar el trigger.
-7. `framework_assessments` (D77, MD-155): `REVOKE UPDATE, DELETE, TRUNCATE` a la app y los triggers
+7. *(Sin uso desde D96: las evaluaciones están en pausa.)* `framework_assessments` (D77, MD-155): `REVOKE UPDATE, DELETE, TRUNCATE` a la app y los triggers
    `framework_assessments_immutable` y `framework_assessments_no_truncate` para todos los roles; un
    `CHECK` impone que el veredicto sea del rol que lo emite (`consultor`: `ready`/`not_ready`;
    `auditor`: `certified`/`not_certified`) y otro que la justificación no esté vacía. Que el rol sea el de
    quien emite lo comprueba la aplicación (la base no mira otra tabla en un `CHECK`).
+
+8. `user_activation_codes` (D95, D96): patrón normal por `company_id` (el de la cuenta a activar). `code_hash` es HMAC con `TOKEN_HASH_PEPPER`, como `access_keys`.
 
 **Búsquedas previas al tenant** (login, canje de clave, refresh, API key): cuatro funciones
 `SECURITY DEFINER`, angostas, con `search_path` fijo y `REVOKE … FROM PUBLIC; GRANT EXECUTE … TO
@@ -197,6 +200,8 @@ monkey_app`: `platform.find_login_candidates(email)`, `find_access_key(code_hash
 (Prisma no tipa funciones SQL); con el `company_id` que devuelven, la app fija `app.tenant_id` y
 sigue con RLS normal. El email es único global (D29), así que el login devuelve a lo sumo un
 usuario.
+
+**Otras funciones `SECURITY DEFINER` (mismo patrón: angostas, `search_path` fijo, `REVOKE … FROM PUBLIC; GRANT EXECUTE … TO monkey_app`):** `platform.find_mfa_challenge(token_hash)` (D94) y `platform.find_activation_code(code_hash)` (D95, D96; antes de conocer el tenant).
 
 **Columnas denormalizadas por RLS:** `sessions` y `user_control_assignments` llevan `company_id`
 propio (el ER solo llegaba a la empresa vía `user_id`), para que la política sea una comparación

@@ -7,23 +7,23 @@ type: contract
 
 # Cumplimiento — evidencias
 
-**Estado: ACORDADO (2026-10-17; D84 y D85; ajustado por D88 el 2026-10-22); construido: listar, subir, versiones y descargar (MD-126), la revisión (MD-127) y agregar una evidencia propia (D88).** Ver `conventions.md` (sección «Cumplimiento») y `enums.md`. Tickets: MD-126 y MD-127 (la revisión por consultor y auditor, que está en `compliance-audit.md`).
+**Estado: ACORDADO, reescrito por D96 (2026-10-27); construido: listar, subir, versiones y descargar (MD-126), la revisión del `admin_empresa` (MD-127, 2026-10-28) y agregar una evidencia propia (D88).** Lo que falta (el filtro por responsable de dimensión) está en `compliance-audit.md` («Estado de implementación»). Ver `conventions.md` (sección «Cumplimiento») y `enums.md`. Tickets: MD-126 y MD-127 (la validación por el administrador, que está en `compliance-audit.md`).
 
-**Qué es.** Cada control exige evidencias (`evidence_requirements`, que nacen de las plantillas del catálogo al clonar). Quien responde sube un archivo (`evidence_submissions`); **la empresa solo aporta** (D84): lo revisan el consultor y el auditor, cada uno por su lado.
+**Qué es.** Cada control exige evidencias (`evidence_requirements`, que nacen de las plantillas del catálogo al clonar). Quien responde sube un archivo (`evidence_submissions`): lo hace el **`funcional` responsable de la dimensión** de esa prueba (D96), y lo **valida el `admin_empresa`**.
 **Entidades:** `evidence_requirements`, `evidence_submissions`, `evidence_reviews` (`modelo-datos.md` §7.3). **App:** Monkey Platform. En las pantallas (D80): lo que el control exige es la **evidencia requerida** y lo que se sube para cumplirlo es la **evidencia entregada** (una versión por subida). «Prueba» no se usa para esto: en el cerebro una prueba es el test que ejecuta el motor. La evidencia se aporta **desde el propio control** (su panel de detalle) y también desde la pestaña Evidencias, que reúne lo que le toca a cada persona; ambas usan los mismos endpoints.
 
-**La empresa no aprueba ni rechaza (D84).** Quien sube una evidencia no la valida: la **revisan el consultor y el auditor**, cada uno la suya y en su momento (consultoría prepara, auditoría certifica). La revisión
+**Quien sube no valida (D96).** El `funcional` sube; **el `admin_empresa` la valida o la rechaza con motivo**, en una sola revisión; el `auditor` la lee y no la revisa. La revisión
 (los seis atributos y `review`) está en `compliance-audit.md`; este contrato solo muestra su resultado como `evidence_state`. La IA puede sugerir; **nunca aprueba ni cierra nada**.
 
 ## Quién puede qué
 
-| Acción | `admin_empresa` | `funcional` | `consultor` | `auditor` |
-|---|---|---|---|---|
-| Ver requerimientos y entregas | todos | **solo los de sus acciones asignadas** | todos | todos |
-| Subir un archivo | ✓ | solo de lo asignado | `403` | `403` |
-| Ver o descargar el archivo | ✓ | solo de lo asignado | ✓ | ✓ |
-| Revisar una entrega (`compliance-audit.md`) | `403` | `403` | ✓ la suya | ✓ la suya |
-| Cambiar el responsable, agregar o quitar un requerimiento propio | ✓ | `403` | `403` | `403` |
+| Acción | `admin_empresa` | `funcional` | `auditor` |
+|---|---|---|---|
+| Ver requerimientos y entregas | todos | **solo los de las pruebas de las que es responsable** | todos |
+| Subir un archivo | ✓ (no es su foco) | ✓ solo de su dimensión | `403` |
+| Ver o descargar el archivo | ✓ | solo de lo suyo | ✓ |
+| Validar o rechazar una entrega (`compliance-audit.md`) | ✓ | `403` | `403` |
+| Cambiar el responsable, agregar o quitar un requerimiento propio | ✓ | `403` | `403` |
 
 ## `GET /v1/controls/{id}/evidence`
 
@@ -70,10 +70,10 @@ Los requerimientos de una acción, cada uno con sus entregas (la más reciente p
 - `test` (D88): `{ "id", "code", "display_name" }` si la evidencia es de **esa** prueba del control (la que la persona sube bajo la prueba); `null` si es un documento que el catálogo **sugiere** para el control sin decir a qué prueba sirve (no cuenta para ninguna). `display_name` es el nombre neutro (D70).
 - `version` es un entero que crece por requerimiento; el modelo lo guarda como texto. **Una versión nueva nunca pisa la anterior.**
 - `ai` es `null` o `{ "is_ai_generated": true, "ai_confidence": 0.82, "verdict": "…" }`: una sugerencia, siempre marcada.
-- `evidence_state` (`enums.md`) lo **deriva el servidor** de la revisión; nadie lo escribe. Para la empresa, el consultor y `admin_empresa` sale de la **revisión del consultor** (la que consume el motor, D84); para el auditor, de la **suya**. Sin ninguna revisión humana
+- `evidence_state` (`enums.md`) lo **deriva el servidor** de la revisión; nadie lo escribe. Sale de la **revisión del `admin_empresa`** (la que consume el motor, D96); para todos los roles es la misma. Sin ninguna revisión humana
   es `pending`, o `in_review` si la IA ya la sugirió.
 - Con `?view=technical` cada entrega agrega `technical: { "review": "ai_prevalidated", "attributes": { "type_ok": true, "period_ok": true, "valid_ok": null, "approved_ok": true, "signed_ok": null, "content_ok": true }, "note": null, "reviewed_by": null, "reviewed_at": null }`.
-  Es **la revisión de quien pregunta**: la del consultor para `admin_empresa` y consultor, la del auditor para el auditor. **El auditor nunca recibe la del consultor ni rastro de que exista, y el consultor no recibe la del auditor** (D84, SEG-61).
+  Es la revisión del `admin_empresa`, y la ven `admin_empresa` y `auditor` (el `funcional` ve el estado y la nota de rechazo, no los atributos). Ya no se esconde la revisión de un rol al otro: SEG-61 se retira (D96).
 
 ## `POST /v1/evidence-requirements/{id}/submissions` — subir
 
@@ -162,12 +162,12 @@ Lo que se subió para un test **manual o documental**, para mostrarlo en el test
 
 ## `POST /v1/controls/{control_id}/tests/{test_id}/evidence` — subir la evidencia de una prueba (D88)
 
-La persona lee lo que pide la prueba y sube su documento **bajo ella**, en un solo paso; el consultor lo revisa después (D84). `multipart/form-data`, campo `file`; mismos tipos y tope que la subida de un requerimiento (PDF, DOCX, XLSX, PNG y JPG, 25 MB, SEG-60). Suben `admin_empresa` y el `funcional` dueño del control.
+La persona lee lo que pide la prueba y sube su documento **bajo ella**, en un solo paso; el `admin_empresa` la valida después (D96). `multipart/form-data`, campo `file`; mismos tipos y tope que la subida de un requerimiento (PDF, DOCX, XLSX, PNG y JPG, 25 MB, SEG-60). Suben el `funcional` responsable de la dimensión de esa prueba y, si hace falta, el `admin_empresa`.
 
 - **La primera entrega crea el lugar de esa prueba** en el control (un requerimiento propio, `origin: "own"`, con `test_id` = la prueba, `description` = el nombre neutro de la prueba y código `EV-<control>-NN`); las siguientes son **versiones nuevas** del mismo lugar. Con el control bloqueado, dos primeras entregas a la vez crean un solo lugar.
 - El archivo se comprueba **antes** de crear el lugar: uno rechazado no deja un requerimiento vacío.
 - La prueba debe ser documental (`dimension: "policy"`) y del control: si el control no la lleva, `404`; si no es documental, `422` (`test.not_documentary`). Un control dado de baja, `409 CONTROL_RETIRED`.
-- Responde `201` con la entrega (`requirement_id` del lugar de esa prueba). **Subir no cumple la prueba**: queda en revisión hasta que el consultor valide la evidencia.
+- Responde `201` con la entrega (`requirement_id` del lugar de esa prueba). **Subir no cumple la prueba**: queda en revisión hasta que el `admin_empresa` la valide.
 
 ## Requerimientos
 
@@ -253,7 +253,7 @@ Todos con el mismo sobre (`conventions.md`); `message` es la clave i18n del erro
 - **Una entrega es histórico.** La app (`monkey_app`) no tiene `UPDATE` ni `DELETE` sobre `evidence_submissions` (`REVOKE` en la migración `20261018100000_evidence_submissions_provide_only`): solo inserta y lee, como el rastro de auditoría.
 - **Orden al subir.** Primero se comprueba el requerimiento y a quién le toca (`404`/`403`/`409`), luego el contenido del archivo (SEG-60), luego se guarda en el bucket y por último se inserta la fila con su rastro en la misma transacción. Si la base o el rastro fallan, el objeto se borra del bucket.
 - **La llave del objeto no sale.** Es `<empresa>/services/<servicio>/evidence/<requerimiento>/<uuid>/<nombre>`; `file_name` es su último tramo (el nombre ya limpio: sin acentos ni espacios). `storage_location` guarda `s3`.
-- **`evidence_state`** (MD-127, 2026-10-22). Sale de la revisión de quien pregunta (`evidence_reviews`): la del consultor para la empresa y el consultor, la del auditor para el auditor; **la base solo devuelve la del rol que pregunta** (SEG-61). Sin revisión es `pending` (o `in_review` si la IA ya sugirió). En `?view=technical` el bloque trae `review`, `attributes`, `note`, `reviewed_by` y `reviewed_at` de esa revisión; sin ninguna, todo `pending_review` y `null`.
+- **`evidence_state`** (MD-127, 2026-10-22). Sale de la única revisión de la entrega (`evidence_reviews`), la del `admin_empresa` (D96), para todos los roles; las filas viejas de `consultor` y `auditor` no se leen. Cada entrega lleva `review_note` (el motivo del rechazo), visible también para el `funcional`. Sin revisión es `pending` (o `in_review` si la IA ya sugirió). En `?view=technical` el bloque trae `review`, `attributes`, `note`, `reviewed_by` y `reviewed_at` de esa revisión; sin ninguna, todo `pending_review` y `null`.
 - **Subir por prueba (D88, 2026-10-22).** `POST /v1/controls/{id}/tests/{test_id}/evidence` busca el requerimiento de esa prueba en el control (lo crea en la primera entrega, con el control bloqueado) y sube el archivo como su versión siguiente. Rastro: `evidence_requirement.create` solo si lo creó, y `evidence.submit`.
 - **Requerimientos propios (D88, 2026-10-22).** `POST /v1/controls/{id}/evidence-requirements` (solo `admin_empresa`) crea un requerimiento `origin: "own"` con código `EV-<código del control>-NN` y la posición siguiente, calculados con el control bloqueado (dos altas a la vez no chocan). Valida `dimension.not_in_control`, `test.not_in_control` y `test.not_documentary`, y copia la vigencia que ya usa el servicio. Cómo la revisión de una evidencia mueve el estado del control está en `compliance-audit.md` y en `modelo/09-calculo-cumplimiento.md`.
 - **`ai`.** `ai_confidence` va `null`: la confianza no se guarda todavía.

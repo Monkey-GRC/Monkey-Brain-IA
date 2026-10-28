@@ -15,7 +15,7 @@ las citas) y este mapa dice dónde buscarla.
 |---|---|
 | **Aislamiento entre empresas** (RLS, variables de sesión, funciones previas al tenant) | [`../datos/modelo-datos.md`](../datos/modelo-datos.md) §4.3 y §4.4 · [`../datos/schema-implementacion.md`](../datos/schema-implementacion.md) §5 · D25, D29, D31 |
 | **Identidad, sesión, contraseñas, MFA** | `modelo-datos.md` §5.3 (la política del comité) · `contracts/modules/auth.md` |
-| **Roles y permisos** | `modelo-datos.md` §5.1 (los 5 roles; auditor y consultor son roles, D63, D64) y §5.5 (la matriz) · SEG-54 · P3 en [`../datos/modelo-datos-pendientes.md`](../datos/modelo-datos-pendientes.md) |
+| **Roles y permisos** | `modelo-datos.md` §5.1 (los 4 roles activos; el auditor es un rol aparte, D63, D96) y §5.5 (la matriz) · SEG-54 · P3 en [`../datos/modelo-datos-pendientes.md`](../datos/modelo-datos-pendientes.md) |
 | **Cómo el modelo de usuarios sostiene SOC 2** | `modelo-datos.md` §5.6 |
 | **Secretos y cifrado de credenciales** | `schema-implementacion.md` §4 · D46 · [`../deuda-tecnica/`](../deuda-tecnica/README.md) DT-5 |
 | **Auditoría, inmutabilidad y retención** | D41 · `modelo-datos.md` §7.4 · D72 |

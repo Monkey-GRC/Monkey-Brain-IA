@@ -393,7 +393,7 @@ puede cambiar solo — ya pasó una vez con la reclasificación de 223 checks.
 | `control_tests` → `client_control_tests` | **Sí** (D36): se copia el **vínculo** control ↔ test, no el test. Lo necesita un control propio y es lo que "cambiar los tests de un control requiere aceptación" (abajo) da por hecho |
 | `control_measurements` | **No** (D2: peso lineal, sin configuración). Ausencia de fila = peso 1. Si D2 se revisa, se clonan entonces |
 
-**Qué se propaga solo y qué requiere aceptación del consultor:**
+**Qué se propaga solo y qué requiere aceptación del `admin_empresa` (D96):**
 
 | Tipo de cambio en el catálogo | Se propaga solo | Requiere aceptación |
 |---|---|---|

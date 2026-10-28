@@ -282,10 +282,10 @@ Lo marca `admin_monkey` al registrar la empresa. No se revierte sin migrar datos
 `non_payment` Falta de pago · `client_request` El cliente ya no desea el servicio · `other` Otro
 
 ### `access_key_status` — `access_keys.status`
-`pending` Pendiente · `used` Usada · `expired` Expirada · `revoked` Revocada
+`pending` Pendiente · `used` Usada · `expired` Expirada · `revoked` Revocada *(también el estado de los códigos de activación de cuentas, D95)*
 
 ### `user_role` — `users.role`
-`admin_monkey` · `admin_empresa` · `funcional` · `consultor` · `auditor`
+`admin_monkey` · `admin_empresa` · `funcional` · `auditor`. *(El enum de la base conserva un quinto valor, `consultor`, **sin uso** desde D96: la API no lo acepta ni lo devuelve.)*
 
 ⚠️ El schema actual del Backend usa `MONKEY_ADMIN`, `CLIENT_ADMIN`, `USER`, `VIEWER`. El modelo
 nuevo manda estos cuatro en minúscula; la API expone los del modelo.
@@ -294,21 +294,21 @@ nuevo manda estos cuatro en minúscula; la API expone los del modelo.
 `observation` Observación · `recommendation` Recomendación · `information_request` Solicitud de información
 
 ### `audit_observation_status` — `audit_observations.status`
-`open` Abierta · `answered` Respondida · `closed` Cerrada. `admin_empresa` o el `funcional` dueño del control la pasan a `answered`; solo quien la escribió (`auditor` o `consultor`) la cierra o la devuelve a `open`.
+`open` Abierta · `answered` Respondida · `closed` Cerrada. `admin_empresa` o el `funcional` dueño del control la pasan a `answered`; solo quien la escribió (el `auditor`) la cierra o la devuelve a `open`.
 *(Contrato: `modules/compliance-audit.md`.)*
 
 ### `control_change_type` — `client_control_changes.change_type`
 `create` Crear un control propio · `retire` Dar de baja · `edit_dimensions` Editar dimensiones · `edit_interpretation` Editar interpretación
 
 ### `control_change_status` — `client_control_changes.status`
-`pending` Pendiente · `approved` Aprobado · `rejected` Rechazado. Solo el `consultor` decide.
+`pending` Pendiente · `approved` Aprobado · `rejected` Rechazado. **Sin uso desde D96**: el `admin_empresa` edita y da de baja directamente, así que no hay propuestas que decidir.
 *(Contrato: `modules/compliance-controls.md`.)*
 
 ### `consultant_assignment_status` — `consultant_assignments.status`
-`active` Activa · `suspended` Suspendida por la empresa · `revoked` Retirada por Monkey. *(La tabla está construida (MD-157); sus endpoints no tienen contrato todavía: MD-159 y MD-161.)*
+`active` Activa · `suspended` Suspendida por la empresa · `revoked` Retirada por Monkey. *(**Sin uso desde D96**: no hay consultor ni asignaciones.)*
 
 ### `user_status` — `users.status`
-`active` Activo · `inactive` Inactivo · `suspended` Suspendido
+`active` Activo · `inactive` Inactivo · `suspended` Suspendido · `pending` Pendiente de activar (D95: la cuenta existe pero aún no usó su código; no puede iniciar sesión)
 
 ## Catálogo, cumplimiento y control técnico
 
@@ -418,7 +418,7 @@ Los nombres son marcas y **no se traducen**. `logo_key` es el nombre del SVG ofi
 Cancelada
 
 ### `evaluation_origin` — `evaluations.origin`
-`automated` Automática (sonda) · `manual` Manual (consultor con evidencia) · `ai_assisted`
+`automated` Automática (sonda) · `manual` Manual (veredicto del administrador con evidencia) · `ai_assisted`
 Asistida por IA (revisión documental)
 
 ### `severity` — `findings.severity` y `vulnerabilities.severity`
@@ -435,7 +435,7 @@ Ya definidos en `modelo-datos.md` (§7 y §8): `mitigate|accept|transfer|avoid`,
 
 ## Cumplimiento — contratos de endpoints (MD-108)
 
-**Qué listas sirve `GET /v1/catalogs/{name}` (2026-10-17).** Además de las del onboarding, sirve las de cumplimiento y las del catálogo maestro: `risk_criterion`, `failure_category`, `risk_level`, `risk_treatment_decision`, `responsible_type`, `cause_control_effect`, `exclusion_status`, `assessor_role`, `assessment_verdict`, `dimension`, `control_type`, `catalog_origin`, `loss_type` y `risk_scale` (valores `1`–`5`, de la matriz 5×5). La respuesta es la de siempre (`value` + `label` según `Accept-Language`), en el orden del enum. **Ningún cliente escribe estas listas a mano**; la fuente es el enum de la base y la etiqueta, `i18n/<idioma>/catalogs.json` del backend.
+**Qué listas sirve `GET /v1/catalogs/{name}` (2026-10-17; `assessor_role` y `assessment_verdict` ya no, D96).** Además de las del onboarding, sirve las de cumplimiento y las del catálogo maestro: `risk_criterion`, `failure_category`, `risk_level`, `risk_treatment_decision`, `responsible_type`, `cause_control_effect`, `exclusion_status`, `assessor_role`, `assessment_verdict`, `dimension`, `control_type`, `catalog_origin`, `loss_type` y `risk_scale` (valores `1`–`5`, de la matriz 5×5). La respuesta es la de siempre (`value` + `label` según `Accept-Language`), en el orden del enum. **Ningún cliente escribe estas listas a mano**; la fuente es el enum de la base y la etiqueta, `i18n/<idioma>/catalogs.json` del backend.
 
 Valores que usan `modules/compliance-*.md`. Los de las tablas ya existentes (`dimension`, `trust_criterion`, `risk_criterion`, `risk_level`, `failure_category`, `risk_treatment_decision`, `evidence_review`,
 `audit_observation_*`, `control_change_*`) no se repiten.
@@ -443,8 +443,8 @@ Valores que usan `modules/compliance-*.md`. Los de las tablas ya existentes (`di
 ### `control_type` — `client_controls.type`
 `manual` Manual · `automated` Automática · `hybrid` Híbrida · `technical_manual` Técnica manual
 
-### `control_approval` — si un control propio ya lo aprobó el consultor
-`approved` Aprobado · `pending` Pendiente de aprobación · `rejected` Rechazado. Un control del catálogo es siempre `approved`; uno propio cuenta desde que se crea, aunque esté `pending` (D65).
+### `control_approval` — si un control propio está aprobado
+`approved` Aprobado · `pending` Pendiente de aprobación · `rejected` Rechazado. **Desde D96 un control propio nace `approved`** (lo crea el `admin_empresa` directamente); `pending` y `rejected` quedan sin uso. Uno del catálogo es siempre `approved`.
 
 ### `exclusion_status` — `exclusions.status`
 `pending` Pendiente · `approved` Aprobada · `rejected` Rechazada. «Vencida» no es un estado: se deriva de `valid_until` (`is_expired`).
@@ -462,7 +462,7 @@ Valores que usan `modules/compliance-*.md`. Los de las tablas ya existentes (`di
 ## Estados de evaluación (D68)
 
 Los **estados que el motor calcula** en cada nivel (`modelo-datos.md` §9). Se **derivan**, no son una columna que alguien edita. **La fuente (hoja `MODELO EVALUACIÓN MONKEY`) solo da las etiquetas en español**; los valores en
-`snake_case` en inglés son nuestra nomenclatura. El cliente ve el estado cualitativo (Preparado, Casi listo, Requiere trabajo, Sin medir: `philosophy.md`) junto con su porcentaje de avance (D80); estos son los estados del motor, la **vista técnica** del consultor, el auditor y, desde D81, el administrador de la empresa.
+`snake_case` en inglés son nuestra nomenclatura. El cliente ve el estado cualitativo (Preparado, Casi listo, Requiere trabajo, Sin medir: `philosophy.md`) junto con su porcentaje de avance (D80); estos son los estados del motor, la **vista técnica** del auditor y del administrador de la empresa (D81, D96).
 
 ### `evidence_state` — estado calculado de una evidencia
 `compliant` Cumple · `non_compliant` No cumple · `pending` Pendiente · `in_review` En revisión · `expired` Evidencia vencida · `not_applicable` No aplica.
@@ -470,7 +470,7 @@ Los **estados que el motor calcula** en cada nivel (`modelo-datos.md` §9). Se *
 ### `evidence_review` — `evidence_reviews.review` (D84)
 `pending_review` Pendiente de revisión · `ai_prevalidated` Pre-validada por IA · `human_validated` Validada por una persona. Solo `human_validated` permite `compliant`; la IA nunca produce «cumple» (RN-03).
 **Lo guarda una persona solo como `pending_review` o `human_validated`; `ai_prevalidated` lo deriva el servidor** (la entrega tiene `ai_verdict` y ninguna revisión humana) y nunca se acepta de un cliente.
-`reviewer_role` (`evidence_reviews.reviewer_role`): `consultor` · `auditor`. La empresa no aprueba ni rechaza la evidencia (D84).
+`reviewer_role` (`evidence_reviews.reviewer_role`): desde D96 solo `admin_empresa`, que valida o rechaza la evidencia en **una sola revisión** (el `funcional` la sube; el `auditor` la lee y no la revisa). Los valores `consultor` y `auditor` del enum quedan sin uso.
 
 ### `asset_result` — el resultado de un activo en un test (`evaluations.result`)
 `compliant` Cumple · `non_compliant` No cumple · `pending` Pendiente · `error` Error · `excluded` Excluido (más `not_applicable`).
@@ -491,7 +491,7 @@ Riesgo: `mitigated` Mitigado · `not_mitigated` No mitigado · `evaluating` En e
 ### `residual_acceptance` — el riesgo que queda frente al apetito (D75)
 `acceptable` Aceptable · `not_acceptable` No aceptable. El valor del apetito es un parámetro (inicial: 9 sobre 25); quién lo define está abierto (`P22`).
 
-### `assessor_role` · `assessment_verdict` — evaluación del consultor y del auditor (D77)
+### `assessor_role` · `assessment_verdict` — evaluación del consultor y del auditor (D77, **en pausa por D96**: no se sirven ni se usan)
 Rol: `consultor` Consultor · `auditor` Auditor. Veredicto del consultor: `ready` Lista para la auditoría · `not_ready` No lista. Veredicto del auditor: `certified` Certifica · `not_certified` No certifica.
 
 ### `cause_control_effect` — `cause_controls.effect` y `client_cause_controls.effect` (D75)

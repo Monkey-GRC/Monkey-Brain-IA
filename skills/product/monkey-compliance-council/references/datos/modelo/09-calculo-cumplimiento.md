@@ -40,7 +40,7 @@ Otros documentos citan estas reglas (las del Excel del 9 de octubre y de D62). E
 |---|---|
 | R-01 cumplimiento solo sobre el scope del servicio | **Se conserva** |
 | R-02 cada control define sus dimensiones y activos | **Se conserva** (las dimensiones, de `Controles Monkey`) |
-| R-03 manual: la evidencia sustenta, el consultor evalúa | **Se conserva**, junto a la evaluación del auditor (D77) |
+| R-03 manual: la evidencia sustenta, el `admin_empresa` evalúa | **Se conserva**; la evaluación del auditor (D77) está en pausa (D96) |
 | R-04 automático: la sonda entrega, Monkey interpreta | **Se conserva** (lectura de la sonda, más abajo) |
 | R-05, R-06, R-08, R-09, R-10 (dimensión que cumple, solo se mide lo que tiene resultado, % del control, de la categoría y del marco) | **Reemplazadas** por las reglas de abajo (D68) |
 | R-07 `not_applicable` se excluye | **Se conserva**: un test `NO APLICA` no cuenta para el control |
@@ -84,7 +84,7 @@ firma o autorización, contenido obligatorio). Algún atributo en «No» ⇒ `NO
 validada por una persona puede ser `CUMPLE`**: la pre-validada por IA queda `EN REVISIÓN` (RN-03). El test documental agrega sus evidencias con la prioridad
 `NO CUMPLE` > `VENCIDA` > `EN REVISIÓN` > `PENDIENTE` > `CUMPLE`; sin evidencias es `PENDIENTE`. Cada evidencia conserva origen, fecha, responsable, versión y hash, y una versión nueva
 **no sobrescribe** la anterior (en el cálculo cuenta la **más reciente** de cada requerimiento).
-**Un test documental se calcula por control (D88):** sus evidencias son las que la persona entregó PARA ESE TEST en ese control (`test_id` igual); un documento que el catálogo sugiere sin prueba (`test_id` nulo) y las de otro control o de otra prueba nunca cuentan. La revisión del consultor es el veredicto (no hay un segundo paso). Esto ajusta RN-13 para lo documental: el resultado sigue siendo único por
+**Un test documental se calcula por control (D88):** sus evidencias son las que la persona entregó PARA ESE TEST en ese control (`test_id` igual); un documento que el catálogo sugiere sin prueba (`test_id` nulo) y las de otro control o de otra prueba nunca cuentan. La validación del `admin_empresa` es el veredicto (no hay un segundo paso). Esto ajusta RN-13 para lo documental: el resultado sigue siendo único por
 test × **control** × período × versión, porque el documento cambia de un control a otro.
 **Relación control–test** (RN-12, REQ-019 a REQ-021): es N:M y lleva *obligatorio*, *vigente*, fecha de alta y de baja, y justificación. Un test no obligatorio, no vigente o `NO APLICA`
 **no cuenta** para el control; desactivarlo exige justificación y deja rastro. **Agregar un test obligatorio nuevo** lo hace entrar `PENDIENTE` y puede volver no efectivo a un control que era efectivo.
@@ -103,8 +103,7 @@ pendientes. El estado de un control se **reutiliza** entre marcos del mismo serv
 **La evaluación** (REQ-004, REQ-005): se define por **servicio + marco + versión + período auditado + fecha de corte**; sin esos cinco datos no se ejecuta ni se reutiliza un resultado. Solo se evalúan los
 marcos **contratados** (D47) y las categorías en alcance. Un resultado se calcula **una vez** por test × servicio × período × versión y lo consumen todos los controles que usan ese test (RN-13).
 
-**Exclusiones de activos** (REQ-008): excluir un activo exige **justificación, aprobador y vigencia**; sin los tres no se puede, y queda en el rastro. La propone la empresa y la aprueba el
-consultor (D78). Cambia el denominador del test solo así: *un check que sale por omisión es un agujero*.
+**Exclusiones de activos** (REQ-008): excluir un activo exige **justificación, aprobador y vigencia**; sin los tres no se puede, y queda en el rastro. La propone y la decide el `admin_empresa` en un solo acto (D96). Cambia el denominador del test solo así: *un check que sale por omisión es un agujero*.
 
 **Riesgo inherente** (RN-22): probabilidad × impacto (1 a 25): Bajo 1–4 · Moderado 5–9 · Alto 10–16 · Crítico 17–25.
 **Riesgo residual** (RN-23, D75): para un riesgo, *Cp* son los controles únicos con efecto «probabilidad» vinculados a sus causas aplicables y *Ci* los de efecto «impacto». La reducción de la probabilidad es
@@ -112,7 +111,7 @@ consultor (D78). Cambia el denominador del test solo así: *un check que sale po
 siempre menor o igual que el inherente. **Solo los controles efectivos reducen** (los pendientes reducen 0) y no se pondera por la solidez del control. Los parámetros son **configurables, nunca escritos en el código**:
 máximo 2 puntos en probabilidad y 1 en impacto. El residual es **aceptable** si su valor es menor o igual que el **apetito**, cuyo valor inicial es 9 sobre 25 (RN-24). Los controles efectivos no implican un residual aceptable.
 Por riesgo se muestra qué controles lo mitigan, cuáles reducen probabilidad y cuáles impacto, la reducción aplicada y si la lectura es *confirmada*, *provisional* o *con controles fallidos* (REQ-041). La **matriz inherente** (antes de aplicar controles) y la **matriz residual** (después) son el mapa de calor 5×5 con la posición de cada riesgo (REQ-042). **Son la lectura de la evolución, no el criterio de mitigación**: si un riesgo está mitigado lo dicen sus controles y sus tests (RN-20, RN-21, D76).
-**Es vista del consultor y del auditor, no del cliente.** **No se construyen todavía** (MD-151, fuera del sprint): la relación causa→control ya está completa en el Excel (209 relaciones), pero falta el **efecto (probabilidad o impacto) y la obligatoriedad** de cada una, el comité entregará el detalle de la fórmula y la probabilidad y el impacto de cada riesgo los pone el cliente (`P22`, D76).
+**Es vista del `admin_empresa` y del `auditor` (D96).** **No se construyen todavía** (MD-151, fuera del sprint): la relación causa→control ya está completa en el Excel (209 relaciones), pero falta el **efecto (probabilidad o impacto) y la obligatoriedad** de cada una, el comité entregará el detalle de la fórmula y la probabilidad y el impacto de cada riesgo los pone el cliente (`P22`, D76).
 
 ### El ejemplo resuelto
 
@@ -147,7 +146,7 @@ o quede pendiente o en error, vuelve a romperlo. Las simulaciones 1 a 6 y las va
 
 ### Qué ve cada rol, y el semáforo
 
-Los estados de arriba (efectivo, incompleto, vencido…) y las listas de controles son **la vista técnica**: es la pantalla de los roles `auditor` y `consultor` y, desde D81, también la pide `admin_empresa` (mientras `P3` siga abierta). **El cliente** (`admin_empresa`, `funcional`)
+Los estados de arriba (efectivo, incompleto, vencido…) y las listas de controles son **la vista técnica**: es la pantalla de los roles `auditor` y `admin_empresa` (D81, D96; mientras `P3` siga abierta). **El cliente** (`admin_empresa`, `funcional`)
 ve por defecto la vista de negocio (REQ-049): el semáforo cualitativo primero, y en qué falla y su avance (`philosophy.md`).
 
 | Semáforo | Cuándo (sobre el avance del nivel) |
@@ -160,13 +159,9 @@ ve por defecto la vista de negocio (REQ-049): el semáforo cualitativo primero, 
 Un activo se lee con la misma regla sobre sus tests con resultado cumplidos / sus tests con resultado (el comité no lo define; sigue la lectura de D62, `DT-66`).
 **La cobertura va siempre al lado del avance**, como número aparte: «100% de lo medido · cobertura 40%» nunca se presenta como Preparado.
 
-### La evaluación del consultor y la del auditor
+### La evaluación del consultor y la del auditor — en pausa (D96)
 
-El cálculo de Monkey no es el único veredicto. **El consultor y el auditor hacen cada uno una evaluación del cumplimiento sobre los mismos datos, con distinto enfoque:** el **consultor prepara** a la empresa
-(le dice qué le falta) y el **auditor certifica**, de forma independiente. El Excel del comité no las contempla: donde dice «validada por auditor» (RN-03) se entiende **«validada por una persona»**.
-Hoy el consultor da el veredicto de los tests documentales y manuales (§7.5, R-03) y el auditor escribe observaciones (§7.6). **Cada uno emite la suya en `framework_assessments` (§7.5, D77), ligada a la evaluación del servicio, y se muestra al lado del estado calculado sin cambiarlo.** El consultor da además un veredicto general («lista» o «no lista para la auditoría»); el del auditor es su opinión y certifica.
-Qué ve el cliente de ellas queda en `P3`.
-
+El cálculo de Monkey es el único veredicto por ahora. Las evaluaciones que el consultor y el auditor emitían sobre los mismos datos (D68 punto 11, D77) **están en pausa**: el consultor ya no existe en el producto y la calificación del auditor (certificar o no) se retoma después, según el Excel y sin cambiar el estado calculado (`P35`). Donde el Excel dice «validada por auditor» (RN-03) se entiende **«validada por una persona»**: hoy, el `admin_empresa`.
 ### Cómo se guarda
 
 El cumplimiento de un marco **se deriva** recorriendo requisitos → controles y **nunca se almacena como atributo del marco**. El comité pide recálculo incremental por eventos y un rastro de cada cambio

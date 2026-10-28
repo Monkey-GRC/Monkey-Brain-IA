@@ -1,6 +1,6 @@
-# Registro de decisiones — D62–D68
+# Registro de decisiones — D62–D68, D95 y D96
 
-> Parte de [`modelo-datos-decisiones.md`](../modelo-datos-decisiones.md) (índice). Cómo se cuenta el cumplimiento, el auditor, los cinco roles, controles propios y MFA.
+> Parte de [`modelo-datos-decisiones.md`](../modelo-datos-decisiones.md) (índice). Cómo se cuenta el cumplimiento, el auditor, los cinco roles, controles propios, MFA y la entrada del consultor.
 > Los identificadores (`D-n`, `A1`…) no cambian: se citan por su ID, no por la posición.
 
 ## D62 · El cumplimiento se cuenta: dimensión → control → categoría → marco (2026-10-09)
@@ -32,6 +32,8 @@ diagnóstico que se le muestra al cliente. Una categoría al 99% se ve como 99%,
 
 ## D63 · El auditor es un rol aparte (2026-10-09)
 
+> **Ajustada por D96 (2026-10-27).** Se mantiene todo lo del auditor, salvo dos cosas: la vista técnica es del `auditor` y del `admin_empresa` (ya no hay consultor) y su evaluación —certificar o no— queda en pausa. Lo crea `admin_empresa` para una auditoría concreta y, al terminar, la empresa lo desactiva.
+
 **Decisión.**
 
 - `auditor` es un rol con permisos propios y su propia experiencia al entrar; la vista técnica es suya (y del consultor, D64), no un modo que active el cliente *(D81: mientras `P3` siga abierta, también la pide `admin_empresa`)*.
@@ -54,6 +56,8 @@ asignación»; aquí solo `admin_empresa` crea auditores y el auditor ve todos l
 
 ## D64 · Hay cinco roles: el consultor prepara, el auditor certifica (2026-10-09)
 
+> **Reemplazada por D96 (2026-10-27).** Ya no hay rol de consultor: lo que hacía pasó al `admin_empresa`. El valor `consultor` del enum y la tabla `consultant_assignments` se conservan sin uso, y nada del producto los toca.
+
 **Decisión.** Se añade el rol `consultor` y se descartan los roles personalizados: los 5 roles son fijos.
 
 - **Consultoría** prepara al cliente para la auditoría; **auditoría** es el examen final que da la certificación del marco. Hacen prácticamente lo mismo; el consultor prepara el terreno.
@@ -75,6 +79,8 @@ una cuenta única evita un correo por empresa (el correo es único en todo el si
 
 ## D65 · Controles propios y cambios de controles con aprobación del consultor (cierra P8) (2026-10-09)
 
+> **Reemplazada por D96 (2026-10-27).** El `admin_empresa` crea, edita y da de baja controles propios y cambios de controles **directamente**, con advertencia y confirmación; ya no se propone ni se aprueba. Se conserva: el control propio es solo documental, va en una categoría que elige la empresa y cuenta para el porcentaje.
+
 **Decisión.**
 
 - El cliente puede **proponer** crear un control propio, darlo de baja y editar las dimensiones o la interpretación de cualquier control suyo. **Decide el consultor.**
@@ -90,6 +96,8 @@ una cuenta única evita un correo por empresa (el correo es único en todo el si
 
 ## D66 · MFA obligatoria para los 5 roles (2026-10-09)
 
+> **Ajustada por D96 (2026-10-27).** Los roles activos son cuatro (`admin_monkey`, `admin_empresa`, `funcional`, `auditor`); la MFA sigue obligatoria para todos. D96 no la relaja para el `funcional`, aunque el Excel lo hace.
+
 **Decisión.** La autenticación de dos factores (TOTP) es obligatoria para `admin_monkey`, `admin_empresa`, `funcional`, `consultor` y `auditor`, y el resto de políticas del TSC integral
 (§5.3) aplican a todos. Es un requisito de seguridad sin excepciones; se construye en el sprint de acceso y usuarios, no en el de Cumplimiento.
 **Por qué.** La hoja de roles del TSC la exigía solo a admin y auditor y dejaba al `funcional` sin ella; el responsable de producto la extendió a todos.
@@ -97,6 +105,8 @@ una cuenta única evita un correo por empresa (el correo es único en todo el si
 
 
 ## D68 · El motor de evaluación del comité es la regla del cálculo (2026-10-10)
+
+> **Ajustada por D96 (2026-10-27).** Cambian dos puntos: el 8 (la exclusión por activo la decide el `admin_empresa`, no el consultor) y el 11 (las evaluaciones del consultor y del auditor quedan en pausa).
 
 **Problema.** El comité entregó la VF2 del TSC integral con tres hojas nuevas que especifican el **motor de evaluación** (`MODELO EVALUACIÓN MONKEY`, `REQUISITOS EVALUACIÓN MONKEY` y un prompt de
 desarrollo): estados por nivel, reglas RN-01 a RN-25, 51 requisitos y 8 casos de prueba. D62 había fijado la agregación con otro criterio (la fijó el responsable de producto porque el Excel de la
@@ -131,5 +141,70 @@ trazable (cada estado se explica con una regla numerada y casos de prueba). La e
 preparación por severidad se escribe contra esta regla; `DT-65`, el calculador que promediaba, se retiró porque ese código ya no existe) y `DT-69` (dimensiones); pendiente `P22` (`P23` lo cerró D77).
 
 **Fuente:** comité funcional, `assets/TSC INTERGRAL SOC 2 DETALLADO VF2.xlsx` (hojas `MODELO EVALUACIÓN MONKEY` y `REQUISITOS EVALUACIÓN MONKEY`), 2026-10-10; evaluación del consultor y del auditor: responsable de producto, 2026-10-10.
+
+---
+
+## D95 · El consultor se activa con un código de un solo uso y entra a sus empresas asignadas eligiendo de una lista, sin token por empresa (2026-10-27)
+
+> **Reemplazada en parte por D96 (2026-10-27).** Sin consultor no hay empresa activa ni asignaciones. **Sobrevive el mecanismo de activación**: el estado `pending`, la tabla `user_activation_codes` y el código de un solo uso, que ahora emite el `admin_empresa` para invitar a `funcional` y `auditor`.
+
+**Decisión.**
+
+- `admin_monkey` crea al consultor solo con su correo (cuenta en la empresa interna de Monkey, D64). Recibe un **código de activación de un solo uso**, ligado a ese correo, que `admin_monkey` le entrega a mano (el correo sigue aplazado, MD-69). Con él pone su contraseña y configura el segundo factor (D94), igual que el `admin_empresa` con su clave de acceso (D43, D51).
+- Al iniciar sesión (contraseña y segundo factor) el consultor ve **solo las empresas con asignación `active`** y elige una; con una sola, entra directo. **No hay un token de ingreso por empresa.**
+- La sesión guarda la empresa activa (`sessions.active_company_id`). La asignación y el estado de la empresa se comprueban en **cada petición**; todo se abre con la empresa activa y lo que el consultor escribe lleva **su** id como autor, nunca el de la empresa. Elegir o cambiar de empresa queda en la auditoría.
+- Cortar el acceso es cambiar el estado de la asignación: `admin_monkey` la retira o la empresa la suspende (D64), y aplica en la siguiente petición.
+- La empresa interna de Monkey existe: la crea `bootstrap:admin` junto al primer `admin_monkey`, y es donde viven `admin_monkey` y `consultor`.
+
+**Por qué.** Un token por empresa no agrega seguridad (la asignación y el segundo factor ya se comprueban en cada petición), obliga a entregar un secreto por cada par consultor–empresa sin servicio de correo, y revocarlo exige rastrear cuál sigue en circulación. La lista solo contiene las empresas asignadas, así que nunca expone la cartera de Monkey. Clasificación del Consejo: **MUST** asignación, elección de empresa, comprobación en cada petición y auditoría; **LATER** asignaciones con vencimiento; **NO BUILD** token de ingreso por empresa.
+
+**Qué cierra.** `P29` (cómo activa su cuenta un consultor) y `P30` (dónde vive y cómo se aísla cuando trabaja en un cliente).
+
+**También aprobado el 2026-10-27** (al revisar el contrato): el estado `pending` en `users` (la cuenta existe desde el alta, así se le puede asignar empresas antes de que active y se ve quién falta), la tabla `user_activation_codes` (la reutilizarán `funcional` y `auditor` en MD-131), desactivar y reactivar la cuenta de un consultor (`CC6.3`, fila «Desactivar / reactivar usuario» del Excel), reemitir un código perdido y la vigencia de 7 días del código (`ACTIVATION_CODE_TTL_HOURS`, el mismo supuesto de la clave de acceso, P2b).
+
+**Qué cambia al construirlo.** `users.status` suma `pending`; tabla `user_activation_codes`; `sessions.active_company_id`; el rol se comprueba **antes** que la empresa elegida (un consultor que llama a una ruta que no es suya recibe 403, no 409); una empresa puede leer la cuenta de los consultores que tienen o tuvieron una asignación con ella (sin eso no se puede decir quién firmó un veredicto); y el trigger de asignaciones ya no deja que `admin_empresa` mueva una asignación que Monkey retiró (antes solo miraba `suspended → active`). El contrato de este corte (`users-consultant-access.md`) se retiró con D96; solo sobrevive lo del código de activación en `contracts/modules/users-team.md` y `SEG-64`.
+
+**Fuente:** Carlos Castaño, 2026-10-27; `modelo-datos.md` §5.1 y §5.2 (D63, D64).
+
+---
+
+## D96 · Cuatro roles: el administrador de la empresa es el experto en compliance y el trabajo se reparte por dimensión (2026-10-27)
+
+**Contexto.** Carlos Castaño (2026-10-27): no hay rol de consultor, por ahora. Monkey es para que **la empresa** vea cómo va con SOC 2 (y luego otros marcos); el experto en compliance es el administrador de la empresa. El auditor es un perfil que la empresa crea cuando va a certificarse, para que revise cómo lleva sus cuentas en Monkey. Quien hace el trabajo son los `funcional`, y hay muchos con especialidades distintas. El cerebro estaba desactualizado frente al Excel del comité: desde aquí, **ante una duda de roles y permisos manda la hoja «Modelo de Gestión usuarios»**.
+
+**Decisión.**
+
+1. **Cuatro roles activos:** `admin_monkey`, `admin_empresa`, `funcional` y `auditor`. `consultor` se conserva en el enum `user_role` y en `consultant_assignments`, **sin uso**: no se crea, no se asigna, no aparece en ninguna pantalla, contrato ni mensaje. Volver a usarlo se decide aparte.
+2. **`admin_empresa` es el experto en compliance de su empresa.** Es quien:
+   - invita, edita y desactiva a `funcional` y `auditor`;
+   - **asigna responsables por dimensión** (punto 5);
+   - **valida la evidencia** de cada prueba, en **una sola revisión humana** (`HUMAN_VALIDATED`), y la rechaza con motivo;
+   - da el **veredicto** de las pruebas manuales que no son documentales;
+   - **decide las exclusiones** (punto 7);
+   - crea, edita y da de baja controles, riesgos y causas **directamente** (punto 8).
+   Puede subir evidencia, pero no es su foco.
+3. **`funcional` es quien ejecuta.** Sube la evidencia de su dimensión, arregla lo que falle en servidores, bases de datos, aplicación o nube, y lo marca listo. **No valida nada.** Tiene una o más **especialidades**, que son las cinco dimensiones del modelo: documental (`policy`), aplicación, servidores, bases de datos y nube.
+4. **`auditor` revisa, no califica.** Lo crea el `admin_empresa` para una auditoría y la empresa lo desactiva al terminar. Lee **todo** el cumplimiento de la empresa con la vista técnica, descarga evidencias, exporta reportes y **registra observaciones**; no valida, no ejecuta pruebas y no edita. **Su calificación (certificar o no) queda fuera por ahora**; volverá según el Excel.
+5. **El responsable es por dimensión, no por control.** Un control mezcla pruebas de varias dimensiones (el Excel tiene una columna por dimensión) y quien lleva las políticas no es quien lleva los servidores.
+   - Cada **servicio** tiene **un responsable principal por dimensión** (un `funcional` con esa especialidad).
+   - El `admin_empresa` puede asignar a otro `funcional` un **control puntual en una dimensión**; esa asignación manda sobre la del servicio.
+   - **El responsable efectivo** de (control, dimensión) es la asignación del control si existe; si no, el responsable del servicio para esa dimensión; si tampoco, nadie, y el admin lo ve como «sin responsable». No se materializa una fila por control: cambiar al responsable del servicio cambia a todos los controles que no tienen excepción.
+   - El `funcional` ve **solo las pruebas de las que es responsable** (su bandeja); lo automático que falla en una dimensión le llega al responsable de esa dimensión.
+6. **Cómo se llega a «cumple» una prueba manual.** El `funcional` sube → queda **en revisión** → el `admin_empresa` valida (cumple) o rechaza con motivo → el `funcional` rehace. Una versión nueva no pisa la anterior. **La IA sugiere y nunca decide.**
+7. **Exclusiones.** El `admin_empresa` las propone y las decide **en un solo acto**: la exclusión nace aprobada, con justificación, vigencia y quién la aprobó. Los estados «pendiente» y «rechazada» quedan sin uso. Dejar sin efecto una exclusión vigente antes de que venza es `LATER`.
+8. **Cambios a controles, riesgos y causas.** El `admin_empresa` los hace **directamente**, con advertencia y confirmación en pantalla. «Eliminar» es **dar de baja, no borrar**: las evaluaciones son inmutables y un auditor necesita el historial. El detalle de las advertencias se valida después (`P33`).
+9. **Las evaluaciones del consultor y del auditor (D77) quedan en pausa.** Sin tabla nueva ni endpoint.
+10. **MFA TOTP para los cuatro roles** (D66 se mantiene). **D96 se aparta del Excel en un punto**: la hoja marca la MFA como «No» para el `funcional`. Queda por ratificar con el comité; no se ha borrado nada.
+11. **Activación de cuentas** (D95 sobrevive solo en esto): quien crea una cuenta emite un **código de un solo uso**, ligado al correo de la cuenta, que la persona canjea para poner su contraseña (la cuenta nace `pending`). Para `funcional` y `auditor` lo emite el `admin_empresa`; el primer `admin_empresa` sigue entrando con la clave de acceso de su empresa (D43).
+
+**Por qué.** La hoja «Modelo de Gestión usuarios» del Excel tiene cuatro roles; deja al `admin_empresa` crear usuarios, **asignar controles**, aprobar evidencia, y crear, editar y eliminar controles y riesgos; y al `funcional`, solo lo asignado. Lo único que el Excel no resuelve es que un control mezcla dimensiones, y de ahí sale el responsable por dimensión; como la dimensión no depende del marco, sigue sirviendo cuando lleguen ISO 27001 o PCI DSS. Sin consultor, quien valida la evidencia es la propia empresa: la contrapartida es el `auditor` externo, que revisa sin poder cambiar nada, y el rastro de cada validación con nombre (`P34`).
+
+**Qué reemplaza.** D64 y D65 enteras; D78 y D83; D84 (quién revisa); D85 y D88 (quién da el veredicto y valida); D77 queda en pausa; ajusta D63, D66, D68 (puntos 8 y 11), D81 y D95. Cierra `P28` (por obsoleta) y `P31` (gana el Excel).
+
+**Qué sigue abierto.** `P33` (advertencias y confirmación al editar o dar de baja), `P34` (separar a quien sube de quien valida cuando es la misma persona) y `P35` (calificación del auditor).
+
+**Qué cambia.** `modelo/05-usuarios.md` (roles, tablas, matriz), `modelo/07-cumplimiento.md`, `modelo/09`, los contratos de Cumplimiento y `users-team.md` (reemplaza a `users-consultant-access.md`), `enums.md`, el registro de seguridad y los documentos de producto.
+
+**Fuente:** Carlos Castaño, 2026-10-27; hoja «Modelo de Gestión usuarios» del TSC integral.
 
 ---

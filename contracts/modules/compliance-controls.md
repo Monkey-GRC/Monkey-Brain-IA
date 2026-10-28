@@ -1,30 +1,31 @@
 ---
 id: contracts-compliance-controls
 name: Contrato — Cumplimiento, controles
-description: Listar y ver los controles de un servicio, crear un control propio y proponer o decidir cambios de controles.
+description: Listar y ver los controles de un servicio, crear un control propio y editarlo o darlo de baja directamente (D96).
 type: contract
 ---
 
 # Cumplimiento — controles
 
-**Estado: ACORDADO (2026-10-17; D80 el 2026-10-15), salvo el detalle por pantalla de `P3`.** Ver `conventions.md` (sección «Cumplimiento: roles, vistas y decisiones») y `enums.md`. Tickets: MD-117, MD-118, MD-150, MD-156.
+**Estado: ACORDADO, reescrito por D96 (2026-10-27): no hay propuestas ni consultor que las apruebe.** Listar, ver, crear, editar y dar de baja están construidos (2026-10-28); falta el filtro por responsable de dimensión (ver «Estado de implementación»). Ver `conventions.md` (sección «Cumplimiento: roles, vistas y decisiones») y `enums.md`. Tickets: MD-117, MD-118, MD-150, MD-156 (queda sin objeto).
 
 **Qué es.** Un *control* del servicio es un **control del cliente** (`client_controls`, `modelo-datos.md` §7.1): el control del catálogo que el servicio heredó al contratar
-un marco, o uno propio. Todo lo que se mide cuelga de él. **Entidades:** `client_controls`, `client_control_dimensions`, `client_control_changes`, `user_control_assignments`.
+un marco, o uno propio. Todo lo que se mide cuelga de él. **Entidades:** `client_controls`, `client_control_dimensions`, `service_dimension_owners` y `user_control_assignments` (el responsable por dimensión, `users-team.md`).
 **App:** Monkey Platform. En el cable se llama `controls` y las pantallas también le dicen «control» (D80: el vocabulario del dominio; el nombre «acción de protección» se retira).
+
+**El `admin_empresa` es quien edita (D96).** Crea un control propio, cambia su interpretación o sus dimensiones y lo da de baja **directamente**, con advertencia y confirmación en pantalla (`P33`). Cambiar lo que se mide cambia el avance del servicio: la API lo hace al instante y deja el rastro y el evento de cumplimiento. «Eliminar» es **dar de baja, no borrar** (`conventions.md`).
 
 ## Quién puede qué
 
-| Acción | `admin_empresa` | `funcional` | `consultor` | `auditor` |
-|---|---|---|---|---|
-| Listar y ver | todas | **solo las asignadas** | todas | todas |
-| Pedir `view=technical` | ✓ (D81) | `403` | ✓ | ✓ |
-| Crear un control propio | ✓ | `403` | `403` | `403` |
-| Proponer editar o dar de baja | ✓ cualquiera | solo uno suyo | `403` | `403` |
-| Aprobar o rechazar una propuesta | `403` | `403` | ✓ | `403` |
+| Acción | `admin_empresa` | `funcional` | `auditor` |
+|---|---|---|---|
+| Listar y ver | todas | **solo aquellas de las que es responsable** (alguna de sus dimensiones) | todas |
+| Pedir `view=technical` | ✓ (D81) | `403` | ✓ |
+| Crear un control propio | ✓ | `403` | `403` |
+| Editar la interpretación o las dimensiones | ✓ | `403` | `403` |
+| Dar de baja | ✓ | `403` | `403` |
 
-Vigente hasta que el comité entregue los permisos por pantalla (`P3`): si ese documento cambia un renglón, se ajusta aquí.
-
+Vigente hasta que el comité entregue los permisos por pantalla (`P3`): si ese documento cambia un renglón, se ajusta aquí. El Excel marca «editar control» como ⊗ para el `funcional`; mientras `P3` siga abierta, **no edita**.
 ## `GET /v1/services/{service_id}/controls`
 
 Lista paginada. Se omiten los dados de baja. Un servicio recién clonado trae unas 80 acciones y la lista responde sin consultas repetidas.
@@ -34,8 +35,7 @@ Lista paginada. Se omiten los dados de baja. Un servicio recién clonado trae un
 | `trust_criterion` | una de las 5 categorías (`enums.md` `trust_criterion`) |
 | `type` | `manual` · `automated` · `hybrid` · `technical_manual` (`control_type`) |
 | `readiness` | `ready` · `almost_ready` · `needs_work` · `not_measured` |
-| `approval` | `approved` · `pending` · `rejected` (solo tiene sentido en un control propio) |
-| `assigned_to` | `uuid` de un usuario con cuenta |
+| `responsible` | `uuid` de un `funcional`: solo los controles de los que es responsable efectivo en alguna dimensión (`users-team.md`) |
 | `origin` | `catalog` · `own` |
 | `page`, `page_size`, `sort` | convenciones; `sort` acepta `code` (por defecto: el código interno por prefijo y número, `IAC-2` antes que `IAC-10`, `C2` antes que `C10`), `-code`, `name` y `-name` |
 
@@ -58,8 +58,6 @@ Lista paginada. Se omiten los dados de baja. Un servicio recién clonado trae un
         "readiness": "needs_work",
         "progress": { "done": 3, "total": 5 },
         "coverage": { "measured": 4, "applicable": 5 },
-        "assigned_to": { "user_id": "a1b2…", "name": "Laura", "last_name": "Gómez" },
-        "has_pending_change": false
       },
       {
         "id": "9d44…",
@@ -70,12 +68,10 @@ Lista paginada. Se omiten los dados de baja. Un servicio recién clonado trae un
         "origin": "own",
         "type": "manual",
         "trust_criteria": ["security"],
-        "approval": "pending",
+        "approval": "approved",
         "readiness": "not_measured",
         "progress": { "done": 0, "total": 1 },
         "coverage": { "measured": 0, "applicable": 1 },
-        "assigned_to": null,
-        "has_pending_change": true
       }
     ],
     "page": 1, "page_size": 25, "total": 2, "total_pages": 1
@@ -137,8 +133,6 @@ El detalle de una acción. Mismas reglas de acceso que la lista.
     "readiness": "needs_work",
     "progress": { "done": 3, "total": 5 },
     "coverage": { "measured": 4, "applicable": 5 },
-    "assigned_to": { "user_id": "a1b2…", "name": "Laura", "last_name": "Gómez" },
-    "has_pending_change": false,
     "failing": [
       { "dimension": "cloud", "affected": [ { "kind": "asset", "id": "8f10…", "name": "cuenta-aws-produccion" } ] }
     ]
@@ -180,7 +174,7 @@ Solo `admin_empresa`. Un control propio es **solo documental** (su única dimens
     "origin": "own",
     "type": "manual",
     "trust_criteria": ["security"],
-    "approval": "pending",
+    "approval": "approved",
     "interpretation": { "text": "Cada trimestre TI revisa que los proveedores críticos sigan cumpliendo el contrato.", "is_customized": true },
     "dimensions": [ { "dimension": "policy", "applies": true, "type": "manual", "reason_not_applicable": null } ],
     "evidence": [],
@@ -188,103 +182,54 @@ Solo `admin_empresa`. Un control propio es **solo documental** (su única dimens
     "readiness": "not_measured",
     "progress": { "done": 0, "total": 1 },
     "coverage": { "measured": 0, "applicable": 1 },
-    "assigned_to": null,
-    "has_pending_change": true,
     "failing": []
   }
 }
 ```
 
-Queda una propuesta `create` pendiente (`GET /v1/controls/{id}/changes`) para que el consultor la decida. `trust_criterion` debe ser una categoría **contratada por el servicio**
+Nace `approved` y **cuenta desde el primer momento** (D65, D96). `trust_criterion` debe ser una categoría **contratada por el servicio**
 (`security` siempre lo está).
 
-## `POST /v1/controls/{id}/changes` — proponer un cambio
+## `PATCH /v1/controls/{id}` — editar
 
-`admin_empresa` sobre cualquier acción; `funcional` solo sobre una asignada. **Hasta que el consultor aprueba, la acción sigue como estaba y sigue contando.**
+Solo `admin_empresa`. Cambia la interpretación o las dimensiones **al instante**; las dos cosas pueden ir juntas. Responde `200` con el control ya cambiado (el objeto de arriba).
 
-| `change_type` | `proposed_values` |
+| Campo | Valor |
 |---|---|
-| `edit_interpretation` | `{ "interpretation": "texto nuevo" }` |
-| `edit_dimensions` | `{ "dimensions": [ { "dimension": "database", "applies": false, "reason_not_applicable": "…" }, … ] }` |
-| `retire` | `{}` (o se omite) |
-
-`create` **no** se acepta aquí: nace con `POST …/controls`. Una dimensión con `applies: false` **exige** `reason_not_applicable`.
+| `interpretation` | `{ "text": "texto nuevo" }`. Queda marcada como personalizada (`is_customized`) y se conserva el texto original del catálogo |
+| `dimensions` | `[ { "dimension": "database", "applies": false, "reason_not_applicable": "…" }, … ]`. Una dimensión con `applies: false` **exige** `reason_not_applicable` |
 
 ```json
 {
-  "change_type": "edit_dimensions",
-  "proposed_values": {
-    "dimensions": [
-      { "dimension": "policy", "applies": true },
-      { "dimension": "database", "applies": false, "reason_not_applicable": "No operamos bases de datos propias." }
-    ]
-  }
+  "dimensions": [
+    { "dimension": "policy", "applies": true },
+    { "dimension": "database", "applies": false, "reason_not_applicable": "No operamos bases de datos propias." }
+  ]
 }
 ```
 
-```json
-{
-  "statusCode": 201,
-  "message": "control_change.requested",
-  "data": {
-    "id": "5e90…",
-    "control_id": "3f1c…",
-    "change_type": "edit_dimensions",
-    "status": "pending",
-    "proposed_values": { "dimensions": [ { "dimension": "policy", "applies": true }, { "dimension": "database", "applies": false, "reason_not_applicable": "No operamos bases de datos propias." } ] },
-    "requested_by": { "id": "a1b2…", "name": "Laura", "last_name": "Gómez" },
-    "requested_at": "2026-10-14T15:02:44Z",
-    "decided_by": null,
-    "decision_note": null,
-    "decided_at": null
-  }
-}
-```
+- Un control **propio** solo admite la dimensión `policy` (`dimension.policy_only`).
+- Quitar una dimensión deja de medir sus pruebas: el avance del servicio puede cambiar. Si esa dimensión tiene un **responsable** (`users-team.md`), la excepción del control en ella se elimina; el responsable del servicio no se toca.
+- Editar un control dado de baja es `409 CONTROL_RETIRED`.
+- Si el cambio altera lo que se mide, deja además un `compliance_events` en la misma transacción.
 
-## `GET /v1/controls/{id}/changes`
+## `DELETE /v1/controls/{id}` — dar de baja
 
-Paginada, de la más reciente a la más antigua; filtro `status`. La leen `admin_empresa`, el `funcional` dueño, `consultor` y `auditor`. Cada ítem es el objeto de arriba.
-
-## `GET /v1/control-changes` — la bandeja del consultor
-
-Las propuestas de **la empresa donde trabaja** el consultor, de todos sus servicios. Solo `consultor` y `auditor` (lectura); `403` para los demás. Filtros: `status` (por defecto `pending`),
-`service_id`, `change_type`. Cada ítem trae además `control: { id, own_code, name }` y `service: { id, name }`.
-
-## `PATCH /v1/control-changes/{id}` — decidir
-
-Solo el `consultor`. Cualquier otro rol, incluido el `admin_empresa` que la propuso, recibe `403`.
-
-```json
-{ "status": "approved" }
-```
-
-```json
-{ "status": "rejected", "decision_note": "La interpretación no cubre el acceso remoto." }
-```
-
-Responde `200` con la propuesta ya decidida (`decided_by`, `decided_at`). **Qué pasa al decidir** (D65):
-
-| `change_type` | Aprobar | Rechazar |
-|---|---|---|
-| `create` | el control queda definitivo (`approval: approved`) | se da de baja y **deja de contar** |
-| `retire` | se da de baja y deja de contar; el histórico se conserva | sigue como estaba |
-| `edit_dimensions` · `edit_interpretation` | se aplica el cambio | sigue como estaba |
-
+Solo `admin_empresa`. Sin cuerpo; responde `204`. **Es una baja, no un borrado** (`conventions.md`): `is_active = false`, el control **deja de contar** y de verse en las listas (salvo `?include_inactive=true`), y el histórico —evaluaciones inmutables, evidencias, auditoría— se conserva. Darlo de baja dos veces es `409 CONTROL_RETIRED`.
+Qué advierte la pantalla antes de confirmar (pruebas que dejan de contar, riesgos y causas que quedan sin ese control, cómo se mueve el avance) es `P33`; la API no pide confirmación: el `DELETE` es el acto confirmado.
 ## Errores
 
 | HTTP | `error.code` | Cuándo |
 |---|---|---|
-| 403 | `FORBIDDEN` | El rol no puede; el `funcional` no tiene asignada la acción; `view=technical` sin ser `admin_empresa`, `auditor` o `consultor`; el proponente intenta decidir |
-| 404 | `NOT_FOUND` | La acción, el servicio o la propuesta no existen para esta empresa |
-| 409 | `CHANGE_ALREADY_PENDING` | Ya hay una propuesta pendiente del mismo `change_type` sobre esa acción |
-| 409 | `CONTROL_RETIRED` | La acción ya está dada de baja |
-| 409 | `ALREADY_DECIDED` | La propuesta ya fue aprobada o rechazada |
+| 403 | `FORBIDDEN` | El rol no puede; el `funcional` no es responsable de ese control; `view=technical` sin ser `admin_empresa` o `auditor` |
+| 404 | `NOT_FOUND` | El control o el servicio no existen para esta empresa |
+| 409 | `CONTROL_RETIRED` | El control ya está dado de baja |
 | 422 | `VALIDATION_FAILED` | Campos: `required`, `enum.invalid`, `string.max`, y los propios de abajo |
 
 Códigos de campo propios: `category.not_in_scope` (`trust_criterion` no es una categoría contratada), `dimension.policy_only` (`dimensions[i]` en un control propio),
-`reason.required` (`proposed_values.dimensions[i].reason_not_applicable` cuando `applies` es `false`), `note.required` (`decision_note` al rechazar).
+`reason.required` (`dimensions[i].reason_not_applicable` cuando `applies` es `false`).
 
-Claves i18n: `control.list`, `control.read`, `control.created`, `control_change.requested`, `control_change.decided`.
+Claves i18n: `control.list`, `control.read`, `control.created`, `control.updated`, `control.retired`.
 
 ## Ejemplos de error
 
@@ -303,19 +248,6 @@ Todos con el mismo sobre (`conventions.md`); `message` es la clave i18n del erro
 }
 ```
 
-**`409` — ya hay una propuesta pendiente del mismo tipo**
-
-```json
-{
-  "statusCode": 409,
-  "message": "control_change.already_pending",
-  "data": null,
-  "error": {
-    "code": "CHANGE_ALREADY_PENDING"
-  }
-}
-```
-
 **`422` — una dimensión que no aplica sin motivo, y una categoría que el servicio no contrató**
 
 ```json
@@ -327,7 +259,7 @@ Todos con el mismo sobre (`conventions.md`); `message` es la clave i18n del erro
     "code": "VALIDATION_FAILED",
     "fields": [
       {
-        "field": "proposed_values.dimensions[1].reason_not_applicable",
+        "field": "dimensions[1].reason_not_applicable",
         "code": "reason.required",
         "message": "Indica por qué esta dimensión no aplica."
       },
@@ -346,27 +278,29 @@ Todos con el mismo sobre (`conventions.md`); `message` es la clave i18n del erro
 | `action` | Cuándo | Quién |
 |---|---|---|
 | `client_control.create` | se crea un control propio | `admin_empresa` |
-| `client_control_change.request` | se propone un cambio | `admin_empresa`, `funcional` |
-| `client_control_change.decide` | el consultor aprueba o rechaza (con `before_state`/`after_state` del control cuando se aplica) | `consultor` |
+| `client_control.update` | se edita la interpretación o las dimensiones (con `before_state`/`after_state`) | `admin_empresa` |
+| `client_control.retire` | se da de baja (con `before_state`) | `admin_empresa` |
 
-Aprobar un cambio que altera lo que se mide deja además un `compliance_events` en la misma transacción.
+Crear, editar dimensiones o dar de baja altera lo que se mide y deja además un `compliance_events` en la misma transacción.
 
 ## Estado de implementación
 
 **Pendiente por D80 (2026-10-15):** `code` y `requirement_codes` en la **vista de negocio** (lista, detalle y creación). El backend aún los devuelve solo dentro de `technical` (`control_code`, `requirement_codes`) y `403` para el resto de roles; hay que moverlos a la base y dejar en `technical` solo lo demás (**MD-166**). Hasta entonces, el frontend muestra el código cuando llega y no lo inventa.
 
-**Construido (2026-10-14):** MD-117 (listar y ver), MD-150 (crear un control propio) y MD-118 (proponer cambios y listarlos). **No** MD-156: decidir una propuesta, la bandeja `GET /v1/control-changes` y `PATCH /v1/control-changes/{id}`.
+**Construido (2026-10-28, B66): listar, ver, crear, editar y dar de baja.**
 
-- `approval`, `has_pending_change` y `origin` salen de los datos: un control propio pendiente cuenta desde que se crea y una propuesta pendiente no cambia la acción.
-- `proposed_values` se guarda **normalizado**: en `edit_dimensions`, cada dimensión lleva `reason_not_applicable` (el motivo recortado si no aplica, `null` si aplica); en `edit_interpretation`, el texto recortado; `retire` guarda `{}`.
-- Una propuesta pendiente por tipo y por acción la impone la base (índice único parcial); una decidida lleva quién y cuándo, y rechazar exige motivo (restricciones de la base).
-- Crear un control propio deja, en la misma transacción, su rastro de auditoría y un evento de cumplimiento (cambia lo que se mide). Proponer un cambio deja solo el rastro: no cambia el estado hasta que se apruebe.
+- `POST /v1/services/{id}/controls` (MD-150): el control propio nace `approved` y cuenta desde ya. `approval` sigue en la respuesta, siempre `approved`.
+- `PATCH /v1/controls/{id}` y `DELETE /v1/controls/{id}` (D96), solo `admin_empresa`, con `client_control.update` / `client_control.retire`, su evento de cumplimiento y, si editar dimensiones mueve algún control, el evento de estado (`cause: control_updated`). La baja es `is_active = false` (204); lo de baja deja de verse en lista y detalle (`404`) y editarlo o darlo de baja otra vez es `409 CONTROL_RETIRED`. **No está el `?include_inactive=true`.**
+- **Retirado:** `POST` y `GET /v1/controls/{id}/changes`, `has_pending_change` y el filtro `approval`. También el filtro `assigned_to`. La tabla `client_control_changes` y sus enums quedan sin uso. Los roles de las rutas ya no incluyen `consultor`.
+- **El `funcional` ve solo lo suyo (B67, 2026-10-29):** la lista y el detalle devuelven solo los controles de los que es responsable efectivo en alguna dimensión (`users-team.md`). **Sigue:** el campo `assigned_to` de la respuesta (la primera persona responsable); `responsible` por dimensión como campo de la lista está sin construir. Al editar dimensiones no se toca la excepción de responsable de la dimensión quitada.
+- Pruebas: `Backend/test/cumplimiento/cambios.e2e-spec.ts` (crear, editar, baja) y `controles.e2e-spec.ts`.
+- **Hecho: filtrar por responsable.** Para el `funcional`, la lista y el detalle devuelven solo los controles con una dimensión de la que es responsable efectivo; en el detalle, `failing` trae solo lo de sus dimensiones.
 - `display_name` de una prueba es el nombre neutro que escribe Monkey (D70); mientras una prueba no lo tenga, sale un texto genérico de su dimensión («Prueba de nube», «Revisión documental»…). **Nunca** el nombre del comité. `display_description` sigue la misma regla (D82): el objetivo del comité o su reescritura neutra, nunca el texto que nombra al proveedor.
-- **Sin resultados guardados todo sale «Sin medir».** El motor de nube lo escribe desde 2026-10-22 al cerrar cada corrida (`DT-50`); la sonda de servidores, todavía no. Una acción sube de «Sin medir» en cuanto existan evaluaciones de su test sobre los activos del servicio, y solo cuentan los checks que el comité ratificó (con `READINESS_INCLUDE_PROPOSED=true`, también los propuestos).
+- **Sin resultados guardados todo sale «Sin medir».** El motor de nube lo escribe desde 2026-10-22 al cerrar cada corrida (`DT-50`); la sonda de servidores, todavía no. Un control sube de «Sin medir» en cuanto existan evaluaciones de su test sobre los activos del servicio, y solo cuentan los checks que el comité ratificó (con `READINESS_INCLUDE_PROPOSED=true`, también los propuestos).
 - Un test de la dimensión documental sale de la revisión de lo que se entregó **para esa prueba en este control** (D88): sin evidencias o sin revisar, `pending`; nunca cumple por sí solo.
-- El `consultor` solo puede leer la empresa donde trabaja cuando exista la elección de empresa al iniciar sesión (MD-160); hasta entonces, los datos de un cliente los lee el `auditor`.
+
 
 ## Preguntas abiertas
 
 - **`P3`**: el detalle por pantalla de cada rol puede ajustar la tabla de «Quién puede qué».
-- **Filtro `assigned_to` y campo `assigned_to`**: la asignación de acciones a personas con cuenta es MD-158 (fuera de este sprint). Hasta entonces el campo viene `null` y el filtro devuelve vacío.
+- **`P33`**: qué advierte la pantalla al editar o dar de baja un control.

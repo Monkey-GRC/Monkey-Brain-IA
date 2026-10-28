@@ -289,7 +289,11 @@
       },
       {
         "path": "contracts/modules/auth.md",
-        "description": "Canje de la clave, login, refresh, logout. Auth minima sin MFA (aplazada a MD-94)."
+        "description": "Canje de la clave, login, refresh, logout, segundo factor (D94) y activacion de cuentas con codigo de un solo uso (D95)."
+      },
+      {
+        "path": "contracts/modules/users-team.md",
+        "description": "Equipo: el administrador invita a funcional y auditor, activan su cuenta y se reparte el trabajo por dimension (D96)."
       },
       {
         "path": "contracts/modules/onboarding-organizational-context.md",
@@ -309,7 +313,7 @@
       },
       {
         "path": "contracts/modules/compliance-controls.md",
-        "description": "Cumplimiento, acciones de proteccion: listar y ver, control propio, cambios propuestos por la empresa y decididos por el consultor."
+        "description": "Cumplimiento, acciones de proteccion: listar y ver, control propio, edicion y baja directas por el administrador de la empresa, con confirmacion."
       },
       {
         "path": "contracts/modules/compliance-risks.md",
@@ -325,11 +329,11 @@
       },
       {
         "path": "contracts/modules/compliance-overview.md",
-        "description": "Cumplimiento, resumen del servicio por marco y categoria con vista tecnica, y las evaluaciones del consultor y del auditor."
+        "description": "Cumplimiento, resumen del servicio por marco y categoria con vista tecnica, (las evaluaciones del servicio estan en pausa)."
       },
       {
         "path": "contracts/modules/compliance-audit.md",
-        "description": "Cumplimiento, consultoria y auditoria: tests y veredictos, observaciones y exclusiones."
+        "description": "Cumplimiento y auditoria: tests y veredictos, observaciones del auditor y exclusiones."
       }
     ]
   }

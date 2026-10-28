@@ -128,12 +128,20 @@ hasta el máximo de 8 h de sesión.
 | `POST /v1/auth/mfa/setup` | — | `200` `{ secret, otpauth_uri, issuer, account }`. Idempotente: devuelve el mismo secreto mientras el desafío viva. **El QR se dibuja en el navegador** con `otpauth_uri`; el secreto no se manda a ningún servicio externo |
 | `POST /v1/auth/mfa/setup/confirm` | `{ "code": "123456" }` | `200` como el login **más `recovery_codes`** (10, `XXXXX-XXXXX`, **se muestran una sola vez**); abre la sesión |
 | `POST /v1/auth/mfa/recovery-codes` | `{ "code": "123456" }` (con sesión) | `200` `{ recovery_codes }`; los anteriores dejan de servir |
-| `DELETE /v1/users/{id}/mfa` | — | `204`. Solo `admin_empresa`, sobre `funcional`/`consultor`/`auditor` de su empresa y nunca sobre sí mismo. Borra el secreto y los códigos y cierra las sesiones de esa persona |
+| `DELETE /v1/users/{id}/mfa` | — | `204`. Solo `admin_empresa`, sobre `funcional` o `auditor` de su empresa y nunca sobre sí mismo. Borra el secreto y los códigos y cierra las sesiones de esa persona |
 
 - **Reglas:** TOTP RFC 6238 (SHA-1, 6 dígitos, 30 s, ±1 paso); un código ya usado no sirve otra vez; un código equivocado suma al bloqueo de la cuenta (5 intentos, 15 min) y al del desafío (5, luego hay que reingresar).
 - **Restablecer al `admin_empresa`:** no hay endpoint; Monkey lo hace con `npm run mfa:reset` (D94, punto 8).
 - **`MFA_REQUIRED`** (variable de entorno, por defecto `true`): en `false` el login abre la sesión directo. En producción el Backend no arranca con `false`.
 - **`is_mfa_enabled`** del `user` indica si la persona ya configuró su factor.
+## Activación de una cuenta que crea el administrador (D95, D96)
+
+Una cuenta que crea el `admin_empresa` —`funcional` o `auditor`— nace `pending` y la persona la activa con un código de un solo uso, en dos pasos como el canje de la clave. **El alta, el detalle y los errores están en `users-team.md`** (un dato, un dueño). Los códigos de activación comparten el freno de intentos de las claves de acceso.
+
+| Endpoint | Qué hace |
+| --- | --- |
+| `POST /v1/auth/activate/lookup` | `{ code }` → `{ email, expires_at }`. No gasta el código |
+| `POST /v1/auth/activate` | `{ code, email, password }` → como el canje: `201` con `next_step: mfa_setup` y la cookie `mnk_mfa` (sin sesión) |
 ## `POST /v1/auth/refresh`
 
 Sin cuerpo; usa la cookie de refresh. `200` con `data: null` y cookies renovadas. Pasado el
@@ -206,6 +214,7 @@ Implementado en `Backend/src/features/auth` (feature de referencia del backend),
 | `POST /v1/auth/login` | ✅ Por email; bloqueo a los 5 intentos por 15 min con `retry_after_seconds` |
 | `POST /v1/auth/refresh` | ✅ Rota el refresh token en cada uso (el anterior deja de servir) |
 | `POST /v1/auth/logout` | ✅ `204`, idempotente |
+| `POST /v1/auth/activate/lookup` · `POST /v1/auth/activate` | ✅ (D95, D96) Código de activación de un solo uso para las cuentas que crea el administrador de la empresa; mismo freno de intentos que las claves de acceso. **Falta el módulo que crea la cuenta y emite el código** (`users-team.md`) |
 | `GET /v1/auth/me` | ✅ `user` + `company` + `onboarding` (solo para `admin_empresa`; `login` y `redeem` lo traen igual). (Desde D89 Platform solo mira si `organizational_context` está completo: declarar servicios y conectar activos ya no son pasos del onboarding, aunque la API los siga listando.) `next_step` es el primer paso sin hacer y `null` si ya terminó los tres; `completed_steps` lista los hechos. **Hoy solo se deriva el Componente 1** (existe su fila en `organizations`): al completarlo, `next_step` pasa a `service_context`. Los pasos `service_context` y `technical_control` se suman a `completed_steps` cuando esos componentes existan (MD-78, MD-85) |
 
 Decisiones de implementación, dentro de lo que el contrato ya decía:
