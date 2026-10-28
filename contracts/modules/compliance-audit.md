@@ -333,7 +333,7 @@ Todos con el mismo sobre (`conventions.md`); `message` es la clave i18n del erro
 - **Exclusiones.** `POST` solo `admin_empresa`: nace `approved` con `decided_by`/`decided_at`, deja el evento `exclusion.approve` y, si mueve un control, su evento de estado (`cause: exclusion_approved`). Auditoría `exclusion.create`. Se retiró el `PATCH /v1/exclusions/{id}`, el campo `awaiting_consultant` y `ALREADY_DECIDED`. Dos creaciones a la vez de lo mismo se serializan (candado de la transacción) y la segunda es `409 EXCLUSION_ALREADY_EXISTS`; el índice único parcial «una pendiente» queda como red de seguridad de datos viejos. `pending` y `rejected` quedan en el enum sin uso.
 - **Pruebas:** `revision-evidencia`, `veredictos`, `eventos-estado`, `exclusiones` y `evidencias` en `Backend/test/cumplimiento/`.
 
-Falta por construir: **el `funcional` ve solo lo suyo** (`users-team.md`, B67: las listas de pruebas y de evidencia se filtran por el responsable efectivo de cada dimensión; hoy se filtra por las asignaciones por control) y las **observaciones (MD-154)**, que solo escribe el `auditor`.
+El **`funcional` ve solo lo suyo** quedó construido el 2026-10-29 (B67, SEG-66; ver `users-team.md`): controles, evidencia, riesgos y hallazgos se filtran por el responsable efectivo de cada dimensión. Falta por construir las **observaciones (MD-154)**, que solo escribe el `auditor`.
 
 Lo que no cambia y el código ya hace: la vigencia llega al `period_end` del servicio (D87); «vencida» se deriva al leer (`is_expired`, `DT-72`, `MD-171`); solo se excluye el activo de un test (la de un check, `excluded_check_id`, es `MD-170`, `DT-74`); y `ai_suggestion` no se guarda ni se devuelve: la IA no escribe aquí.
 

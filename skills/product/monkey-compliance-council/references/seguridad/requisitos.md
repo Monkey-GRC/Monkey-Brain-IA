@@ -37,18 +37,18 @@ Las de HTTP de aislamiento ya están en `develop` (PR #18 y #19). **Las de `test
 
 ## Resumen
 
-Estado de un vistazo (**recontado el 2026-10-28** a partir de la columna Estado; los retirados por D96 no cuentan; los estados se revisaron por última vez el 2026-10-07). **Lo que no está en ✅ es lo que falta por probar o construir**; en cada tabla el estado va justo después del ID.
+Estado de un vistazo (**recontado el 2026-10-29** a partir de la columna Estado; los retirados por D96 no cuentan; los estados se revisaron por última vez el 2026-10-07). **Lo que no está en ✅ es lo que falta por probar o construir**; en cada tabla el estado va justo después del ID.
 
 | Sección | ✅ | 🟡 | 🟠 | 🔴 | ⚪ | Total |
 |---|--:|--:|--:|--:|--:|--:|
 | A. Aislamiento entre empresas (el riesgo #1 del producto) | 6 | 1 | 1 | 2 | 0 | 10 |
 | B. Autenticación y sesión | 7 | 1 | 2 | 1 | 0 | 11 |
 | C. Autorización | 2 | 1 | 3 | 3 | 0 | 9 |
-| D. Datos y secretos | 8 | 3 | 2 | 3 | 3 | 19 |
+| D. Datos y secretos | 9 | 3 | 2 | 2 | 3 | 19 |
 | E. Auditoría y trazabilidad | 4 | 0 | 2 | 0 | 0 | 6 |
 | F. Confidencialidad del proveedor del motor | 0 | 0 | 1 | 0 | 0 | 1 |
 | G. Desarrollo y entrega | 3 | 1 | 0 | 1 | 0 | 5 |
-| **Total** | **30** | **7** | **11** | **10** | **3** | **61** |
+| **Total** | **31** | **7** | **11** | **9** | **3** | **61** |
 
 ---
 
@@ -102,7 +102,7 @@ Estado de un vistazo (**recontado el 2026-10-28** a partir de la columna Estado;
 | **SEG-61** | ⚪ retirado (D96) | ~~La revisión de una evidencia es de **un solo rol**: el consultor y el auditor escriben y leen la suya; el auditor **nunca** recibe la revisión del consultor ni rastro de que exista, y el consultor tampoco recibe la del auditor. La empresa ni aprueba ni rechaza; `admin_empresa` y `funcional` reciben `403` al revisar~~ La evidencia tiene una sola revisión, la del `admin_empresa` (lo cubre SEG-67). | — | — | D96 |
 | **SEG-22** | 🔴 | `funcional` siempre acotado a lo que tiene asignado | `user_control_assignments` | No existe aún el módulo | §5.5 |
 | **SEG-23** | 🟠 | Un usuario desactivado pierde el acceso y se cierran sus sesiones (CC6.3) | El guard comprueba el estado del usuario en cada petición | `test/autenticacion/autenticacion.e2e-spec.ts`: con el usuario `inactive` su sesión abierta deja de servir y no puede volver a entrar. **Falta el endpoint para desactivarlo (MD-132)** | §5.6 |
-| **SEG-66** | 🔴 D96 | El `funcional` solo ve y toca las pruebas de las que es **responsable efectivo** (excepción del control, o si no el responsable del servicio, por dimensión); solo se asigna a un `funcional` con esa especialidad; y solo el `admin_empresa` cambia a los responsables y las especialidades | El responsable efectivo se resuelve en el servidor en cada lista y cada escritura (`users-team.md`); una lista que el `funcional` no puede ver completa llega filtrada, un recurso que existe pero no es suyo responde `403`, el de otra empresa `404` | Ninguna todavía: sin construir. Debe cubrir que un `funcional` de servidores no ve ni sube lo de políticas, y que quitar una especialidad en uso responde `409 DIMENSION_IN_USE` | D96 |
+| **SEG-66** | ✅ D96 | El `funcional` solo ve y toca las pruebas de las que es **responsable efectivo** (excepción del control, o si no el responsable del servicio, por dimensión); solo se asigna a un `funcional` con esa especialidad; y solo el `admin_empresa` cambia a los responsables y las especialidades | El responsable efectivo se resuelve en el servidor en cada lista y cada escritura (`users-team.md`); una lista que el `funcional` no puede ver completa llega filtrada, un recurso que existe pero no es suyo responde `403`, el de otra empresa `404` | `test/equipo/equipo.e2e-spec.ts` (SEG-66: un funcional ve solo los controles y la evidencia de su dimensión, la excepción manda sobre el servicio, cambiar al responsable del servicio mueve a todos sin excepción; quitar una especialidad en uso es `409 DIMENSION_IN_USE`; solo un funcional con esa especialidad) y `test/control-tecnico/hallazgos.e2e-spec.ts`. Construido el 2026-10-29 | D96 |
 | **SEG-67** | ✅ D96 | Solo el `admin_empresa` valida o rechaza una evidencia, da el veredicto de una prueba manual y decide una exclusión; el `funcional` y el `auditor` reciben `403`; y cada acto queda con **quién subió** y **quién validó** (`P34`) | `@Roles` con solo `admin_empresa` en esos endpoints; el rol sale de la base y fija `reviewer_role`; `audit_logs` con el nombre de quien actúa | `test/cumplimiento/revision-evidencia.e2e-spec.ts` (solo `admin_empresa` revisa; `funcional`, `auditor` y `admin_monkey` reciben `403`; `reviewer_role = admin_empresa` y el rastro), `veredictos.e2e-spec.ts` y `exclusiones.e2e-spec.ts` (la crea y la decide en un solo acto). Construido el 2026-10-28. Queda por cubrir `P34` (quién subió = quién validó) | D96 |
 
 ## D. Datos y secretos

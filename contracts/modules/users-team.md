@@ -7,7 +7,7 @@ type: contract
 
 # Equipo — invitar, activar y repartir el trabajo por dimensión
 
-**Estado: ACORDADO (2026-10-27, D96); construida solo la activación (ver «Estado de implementación»).** Reemplaza a `users-consultant-access.md`, que se retiró porque ya no hay rol de consultor. Ver `conventions.md` y `enums.md`. Tickets: MD-131, MD-132, MD-134 (pantalla Equipo), MD-158 (asignar el trabajo). **App:** Monkey Platform. Reglas: `modelo-datos.md` §5.1 y §5.2 (D63, D96).
+**Estado: ACORDADO (2026-10-27, D96); construido en el Backend (2026-10-29): falta la interfaz (ver «Estado de implementación»).** Reemplaza a `users-consultant-access.md`, que se retiró porque ya no hay rol de consultor. Ver `conventions.md` y `enums.md`. Tickets: MD-131, MD-132, MD-134 (pantalla Equipo), MD-158 (asignar el trabajo). **App:** Monkey Platform. Reglas: `modelo-datos.md` §5.1 y §5.2 (D63, D96).
 
 **Qué es.** El `admin_empresa` es el experto en compliance de su empresa: invita a su gente, les da una especialidad y reparte el trabajo por **dimensión**. Un `funcional` ve y hace solo lo suyo; el `auditor` ve todo en solo lectura. `admin_monkey` no entra aquí: no crea ni desactiva cuentas de una empresa.
 
@@ -152,13 +152,22 @@ Claves i18n: `user.created`, `user.list`, `user.updated`, `user.activation_code_
 
 ## Estado de implementación
 
-**Construido (2026-10-28):** la mitad que recibe el código —no la que lo emite—.
+**Construido (2026-10-29, B67): todo el contrato.**
 
-- `POST /v1/auth/activate/lookup` y `POST /v1/auth/activate` (feature `auth`), con sus errores `ACTIVATION_CODE_*`, el mismo freno de intentos de las claves de acceso y el segundo factor al terminar (D94). Pruebas: `test/autenticacion/activacion.e2e-spec.ts`.
-- En la base: el estado `pending` de `users`, la tabla `user_activation_codes` (con RLS), la función `platform.find_activation_code(code_hash)` y la contraseña imposible de adivinar de una cuenta pendiente (`unusablePasswordHash`). Migraciones `20261028000152_user_activation_codes` y `20261028000200_rls_user_activation_codes`, **sin aplicar a la base compartida** hasta que Héctor las revise.
-- `ACTIVATION_CODE_TTL_HOURS` está documentada en `.env.example`, pero **nadie la lee todavía**: la usará el módulo de equipo al emitir el código.
+- **Activación** (2026-10-28): `POST /v1/auth/activate/lookup` y `POST /v1/auth/activate` (feature `auth`), con `ACTIVATION_CODE_*`, el mismo freno de intentos de las claves de acceso y el segundo factor al terminar (D94). Pruebas: `test/autenticacion/activacion.e2e-spec.ts`.
+- **Equipo** (feature `team`): `POST/GET/PATCH /v1/users` y `POST /v1/users/{id}/activation-code`. El código sale con `ACTIVATION_CODE_TTL_HOURS` (168 por defecto) y en la base solo queda su huella. `PATCH` desactiva cerrando las sesiones en la misma transacción. Quitar una especialidad en uso responde `409 DIMENSION_IN_USE` con `responsibilities_count`.
+- **Responsable por dimensión:** `GET`/`PATCH /v1/services/{id}/dimension-owners[/{dimension}]` y `GET`/`PATCH /v1/controls/{id}/responsibles[/{dimension}]`. Una dimensión que no existe responde `404`. Un control dado de baja es `409 CONTROL_RETIRED`.
+- **En la base:** `user_dimensions`, `service_dimension_owners` y `dimension` en `user_control_assignments` (única por control y dimensión), con RLS. Migraciones `20261029000100_team_dimensions` (las asignaciones viejas «del control entero» pasan a una fila por cada dimensión que el control lleva) y `20261029000200_rls_team_dimensions`.
+- **Lo que ve el `funcional` (SEG-66):** el responsable efectivo se calcula al leer (`infrastructure/control-responsibles.ts`): la excepción del control o, si no hay, el responsable del servicio, solo en las dimensiones en que el control tiene pruebas. Con eso, la **lista y el detalle de controles** traen solo los controles de los que es responsable en alguna dimensión (`failing` del detalle, solo lo de sus dimensiones); la **evidencia** (lista, entregas, subida y descarga) solo la de su dimensión; los **riesgos y causas**, los que tocan sus controles; el **resumen** del servicio, sus controles que fallan; y los **hallazgos** de una prueba de nube, solo si es el responsable de la nube en ese control (`403` si no).
+- Pruebas: `test/equipo/equipo.e2e-spec.ts` (invitar, activar, desactivar, reemitir, responsables, SEG-66) y `test/control-tecnico/hallazgos.e2e-spec.ts`.
 
-**Sin construir:** todo lo demás de este contrato —`POST/GET/PATCH /v1/users`, reemitir el código, las especialidades (`user_dimensions`), el responsable por dimensión (`service_dimension_owners`, `dimension` en `user_control_assignments`) y los filtros del `funcional`—. Hasta entonces una cuenta pendiente solo se puede crear a mano en la base (así lo hacen las pruebas).
+Matices que el contrato no decía:
+
+- `PATCH /v1/users/{id}` sobre uno mismo es `409 LAST_ADMIN`; sobre otro administrador, `admin_monkey` o alguien de otra empresa, `404`. Un cuerpo vacío es `422 status.required`; `dimensions` a un auditor, `422 dimensions.not_allowed`.
+- El `funcional` sigue viendo `assigned_to` (la primera persona responsable de las suyas) en la lista de controles; `responsible` por dimensión como campo de la respuesta está **sin construir** (se pide con `GET /controls/{id}/responsibles`).
+- Mientras alguien con la especialidad quitada siga siendo responsable no se deja; desactivar a un responsable **no** lo reasigna: sus controles quedan «sin responsable efectivo activo» hasta que el administrador los reparta (pendiente de decisión, no de código).
+
+**Sin construir:** la pantalla de Equipo, la de activación y la bandeja del funcional en Monkey Platform (F46–F48), invitar por correo (MD-69), y el campo `responsible` por dimensión en la lista de controles.
 
 ## Fuera de este corte
 
