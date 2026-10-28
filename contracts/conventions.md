@@ -188,9 +188,8 @@ Esto es un contador de campos de un formulario, **no un readiness ni un porcenta
 
 Lo que comparten todos los módulos de Cumplimiento (`modules/compliance-*.md`). Los contratos no lo repiten.
 
-**Quién es quién.** Los 5 roles son `admin_monkey`, `admin_empresa`, `funcional`, `consultor` y `auditor` (`modelo-datos.md` §5.1, §5.5). Todo se resuelve
-**en el servidor, con el rol leído de la base**, nunca con lo que mande el frontend. El `consultor` trabaja en **una empresa a la vez** (la que eligió al
-iniciar sesión, MD-160); el resto de roles, en la suya. El acceso de `admin_monkey` al cumplimiento de una empresa (solo lectura, MD-146) tiene sus propios endpoints en Monkey Admin y
+**Quién es quién.** Los 4 roles activos son `admin_monkey`, `admin_empresa`, `funcional` y `auditor` (`modelo-datos.md` §5.1, §5.5; D96: no hay consultor). Todo se resuelve
+**en el servidor, con el rol leído de la base**, nunca con lo que mande el frontend. Cada rol trabaja en la empresa de su cuenta. El `admin_empresa` es el experto en compliance: valida, decide y edita. El acceso de `admin_monkey` al cumplimiento de una empresa (solo lectura, MD-146) tiene sus propios endpoints en Monkey Admin y
 **no está definido aquí**: hasta entonces estos endpoints le responden `403`.
 
 **403 o 404.**
@@ -198,14 +197,14 @@ iniciar sesión, MD-160); el resto de roles, en la suya. El acceso de `admin_mon
 | Situación | Respuesta |
 |---|---|
 | El recurso es de **otra empresa** | `404` (que exista no se informa) |
-| El `funcional` pide o escribe algo de su empresa que **no tiene asignado** | `403` |
-| El rol no puede hacer esa acción (p. ej. el auditor intenta proponer) | `403` |
+| El `funcional` pide o escribe algo de su empresa de lo que **no es responsable** (su dimensión, `users-team.md`) | `403` |
+| El rol no puede hacer esa acción (p. ej. el auditor o el funcional intentan validar una evidencia) | `403` |
 | Una lista que el `funcional` no puede ver completa | no falla: **devuelve solo lo suyo** (vacía si no tiene nada) |
 
 **Vista de negocio y vista técnica.** Por defecto, todo `GET` de Cumplimiento devuelve la **vista de negocio**: en qué falla, con el estado cualitativo y **con los códigos**
 (`code` del control y `requirement_codes`, D80). Con **`?view=technical`** se agrega el objeto `technical` (puntos de enfoque, estados de evaluación de
-`enums.md`, pruebas). **Pueden pedirla los roles `auditor`, `consultor` y, desde D81, `admin_empresa`; para el `funcional` responde `403`**
-(D63, D64, D81, SEG-54). La vista técnica **agrega**, nunca quita: es la de negocio más `technical`.
+`enums.md`, pruebas). **Pueden pedirla los roles `auditor` y `admin_empresa`; para el `funcional` responde `403`**
+(D63, D81, D96, SEG-54). La vista técnica **agrega**, nunca quita: es la de negocio más `technical`.
 
 **Cómo se mide en la vista de negocio.** El estado cualitativo (`readiness`: `ready` · `almost_ready` · `needs_work` · `not_measured`) **y** el porcentaje de avance se muestran
 **juntos**, con la cobertura al lado (D80). La API manda conteos; **el porcentaje no viaja**, la pantalla lo deriva: avance = `done / total`, cobertura = `measured / applicable`.
@@ -226,15 +225,7 @@ Reglas del cálculo en pantalla: se **trunca** a entero (nunca se redondea hacia
 
 **Lo generado por IA** viaja marcado: `"is_ai_generated": true` y `"ai_confidence"`. Una sugerencia de la IA **nunca** decide nada.
 
-**Decisiones sobre una propuesta.** Aprobar o rechazar algo que otro propuso (un cambio de control o una exclusión) es un `PATCH` sobre ese recurso. La evidencia no entra aquí: la empresa no la aprueba (D84):
-
-```json
-{ "status": "rejected", "decision_note": "La interpretación no cubre el acceso remoto." }
-```
-
-`decision_note` es **obligatoria al rechazar** y opcional al aprobar. Quien decide queda en `decided_by` y `decided_at`. Una propuesta ya decidida no se vuelve a
-decidir: `409 ALREADY_DECIDED`. Nadie decide lo que él mismo propuso (`403`).
-
+**Quién decide (D96).** Ya no hay propuestas que otro apruebe: el `admin_empresa` **decide directamente** la validación de una evidencia, el veredicto de una prueba manual, las exclusiones y los cambios a controles, riesgos y causas, y cada acto queda en `audit_logs` con su nombre. Lo único que se **rechaza con motivo** es la evidencia que sube el `funcional` (`compliance-evidence.md`): el motivo es obligatorio al rechazar y opcional al validar.
 **Baja, no borrado.** `DELETE` sobre un riesgo, causa o control **desactiva** (`is_active = false`) y devuelve `204`: el histórico se conserva y la fila sigue existiendo
 (las evaluaciones son inmutables). Una colección omite lo inactivo salvo `?include_inactive=true`.
 

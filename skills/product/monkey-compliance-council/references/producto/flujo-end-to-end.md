@@ -119,12 +119,12 @@ servicio.
 
 ## 8. Módulo de Usuarios *(no completo)*
 
-En cualquier momento (no es un paso del onboarding): `admin_empresa` invita más
-usuarios, les asigna rol (`funcional`, `consultor` o `auditor`), y si son
-`funcional` les asigna qué `client_controls` les toca (`user_control_assignments`). Si
-son `auditor`, quedan como usuarios de **su empresa** (solo `admin_empresa` los crea): ven todo el cumplimiento con la vista técnica y escriben observaciones (D63). La vista técnica la pide también `admin_empresa` (D81). El `consultor`
-no lo crea la empresa: lo crea y asigna `admin_monkey` desde Monkey Admin; la empresa ve los que tiene asignados y puede suspender a uno (D64).
+En cualquier momento (no es un paso del onboarding): `admin_empresa`, que es el experto en compliance de la empresa (D96), invita más usuarios y les asigna rol: `funcional` o `auditor`. La cuenta nace pendiente y la persona la activa con un código de un solo uso que el administrador le entrega (`contracts/modules/users-team.md`).
 
+- A cada `funcional` le da una o más **especialidades**, que son las dimensiones (documental, aplicación, servidores, bases de datos, nube), y reparte el trabajo **por servicio y dimensión**: «Juan lleva servidores de este servicio». Puede reasignar un control puntual.
+- El `funcional` ve solo lo suyo: sube la evidencia, arregla lo que falle en su dimensión y lo marca listo. El `admin_empresa` **valida** (cumple, o rechaza con motivo) y da el veredicto de lo manual.
+- El `auditor` lo crea la empresa cuando va a certificarse, para que revise cómo lleva sus cuentas: queda como usuario de **su empresa**, ve todo el cumplimiento con la vista técnica y escribe observaciones (D63). No valida ni califica por ahora. Al terminar, la empresa lo desactiva.
+- No hay rol de consultor (D96).
 **Lo que falta cerrar:** el detalle de permisos por pantalla (P3).
 
 **Entidades:** `users`, `user_control_assignments`,
@@ -138,7 +138,7 @@ Con Servicio, Scope, catálogo clonado y (opcionalmente) Cumplimiento personaliz
 motor deriva el cumplimiento por par Servicio × Marco, recorriendo
 Requisito → PuntoDeEnfoque → Control, nunca como atributo del marco ni como número de
 empresa completa. Con las reglas del comité (D68): un estado por nivel (activo → test → control → categoría → marco), «todo o nada», y lo pendiente bloquea el cumplimiento.
-Encima de ese cálculo, el consultor (que prepara) y el auditor (que certifica) hacen cada uno su evaluación (D77).
+Las evaluaciones del consultor y del auditor (D77) están en pausa (D96): hoy el único veredicto es el cálculo de arriba, con la validación del `admin_empresa`.
 
 **Fuente:** `modelo-datos.md` §9 (D68, el motor del comité; reemplaza la agregación de D62).
 

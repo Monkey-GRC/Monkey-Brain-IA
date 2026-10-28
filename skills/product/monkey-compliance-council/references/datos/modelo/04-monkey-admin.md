@@ -102,7 +102,7 @@ de conexión, para que no se filtren a otra petición del pool):
 | Variable | Qué es | Quién la lee |
 |---|---|---|
 | `app.tenant_id` | La empresa activa | Toda política de tenant |
-| `app.user_id` | El usuario que actúa | `consultant_assignments` (el consultor ve las empresas que tiene asignadas, sin importar el tenant activo) y la atribución de `audit_logs` |
+| `app.user_id` | El usuario que actúa | La atribución de `audit_logs` y el autor de lo que se escribe. (`consultant_assignments`, la única excepción entre empresas que usaba el consultor, queda sin uso: D96) |
 | `app.user_role` | Su rol (`admin_monkey`, …) | Escritura de `catalog`, lectura de `companies`/`access_keys`/`audit_logs` |
 
 **Las búsquedas que ocurren antes de conocer el tenant** no pueden pasar por RLS (falla

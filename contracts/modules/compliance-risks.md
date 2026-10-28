@@ -14,16 +14,16 @@ probabilidad y el impacto de que algo ocurra o se pierda si una persona lo mater
 D76). **Entidades:** `client_risks`, `client_causes`, `client_risk_causes`, `client_cause_controls`, `risk_treatments`, `organization_responsibles` (`modelo-datos.md` §7.2).
 **App:** Monkey Platform. En las pantallas se llaman «Riesgos» y «Causas» (D80: vocabulario del dominio; se retiran «lo que podría salir mal» y «por qué podría pasar»).
 
-**Fuera de este contrato.** La **mitigación** (estados de causa y riesgo) y el **riesgo residual** con sus dos matrices son vista del consultor y del auditor y esperan los datos y la fórmula del comité
+**Fuera de este contrato.** La **mitigación** (estados de causa y riesgo) y el **riesgo residual** con sus dos matrices son vista del `admin_empresa` y del `auditor` y esperan los datos y la fórmula del comité
 (`P22`, MD-151): cuando existan, se agregan como campos opcionales de la respuesta, sin romper nada de lo de aquí.
 
 ## Quién puede qué
 
-| Acción | `admin_empresa` | `funcional` | `consultor` | `auditor` |
-|---|---|---|---|---|
-| Listar y ver | todos | **solo los que llegan a una acción asignada** | todos | todos |
-| Crear, editar, dar de baja, vincular | ✓ | `403` | `403` | `403` |
-| Evaluar (5×5) y tratar | ✓ | `403` | `403` | `403` |
+| Acción | `admin_empresa` | `funcional` | `auditor` |
+|---|---|---|---|
+| Listar y ver | todos | **solo los que llegan a un control del que es responsable** | todos |
+| Crear, editar, dar de baja, vincular | ✓ (directo, con confirmación: D96, `P33`) | `403` | `403` |
+| Evaluar (5×5) y tratar | ✓ | `403` | `403` |
 
 Sigue la matriz §5.5 (`P3`). **Discrepancia a confirmar:** el ticket MD-122 deja al `funcional` editar «lo suyo», pero la matriz solo le da lectura; este contrato sigue la matriz.
 
@@ -128,7 +128,7 @@ Solo `admin_empresa`. Devuelve al servicio un riesgo que se había dado de baja 
 
 ### `GET /v1/risk-matrix`
 
-La matriz 5×5 completa, con el valor y el nivel de **cada casilla**. La leen `admin_empresa`, `funcional`, `consultor` y `auditor`; no depende de ningún servicio.
+La matriz 5×5 completa, con el valor y el nivel de **cada casilla**. La leen `admin_empresa`, `funcional` y `auditor`; no depende de ningún servicio.
 
 ```json
 { "min": 1, "max": 5, "cells": [ { "likelihood": 1, "impact": 1, "value": 1, "level": "low" }, …, { "likelihood": 5, "impact": 5, "value": 25, "level": "critical" } ] }
@@ -224,7 +224,7 @@ Niveles: Bajo 1–4 · Moderado 5–9 · Alto 10–16 · Crítico 17–25 (`risk
 
 ### `GET /v1/risks/{id}/evaluation-history`
 
-Paginada, de la más reciente a la más antigua. Cada ítem es el objeto de arriba. Se lee de la auditoría (`before_state` / `after_state`). La leen `admin_empresa`, `consultor` y `auditor`; el `funcional` y `admin_monkey`, `403`.
+Paginada, de la más reciente a la más antigua. Cada ítem es el objeto de arriba. Se lee de la auditoría (`before_state` / `after_state`). La leen `admin_empresa` y `auditor`; el `funcional` y `admin_monkey`, `403`.
 
 ## Tratamiento
 
@@ -253,13 +253,13 @@ Solo `admin_empresa`. Agrega una decisión; la vigente es la última.
 }
 ```
 
-`GET /v1/risks/{id}/treatments` lista el historial (paginado, más reciente primero), con la forma de arriba. Lo leen `admin_empresa`, `consultor` y `auditor`; el `funcional`, solo si el riesgo llega a una acción que tiene asignada (si no, `403`). El riesgo, en su lista y su detalle, trae el vigente en `treatment` con `decision`, `due_date` y `responsible`.
+`GET /v1/risks/{id}/treatments` lista el historial (paginado, más reciente primero), con la forma de arriba. Lo leen `admin_empresa` y `auditor`; el `funcional`, solo si el riesgo llega a un control del que es responsable (si no, `403`). El riesgo, en su lista y su detalle, trae el vigente en `treatment` con `decision`, `due_date` y `responsible`.
 
 ## Errores
 
 | HTTP | `error.code` | Cuándo |
 |---|---|---|
-| 403 | `FORBIDDEN` | El rol no puede (incluido el `funcional` en el historial de evaluaciones); `view=technical` sin ser `admin_empresa`, `auditor` o `consultor` |
+| 403 | `FORBIDDEN` | El rol no puede (incluido el `funcional` en el historial de evaluaciones); `view=technical` sin ser `admin_empresa` o `auditor` |
 | 404 | `NOT_FOUND` | El riesgo, la causa, la acción o el cargo no existen para esta empresa (incluye vincular algo de otra, o tratar con un cargo de otra) |
 | 409 | `CODE_ALREADY_EXISTS` | `code` ya usado en el servicio |
 | 409 | `LINK_ALREADY_EXISTS` | El vínculo ya existe |

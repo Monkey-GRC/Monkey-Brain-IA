@@ -7,6 +7,8 @@ type: reference
 
 # Sprint de Cumplimiento — alcance
 
+> **Histórico, ajustado por D96 (2026-10-27).** Este plan se escribió con un rol de **consultor** que revisa la evidencia, da el veredicto y aprueba cambios y exclusiones. **Ese rol ya no existe en el producto**: lo hace el `admin_empresa`, que valida, decide y edita directamente, y el `funcional` ejecuta lo de su dimensión (`contracts/modules/users-team.md`). Donde este documento diga «consultor», léase `admin_empresa`; las evaluaciones del consultor y del auditor (MD-155) están en pausa. Los tickets MD-156 (aprobar cambios), MD-159 a MD-161, MD-172 a MD-174 (consultor y su empresa de trabajo) y MD-169 (aviso de «falta un consultor») quedan sin objeto. Ver `D96` en `datos/decisiones/06-cumplimiento-y-roles.md`.
+
 **Segundo entregable del MVP.** Jira, proyecto `MD`, sprint «MD Sprint 2» (2026-10-09 a 2026-10-23). Es **solo de Cumplimiento**:
 la gestión de usuarios, Monkey Admin y la infraestructura que no sirve a Cumplimiento van a otro sprint.
 

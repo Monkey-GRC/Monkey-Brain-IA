@@ -41,7 +41,7 @@ erDiagram
         json proposed_values "lo que se propone"
         enum status "pending|approved|rejected"
         uuid requested_by FK
-        uuid decided_by FK "nullable, el consultor"
+        uuid decided_by FK "nullable, sin uso desde D96: los cambios son directos"
         text decision_note "nullable"
         datetime requested_at
         datetime decided_at "nullable"
@@ -104,13 +104,12 @@ punto de enfoque (el puente `point_of_focus_controls` es del catálogo): cuenta 
 
 **`own_code`** es el código del catálogo (`IAC-12`) en un control clonado y la numeración propia (`C01…`) en uno que creó la empresa; el código se muestra siempre, también al cliente (D80); el backend aún lo manda solo dentro de `technical` (ver el pendiente D80 de `compliance-controls.md`). Un control propio lleva además `name` y `trust_criterion` (D79).
 
-**Los cambios de controles los decide el consultor** (D65). Crear un control propio, darlo de baja y editar las dimensiones o la interpretación de un control —del
-catálogo o propio— son **propuestas** (`client_control_changes`) que la empresa hace y el consultor aprueba o rechaza:
+**Los cambios de controles los hace el `admin_empresa` directamente** (D96, que reemplaza el circuito de propuestas de D65). Crear un control propio, darlo de baja y editar las dimensiones o la interpretación de un control —del catálogo o propio— se aplican **al instante**, con advertencia y confirmación en pantalla (`P33`):
 
-- **Crear:** el control existe desde que se propone y **cuenta en el porcentaje mientras está pendiente**. Si el consultor lo rechaza, se da de baja y deja de contar.
-- **Dar de baja y editar:** el control sigue como estaba (y contando) hasta que el consultor aprueba; entonces se aplica el cambio.
-- **Una propuesta pendiente por tipo y por control** (índice único parcial), y una decidida lleva quién y cuándo; rechazar exige motivo (restricciones de la base).
-
+- **Crear:** el control existe y **cuenta en el porcentaje desde que se crea** (`approval = approved`).
+- **Dar de baja:** `is_active = false`, el control deja de contar y de verse; **no se borra** (las evaluaciones son inmutables y un auditor necesita el historial).
+- **Editar:** la interpretación o las dimensiones cambian al instante; cada cambio deja su `audit_logs` (con estado anterior y nuevo) y, si altera lo que se mide, un `compliance_events`.
+- La tabla `client_control_changes` y sus enums **quedan sin uso** (no se borran): no hay propuestas pendientes que decidir.
 ### 7.2 Riesgos del cliente y sus indicadores
 
 ```mermaid
@@ -258,7 +257,7 @@ erDiagram
         uuid id PK
         uuid tenant_id FK "RLS (D31)"
         uuid evidence_submission_id FK
-        enum reviewer_role "consultor|auditor: una fila por entrega y por rol (D84)"
+        enum reviewer_role "admin_empresa: una fila por entrega (D96); consultor y auditor, sin uso"
         uuid reviewed_by FK
         datetime reviewed_at
         boolean type_ok "atributos de la evidencia (RN-01); nulo = sin revisar"
@@ -276,8 +275,8 @@ erDiagram
         uuid test_id FK
         uuid asset_id FK "nullable: si excluye un activo de ese test (D68, REQ-008)"
         uuid proposed_by FK "admin_empresa"
-        uuid decided_by FK "nullable, el consultor (antes approved_by, D79)"
-        enum status "pending|approved|rejected (D79)"
+        uuid decided_by FK "nullable; desde D96 es quien la propone (admin_empresa)"
+        enum status "approved (D96); pending y rejected sin uso"
         datetime requested_at "D79"
         datetime decided_at "nullable"
         text decision_note "nullable, obligatoria al rechazar"
@@ -289,13 +288,12 @@ erDiagram
     }
     client_controls ||--o{ evidence_requirements : "exige"
     evidence_requirements ||--o{ evidence_submissions : "se cumple con"
-    evidence_submissions ||--o{ evidence_reviews : "la revisan consultor y auditor"
+    evidence_submissions ||--o{ evidence_reviews : "la valida el admin_empresa"
     tests ||--o{ exclusions : "excluye checks por"
 ```
 
 **Lo que D68 agrega a estas tablas** (la regla está en §9): `client_control_tests` lleva *obligatorio*, *vigente*, fechas y la justificación de una desactivación; `evidence_reviews` guarda los seis atributos que se
-validan por evidencia y la **revisión** (`pending_review`, `human_validated`; `ai_prevalidated` se **deriva** cuando la entrega tiene `ai_verdict` y ninguna revisión humana), de donde se **deriva** su estado (`evidence_state`). **La empresa no
-aprueba ni rechaza** (D84): ya no hay `validation_status` en la entrega. `exclusions` puede excluir un **activo** de un test además de un check, siempre con justificación, aprobador y vigencia. Un `evaluations.result` ahora
+validan por evidencia y la **revisión** (`pending_review`, `human_validated`; `ai_prevalidated` se **deriva** cuando la entrega tiene `ai_verdict` y ninguna revisión humana), de donde se **deriva** su estado (`evidence_state`). **La valida el `admin_empresa`** (D96): no hay `validation_status` en la entrega, la revisión es otra fila. `exclusions` puede excluir un **activo** de un test además de un check, siempre con justificación, aprobador y vigencia. Un `evaluations.result` ahora
 distingue `error` y `excluded`.
 
 **El responsable de la evidencia es cargo *y* persona, en planos distintos** (decisión A1):
@@ -311,12 +309,11 @@ por una fecha de caducidad fija.
 
 **La evidencia de una prueba documental es de esa prueba en su control (D88).** La persona sube su documento bajo la prueba y el servidor lo guarda en el requerimiento de esa prueba (`evidence_requirements.test_id`), que crea en la primera entrega. `test_id` nulo es un documento que el catálogo
 sugiere para el control sin decir a qué prueba sirve (las 89 asignaciones del Excel): no cuenta para ninguna prueba. El estado de la prueba en ese control sale solo de lo entregado para ella (§9); el de un requerimiento, de su **entrega más reciente**.
-**La exclusión la propone la empresa (`admin_empresa`) y la aprueba el consultor (rol `consultor`), y vence** (D78, que invirtió A3). Una
+**La exclusión la propone y la decide el `admin_empresa` en un solo acto, y vence** (D96, que reemplaza a D78). Una
 exclusión sin justificación aprobada no cambia el denominador — y un check que sale por
 omisión es un agujero, no una exclusión.
 
-**La empresa solo aporta la evidencia; la revisan el consultor y el auditor, cada uno la suya** (D84). Son dos momentos: ninguna revisión depende de la otra, el auditor no ve la del consultor,
-y el estado que consume el motor sale de la del consultor (la del auditor no lo mueve, D77). Cada entrega tiene a lo sumo una revisión por rol. Una entrega es histórico: la app solo la inserta y la lee (sin `UPDATE` ni `DELETE`) y `(evidence_requirement_id, version)` es único (MD-126). La IA puede sugerir un veredicto (`ai_verdict`),
+**La evidencia la sube el `funcional` responsable de la dimensión y la valida el `admin_empresa`, en una sola revisión** (D96); el `auditor` la lee, no la revisa. El estado que consume el motor sale de esa revisión. Cada entrega tiene a lo sumo una revisión. Una entrega es histórico: la app solo la inserta y la lee (sin `UPDATE` ni `DELETE`) y `(evidence_requirement_id, version)` es único (MD-126). La IA puede sugerir un veredicto (`ai_verdict`),
 siempre etiquetado como generado por IA, pero **nunca cierra un control**.
 
 ### 7.4 Evaluaciones y hallazgos (el histórico)
@@ -414,7 +411,7 @@ cambios en el estado de cumplimiento. Las dos son **append-only, 7 años, inmuta
 **Todo cambio de estado de un control deja un evento** (D91, REQ-044): `changed_field = 'control.state'`,
 con el estado y el semáforo anteriores en `previous_value` y los nuevos —más el control, el servicio y la
 causa— en `new_value`. Lo escribe, en la misma transacción, la escritura que lo mueve: el veredicto de un
-test manual, la entrega de una evidencia, la revisión del consultor, aprobar una exclusión y lo que mide la
+test manual, la entrega de una evidencia, la validación del administrador, decidir una exclusión y lo que mide la
 sonda. Si lo causa el sistema (la sonda), `user_id`, `ip_address` y `user_agent` van nulos.
 
 **Las vulnerabilidades son solo insumo en el MVP** (decisión D7): alimentan los hallazgos de
@@ -424,34 +421,12 @@ vida propia no entra al MVP.
 ### 7.5 La IA y el veredicto
 
 La IA evalúa evidencia, sugiere una conclusión y recomendaciones; **nunca da el veredicto**. El veredicto de un test documental o manual lo da el
-**consultor** (`evaluations.confirmed_by`), y si lo da con observaciones abiertas se documenta la razón (`evaluations.closure_observation_reason`).
+**`admin_empresa`** (`evaluations.confirmed_by`), y si lo da con observaciones abiertas se documenta la razón (`evaluations.closure_observation_reason`).
 
-**El consultor y el auditor evalúan el cumplimiento con distinto enfoque** (D68, D77): el consultor **prepara** a la empresa y el auditor **certifica**, cada uno sobre los mismos datos.
-Cada uno emite su evaluación del servicio en `framework_assessments`, ligada a la evaluación del servicio (`service_frameworks`: servicio + marco + versión + período + fecha de corte):
-
-```mermaid
-erDiagram
-    framework_assessments {
-        uuid id PK
-        uuid tenant_id FK
-        uuid service_framework_id FK "la evaluación del servicio sobre la que opina"
-        enum assessor_role "consultor|auditor"
-        enum verdict "ready|not_ready (consultor) · certified|not_certified (auditor)"
-        text rationale "obligatoria"
-        uuid issued_by FK
-        datetime issued_at
-    }
-    service_frameworks ||--o{ framework_assessments : "recibe"
-```
-
-- **Cada rol emite solo la suya** (`SEG-56`): el consultor, `ready`/`not_ready` («lista» o «no lista para la auditoría»); el auditor, `certified`/`not_certified`.
-- **No cambia el estado calculado** (§9): se muestra al lado. La del auditor es su opinión; el estado lo mueven solo los datos medidos.
-- **Inmutable una vez emitida**: para cambiarla se emite otra, y la vigente es la última de ese rol sobre esa evaluación. Se escribe en la misma transacción que la acción (`audit_logs`, D52).
-- El veredicto **por test** del consultor sigue en `evaluations.confirmed_by`; este es el general.
-
+**Las evaluaciones del servicio —la del consultor y la del auditor— están en pausa** (D68 punto 11, D77, D96). El consultor ya no existe en el producto y la calificación del auditor (certificar o no) se retoma después, según el Excel y sin cambiar el estado calculado (`P35`). La tabla `framework_assessments` y sus enums quedan sin uso; el veredicto **por test** del administrador sigue en `evaluations.confirmed_by`.
 ### 7.6 Las observaciones
 
-Lo que escriben el `auditor` y el `consultor` (§5.1) son **observaciones**, no hallazgos: un hallazgo lo detecta el sistema (§7.4) y una observación la redacta una
+Lo que escribe el `auditor` (§5.1) son **observaciones**, no hallazgos: un hallazgo lo detecta el sistema (§7.4) y una observación la redacta una
 persona. Cada una la tiene que atender la empresa, y debe quedar constancia de que lo hizo.
 
 ```mermaid
@@ -462,7 +437,7 @@ erDiagram
         uuid service_id FK
         uuid client_control_id FK "nullable, si habla de un control"
         uuid evidence_submission_id FK "nullable, si comenta una evidencia"
-        uuid created_by FK "el auditor o el consultor que la escribe"
+        uuid created_by FK "el auditor que la escribe"
         enum type "observation|recommendation|information_request"
         text body
         enum status "open|answered|closed"
@@ -480,11 +455,11 @@ erDiagram
 ```
 
 - **Tres tipos:** observación, recomendación y solicitud de información (pedirle más datos a la empresa).
-- **Tres estados:** `open` → `answered` → `closed`. La empresa (`admin_empresa`, o el `funcional` dueño del control) **responde** dejando su nota y, si hace falta, una evidencia;
+- **Tres estados:** `open` → `answered` → `closed`. La empresa (`admin_empresa`, o el `funcional` responsable del control) **responde** dejando su nota y, si hace falta, una evidencia;
   **solo quien la escribió la cierra**. Si no queda conforme, la devuelve a `open`.
 - **Una observación cerrada no se reabre**: si hace falta algo más, se crea otra. Mientras no esté cerrada, su autor puede modificarla.
-- **Una observación no mueve el porcentaje.** El cumplimiento solo cambia por el camino de siempre: si la respuesta es un documento, entra como evidencia, se aprueba y
-  el consultor da el veredicto del test **documental**. Si ese veredicto es negativo, el test falla y el porcentaje baja.
+- **Una observación no mueve el porcentaje.** El cumplimiento solo cambia por el camino de siempre: si la respuesta es un documento, entra como evidencia, se valida y
+  el `admin_empresa` da el veredicto del test **documental**. Si ese veredicto es negativo, el test falla y el porcentaje baja.
 - **Se escribe en la misma transacción que la acción** (`audit_logs`, D52). La observación no se borra.
 
 ---

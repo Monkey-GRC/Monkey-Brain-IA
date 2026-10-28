@@ -23,15 +23,16 @@ te toca. Si lo que vas a construir no está aquí, el contrato se acuerda primer
 | `modules/monkey-admin.md` | Registro del tenant y clave de acceso (`companies`, `access_keys`) |
 | `modules/monkey-admin-catalog.md` | Monkey Admin: ver y gestionar el catálogo maestro (marcos, controles, riesgos, causas, pruebas y evidencias) |
 | `modules/auth.md` | Canje de la clave, login, refresh |
+| `modules/users-team.md` | Equipo: el administrador invita a `funcional` y `auditor`, activan su cuenta y se reparte el trabajo por dimensión |
 | `modules/onboarding-organizational-context.md` | Componente 1 — 10 campos |
 | `modules/onboarding-service-context.md` | Componente 2 — 16 campos, repetible por servicio |
 | `modules/onboarding-technical-control.md` | Componente 3 del onboarding — escenario, scope, conexión de activos (rol, llaves, agente), validación, activación |
-| `modules/compliance-controls.md` | Cumplimiento: controles (listar, ver, crear un control propio, proponer cambios y que el consultor decida) |
+| `modules/compliance-controls.md` | Cumplimiento: controles (listar, ver, crear un control propio, editar y dar de baja directamente, con confirmación) |
 | `modules/compliance-risks.md` | Cumplimiento: riesgos y causas, vínculos, evaluación 5×5 y tratamiento |
 | `modules/compliance-evidence.md` | Cumplimiento: evidencias (subir con huella y versión, descargar con enlace firmado, aprobar o rechazar) |
 | `modules/compliance-responsibles.md` | Cumplimiento: los cargos responsables de la organización |
-| `modules/compliance-overview.md` | Cumplimiento: el resumen del servicio por marco y categoría, y las evaluaciones del consultor y del auditor |
-| `modules/compliance-audit.md` | Cumplimiento: tests y veredictos, observaciones del auditor y del consultor, y exclusiones |
+| `modules/compliance-overview.md` | Cumplimiento: el resumen del servicio por marco y categoría, (las evaluaciones del servicio están en pausa, D96) |
+| `modules/compliance-audit.md` | Cumplimiento: tests y veredictos, observaciones del auditor, y exclusiones |
 | `modules/control-tecnico-operacion.md` | Módulo de operación continua (§8): ejecuciones, estado de preparación, hallazgos, vista técnica y API interna del trabajador. Empieza donde acaba el Componente 3 |
 
 ## Formato de cada módulo

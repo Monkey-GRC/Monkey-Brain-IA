@@ -15,10 +15,12 @@ type: contract
 
 ## Quién puede qué
 
-| Acción | `admin_empresa` | `funcional` | `consultor` | `auditor` |
-|---|---|---|---|---|
-| Ver | ✓ | ✓ | ✓ | ✓ |
-| Crear, cambiar la persona, quitar | ✓ | `403` | `403` | `403` |
+| Acción | `admin_empresa` | `funcional` | `auditor` |
+|---|---|---|---|
+| Ver | ✓ | ✓ | ✓ |
+| Crear, cambiar la persona, quitar | ✓ | `403` | `403` |
+
+Un cargo (`responsible_type`) **no es** el responsable por dimensión de `users-team.md`: el cargo responde ante el auditor; el responsable por dimensión es una persona con cuenta que ejecuta pruebas (D96).
 
 ## `responsible_type`
 

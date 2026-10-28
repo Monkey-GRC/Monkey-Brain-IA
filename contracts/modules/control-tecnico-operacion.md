@@ -13,7 +13,7 @@ type: contract
 conexión, validación, activación, programación). Este contrato es **otro módulo del comité** (`modelo-datos.md` §8, «Control Técnico — la
 operación continua»): empieza cuando un activo ya está conectado y validado. Lo que no está aquí: cómo se conecta un activo.
 
-**Entidades:** `executions`, `check_results`, `evaluations`, `findings`, `asset_resources` (`modelo-datos.md` §7.4, §8, §9). **Rol:** `admin_empresa` (y `funcional` en lo suyo); la vista técnica la piden `auditor`, `consultor` y, desde D81, `admin_empresa`.
+**Entidades:** `executions`, `check_results`, `evaluations`, `findings`, `asset_resources` (`modelo-datos.md` §7.4, §8, §9). **Rol:** `admin_empresa` (y `funcional` en lo suyo); la vista técnica la piden `auditor` y `admin_empresa` (D81, D96).
 **App:** Monkey Platform.
 
 
@@ -22,7 +22,7 @@ operación continua»): empieza cuando un activo ya está conectado y validado. 
 > al proveedor (D70, `P14` D3).
 >
 > ⚠️ **Lenguaje de la superficie** (`philosophy.md`). Nada de lo que ve el cliente por defecto lleva códigos de control ni de requisito.
-> Los códigos técnicos viajan solo en el objeto `technical` y solo si quien pide tiene el rol `admin_empresa` (D81), `auditor` o `consultor` y pide `view=technical`; para el `funcional` esa vista responde `403` (D63, D64, D81, SEG-54).
+> Los códigos técnicos viajan solo en el objeto `technical` y solo si quien pide tiene el rol `admin_empresa` (D81) o `auditor` y pide `view=technical`; para el `funcional` esa vista responde `403` (D63, D81, D96, SEG-54).
 
 ## Operación continua
 
@@ -112,7 +112,7 @@ vienen `null` y `how_to_fix` cae a un texto neutro: **nunca se muestra el texto 
 
 ### `GET /v1/assets/{id}/results?view=technical` — vista técnica
 
-Paginado, **para los roles `admin_empresa` (D81), `auditor` y `consultor`** (el `funcional` y `admin_monkey` reciben `403`). Ítems por check y recurso:
+Paginado, **para los roles `admin_empresa` (D81) y `auditor`** (el `funcional` y `admin_monkey` reciben `403`). Ítems por check y recurso:
 
 ```json
 {

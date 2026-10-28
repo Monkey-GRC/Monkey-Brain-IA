@@ -44,7 +44,7 @@ El registro está partido por épocas en `decisiones/`. **Busca el ID en el índ
 | [`decisiones/03-onboarding.md`](decisiones/03-onboarding.md) | **D43–D47** — Clave de acceso y los 3 componentes del onboarding; el marco se contrata al registrar. |
 | [`decisiones/04-sonda-y-correcciones.md`](decisiones/04-sonda-y-correcciones.md) | **D48–D52** — Paso 3 provisional contra la sonda real, pool de conexiones, correcciones del comité, auditoría atómica. |
 | [`decisiones/05-control-tecnico-y-nube.md`](decisiones/05-control-tecnico-y-nube.md) | **D53–D61 y D67** — Conexión con la nube, sonda de servidores, trabajador del motor de nube y descubrimiento de activos. |
-| [`decisiones/06-cumplimiento-y-roles.md`](decisiones/06-cumplimiento-y-roles.md) | **D62–D68** — Cómo se calcula el cumplimiento, el auditor, los cinco roles, controles propios y MFA. |
+| [`decisiones/06-cumplimiento-y-roles.md`](decisiones/06-cumplimiento-y-roles.md) | **D62–D68, D95 y D96** — Cómo se calcula el cumplimiento, el auditor, los cinco roles, controles propios, MFA y la entrada del consultor. |
 | [`decisiones/07-cierres-2026-10-10.md`](decisiones/07-cierres-2026-10-10.md) | **D69–D94** — Cierres del 2026-10-10 al 20: el paso 3, el nombre neutro de las pruebas, la lectura de la sonda, el Postgres de producción, los modelos de negocio, las exclusiones, la fórmula del riesgo residual y el lenguaje GRC de la superficie |
 
 ### Índice
@@ -114,10 +114,10 @@ El registro está partido por épocas en `decisiones/`. **Busca el ID en el índ
 | D60 | Se retira el scope declarado («cuántos tienes») y el servicio muestra sus conexiones | 05 |
 | D61 | Cada recurso descubierto es un activo del cliente, y el servicio elige cuáles son suyos | 05 |
 | D62 | El cumplimiento se cuenta: dimensión → control → categoría → marco | 06 |
-| D63 | El auditor es un rol aparte | 06 |
-| D64 | Hay cinco roles: el consultor prepara, el auditor certifica | 06 |
-| D65 | Controles propios y cambios de controles con aprobación del consultor (cierra P8) | 06 |
-| D66 | MFA obligatoria para los 5 roles | 06 |
+| D63 | El auditor es un rol aparte *(ajustada por D96)* | 06 |
+| D64 | Hay cinco roles: el consultor prepara, el auditor certifica *(reemplazada por D96)* | 06 |
+| D65 | Controles propios y cambios de controles con aprobación del consultor (cierra P8) *(reemplazada por D96)* | 06 |
+| D66 | MFA obligatoria para los 5 roles *(ajustada por D96 (4 roles))* | 06 |
 | D67 | El paso 3 es un marketplace de plataformas y el catálogo de conexiones vive en la base de datos | 05 |
 | D68 | El motor de evaluación del comité es la regla del cálculo | 06 |
 | D69 | El paso 3 se completa al definir dónde vive el servicio, e «Inicio» invita a conectar (cierra P17) | 07 |
@@ -128,21 +128,23 @@ El registro está partido por épocas en `decisiones/`. **Busca el ID en el índ
 | D74 | Exclusiones de activos y controles vencidos (decisiones 3 y 7 del Excel, P22) | 07 |
 | D75 | Se adopta la fórmula del riesgo residual del comité, y se cierran tres decisiones del Excel por su recomendación o por lo ya decidido | 07 |
 | D76 | Respuestas del comité sobre el motor, y qué significa el mapa de calor | 07 |
-| D77 | La evaluación del consultor y la del auditor: el auditor va aparte, el consultor suma un veredicto general (cierra P23) | 07 |
-| D78 | Quién propone y quién aprueba una exclusión: la empresa propone, el consultor aprueba | 07 |
+| D77 | La evaluación del consultor y la del auditor: el auditor va aparte, el consultor suma un veredicto general (cierra P23) *(en pausa por D96)* | 07 |
+| D78 | Quién propone y quién aprueba una exclusión: la empresa propone, el consultor aprueba *(reemplazada por D96)* | 07 |
 | D79 | Columnas que faltaban para los contratos de Cumplimiento (MD-108) | 07 |
 | D80 | La superficie habla el lenguaje del dominio GRC, los códigos se muestran siempre y el porcentaje de avance es visible | 07 |
-| D81 | El administrador de la empresa ve la vista técnica mientras no se definan los permisos por pantalla | 07 |
+| D81 | El administrador de la empresa ve la vista técnica mientras no se definan los permisos por pantalla *(ajustada por D96)* | 07 |
 | D82 | Cada prueba lleva, junto a su nombre neutro, una descripción corta que ve el cliente | 07 |
-| D83 | Sin consultor, la exclusión espera; y la exclusión lleva su servicio (cierra P24) | 07 |
-| D84 | La empresa solo aporta la evidencia: la revisan el consultor y el auditor, cada uno en su momento (cierra parte de P25) | 07 |
-| D85 | El veredicto de un test manual o documental vale para todos los controles que lo usan | 07 |
+| D83 | Sin consultor, la exclusión espera; y la exclusión lleva su servicio (cierra P24) *(reemplazada por D96)* | 07 |
+| D84 | La empresa solo aporta la evidencia: la revisan el consultor y el auditor, cada uno en su momento (cierra parte de P25) *(reemplazada por D96)* | 07 |
+| D85 | El veredicto de un test manual o documental vale para todos los controles que lo usan *(ajustada por D96)* | 07 |
 | D86 | No hay un staging propio: un solo entorno desplegado, y lo que dependa de un staging se congela | 07 |
 | D87 | El período auditado lo declara la empresa y la fecha de corte es «hoy» hasta que se congela (responde P26, provisional) | 07 |
 | D90 | De una prueba técnica el cliente ve qué falló y cómo corregirlo, con la guía del catálogo traducida con IA y sin nombrar al proveedor | 07 |
 | D89 | El onboarding es solo el contexto de la empresa; los servicios se declaran después y sus riesgos se evalúan antes de declarar activos (ajusta D23, reemplaza D69) | 07 |
-| D88 | Una prueba documental se valida en su control, con la evidencia que se sube para esa prueba (ajusta D85, cierra P25) | 07 |
+| D88 | Una prueba documental se valida en su control, con la evidencia que se sube para esa prueba (ajusta D85, cierra P25) *(ajustada por D96)* | 07 |
 | D91 | Todo cambio de estado de un control deja un evento inmutable (cumple REQ-043 y REQ-044) | 07 |
 | D92 | El cliente no declara dónde vive su servicio: elige la plataforma del catálogo y se le ofrecen las seis conexiones (ajusta D46 y D60; se aparta del bloque 2A del Excel, por ratificar) | 07 |
 | D93 | Al evaluar los riesgos de un servicio nuevo se puede retirar el que no aplica (con motivo) o volver a incluirlo, y agregar un riesgo propio con sus causas; retirar un riesgo no retira causas ni controles (amplía D89) | 07 |
 | D94 | Segundo factor TOTP con 10 códigos de recuperación para los 5 roles; ingreso en dos pasos con desafío de 5 min; QR dibujado en el navegador; el admin de la empresa restablece a su equipo y Monkey al admin por script; cierra DT-23 | 07 |
+| D95 | El consultor se activa con un código de un solo uso y entra a sus empresas asignadas eligiendo de una lista, sin token por empresa (cierra P29 y P30; **reemplazada en parte por D96**: solo sobrevive el código de activación) | 06 |
+| D96 | Cuatro roles: el administrador de la empresa es el experto en compliance, valida y decide; el `funcional` ejecuta por dimensión; el auditor revisa sin calificar (reemplaza D64, D65, D78, D83, D84, D85, D88; pausa D77; cierra P28 y P31) | 06 |

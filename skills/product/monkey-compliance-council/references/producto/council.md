@@ -38,7 +38,7 @@ Este es el panel de expertos simulado que diseñó a Monkey y que sigue asesoran
 - **AI Governance Expert** — dueño de la regla "human-in-the-loop" como decisión de producto permanente, no limitación temporal; exige que toda evidencia generada por IA quede etiquetada como tal.
 
 ## Experiencia de Usuario
-- **UX Researcher, Enterprise UX Designer** — dueños de que la vista detallada tipo matriz nunca desaparezca (es la pantalla de los roles `auditor` y `consultor`, D63, D64), aunque el cliente no la vea.
+- **UX Researcher, Enterprise UX Designer** — dueños de que la vista detallada tipo matriz nunca desaparezca (es la pantalla de los roles `auditor` y `admin_empresa`, D63, D96), aunque el cliente no la vea.
 - **Behavioral Designer** — dueño de que el dashboard responda siempre a 4 preguntas ("¿Estamos bien? ¿Qué es urgente? ¿Qué cambió? ¿Qué debemos hacer hoy?") y nunca se vea como una hoja de cálculo.
 
 ## Cómo el Consejo llega a una decisión
