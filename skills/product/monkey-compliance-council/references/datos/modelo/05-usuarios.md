@@ -206,7 +206,7 @@ erDiagram
 | Cifrado en tránsito | TLS 1.3 + HSTS | Requisito PCI DSS |
 | Rotación de API keys | 90 días | Acota el daño de una key comprometida |
 | Rate limiting | 100/min por usuario, 1000/min por empresa | Previene abuso y DoS |
-| Retención del audit trail | 7 años, inmutable, append-only | SOC 2 Type II |
+| Retención del audit trail | 7 años, inmutable, append-only (salvo una empresa dada de baja, D95) | SOC 2 Type II |
 | IP whitelist | opcional, configurable | Control adicional de acceso |
 | Bloqueo de cuenta | 5 intentos fallidos, 15 min | Previene fuerza bruta |
 

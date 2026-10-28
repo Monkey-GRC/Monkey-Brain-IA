@@ -44,8 +44,8 @@ El registro está partido por épocas en `decisiones/`. **Busca el ID en el índ
 | [`decisiones/03-onboarding.md`](decisiones/03-onboarding.md) | **D43–D47** — Clave de acceso y los 3 componentes del onboarding; el marco se contrata al registrar. |
 | [`decisiones/04-sonda-y-correcciones.md`](decisiones/04-sonda-y-correcciones.md) | **D48–D52** — Paso 3 provisional contra la sonda real, pool de conexiones, correcciones del comité, auditoría atómica. |
 | [`decisiones/05-control-tecnico-y-nube.md`](decisiones/05-control-tecnico-y-nube.md) | **D53–D61 y D67** — Conexión con la nube, sonda de servidores, trabajador del motor de nube y descubrimiento de activos. |
-| [`decisiones/06-cumplimiento-y-roles.md`](decisiones/06-cumplimiento-y-roles.md) | **D62–D68, D95 y D96** — Cómo se calcula el cumplimiento, el auditor, los cinco roles, controles propios, MFA y la entrada del consultor. |
-| [`decisiones/07-cierres-2026-10-10.md`](decisiones/07-cierres-2026-10-10.md) | **D69–D94** — Cierres del 2026-10-10 al 20: el paso 3, el nombre neutro de las pruebas, la lectura de la sonda, el Postgres de producción, los modelos de negocio, las exclusiones, la fórmula del riesgo residual y el lenguaje GRC de la superficie |
+| [`decisiones/06-cumplimiento-y-roles.md`](decisiones/06-cumplimiento-y-roles.md) | **D62–D68** — Cómo se calcula el cumplimiento, el auditor, los cinco roles, controles propios y MFA. |
+| [`decisiones/07-cierres-2026-10-10.md`](decisiones/07-cierres-2026-10-10.md) | **D69–D95** — Cierres del 2026-10-10 al 20: el paso 3, el nombre neutro de las pruebas, la lectura de la sonda, el Postgres de producción, los modelos de negocio, las exclusiones, la fórmula del riesgo residual y el lenguaje GRC de la superficie |
 
 ### Índice
 
@@ -92,7 +92,7 @@ El registro está partido por épocas en `decisiones/`. **Busca el ID en el índ
 | D38 | El dato real manda: cómo se siembra y qué se encontró | 02 |
 | D39 | Dimensiones por control y políticas del catálogo (cierra P10) | 02 |
 | D40 | Reglas del clonado del catálogo al elegir marco (MD-80) | 02 |
-| D41 | El audit trail es inmutable en la base de datos y se retiene 7 años (MD-92) | 02 |
+| D41 | El audit trail es inmutable en la base de datos y se retiene 7 años (MD-92); **D95: no aplica a una empresa dada de baja, que se purga con su plazo** | 02 |
 | D42 | Cómo viaja una migración a staging (MD-91) | 02 |
 | D43 | La clave de acceso se canjea una sola vez, y solo con el correo administrativo | 03 |
 | D44 | Componente 1 del onboarding: huecos del contrato resueltos por desarrollo | 03 |
@@ -123,7 +123,7 @@ El registro está partido por épocas en `decisiones/`. **Busca el ID en el índ
 | D69 | El paso 3 se completa al definir dónde vive el servicio, e «Inicio» invita a conectar (cierra P17) | 07 |
 | D70 | El cliente ve el resultado de una prueba con un nombre neutro; los textos del comité son internos (cierra P11) | 07 |
 | D71 | Cómo lee Monkey a la sonda y qué se promete (cierra P12) | 07 |
-| D72 | El Postgres de producción vive separado de la app (cierra P7) | 07 |
+| D72 | El Postgres de producción vive separado de la app (cierra P7); respaldos con rotación de 35 días (D95) | 07 |
 | D73 | La lista de modelos de negocio es de 19, más «otro» (cierra P6) | 07 |
 | D74 | Exclusiones de activos y controles vencidos (decisiones 3 y 7 del Excel, P22) | 07 |
 | D75 | Se adopta la fórmula del riesgo residual del comité, y se cierran tres decisiones del Excel por su recomendación o por lo ya decidido | 07 |
@@ -146,5 +146,6 @@ El registro está partido por épocas en `decisiones/`. **Busca el ID en el índ
 | D92 | El cliente no declara dónde vive su servicio: elige la plataforma del catálogo y se le ofrecen las seis conexiones (ajusta D46 y D60; se aparta del bloque 2A del Excel, por ratificar) | 07 |
 | D93 | Al evaluar los riesgos de un servicio nuevo se puede retirar el que no aplica (con motivo) o volver a incluirlo, y agregar un riesgo propio con sus causas; retirar un riesgo no retira causas ni controles (amplía D89) | 07 |
 | D94 | Segundo factor TOTP con 10 códigos de recuperación para los 5 roles; ingreso en dos pasos con desafío de 5 min; QR dibujado en el navegador; el admin de la empresa restablece a su equipo y Monkey al admin por script; cierra DT-23 | 07 |
+| D95 | Archivar una empresa (corta accesos y motores, reversible) y borrarla definitivamente al vencer un plazo elegido (6 meses por defecto); solo queda un rastro mínimo; enmienda D41 y D72: los respaldos generales rotan a 35 días | 07 |
 | D95 | El consultor se activa con un código de un solo uso y entra a sus empresas asignadas eligiendo de una lista, sin token por empresa (cierra P29 y P30; **reemplazada en parte por D96**: solo sobrevive el código de activación) | 06 |
 | D96 | Cuatro roles: el administrador de la empresa es el experto en compliance, valida y decide; el `funcional` ejecuta por dimensión; el auditor revisa sin calificar (reemplaza D64, D65, D78, D83, D84, D85, D88; pausa D77; cierra P28 y P31) | 06 |

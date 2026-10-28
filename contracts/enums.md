@@ -276,7 +276,10 @@ Aplicación · `cloud` Nube
 Lo marca `admin_monkey` al registrar la empresa. No se revierte sin migrar datos.
 
 ### `company_status` — `companies.status`
-`active` Activa · `suspended` Suspendida
+`active` Activa · `suspended` Suspendida · `deactivated` Archivada *(D95: sin acceso hasta el borrado definitivo; solo `admin_monkey`)*
+
+### `company_deactivation_reason` — motivo al archivar una empresa (D95)
+`non_payment` Falta de pago · `client_request` El cliente ya no desea el servicio · `other` Otro
 
 ### `access_key_status` — `access_keys.status`
 `pending` Pendiente · `used` Usada · `expired` Expirada · `revoked` Revocada *(también el estado de los códigos de activación de cuentas, D95)*
