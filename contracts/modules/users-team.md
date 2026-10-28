@@ -167,7 +167,11 @@ Matices que el contrato no decía:
 - El `funcional` sigue viendo `assigned_to` (la primera persona responsable de las suyas) en la lista de controles; `responsible` por dimensión como campo de la respuesta está **sin construir** (se pide con `GET /controls/{id}/responsibles`).
 - Mientras alguien con la especialidad quitada siga siendo responsable no se deja; desactivar a un responsable **no** lo reasigna: sus controles quedan «sin responsable efectivo activo» hasta que el administrador los reparta (pendiente de decisión, no de código).
 
-**Sin construir:** la pantalla de Equipo, la de activación y la bandeja del funcional en Monkey Platform (F46–F48), invitar por correo (MD-69), y el campo `responsible` por dimensión en la lista de controles.
+- **Servicios en lectura (2026-10-29):** `GET /v1/services` y `GET /v1/services/{id}` los leen también el `auditor` (todos) y el `funcional` (solo los servicios en los que es responsable de alguna dimensión; el detalle de otro es `403`). Sin esto no llegaban a Cumplimiento. Crear, editar y borrar un servicio siguen siendo solo del `admin_empresa`. El archivo de la descripción del sistema sigue siendo solo del administrador.
+
+**Interfaz construida en Monkey Platform (2026-10-29):** la pantalla **Equipo** (`/equipo`), la **activación** con el mismo formulario que la clave de una empresa (acepta cualquiera de los dos códigos), el **reparto por servicio** y el **responsable por control** en el panel de detalle del control. Ver `context/frontend.md`.
+
+**Sin construir:** invitar por correo (MD-69), el campo `responsible` por dimensión en la lista de controles, una vista «Mi trabajo» para el `funcional` (hoy ve su Cumplimiento filtrado) y la pantalla donde el administrador valida la evidencia (`compliance-audit.md`).
 
 ## Fuera de este corte
 

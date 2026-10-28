@@ -260,7 +260,7 @@ Implementado en `Backend/src/features/services` (más `catalogs` y el progreso d
 
 | Endpoint | Estado |
 |---|---|
-| `POST /v1/services` | ✅ Solo `admin_empresa`. Crea el servicio **y clona el catálogo en la misma transacción**; el `201` ya trae `catalog.status = ready` |
+| **Quién lee** la lista y el detalle (D96) | ✅ `admin_empresa` (todos), `auditor` (todos, solo lectura) y `funcional` (solo aquellos en los que es responsable de alguna dimensión; el detalle de otro, `403`). D96. | Crea el servicio **y clona el catálogo en la misma transacción**; el `201` ya trae `catalog.status = ready` |
 | `GET /v1/services` | ✅ Paginado: `id`, `name`, `type`, `is_complete`, `frameworks[]`, `catalog` y `created_at` |
 | `GET /v1/services/{id}` | ✅ Todos los campos declarados (el response del `201` los trae igual, para que la pantalla de edición no pida dos veces) |
 | `PATCH /v1/services/{id}` | ✅ Solo las claves presentes (`null` borra un opcional). Ampliar `trust_criteria` o `framework_codes` recalcula y clona lo que falte; no borra ni pisa nada |
