@@ -7,7 +7,7 @@ type: contract
 
 # Cumplimiento — validación y auditoría
 
-**Estado: ACORDADO, reescrito por D96 (2026-10-27): no hay consultor.** Construido con el modelo anterior (exclusiones MD-144, revisión de la evidencia MD-127, veredicto MD-155); lo que el Backend debe ajustar a este texto está en «Estado de implementación». Ver `conventions.md` (sección «Cumplimiento») y `enums.md`. Tickets: MD-144, MD-154, MD-155, MD-127.
+**Estado: ACORDADO, reescrito por D96 (2026-10-27): no hay consultor.** Construido con el modelo anterior (exclusiones MD-144, revisión de la evidencia MD-127, veredicto MD-155); el Backend ya quedó ajustado a este texto salvo lo que lista «Estado de implementación». Ver `conventions.md` (sección «Cumplimiento») y `enums.md`. Tickets: MD-144, MD-154, MD-155, MD-127.
 
 **Qué es.** El **`admin_empresa` es el experto en compliance** (D96): valida la evidencia, da el veredicto de las pruebas manuales y decide las exclusiones. El **`funcional`** sube la evidencia y repara lo suyo, y el **`auditor`** revisa y escribe observaciones que la empresa debe atender; no califica por ahora. **Entidades:** `evaluations`, `evidence_submissions`, `evidence_reviews`, `audit_observations`, `exclusions` (`modelo-datos.md` §7.3 a §7.6). **App:** Monkey Platform.
 Los cambios de controles, riesgos y causas están en `compliance-controls.md` y `compliance-risks.md`; el resumen del servicio, en `compliance-overview.md`; y quién es responsable de qué, en `users-team.md`.
@@ -325,18 +325,19 @@ Todos con el mismo sobre (`conventions.md`); `message` es la clave i18n del erro
 
 ## Estado de implementación
 
-**Construido con el modelo anterior (consultor): MD-144, MD-127 y MD-155.** Para dejarlo como dice este contrato, el Backend debe:
+**Construido (2026-10-28, B66): el paso de lo que hacía el consultor al `admin_empresa`.** El Backend ya hace lo que dice este contrato en:
 
-- **Revisión de la evidencia.** Aceptar solo `admin_empresa` (hoy `consultor` y `auditor`); `evidence_reviews.reviewer_role` pasa a `admin_empresa` (migración: el valor se agrega al enum y los datos de prueba se descartan); **una sola revisión por entrega**; exigir `note` al rechazar. Ya no se esconde la revisión de un rol al otro (SEG-61 se retira).
-- **Veredicto.** Cambiar el rol de `consultor` a `admin_empresa` en el `POST`/`GET` (la lógica de evaluaciones inmutables, `409 TEST_NOT_MANUAL`, `TEST_DECIDED_BY_EVIDENCE` y `TEST_HAS_NO_ASSETS` no cambia).
-- **Pruebas documentales por control (D88).** El estado sale de la revisión del `admin_empresa` (hoy, la del consultor).
-- **Exclusiones.** `POST` solo `admin_empresa`, nace `approved` con `decided_by`/`decided_at`, deja el evento `exclusion.approve`; se retira el `PATCH /v1/exclusions/{id}` y el campo `awaiting_consultant`; el índice único parcial pasa de «una pendiente» a «una aprobada vigente».
-- **El `funcional` ve solo lo suyo** (`users-team.md`): las listas de pruebas y de evidencia se filtran por el responsable efectivo de cada dimensión.
-- **Observaciones (MD-154)**, sin construir: solo las escribe el `auditor`.
+- **Revisión de la evidencia.** Solo `admin_empresa` (`PUT /v1/evidence-submissions/{id}/review`); `evidence_reviews.reviewer_role` tiene el valor `admin_empresa` (migración `20261028202705_evidence_reviewer_admin_empresa`; `consultor` y `auditor` quedan en el enum sin uso); una sola revisión por entrega; rechazar sin `note` es `422 note.required`. Todos los roles ven la misma revisión (SEG-61 retirado); el `funcional` recibe `review_note` en cada entrega.
+- **Veredicto.** `POST` solo `admin_empresa`, `GET` del historial `admin_empresa` y `auditor`.
+- **Pruebas documentales por control (D88).** El estado sale de la revisión del `admin_empresa`.
+- **Exclusiones.** `POST` solo `admin_empresa`: nace `approved` con `decided_by`/`decided_at`, deja el evento `exclusion.approve` y, si mueve un control, su evento de estado (`cause: exclusion_approved`). Auditoría `exclusion.create`. Se retiró el `PATCH /v1/exclusions/{id}`, el campo `awaiting_consultant` y `ALREADY_DECIDED`. Dos creaciones a la vez de lo mismo se serializan (candado de la transacción) y la segunda es `409 EXCLUSION_ALREADY_EXISTS`; el índice único parcial «una pendiente» queda como red de seguridad de datos viejos. `pending` y `rejected` quedan en el enum sin uso.
+- **Pruebas:** `revision-evidencia`, `veredictos`, `eventos-estado`, `exclusiones` y `evidencias` en `Backend/test/cumplimiento/`.
+
+Falta por construir: **el `funcional` ve solo lo suyo** (`users-team.md`, B67: las listas de pruebas y de evidencia se filtran por el responsable efectivo de cada dimensión; hoy se filtra por las asignaciones por control) y las **observaciones (MD-154)**, que solo escribe el `auditor`.
 
 Lo que no cambia y el código ya hace: la vigencia llega al `period_end` del servicio (D87); «vencida» se deriva al leer (`is_expired`, `DT-72`, `MD-171`); solo se excluye el activo de un test (la de un check, `excluded_check_id`, es `MD-170`, `DT-74`); y `ai_suggestion` no se guarda ni se devuelve: la IA no escribe aquí.
 
-**No hay pantalla de exclusiones con el aviso del consultor ni la casilla de contacto** (MD-169, `P28`): se retiran. La pantalla de exclusiones solo propone y decide, en un acto.
+**No hay pantalla de exclusiones con el aviso del consultor ni la casilla de contacto** (MD-169, `P28`): se retiran. La pantalla de exclusiones solo crea y lista: la decisión es el mismo acto.
 
 ## Preguntas abiertas
 

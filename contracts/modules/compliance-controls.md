@@ -7,7 +7,7 @@ type: contract
 
 # Cumplimiento — controles
 
-**Estado: ACORDADO, reescrito por D96 (2026-10-27): no hay propuestas ni consultor que las apruebe.** Listar, ver y crear un control propio están construidos; la edición y la baja directas **no** (hoy el Backend tiene el circuito de propuestas de D65: ver «Estado de implementación»). Ver `conventions.md` (sección «Cumplimiento: roles, vistas y decisiones») y `enums.md`. Tickets: MD-117, MD-118, MD-150, MD-156 (queda sin objeto).
+**Estado: ACORDADO, reescrito por D96 (2026-10-27): no hay propuestas ni consultor que las apruebe.** Listar, ver, crear, editar y dar de baja están construidos (2026-10-28); falta el filtro por responsable de dimensión (ver «Estado de implementación»). Ver `conventions.md` (sección «Cumplimiento: roles, vistas y decisiones») y `enums.md`. Tickets: MD-117, MD-118, MD-150, MD-156 (queda sin objeto).
 
 **Qué es.** Un *control* del servicio es un **control del cliente** (`client_controls`, `modelo-datos.md` §7.1): el control del catálogo que el servicio heredó al contratar
 un marco, o uno propio. Todo lo que se mide cuelga de él. **Entidades:** `client_controls`, `client_control_dimensions`, `service_dimension_owners` y `user_control_assignments` (el responsable por dimensión, `users-team.md`).
@@ -287,14 +287,18 @@ Crear, editar dimensiones o dar de baja altera lo que se mide y deja además un 
 
 **Pendiente por D80 (2026-10-15):** `code` y `requirement_codes` en la **vista de negocio** (lista, detalle y creación). El backend aún los devuelve solo dentro de `technical` (`control_code`, `requirement_codes`) y `403` para el resto de roles; hay que moverlos a la base y dejar en `technical` solo lo demás (**MD-166**). Hasta entonces, el frontend muestra el código cuando llega y no lo inventa.
 
-**Construido con el modelo anterior (2026-10-14):** MD-117 (listar y ver), MD-150 (crear un control propio) y MD-118 (proponer cambios y listarlos, `POST`/`GET /v1/controls/{id}/changes`). Para dejarlo como dice este contrato, el Backend debe:
+**Construido (2026-10-28, B66): listar, ver, crear, editar y dar de baja.**
 
-- **Retirar el circuito de propuestas:** `POST` y `GET /v1/controls/{id}/changes`, el campo `has_pending_change`, el filtro `approval` y el campo `assigned_to` (que lo reemplaza `users-team.md`). La tabla `client_control_changes` y sus enums quedan **sin uso**, sin borrarse.
-- **Crear `PATCH` y `DELETE /v1/controls/{id}`** como arriba, con su auditoría y su evento de cumplimiento, y que un control propio nazca `approved`.
-- **Filtrar por responsable:** para el `funcional`, la lista y el detalle devuelven solo los controles con un par (control, dimensión) del que es responsable efectivo.
+- `POST /v1/services/{id}/controls` (MD-150): el control propio nace `approved` y cuenta desde ya. `approval` sigue en la respuesta, siempre `approved`.
+- `PATCH /v1/controls/{id}` y `DELETE /v1/controls/{id}` (D96), solo `admin_empresa`, con `client_control.update` / `client_control.retire`, su evento de cumplimiento y, si editar dimensiones mueve algún control, el evento de estado (`cause: control_updated`). La baja es `is_active = false` (204); lo de baja deja de verse en lista y detalle (`404`) y editarlo o darlo de baja otra vez es `409 CONTROL_RETIRED`. **No está el `?include_inactive=true`.**
+- **Retirado:** `POST` y `GET /v1/controls/{id}/changes`, `has_pending_change` y el filtro `approval`. También el filtro `assigned_to`. La tabla `client_control_changes` y sus enums quedan sin uso. Los roles de las rutas ya no incluyen `consultor`.
+- **Sigue (hasta B67):** el campo `assigned_to` de la respuesta y que el `funcional` vea solo lo asignado **por control**; lo reemplaza `responsible` por dimensión (`users-team.md`). Al editar dimensiones no se toca la excepción de responsable porque `user_control_assignments` aún no tiene dimensión.
+- Pruebas: `Backend/test/cumplimiento/cambios.e2e-spec.ts` (crear, editar, baja) y `controles.e2e-spec.ts`.
+- **Sin construir: filtrar por responsable.** Para el `funcional`, la lista y el detalle devuelven solo los controles con un par (control, dimensión) del que es responsable efectivo (B67).
 - `display_name` de una prueba es el nombre neutro que escribe Monkey (D70); mientras una prueba no lo tenga, sale un texto genérico de su dimensión («Prueba de nube», «Revisión documental»…). **Nunca** el nombre del comité. `display_description` sigue la misma regla (D82): el objetivo del comité o su reescritura neutra, nunca el texto que nombra al proveedor.
 - **Sin resultados guardados todo sale «Sin medir».** El motor de nube lo escribe desde 2026-10-22 al cerrar cada corrida (`DT-50`); la sonda de servidores, todavía no. Un control sube de «Sin medir» en cuanto existan evaluaciones de su test sobre los activos del servicio, y solo cuentan los checks que el comité ratificó (con `READINESS_INCLUDE_PROPOSED=true`, también los propuestos).
 - Un test de la dimensión documental sale de la revisión de lo que se entregó **para esa prueba en este control** (D88): sin evidencias o sin revisar, `pending`; nunca cumple por sí solo.
+
 
 ## Preguntas abiertas
 

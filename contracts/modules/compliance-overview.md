@@ -219,9 +219,9 @@ Todos con el mismo sobre (`conventions.md`); `message` es la clave i18n del erro
 - **Sin construir de esto:** pedir el período al contratar el marco o crear el servicio (hoy el onboarding solo pide `evaluation_period`, un texto, DT-16).
 - **`catalog_version`** viaja como texto del número de versión del catálogo (`"3"`), no como `"2026.10"` del ejemplo.
 - **Códigos (D80).** `failing_controls[].code` es siempre visible (el del catálogo o el propio) y `requirement_codes` también; `own_code` solo en un control propio. El nombre de un test sale neutro, nunca con el texto del comité; en la vista técnica sí viaja `test_code`.
-- **Vista técnica.** Hoy la piden `auditor`, `consultor` y `admin_empresa` (D81); el `funcional` y `admin_monkey` reciben `403`. **Con D96 se retira `consultor`.** El campo `assessments` (hoy `{ consultant: null, auditor: null }`) se quita de la respuesta. `blocking_tests` son los tests del control que impiden la efectividad.
+- **Vista técnica.** La piden `auditor` y `admin_empresa` (D81, D96); el `funcional` y `admin_monkey` reciben `403`. `consultor` ya no entra. `blocking_tests` son los tests del control que impiden la efectividad.
 - **`funcional`.** Ve el marco y las categorías completos; en `failing_controls` solo los que tiene asignados.
-- **Evaluaciones del consultor y del auditor (MD-155, construidas el 2026-10-23): hay que retirarlas del Backend (D96)** — `POST` y `GET …/assessments`, el campo `assessments` de la vista técnica y el `409 EVALUATION_ALREADY_ISSUED` que congelaba la fecha de corte. La tabla y los datos de prueba quedan; `SEG-56` se retira.
+- **Evaluaciones del consultor y del auditor (MD-155): retiradas del Backend el 2026-10-28 (D96).** Ya no existen `POST` ni `GET …/assessments`, ni el campo `assessments` de la vista técnica, ni el `409 EVALUATION_ALREADY_ISSUED`: la fecha de corte y el período se pueden cambiar siempre. Las tablas `framework_assessments` y sus enums quedan sin uso y sin borrarse; `SEG-56` está retirado.
 - **Pendiente:** lo que resta de `DT-50` (la sonda de servidores aún no escribe `evaluations`). **El motor de nube ya los escribe (2026-10-22):** tras una corrida de la cuenta, el resumen sale con el avance, la cobertura y los controles que fallan; sin corrida, «Sin medir».
 ## Preguntas abiertas
 
