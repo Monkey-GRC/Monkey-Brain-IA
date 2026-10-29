@@ -62,7 +62,7 @@ el nombre en inglés.
 | 2 | Las 5 dimensiones | El eje transversal que atraviesa todo el modelo | [`modelo/02-dimensiones.md`](modelo/02-dimensiones.md) |
 | 3 | Catálogo maestro | Lo que Monkey administra antes de que exista un cliente | [`modelo/03-catalogo-maestro.md`](modelo/03-catalogo-maestro.md) |
 | 4 | Monkey Admin | Registro del tenant y aislamiento de datos | [`modelo/04-monkey-admin.md`](modelo/04-monkey-admin.md) |
-| 5 | Usuarios | Los 5 roles, las tablas, las políticas de seguridad, los responsables organizacionales, la matriz de permisos y cómo el modelo de acceso sostiene SOC 2 | [`modelo/05-usuarios.md`](modelo/05-usuarios.md) |
+| 5 | Usuarios | Los 4 roles, las tablas, las políticas de seguridad, los responsables organizacionales, la matriz de permisos y cómo el modelo de acceso sostiene SOC 2 | [`modelo/05-usuarios.md`](modelo/05-usuarios.md) |
 | 6 | Onboarding | Los 3 componentes que capturan el contexto del cliente | [`modelo/06-onboarding.md`](modelo/06-onboarding.md) |
 | 7 | Cumplimiento | Controles del cliente, riesgos, evidencias, evaluaciones | [`modelo/07-cumplimiento.md`](modelo/07-cumplimiento.md) |
 | 8 | Control Técnico | La operación continua de la sonda | [`modelo/08-control-tecnico.md`](modelo/08-control-tecnico.md) |

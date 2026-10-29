@@ -188,7 +188,7 @@ Esto es un contador de campos de un formulario, **no un readiness ni un porcenta
 
 Lo que comparten todos los módulos de Cumplimiento (`modules/compliance-*.md`). Los contratos no lo repiten.
 
-**Quién es quién.** Los 4 roles activos son `admin_monkey`, `admin_empresa`, `funcional` y `auditor` (`modelo-datos.md` §5.1, §5.5; D96: no hay consultor). Todo se resuelve
+**Quién es quién.** Los 4 roles activos son `admin_monkey`, `admin_empresa`, `funcional` y `auditor` (`modelo-datos.md` §5.1, §5.5, D96). Todo se resuelve
 **en el servidor, con el rol leído de la base**, nunca con lo que mande el frontend. Cada rol trabaja en la empresa de su cuenta. El `admin_empresa` es el experto en compliance: valida, decide y edita. El acceso de `admin_monkey` al cumplimiento de una empresa (solo lectura, MD-146) tiene sus propios endpoints en Monkey Admin y
 **no está definido aquí**: hasta entonces estos endpoints le responden `403`.
 

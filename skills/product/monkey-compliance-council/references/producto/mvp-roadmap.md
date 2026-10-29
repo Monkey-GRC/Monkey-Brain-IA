@@ -68,7 +68,7 @@ El **sprint 1** cubre los épicos 1 a 5 y está detallado aparte en `sprint-onbo
 
 | # | Épico | Qué entra | Fuente |
 |---|---|---|---|
-| 1 | **Fundación RBAC y Auth** | `companies`, `users`, los 5 roles fijos (sin roles personalizados), sesiones, aislamiento por tenant (dedicado o RLS). MFA obligatoria para los 5 roles, **en el sprint de acceso y usuarios (MD-94)** | `modelo-datos.md` §4 y §5 |
+| 1 | **Fundación RBAC y Auth** | `companies`, `users`, los 4 roles fijos (sin roles personalizados), sesiones, aislamiento por tenant (dedicado o RLS). MFA obligatoria para los 4 roles, **en el sprint de acceso y usuarios (MD-94)** | `modelo-datos.md` §4 y §5 |
 | 2 | **Onboarding — Contexto Organizacional** | Componente 1: 10 campos de identidad, perfil y jurisdicción → `organizations` | `modulos/onboarding.md` |
 | 3 | **Onboarding — Contexto del Servicio** | Componente 2: 16 campos por servicio, incluida la Descripción del Sistema (10 secciones AICPA) → `services` y lo que cuelga de ella | `modulos/onboarding.md` |
 | 4 | **Onboarding — Control Técnico** | Componente 3: catálogo `ac_01`…`ac_06`, flujo conectar → validar → activar → programar. **El cliente nunca ve el proveedor del motor** | `modulos/onboarding.md`, `wazuh.md` |
@@ -79,7 +79,7 @@ El **sprint 1** cubre los épicos 1 a 5 y está detallado aparte en `sprint-onbo
 | 9 | **Dashboard y modo guiado** | Vista por defecto con estado cualitativo, porcentaje de avance y cobertura juntos, y el vocabulario y los códigos del dominio (D80); nunca un % solo. La vista técnica detallada **no es un modo ni un botón: es la pantalla de los roles `auditor` y `admin_empresa`** (D63, D81, D96; mientras no se definan los permisos por pantalla, `P3`) | `philosophy.md` |
 | 10 | **Integración de la sonda** | La base del agente on-prem/híbrido. Confidencialidad total: nunca se nombra al proveedor, en ninguna pantalla, notificación ni texto generado por IA | `wazuh.md` |
 | 11 | **Conectores cloud/SaaS/IdP** | 12-15 conectores: AWS o Azure, GitHub, Google Workspace o M365, Okta o Entra ID, Slack | columna MUST de este archivo |
-| 12 | **Equipo, validación y auditoría** | El `admin_empresa` invita a `funcional` (con su especialidad por dimensión) y a `auditor`, reparte el trabajo por dimensión, **valida la evidencia**, da el veredicto de lo manual y edita controles, riesgos y causas directamente (D96). El `auditor` (lo crea `admin_empresa`) ve todos los servicios de su empresa en solo lectura, con vista técnica, escribe observaciones con estado y descarga evidencias y reportes; **su calificación queda para después** (`P35`). No hay rol de consultor. **Está en el MVP** | `modelo-datos.md` §5.1 y §7.6 |
+| 12 | **Equipo, validación y auditoría** | El `admin_empresa` invita a `funcional` (con su especialidad por dimensión) y a `auditor`, reparte el trabajo por dimensión, **valida la evidencia**, da el veredicto de lo manual y edita controles, riesgos y causas directamente (D96). El `auditor` (lo crea `admin_empresa`) ve todos los servicios de su empresa en solo lectura, con vista técnica, escribe observaciones con estado y descarga evidencias y reportes; **su calificación queda para después** (`P35`). **Está en el MVP** | `modelo-datos.md` §5.1 y §7.6 |
 
 Antes de esto, el proyecto `MD` cerró 56 tareas (MD-1 a MD-56) que fueron de **decisión, no de
 construcción**: fijaron qué entidades hay y cómo se relacionan. Queda de ahí un pendiente

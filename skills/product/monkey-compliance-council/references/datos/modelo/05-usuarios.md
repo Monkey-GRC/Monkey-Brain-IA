@@ -20,13 +20,12 @@ Definido por el comité en su modelo de gestión de usuarios (hoja «Modelo de G
 | `funcional` | Quien ejecuta: sube la evidencia, arregla lo que falla en servidores, bases de datos, aplicación o nube | **Solo las pruebas de las que es responsable** (según su especialidad). No valida nada | Sí |
 | `auditor` | Quien audita el cumplimiento de la empresa dentro de Monkey (suele ser una persona externa, pero su cuenta **pertenece a la empresa**) | Lectura de **todo** el cumplimiento de **todos** los servicios de su empresa + módulo de auditoría. **Registra observaciones.** No califica por ahora (`P35`) | Sí |
 
-El enum `user_role` conserva un quinto valor, `consultor`, **sin uso** (D96): no se crea, no se asigna y no aparece en ninguna pantalla ni contrato.
 
 **Quién crea a quién.** `admin_monkey` registra la empresa y su clave de acceso, y con ella entra el primer `admin_empresa` (D43). Desde ahí, **la empresa crea a su gente**: el `admin_empresa` invita a `funcional` y a `auditor`. `admin_monkey` no crea ni desactiva cuentas de una empresa; sí restablece el segundo factor del `admin_empresa` (D94).
 
 ### El `admin_empresa` es el experto en compliance (D96)
 
-Sin consultor, lo que antes hacía un tercero lo hace la propia empresa a través de su administrador:
+Lo que requiere criterio de compliance lo hace la propia empresa a través de su administrador:
 
 1. **Invita y desactiva** a `funcional` y `auditor` (desactivar es la baja, `CC6.3`).
 2. **Reparte el trabajo por dimensión** (ver abajo) y reasigna controles puntuales.
@@ -80,7 +79,7 @@ erDiagram
         string name "nullable (D51): la cuenta se identifica por su correo"
         string last_name "nullable (D51)"
         string password_hash "bcrypt+salt"
-        enum role "admin_monkey|admin_empresa|funcional|auditor (consultor: sin uso, D96)"
+        enum role "admin_monkey|admin_empresa|funcional|auditor"
         enum status "active|inactive|suspended|pending"
         boolean is_mfa_enabled
         datetime last_login_at "nullable"
@@ -177,8 +176,6 @@ erDiagram
     companies ||--o{ api_keys : "integra con"
 ```
 
-**Sin uso (D96):** `consultant_assignments` y `sessions.active_company_id` existen (o existieron en el diseño) para un consultor que trabaja en varias empresas. Mientras no haya consultor, **nada del producto los toca** y no se construyen endpoints sobre ellos. No se borran: volver a usarlos se decide aparte.
-
 **`sessions`:** access token de 15 min; refresh token rotado en cada uso; la sesión se cierra a los **30 min sin actividad** (`last_activity_at`) y a las **8 h de creada** (`created_at`, `expires_at`), como pide §5.3. Las dos columnas de actividad se añadieron el 2026-09-30 (migración `platform_sessions_activity_tracking`): sin ellas el servidor no podía aplicar esa política.
 
 **`pending` y los códigos de activación (D95, D96).** Una cuenta que crea alguien más (la de `funcional` y `auditor`, que crea el `admin_empresa`) existe desde el alta en estado `pending`, con una contraseña imposible de adivinar (el hash de un secreto aleatorio que se descarta, con el mismo costo que uno real: desde fuera no se distingue de una contraseña mala), y **no puede iniciar sesión**. La persona la activa con un **código de un solo uso**, ligado al correo de la cuenta (`user_activation_codes`): pone su contraseña y la cuenta pasa a `active`, todo en una transacción. El código se guarda solo como HMAC, vence (7 días), se puede reemitir mientras la cuenta siga `pending` (el anterior queda `revoked`) y comparte el freno de intentos de las claves de acceso. Es el mismo mecanismo de la clave de acceso de una empresa (D43, D51), pero de una persona y no de una empresa.
@@ -206,7 +203,7 @@ erDiagram
 | Cifrado en tránsito | TLS 1.3 + HSTS | Requisito PCI DSS |
 | Rotación de API keys | 90 días | Acota el daño de una key comprometida |
 | Rate limiting | 100/min por usuario, 1000/min por empresa | Previene abuso y DoS |
-| Retención del audit trail | 7 años, inmutable, append-only (salvo una empresa dada de baja, D95) | SOC 2 Type II |
+| Retención del audit trail | 7 años, inmutable, append-only (salvo una empresa dada de baja, D97) | SOC 2 Type II |
 | IP whitelist | opcional, configurable | Control adicional de acceso |
 | Bloqueo de cuenta | 5 intentos fallidos, 15 min | Previene fuerza bruta |
 

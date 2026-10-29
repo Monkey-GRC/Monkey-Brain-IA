@@ -124,7 +124,6 @@ En cualquier momento (no es un paso del onboarding): `admin_empresa`, que es el 
 - A cada `funcional` le da una o más **especialidades**, que son las dimensiones (documental, aplicación, servidores, bases de datos, nube), y reparte el trabajo **por servicio y dimensión**: «Juan lleva servidores de este servicio». Puede reasignar un control puntual.
 - El `funcional` ve solo lo suyo: sube la evidencia, arregla lo que falle en su dimensión y lo marca listo. El `admin_empresa` **valida** (cumple, o rechaza con motivo) y da el veredicto de lo manual.
 - El `auditor` lo crea la empresa cuando va a certificarse, para que revise cómo lleva sus cuentas: queda como usuario de **su empresa**, ve todo el cumplimiento con la vista técnica y escribe observaciones (D63). No valida ni califica por ahora. Al terminar, la empresa lo desactiva.
-- No hay rol de consultor (D96).
 **Lo que falta cerrar:** el detalle de permisos por pantalla (P3).
 
 **Entidades:** `users`, `user_control_assignments`,
@@ -138,7 +137,7 @@ Con Servicio, Scope, catálogo clonado y (opcionalmente) Cumplimiento personaliz
 motor deriva el cumplimiento por par Servicio × Marco, recorriendo
 Requisito → PuntoDeEnfoque → Control, nunca como atributo del marco ni como número de
 empresa completa. Con las reglas del comité (D68): un estado por nivel (activo → test → control → categoría → marco), «todo o nada», y lo pendiente bloquea el cumplimiento.
-Las evaluaciones del consultor y del auditor (D77) están en pausa (D96): hoy el único veredicto es el cálculo de arriba, con la validación del `admin_empresa`.
+La evaluación del auditor (D77) está en pausa (D96): hoy el único veredicto es el cálculo de arriba, con la validación del `admin_empresa`.
 
 **Fuente:** `modelo-datos.md` §9 (D68, el motor del comité; reemplaza la agregación de D62).
 

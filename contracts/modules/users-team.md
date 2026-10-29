@@ -1,13 +1,13 @@
 ---
 id: contracts-users-team
 name: Contrato — Equipo: invitar, activar y repartir el trabajo por dimensión
-description: Cómo el administrador de la empresa invita a su equipo (funcional y auditor), cómo activan su cuenta y cómo se reparte el trabajo por dimensión. Reemplaza al contrato del consultor.
+description: Cómo el administrador de la empresa invita a su equipo (funcional y auditor), cómo activan su cuenta y cómo se reparte el trabajo por dimensión.
 type: contract
 ---
 
 # Equipo — invitar, activar y repartir el trabajo por dimensión
 
-**Estado: ACORDADO (2026-10-27, D96); construido en el Backend (2026-10-29): falta la interfaz (ver «Estado de implementación»).** Reemplaza a `users-consultant-access.md`, que se retiró porque ya no hay rol de consultor. Ver `conventions.md` y `enums.md`. Tickets: MD-131, MD-132, MD-134 (pantalla Equipo), MD-158 (asignar el trabajo). **App:** Monkey Platform. Reglas: `modelo-datos.md` §5.1 y §5.2 (D63, D96).
+**Estado: ACORDADO (2026-10-27, D96); construido en el Backend (2026-10-29): falta la interfaz (ver «Estado de implementación»).** Ver `conventions.md` y `enums.md`. Tickets: MD-131, MD-132, MD-134 (pantalla Equipo), MD-158 (asignar el trabajo). **App:** Monkey Platform. Reglas: `modelo-datos.md` §5.1 y §5.2 (D63, D96).
 
 **Qué es.** El `admin_empresa` es el experto en compliance de su empresa: invita a su gente, les da una especialidad y reparte el trabajo por **dimensión**. Un `funcional` ve y hace solo lo suyo; el `auditor` ve todo en solo lectura. `admin_monkey` no entra aquí: no crea ni desactiva cuentas de una empresa.
 

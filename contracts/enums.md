@@ -276,16 +276,16 @@ Aplicación · `cloud` Nube
 Lo marca `admin_monkey` al registrar la empresa. No se revierte sin migrar datos.
 
 ### `company_status` — `companies.status`
-`active` Activa · `suspended` Suspendida · `deactivated` Archivada *(D95: sin acceso hasta el borrado definitivo; solo `admin_monkey`)*
+`active` Activa · `suspended` Suspendida · `deactivated` Archivada *(D97: sin acceso hasta el borrado definitivo; solo `admin_monkey`)*
 
-### `company_deactivation_reason` — motivo al archivar una empresa (D95)
+### `company_deactivation_reason` — motivo al archivar una empresa (D97)
 `non_payment` Falta de pago · `client_request` El cliente ya no desea el servicio · `other` Otro
 
 ### `access_key_status` — `access_keys.status`
 `pending` Pendiente · `used` Usada · `expired` Expirada · `revoked` Revocada *(también el estado de los códigos de activación de cuentas, D95)*
 
 ### `user_role` — `users.role`
-`admin_monkey` · `admin_empresa` · `funcional` · `auditor`. *(El enum de la base conserva un quinto valor, `consultor`, **sin uso** desde D96: la API no lo acepta ni lo devuelve.)*
+`admin_monkey` · `admin_empresa` · `funcional` · `auditor`.
 
 ⚠️ El schema actual del Backend usa `MONKEY_ADMIN`, `CLIENT_ADMIN`, `USER`, `VIEWER`. El modelo
 nuevo manda estos cuatro en minúscula; la API expone los del modelo.
@@ -303,9 +303,6 @@ nuevo manda estos cuatro en minúscula; la API expone los del modelo.
 ### `control_change_status` — `client_control_changes.status`
 `pending` Pendiente · `approved` Aprobado · `rejected` Rechazado. **Sin uso desde D96**: el `admin_empresa` edita y da de baja directamente, así que no hay propuestas que decidir.
 *(Contrato: `modules/compliance-controls.md`.)*
-
-### `consultant_assignment_status` — `consultant_assignments.status`
-`active` Activa · `suspended` Suspendida por la empresa · `revoked` Retirada por Monkey. *(**Sin uso desde D96**: no hay consultor ni asignaciones.)*
 
 ### `user_status` — `users.status`
 `active` Activo · `inactive` Inactivo · `suspended` Suspendido · `pending` Pendiente de activar (D95: la cuenta existe pero aún no usó su código; no puede iniciar sesión)
@@ -470,7 +467,7 @@ Los **estados que el motor calcula** en cada nivel (`modelo-datos.md` §9). Se *
 ### `evidence_review` — `evidence_reviews.review` (D84)
 `pending_review` Pendiente de revisión · `ai_prevalidated` Pre-validada por IA · `human_validated` Validada por una persona. Solo `human_validated` permite `compliant`; la IA nunca produce «cumple» (RN-03).
 **Lo guarda una persona solo como `pending_review` o `human_validated`; `ai_prevalidated` lo deriva el servidor** (la entrega tiene `ai_verdict` y ninguna revisión humana) y nunca se acepta de un cliente.
-`reviewer_role` (`evidence_reviews.reviewer_role`): desde D96 solo `admin_empresa`, que valida o rechaza la evidencia en **una sola revisión** (el `funcional` la sube; el `auditor` la lee y no la revisa). Los valores `consultor` y `auditor` del enum quedan sin uso.
+`reviewer_role` (`evidence_reviews.reviewer_role`): desde D96 solo `admin_empresa`, que valida o rechaza la evidencia en **una sola revisión** (el `funcional` la sube; el `auditor` la lee y no la revisa). 
 
 ### `asset_result` — el resultado de un activo en un test (`evaluations.result`)
 `compliant` Cumple · `non_compliant` No cumple · `pending` Pendiente · `error` Error · `excluded` Excluido (más `not_applicable`).
@@ -491,8 +488,8 @@ Riesgo: `mitigated` Mitigado · `not_mitigated` No mitigado · `evaluating` En e
 ### `residual_acceptance` — el riesgo que queda frente al apetito (D75)
 `acceptable` Aceptable · `not_acceptable` No aceptable. El valor del apetito es un parámetro (inicial: 9 sobre 25); quién lo define está abierto (`P22`).
 
-### `assessor_role` · `assessment_verdict` — evaluación del consultor y del auditor (D77, **en pausa por D96**: no se sirven ni se usan)
-Rol: `consultor` Consultor · `auditor` Auditor. Veredicto del consultor: `ready` Lista para la auditoría · `not_ready` No lista. Veredicto del auditor: `certified` Certifica · `not_certified` No certifica.
+### `assessor_role` · `assessment_verdict` — evaluación del auditor (D77, **en pausa por D96 y `P35`**: no se sirven ni se usan)
+Rol: `auditor` Auditor. Veredicto: `certified` Certifica · `not_certified` No certifica.
 
 ### `cause_control_effect` — `cause_controls.effect` y `client_cause_controls.effect` (D75)
 `probability` Probabilidad · `impact` Impacto. Un control sin efecto definido no participa del residual.
