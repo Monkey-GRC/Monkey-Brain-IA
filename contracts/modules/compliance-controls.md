@@ -129,7 +129,7 @@ El detalle de una acción. Mismas reglas de acceso que la lista.
         "latest_submission": { "id": "b310…", "version": 2, "evidence_state": "pending" }
       }
     ],
-    "causes": [ { "id": "7c2e…", "name": "Cuentas sin dueño tras una salida de personal" } ],
+    "causes": [ { "id": "7c2e…", "code": "F012", "name": "Cuentas sin dueño tras una salida de personal" } ],
     "readiness": "needs_work",
     "progress": { "done": 3, "total": 5 },
     "coverage": { "measured": 4, "applicable": 5 },
@@ -285,7 +285,7 @@ Crear, editar dimensiones o dar de baja altera lo que se mide y deja además un 
 
 ## Estado de implementación
 
-**Pendiente por D80 (2026-10-15):** `code` y `requirement_codes` en la **vista de negocio** (lista, detalle y creación). El backend aún los devuelve solo dentro de `technical` (`control_code`, `requirement_codes`) y `403` para el resto de roles; hay que moverlos a la base y dejar en `technical` solo lo demás (**MD-166**). Hasta entonces, el frontend muestra el código cuando llega y no lo inventa.
+**Construido (MD-166, 2026-10-30): los códigos en la vista de negocio (D80).** `code` (el del catálogo `IAC-12` o el propio `C01`) y `requirement_codes` salen en la lista, el detalle y la creación de un control, para todos los roles que los leen (`admin_empresa`, `funcional` responsable y `auditor`); `own_code` sigue siendo solo la numeración de los propios. `technical` conserva únicamente `points_of_focus`, `control_state`, `tests_count` y, en el detalle, `tests`: **`control_code` y `requirement_codes` ya no viajan allí.** Cada causa de `causes` en el detalle lleva también su `code`. Pruebas: `controles.e2e-spec.ts`, `cambios.e2e-spec.ts` y `riesgos.e2e-spec.ts`.
 
 **Construido (2026-10-28, B66): listar, ver, crear, editar y dar de baja.**
 
