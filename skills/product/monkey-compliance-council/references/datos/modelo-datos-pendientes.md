@@ -272,6 +272,7 @@ Se quedan aquí como referencia; el detalle de cada una está en la decisión qu
 | **P20** | Quién reactiva a quien la empresa suspendió | 2026-10-27 — D96: el `admin_empresa` desactiva y reactiva a su equipo (`users-team.md`) |
 | **P23** | Cómo se guarda y se muestra la evaluación del auditor | 2026-10-13 — D77: va aparte y no cambia el estado, ligada a la evaluación del servicio. En pausa por D96 (`P35`) |
 | **P24** | Quién aprueba una exclusión | 2026-10-27 — D96: el `admin_empresa` la propone y la decide en un solo acto; no hay espera |
+| **P25** | Si validar las evidencias de un test documental es lo mismo que dar su veredicto | 2026-10-22 — D88: una prueba documental se valida en su control con la evidencia que se sube para esa prueba; no hay un segundo paso de veredicto. Desde D96 la validación es del `admin_empresa` |
 | **P28** | A quién contacta la empresa cuando una exclusión espera decisión | 2026-10-27 — D96: obsoleta; la exclusión no espera |
 | **P31** | El Excel y el cerebro no coinciden en los roles | 2026-10-27 — D96: gana el Excel (cuatro roles; el `admin_empresa` valida la evidencia); la MFA sigue en los cuatro roles (D66) |
 | **P29** | Cómo activa su cuenta quien la empresa invita | 2026-10-27 — D95, D96: un código de activación de un solo uso, ligado a su correo, que le entrega el `admin_empresa`; con él pone su contraseña y configura el segundo factor |

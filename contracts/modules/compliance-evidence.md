@@ -155,9 +155,9 @@ Lo que se subió para un test **manual o documental**, para mostrarlo en el test
 }
 ```
 
-- Cada `submissions[i]` trae los campos de la lista de evidencias (archivo, versión, huella, `evidence_state`, `ai`).
+- Cada ítem es el mismo objeto de requerimiento de `GET /v1/controls/{id}/evidence` (con `sequence`, `test`, `validity_within_period`, `origin`) más su `control`; cada `submissions[i]` trae los campos de la lista de evidencias (archivo, versión, huella, `evidence_state`, `ai`). `?view=technical` agrega el bloque `technical` de cada entrega, como en la lista, y solo lo piden `admin_empresa` y `auditor`.
 - `shared_with` son los **otros** controles del servicio que llevan el test (vacío si es solo de este), para que la pantalla avise «este test también aplica a…» (D85).
-- Un `funcional` ve solo los requerimientos de controles que tiene asignados (los demás se omiten, no fallan).
+- Un `funcional` ve solo los requerimientos de las **dimensiones de las que es responsable** en cada control (D96, SEG-66); los demás se omiten, no fallan. En `shared_with` solo ve los otros controles en los que también es responsable de la dimensión del test.
 - Si el test no es manual ni documental, o el control no lo lleva, `404`.
 
 ## `POST /v1/controls/{control_id}/tests/{test_id}/evidence` — subir la evidencia de una prueba (D88)
@@ -259,6 +259,7 @@ Todos con el mismo sobre (`conventions.md`); `message` es la clave i18n del erro
 - **`ai`.** `ai_confidence` va `null`: la confianza no se guarda todavía.
 - **Descarga.** Genera el enlace (5 minutos) y lo registra en el rastro **de mejor esfuerzo**, sin la URL firmada; no hay un cambio de datos con el que ser atómico. Si no hay almacenamiento responde `503` y no registra una descarga que no ocurrió.
 - **Tipos y tamaño.** PDF, DOCX, XLSX, PNG y JPG, hasta 25 MB. Un DOCX o un XLSX se reconoce mirando el directorio central del zip (`[Content_Types].xml` y `word/` o `xl/`); un zip cualquiera renombrado se rechaza con `415`.
+- **Ver sin descargar y listar por test (MD-177, 2026-10-30).** `GET /v1/controls/{id}/tests/{test_id}/evidence` y `disposition=inline` en la descarga están construidos. El enlace sale con la disposición y el tipo de contenido **fijados al firmar** (`ResponseContentDisposition` y `ResponseContentType` del S3); `inline` solo para PDF, PNG y JPG y con otro tipo es `422 disposition.not_supported`, sin generar enlace ni rastro. La respuesta de la descarga lleva `disposition` y el rastro `evidence.download` la guarda. El test se considera manual si es documental (`policy`) o si su dimensión en el control de origen es `manual` o `technical_manual` (lo mismo que decide si cabe un veredicto); uno automático o que el control no lleva es `404`. Un test documental solo devuelve el requerimiento de esa prueba **en este control**; otro test manual devuelve los requerimientos de los controles vigentes del servicio que lo llevan y sirven al test (`test_id` igual, o compartidos de su dimensión). Pruebas: `test/cumplimiento/evidencia-por-test.e2e-spec.ts` y la del firmado en `s3-file.storage.spec.ts`.
 - **Pruebas.** Unitaria del validador y e2e `test/cumplimiento/evidencias.e2e-spec.ts` (almacenamiento en memoria); y `test/almacenamiento/evidencia.e2e-spec.ts` contra un S3 real, opcional como la de la Descripción del Sistema.
 - **Sin construir:** el modo `?disposition=inline`, la lista por test (MD-177; la pantalla ya agrupa por prueba con `GET /v1/controls/{id}/evidence` y el `test` de cada requerimiento) y, de la gestión de requerimientos, cambiar el responsable (`PATCH`) y quitar uno propio (`DELETE`).
 

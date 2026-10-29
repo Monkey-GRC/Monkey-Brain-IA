@@ -22,7 +22,7 @@ Este archivo es el **contexto de la funcionalidad**, para no perderlo entre sesi
 - **Cada fila dice de dónde viene** (`origin`: `committee` o `monkey_admin`) y **cada cambio queda en la auditoría**. Así reconciliar el Excel nuevo es un diff claro.
 - El **versionado de A4** (publicar una versión y propagarla a las empresas) **queda fuera de esta entrega**. Mientras tanto, lo que se cambie en Admin no llega a las empresas que ya contrataron (sus copias son propias, D28).
 
-**Orden de trabajo.** 1) este contrato · 2) Backend, lectura · 3) Admin, lectura · 4) Backend, escritura · 5) Admin, escritura. La lectura sola ya es útil: muestra huecos reales (p. ej. los 52 controles sin evidencia requerida, B7 de `DEUDAS-TECNICAS.md`).
+**Orden de trabajo.** 1) este contrato · 2) Backend, lectura · 3) Admin, lectura · 4) Backend, escritura · 5) Admin, escritura. La lectura sola ya es útil: muestra huecos reales (p. ej. los 52 controles sin evidencia requerida; ver `deuda-tecnica/`).
 
 **Lo que hay hoy.** Solo `GET /v1/catalogs/frameworks` (lo lee `admin_empresa`: código, nombre, descripción, disponibilidad). El catálogo se carga únicamente con `catalog:load`, que solo inserta y aborta si una fila difiere (A4/D33). En la base, `catalog` lo lee todo el mundo y solo `admin_monkey` escribe (D31).
 
