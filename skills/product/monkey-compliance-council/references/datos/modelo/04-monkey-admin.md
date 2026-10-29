@@ -20,7 +20,7 @@ erDiagram
         string name "razon social, se fija aqui"
         string admin_email
         enum isolation_strategy "dedicated|shared"
-        enum status "active|suspended"
+        enum status "active|suspended|deactivated"
         datetime created_at
         datetime updated_at
     }
@@ -54,6 +54,10 @@ requiere base de datos dedicada, y el correo administrativo de la empresa. Al en
    contraseña.
 5. Arranca el onboarding (§6). El campo "nombre / razón social" del Componente 1 llega
    **precargado y bloqueado**: ya se fijó aquí.
+
+### 4.2b Archivar y borrar una empresa (D97)
+
+Una empresa se **archiva** (`status = deactivated`, con `deactivated_at` y `archive_until`) y, al vencer el plazo que eligió `admin_monkey` (6 meses por defecto), se **borra definitivamente** con todo lo suyo. Al archivar: sin accesos, sin motores y sin datos nuevos; usuarios, asignaciones y datos quedan guardados y se toma una copia cifrada. Reversible solo dentro del plazo; avisa a los `admin_monkey` 3 días antes (correo y app); los respaldos generales rotan a 35 días. Del borrado solo sobrevive el rastro mínimo (`company_purge_log`: nombre, fecha y hora, quién). Contrato: `monkey-admin.md`; requisito: SEG-68; enmienda a D41.
 
 ### 4.3 Aislamiento de datos (multi-tenancy)
 
@@ -102,7 +106,7 @@ de conexión, para que no se filtren a otra petición del pool):
 | Variable | Qué es | Quién la lee |
 |---|---|---|
 | `app.tenant_id` | La empresa activa | Toda política de tenant |
-| `app.user_id` | El usuario que actúa | La atribución de `audit_logs` y el autor de lo que se escribe. (`consultant_assignments`, la única excepción entre empresas que usaba el consultor, queda sin uso: D96) |
+| `app.user_id` | El usuario que actúa | La atribución de `audit_logs` y el autor de lo que se escribe. |
 | `app.user_role` | Su rol (`admin_monkey`, …) | Escritura de `catalog`, lectura de `companies`/`access_keys`/`audit_logs` |
 
 **Las búsquedas que ocurren antes de conocer el tenant** no pueden pasar por RLS (falla

@@ -188,3 +188,12 @@ Lo que no pertenece a un solo módulo (pruebas, CI, auditoría, traducciones, en
 - **Qué está parchado:** `GET /v1/services` lee los servicios de uno en uno dentro de una sola transacción, y cada lectura son varias consultas seguidas (criterios, marcos, proveedores, conexiones y dos conteos). Contra la base remota (~100 ms por consulta) unos cuantos servicios pasaban de los 5 s de Prisma y la lista (y el detalle) respondían 500 con `P2028`. Se subió el límite de esas dos lecturas a 30 s.
 - **Por qué:** es lo mínimo que lo arregla sin reescribir la lectura; el costo crece con el número de servicios y con la latencia a la base.
 - **Qué lo cierra:** leer la página entera en pocas consultas (los conteos de requisitos y controles con un `groupBy` para todos los servicios de la página, y las relaciones con un solo `findMany`), de modo que el tiempo no dependa de cuántos servicios haya. Al cerrarla, bórrese esta entrada y `READ_TRANSACTION`.
+
+### DT-83 · Falta el aviso a los `admin_monkey` de que una empresa está por borrarse
+
+🟠 Importante
+
+- **Qué está parchado:** archivar y borrar una empresa (D97) exige avisar a todos los `admin_monkey`, al menos 3 días antes, por correo y por notificación en la app. Ni el correo (MD-69) ni las notificaciones existen. El aviso es informativo y no condiciona el borrado: archivar, reactivar y la purga al vencer funcionan de punta a punta; mientras tanto Monkey Admin muestra en el listado de archivadas la fecha de borrado y los días que faltan.
+- **Por qué:** el sistema de correos y de notificaciones es una funcionalidad aparte, que no bloquea el resto.
+- **Qué lo cierra:** construir el correo y las notificaciones en la app, enviarlos a todos los `admin_monkey` al menos 3 días antes del vencimiento, sin tocar la purga.
+

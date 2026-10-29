@@ -1,3 +1,5 @@
+﻿		
+
 # Modelo de datos — registro de decisiones
 
 Bitácora de las decisiones que cerraron el modelo relacional, desde el 15 de
@@ -37,115 +39,116 @@ equivocada, se corrige con el comité — pero no se re-abre el debate en cada s
 
 El registro está partido por épocas en `decisiones/`. **Busca el ID en el índice y abre solo ese archivo** (la columna Archivo es el prefijo `NN` del nombre). Los IDs no cambian.
 
-| Archivo | Contiene |
-|---|---|
-| [`decisiones/01-base-y-calculo.md`](decisiones/01-base-y-calculo.md) | **A–D y D23–D25** — Estructura, cálculo, material fuente y aprovisionamiento (septiembre 2026). |
-| [`decisiones/02-schema-y-catalogo.md`](decisiones/02-schema-y-catalogo.md) | **D26–D42** — Revisión de migraciones, enums, RLS, siembra y clonado del catálogo, audit trail, despliegue de migraciones. |
-| [`decisiones/03-onboarding.md`](decisiones/03-onboarding.md) | **D43–D47** — Clave de acceso y los 3 componentes del onboarding; el marco se contrata al registrar. |
-| [`decisiones/04-sonda-y-correcciones.md`](decisiones/04-sonda-y-correcciones.md) | **D48–D52** — Paso 3 provisional contra la sonda real, pool de conexiones, correcciones del comité, auditoría atómica. |
-| [`decisiones/05-control-tecnico-y-nube.md`](decisiones/05-control-tecnico-y-nube.md) | **D53–D61 y D67** — Conexión con la nube, sonda de servidores, trabajador del motor de nube y descubrimiento de activos. |
-| [`decisiones/06-cumplimiento-y-roles.md`](decisiones/06-cumplimiento-y-roles.md) | **D62–D68, D95, D96 y D98** — Cómo se calcula el cumplimiento, el auditor, los cinco roles, controles propios, MFA y la entrada del consultor. |
-| [`decisiones/07-cierres-2026-10-10.md`](decisiones/07-cierres-2026-10-10.md) | **D69–D94** — Cierres del 2026-10-10 al 20: el paso 3, el nombre neutro de las pruebas, la lectura de la sonda, el Postgres de producción, los modelos de negocio, las exclusiones, la fórmula del riesgo residual y el lenguaje GRC de la superficie |
+| Archivo                                                                               | Contiene                                                                                                                                                                                                                                                              |
+| ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`decisiones/01-base-y-calculo.md`](decisiones/01-base-y-calculo.md)                 | **A–D y D23–D25** — Estructura, cálculo, material fuente y aprovisionamiento (septiembre 2026).                                                                                                                                                             |
+| [`decisiones/02-schema-y-catalogo.md`](decisiones/02-schema-y-catalogo.md)           | **D26–D42** — Revisión de migraciones, enums, RLS, siembra y clonado del catálogo, audit trail, despliegue de migraciones.                                                                                                                                  |
+| [`decisiones/03-onboarding.md`](decisiones/03-onboarding.md)                         | **D43–D47** — Clave de acceso y los 3 componentes del onboarding; el marco se contrata al registrar.                                                                                                                                                          |
+| [`decisiones/04-sonda-y-correcciones.md`](decisiones/04-sonda-y-correcciones.md)     | **D48–D52** — Paso 3 provisional contra la sonda real, pool de conexiones, correcciones del comité, auditoría atómica.                                                                                                                                     |
+| [`decisiones/05-control-tecnico-y-nube.md`](decisiones/05-control-tecnico-y-nube.md) | **D53–D61 y D67** — Conexión con la nube, sonda de servidores, trabajador del motor de nube y descubrimiento de activos.                                                                                                                                     |
+| [`decisiones/06-cumplimiento-y-roles.md`](decisiones/06-cumplimiento-y-roles.md)     | **D62–D68, D95, D96 y D98** — Cómo se calcula el cumplimiento, el auditor, los cinco roles, controles propios y MFA.                                                                                                                                                         |
+| [`decisiones/07-cierres-2026-10-10.md`](decisiones/07-cierres-2026-10-10.md)         | **D69–D94 y D97** — Cierres del 2026-10-10 al 20: el paso 3, el nombre neutro de las pruebas, la lectura de la sonda, el Postgres de producción, los modelos de negocio, las exclusiones, la fórmula del riesgo residual y el lenguaje GRC de la superficie |
 
 ### Índice
 
-| ID | Decisión | Archivo |
-|---|---|---|
-| A1 | El responsable de una evidencia es cargo *y* persona, en planos distintos | 01 |
-| A2 | Un activo puede pertenecer a varios servicios (`N:M`) | 01 |
-| A3 | ~~La exclusión la propone el consultor y la aprueba el cliente~~ (D78: la propone la empresa y la aprueba el consultor); vence con el periodo de evaluación | 01 |
-| A4 | El catálogo maestro se versiona, y cada evaluación guarda contra qué versión se midió | 01 |
-| B1 | No se pondera por nivel de riesgo | 01 |
-| B2 | El requisito es binario, igual que el control | 01 |
-| B6 | La regla del schedule la editan `admin_monkey` y `admin_empresa` | 01 |
-| C1 | La evidencia es válida si cae dentro del periodo de evaluación | 01 |
-| D2 | Peso lineal, y punto (en el MVP) | 01 |
-| D3 | `client_controls` es una entidad propia | 01 |
-| D4 | Hay un cuarto tipo: `technical_manual` | 01 |
-| D5 | Se mantienen las 5 dimensiones | 01 |
-| D6 | El mapeo de checks es por política | 01 |
-| D7 | Vulnerabilidades: solo insumo en el MVP | 01 |
-| D8 | El muestreo se modela como dato, no como texto | 01 |
-| D9 | Monkey cura el catálogo central; la matriz RBAC aplica al escenario del cliente | 01 |
-| D10 | `regulations` es una entidad propia y no se puntúa | 01 |
-| D11 | `csocs` y `cuecs` son entidades propias, marcadas como no medibles por Monkey | 01 |
-| D12 | Se guarda el mapeo completo, en una tabla `check_mappings` (`check_id`, `framework_code`, `framework_version`, `requirem… | 01 |
-| D13 | La nube se reporta como cobertura pendiente | 01 |
-| D1 | El 40/60 de la matriz ya no bloquea nada: el comité especificó la fórmula completa | 01 |
-| A4 | El comité aceptó la recomendación, con dos matices que la completan | 01 |
-| D14 | Es híbrido: el cliente elige, no Monkey | 01 |
-| D23 | No es un 4º componente del onboarding | 01 |
-| D24 | Monkey Admin y Monkey Platform son dos aplicaciones distintas; el registro del tenant define nombre y aislamiento | 01 |
-| D25 | Una sola base de datos por defecto, no dos planos separados | 01 |
-| D26 | Tipos enum en `snake_case` | 02 |
-| D27 | Qué dice una evaluación, y por qué es inmutable de verdad | 02 |
-| D28 | Riesgos y causas: plantilla en el catálogo, copia por cliente | 02 |
-| D29 | Búsquedas previas al tenant: funciones `SECURITY DEFINER`, email único global | 02 |
-| D30 | Cargos, clonado de evidencia y de tests (cierra P4) | 02 |
-| D31 | RLS también en `catalog` (escritura), `companies`, `access_keys` y `audit_logs` | 02 |
-| D32 | Las `N:M` de dominios de monitoreo, explícitas | 02 |
-| D33 | Riesgos: categoría de 11 valores y evaluación 5×5 que hace el cliente | 02 |
-| D34 | Los enums que estaban como texto, cerrados | 02 |
-| D35 | Siembra del catálogo de SOC 2 (MD-65): dominio del control, publicador opcional y estrategia | 02 |
-| D36 | Controles del cliente completos, clonado y plantillas de evidencia | 02 |
-| D37 | El MVP contempla solo SOC 2 | 02 |
-| D38 | El dato real manda: cómo se siembra y qué se encontró | 02 |
-| D39 | Dimensiones por control y políticas del catálogo (cierra P10) | 02 |
-| D40 | Reglas del clonado del catálogo al elegir marco (MD-80) | 02 |
-| D41 | El audit trail es inmutable en la base de datos y se retiene 7 años (MD-92) | 02 |
-| D42 | Cómo viaja una migración a staging (MD-91) | 02 |
-| D43 | La clave de acceso se canjea una sola vez, y solo con el correo administrativo | 03 |
-| D44 | Componente 1 del onboarding: huecos del contrato resueltos por desarrollo | 03 |
-| D45 | Componente 2 del onboarding: ajustes del schema y huecos resueltos por desarrollo | 03 |
-| D46 | Componente 3 del onboarding: huecos cerrados por desarrollo | 03 |
-| D47 | El marco se contrata al registrar la empresa (revierte el veto de §6.1) | 03 |
-| D48 | Paso 3 del control técnico: lo verificado contra la sonda real y por qué el flujo actual es provisional | 04 |
-| D49 | Las peticiones esperan hasta 10 s por una conexión del pool | 04 |
-| D50 | Todos los marcos se ofrecen, solo SOC 2 se contrata; cada marco con sus categorías | 04 |
-| D51 | Correcciones al Componente 2 y a la activación de cuenta | 04 |
-| D52 | La auditoría se escribe en la misma transacción que la acción (cierra DT-28, SEG-36) | 04 |
-| D53 | Conexión con la nube: alcance, activo, regiones, canales y retención | 05 |
-| D54 | La sonda de servidores: un manager, un grupo por cliente, agente pre-registrado por Monkey (responde P12.2; 2026-10-07) | 05 |
-| D55 | Entorno de desarrollo del control técnico: motor de nube y manager en la VPS | 05 |
-| D56 | El control técnico de la nube en el modelo: recurso hijo, procedencia del mapeo y checks sin filas | 05 |
-| D57 | Quién ejecuta el motor de nube: un trabajador aislado | 05 |
-| D58 | El flujo de conexión de una cuenta de nube: validación real a través del trabajador | 05 |
-| D59 | La conexión descubre los activos de la cuenta y los muestra al cliente | 05 |
-| D60 | Se retira el scope declarado («cuántos tienes») y el servicio muestra sus conexiones | 05 |
-| D61 | Cada recurso descubierto es un activo del cliente, y el servicio elige cuáles son suyos | 05 |
-| D62 | El cumplimiento se cuenta: dimensión → control → categoría → marco | 06 |
-| D63 | El auditor es un rol aparte *(ajustada por D96)* | 06 |
-| D64 | Hay cinco roles: el consultor prepara, el auditor certifica *(reemplazada por D96)* | 06 |
-| D65 | Controles propios y cambios de controles con aprobación del consultor (cierra P8) *(reemplazada por D96)* | 06 |
-| D66 | MFA obligatoria para los 5 roles *(ajustada por D96 (4 roles))* | 06 |
-| D67 | El paso 3 es un marketplace de plataformas y el catálogo de conexiones vive en la base de datos | 05 |
-| D68 | El motor de evaluación del comité es la regla del cálculo | 06 |
-| D69 | El paso 3 se completa al definir dónde vive el servicio, e «Inicio» invita a conectar (cierra P17) | 07 |
-| D70 | El cliente ve el resultado de una prueba con un nombre neutro; los textos del comité son internos (cierra P11) | 07 |
-| D71 | Cómo lee Monkey a la sonda y qué se promete (cierra P12) | 07 |
-| D72 | El Postgres de producción vive separado de la app (cierra P7) | 07 |
-| D73 | La lista de modelos de negocio es de 19, más «otro» (cierra P6) | 07 |
-| D74 | Exclusiones de activos y controles vencidos (decisiones 3 y 7 del Excel, P22) | 07 |
-| D75 | Se adopta la fórmula del riesgo residual del comité, y se cierran tres decisiones del Excel por su recomendación o por lo ya decidido | 07 |
-| D76 | Respuestas del comité sobre el motor, y qué significa el mapa de calor | 07 |
-| D77 | La evaluación del consultor y la del auditor: el auditor va aparte, el consultor suma un veredicto general (cierra P23) *(en pausa por D96)* | 07 |
-| D78 | Quién propone y quién aprueba una exclusión: la empresa propone, el consultor aprueba *(reemplazada por D96)* | 07 |
-| D79 | Columnas que faltaban para los contratos de Cumplimiento (MD-108) | 07 |
-| D80 | La superficie habla el lenguaje del dominio GRC, los códigos se muestran siempre y el porcentaje de avance es visible | 07 |
-| D81 | El administrador de la empresa ve la vista técnica mientras no se definan los permisos por pantalla *(ajustada por D96)* | 07 |
-| D82 | Cada prueba lleva, junto a su nombre neutro, una descripción corta que ve el cliente | 07 |
-| D83 | Sin consultor, la exclusión espera; y la exclusión lleva su servicio (cierra P24) *(reemplazada por D96)* | 07 |
-| D84 | La empresa solo aporta la evidencia: la revisan el consultor y el auditor, cada uno en su momento (cierra parte de P25) *(reemplazada por D96)* | 07 |
-| D85 | El veredicto de un test manual o documental vale para todos los controles que lo usan *(ajustada por D96)* | 07 |
-| D86 | No hay un staging propio: un solo entorno desplegado, y lo que dependa de un staging se congela | 07 |
-| D87 | El período auditado lo declara la empresa y la fecha de corte es «hoy» hasta que se congela (responde P26, provisional) | 07 |
-| D90 | De una prueba técnica el cliente ve qué falló y cómo corregirlo, con la guía del catálogo traducida con IA y sin nombrar al proveedor | 07 |
-| D89 | El onboarding es solo el contexto de la empresa; los servicios se declaran después y sus riesgos se evalúan antes de declarar activos (ajusta D23, reemplaza D69) | 07 |
-| D88 | Una prueba documental se valida en su control, con la evidencia que se sube para esa prueba (ajusta D85, cierra P25) *(ajustada por D96)* | 07 |
-| D91 | Todo cambio de estado de un control deja un evento inmutable (cumple REQ-043 y REQ-044) | 07 |
-| D92 | El cliente no declara dónde vive su servicio: elige la plataforma del catálogo y se le ofrecen las seis conexiones (ajusta D46 y D60; se aparta del bloque 2A del Excel, por ratificar) | 07 |
-| D93 | Al evaluar los riesgos de un servicio nuevo se puede retirar el que no aplica (con motivo) o volver a incluirlo, y agregar un riesgo propio con sus causas; retirar un riesgo no retira causas ni controles (amplía D89) | 07 |
-| D94 | Segundo factor TOTP con 10 códigos de recuperación para los 5 roles; ingreso en dos pasos con desafío de 5 min; QR dibujado en el navegador; el admin de la empresa restablece a su equipo y Monkey al admin por script; cierra DT-23 | 07 |
-| D95 | El consultor se activa con un código de un solo uso y entra a sus empresas asignadas eligiendo de una lista, sin token por empresa (cierra P29 y P30; **reemplazada en parte por D96**: solo sobrevive el código de activación) | 06 |
-| D96 | Cuatro roles: el administrador de la empresa es el experto en compliance, valida y decide; el `funcional` ejecuta por dimensión; el auditor revisa sin calificar (reemplaza D64, D65, D78, D83, D84, D85, D88; pausa D77; cierra P28 y P31) | 06 |
-| D98 | El funcional atiende todo lo de sus especialidades; toda cuenta lleva nombre; un administrador crea a otro | 06 |
+| ID  | Decisión                                                                                                                                                                                                                                      | Archivo |
+| --- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
+| A1  | El responsable de una evidencia es cargo *y* persona, en planos distintos                                                                                                                                                                    | 01      |
+| A2  | Un activo puede pertenecer a varios servicios (`N:M`)                                                                                                                                                                                        | 01      |
+| A3  | ~~La exclusión la propone el consultor y la aprueba el cliente~~ (D78: la propone la empresa y la aprueba el consultor); vence con el periodo de evaluación                                                                                 | 01      |
+| A4  | El catálogo maestro se versiona, y cada evaluación guarda contra qué versión se midió                                                                                                                                                     | 01      |
+| B1  | No se pondera por nivel de riesgo                                                                                                                                                                                                              | 01      |
+| B2  | El requisito es binario, igual que el control                                                                                                                                                                                                  | 01      |
+| B6  | La regla del schedule la editan `admin_monkey` y `admin_empresa`                                                                                                                                                                           | 01      |
+| C1  | La evidencia es válida si cae dentro del periodo de evaluación                                                                                                                                                                               | 01      |
+| D2  | Peso lineal, y punto (en el MVP)                                                                                                                                                                                                               | 01      |
+| D3  | `client_controls` es una entidad propia                                                                                                                                                                                                      | 01      |
+| D4  | Hay un cuarto tipo: `technical_manual`                                                                                                                                                                                                       | 01      |
+| D5  | Se mantienen las 5 dimensiones                                                                                                                                                                                                                 | 01      |
+| D6  | El mapeo de checks es por política                                                                                                                                                                                                            | 01      |
+| D7  | Vulnerabilidades: solo insumo en el MVP                                                                                                                                                                                                        | 01      |
+| D8  | El muestreo se modela como dato, no como texto                                                                                                                                                                                                 | 01      |
+| D9  | Monkey cura el catálogo central; la matriz RBAC aplica al escenario del cliente                                                                                                                                                               | 01      |
+| D10 | `regulations` es una entidad propia y no se puntúa                                                                                                                                                                                          | 01      |
+| D11 | `csocs` y `cuecs` son entidades propias, marcadas como no medibles por Monkey                                                                                                                                                              | 01      |
+| D12 | Se guarda el mapeo completo, en una tabla `check_mappings` (`check_id`, `framework_code`, `framework_version`, `requirem…                                                                                                             | 01      |
+| D13 | La nube se reporta como cobertura pendiente                                                                                                                                                                                                    | 01      |
+| D1  | El 40/60 de la matriz ya no bloquea nada: el comité especificó la fórmula completa                                                                                                                                                          | 01      |
+| A4  | El comité aceptó la recomendación, con dos matices que la completan                                                                                                                                                                         | 01      |
+| D14 | Es híbrido: el cliente elige, no Monkey                                                                                                                                                                                                       | 01      |
+| D23 | No es un 4º componente del onboarding                                                                                                                                                                                                         | 01      |
+| D24 | Monkey Admin y Monkey Platform son dos aplicaciones distintas; el registro del tenant define nombre y aislamiento                                                                                                                              | 01      |
+| D25 | Una sola base de datos por defecto, no dos planos separados                                                                                                                                                                                    | 01      |
+| D26 | Tipos enum en `snake_case`                                                                                                                                                                                                                   | 02      |
+| D27 | Qué dice una evaluación, y por qué es inmutable de verdad                                                                                                                                                                                   | 02      |
+| D28 | Riesgos y causas: plantilla en el catálogo, copia por cliente                                                                                                                                                                                 | 02      |
+| D29 | Búsquedas previas al tenant: funciones `SECURITY DEFINER`, email único global                                                                                                                                                              | 02      |
+| D30 | Cargos, clonado de evidencia y de tests (cierra P4)                                                                                                                                                                                            | 02      |
+| D31 | RLS también en `catalog` (escritura), `companies`, `access_keys` y `audit_logs`                                                                                                                                                       | 02      |
+| D32 | Las `N:M` de dominios de monitoreo, explícitas                                                                                                                                                                                              | 02      |
+| D33 | Riesgos: categoría de 11 valores y evaluación 5×5 que hace el cliente                                                                                                                                                                       | 02      |
+| D34 | Los enums que estaban como texto, cerrados                                                                                                                                                                                                     | 02      |
+| D35 | Siembra del catálogo de SOC 2 (MD-65): dominio del control, publicador opcional y estrategia                                                                                                                                                  | 02      |
+| D36 | Controles del cliente completos, clonado y plantillas de evidencia                                                                                                                                                                             | 02      |
+| D37 | El MVP contempla solo SOC 2                                                                                                                                                                                                                    | 02      |
+| D38 | El dato real manda: cómo se siembra y qué se encontró                                                                                                                                                                                       | 02      |
+| D39 | Dimensiones por control y políticas del catálogo (cierra P10)                                                                                                                                                                                | 02      |
+| D40 | Reglas del clonado del catálogo al elegir marco (MD-80)                                                                                                                                                                                       | 02      |
+| D41 | El audit trail es inmutable en la base de datos y se retiene 7 años (MD-92); **D97: no aplica a una empresa dada de baja, que se purga con su plazo**                                                                                   | 02      |
+| D42 | Cómo viaja una migración a staging (MD-91)                                                                                                                                                                                                   | 02      |
+| D43 | La clave de acceso se canjea una sola vez, y solo con el correo administrativo                                                                                                                                                                 | 03      |
+| D44 | Componente 1 del onboarding: huecos del contrato resueltos por desarrollo                                                                                                                                                                      | 03      |
+| D45 | Componente 2 del onboarding: ajustes del schema y huecos resueltos por desarrollo                                                                                                                                                              | 03      |
+| D46 | Componente 3 del onboarding: huecos cerrados por desarrollo                                                                                                                                                                                    | 03      |
+| D47 | El marco se contrata al registrar la empresa (revierte el veto de §6.1)                                                                                                                                                                       | 03      |
+| D48 | Paso 3 del control técnico: lo verificado contra la sonda real y por qué el flujo actual es provisional                                                                                                                                      | 04      |
+| D49 | Las peticiones esperan hasta 10 s por una conexión del pool                                                                                                                                                                                   | 04      |
+| D50 | Todos los marcos se ofrecen, solo SOC 2 se contrata; cada marco con sus categorías                                                                                                                                                            | 04      |
+| D51 | Correcciones al Componente 2 y a la activación de cuenta                                                                                                                                                                                      | 04      |
+| D52 | La auditoría se escribe en la misma transacción que la acción (cierra DT-28, SEG-36)                                                                                                                                                        | 04      |
+| D53 | Conexión con la nube: alcance, activo, regiones, canales y retención                                                                                                                                                                         | 05      |
+| D54 | La sonda de servidores: un manager, un grupo por cliente, agente pre-registrado por Monkey (responde P12.2; 2026-10-07)                                                                                                                        | 05      |
+| D55 | Entorno de desarrollo del control técnico: motor de nube y manager en la VPS                                                                                                                                                                  | 05      |
+| D56 | El control técnico de la nube en el modelo: recurso hijo, procedencia del mapeo y checks sin filas                                                                                                                                            | 05      |
+| D57 | Quién ejecuta el motor de nube: un trabajador aislado                                                                                                                                                                                         | 05      |
+| D58 | El flujo de conexión de una cuenta de nube: validación real a través del trabajador                                                                                                                                                         | 05      |
+| D59 | La conexión descubre los activos de la cuenta y los muestra al cliente                                                                                                                                                                        | 05      |
+| D60 | Se retira el scope declarado («cuántos tienes») y el servicio muestra sus conexiones                                                                                                                                                        | 05      |
+| D61 | Cada recurso descubierto es un activo del cliente, y el servicio elige cuáles son suyos                                                                                                                                                       | 05      |
+| D62 | El cumplimiento se cuenta: dimensión → control → categoría → marco                                                                                                                                                                        | 06      |
+| D63 | El auditor es un rol aparte *(ajustada por D96)*                                                                                                                                                                                             | 06      |
+| D64 | Hay cinco roles: el consultor prepara, el auditor certifica *(reemplazada por D96)*                                                                                                                                                          | 06      |
+| D65 | Controles propios y cambios de controles con aprobación del consultor (cierra P8) *(reemplazada por D96)*                                                                                                                                   | 06      |
+| D66 | MFA obligatoria para los 5 roles *(ajustada por D96 (4 roles))*                                                                                                                                                                              | 06      |
+| D67 | El paso 3 es un marketplace de plataformas y el catálogo de conexiones vive en la base de datos                                                                                                                                               | 05      |
+| D68 | El motor de evaluación del comité es la regla del cálculo                                                                                                                                                                                   | 06      |
+| D69 | El paso 3 se completa al definir dónde vive el servicio, e «Inicio» invita a conectar (cierra P17)                                                                                                                                          | 07      |
+| D70 | El cliente ve el resultado de una prueba con un nombre neutro; los textos del comité son internos (cierra P11)                                                                                                                                | 07      |
+| D71 | Cómo lee Monkey a la sonda y qué se promete (cierra P12)                                                                                                                                                                                     | 07      |
+| D72 | El Postgres de producción vive separado de la app (cierra P7); respaldos con rotación de 35 días (D97)                                                                                                                                      | 07      |
+| D73 | La lista de modelos de negocio es de 19, más «otro» (cierra P6)                                                                                                                                                                             | 07      |
+| D74 | Exclusiones de activos y controles vencidos (decisiones 3 y 7 del Excel, P22)                                                                                                                                                                  | 07      |
+| D75 | Se adopta la fórmula del riesgo residual del comité, y se cierran tres decisiones del Excel por su recomendación o por lo ya decidido                                                                                                       | 07      |
+| D76 | Respuestas del comité sobre el motor, y qué significa el mapa de calor                                                                                                                                                                       | 07      |
+| D77 | La evaluación del consultor y la del auditor: el auditor va aparte, el consultor suma un veredicto general (cierra P23) *(en pausa por D96)*                                                                                                | 07      |
+| D78 | Quién propone y quién aprueba una exclusión: la empresa propone, el consultor aprueba *(reemplazada por D96)*                                                                                                                             | 07      |
+| D79 | Columnas que faltaban para los contratos de Cumplimiento (MD-108)                                                                                                                                                                              | 07      |
+| D80 | La superficie habla el lenguaje del dominio GRC, los códigos se muestran siempre y el porcentaje de avance es visible                                                                                                                         | 07      |
+| D81 | El administrador de la empresa ve la vista técnica mientras no se definan los permisos por pantalla *(ajustada por D96)*                                                                                                                    | 07      |
+| D82 | Cada prueba lleva, junto a su nombre neutro, una descripción corta que ve el cliente                                                                                                                                                          | 07      |
+| D83 | Sin consultor, la exclusión espera; y la exclusión lleva su servicio (cierra P24) *(reemplazada por D96)*                                                                                                                                  | 07      |
+| D84 | La empresa solo aporta la evidencia: la revisan el consultor y el auditor, cada uno en su momento (cierra parte de P25) *(reemplazada por D96)*                                                                                              | 07      |
+| D85 | El veredicto de un test manual o documental vale para todos los controles que lo usan *(ajustada por D96)*                                                                                                                                   | 07      |
+| D86 | No hay un staging propio: un solo entorno desplegado, y lo que dependa de un staging se congela                                                                                                                                                | 07      |
+| D87 | El período auditado lo declara la empresa y la fecha de corte es «hoy» hasta que se congela (responde P26, provisional)                                                                                                                     | 07      |
+| D90 | De una prueba técnica el cliente ve qué falló y cómo corregirlo, con la guía del catálogo traducida con IA y sin nombrar al proveedor                                                                                                    | 07      |
+| D89 | El onboarding es solo el contexto de la empresa; los servicios se declaran después y sus riesgos se evalúan antes de declarar activos (ajusta D23, reemplaza D69)                                                                            | 07      |
+| D88 | Una prueba documental se valida en su control, con la evidencia que se sube para esa prueba (ajusta D85, cierra P25) *(ajustada por D96)*                                                                                                    | 07      |
+| D91 | Todo cambio de estado de un control deja un evento inmutable (cumple REQ-043 y REQ-044)                                                                                                                                                        | 07      |
+| D92 | El cliente no declara dónde vive su servicio: elige la plataforma del catálogo y se le ofrecen las seis conexiones (ajusta D46 y D60; se aparta del bloque 2A del Excel, por ratificar)                                                      | 07      |
+| D93 | Al evaluar los riesgos de un servicio nuevo se puede retirar el que no aplica (con motivo) o volver a incluirlo, y agregar un riesgo propio con sus causas; retirar un riesgo no retira causas ni controles (amplía D89)                      | 07      |
+| D94 | Segundo factor TOTP con 10 códigos de recuperación para los 5 roles; ingreso en dos pasos con desafío de 5 min; QR dibujado en el navegador; el admin de la empresa restablece a su equipo y Monkey al admin por script; cierra DT-23       | 07      |
+| D95 | El consultor se activa con un código de un solo uso y entra a sus empresas asignadas eligiendo de una lista, sin token por empresa (cierra P29 y P30; **reemplazada en parte por D96**: solo sobrevive el código de activación)       | 06      |
+| D96 | Cuatro roles: el administrador de la empresa es el experto en compliance, valida y decide; el `funcional` ejecuta por dimensión; el auditor revisa sin calificar (reemplaza D64, D65, D78, D83, D84, D85, D88; pausa D77; cierra P28 y P31) | 06      |
+| D97 | Archivar una empresa (corta accesos y motores, reversible) y borrarla definitivamente al vencer un plazo elegido (6 meses por defecto); solo queda un rastro mínimo; enmienda D41 y D72: los respaldos generales rotan a 35 días             | 07      |
+| D98 | El funcional atiende todo lo de sus especialidades; toda cuenta lleva nombre; un administrador crea a otro                                                                                                                                   | 06      |

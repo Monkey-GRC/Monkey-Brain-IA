@@ -159,9 +159,9 @@ ve por defecto la vista de negocio (REQ-049): el semáforo cualitativo primero, 
 Un activo se lee con la misma regla sobre sus tests con resultado cumplidos / sus tests con resultado (el comité no lo define; sigue la lectura de D62, `DT-66`).
 **La cobertura va siempre al lado del avance**, como número aparte: «100% de lo medido · cobertura 40%» nunca se presenta como Preparado.
 
-### La evaluación del consultor y la del auditor — en pausa (D96)
+### La evaluación del auditor — en pausa (D96)
 
-El cálculo de Monkey es el único veredicto por ahora. Las evaluaciones que el consultor y el auditor emitían sobre los mismos datos (D68 punto 11, D77) **están en pausa**: el consultor ya no existe en el producto y la calificación del auditor (certificar o no) se retoma después, según el Excel y sin cambiar el estado calculado (`P35`). Donde el Excel dice «validada por auditor» (RN-03) se entiende **«validada por una persona»**: hoy, el `admin_empresa`.
+El cálculo de Monkey es el único veredicto por ahora. La evaluación que el auditor emitiría sobre los mismos datos (D68 punto 11, D77) **está en pausa**: la calificación del auditor (certificar o no) se retoma después, según el Excel y sin cambiar el estado calculado (`P35`). Donde el Excel dice «validada por auditor» (RN-03) se entiende **«validada por una persona»**: hoy, el `admin_empresa`.
 ### Cómo se guarda
 
 El cumplimiento de un marco **se deriva** recorriendo requisitos → controles y **nunca se almacena como atributo del marco**. El comité pide recálculo incremental por eventos y un rastro de cada cambio

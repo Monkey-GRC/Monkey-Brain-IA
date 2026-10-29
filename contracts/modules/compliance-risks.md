@@ -332,7 +332,7 @@ Todos con el mismo sobre (`conventions.md`); `message` es la clave i18n del erro
 
 ## Estado de implementación
 
-**Pendiente por D80 (2026-10-15):** `code` en cada vínculo causa–control (`controls[]`), en el riesgo y en la causa. El backend aún devuelve el código del catálogo solo dentro de `technical` y deja `own_code` en `null` para los del catálogo (**MD-166**).
+**Construido (MD-166, 2026-10-30): el código en cada vínculo causa–control (`controls[]`) en la vista de negocio (D80).** Es el del catálogo (`IAC-12`) o el propio (`C01`); el riesgo y la causa ya lo traían. `own_code` sigue siendo solo la numeración de los propios y `technical.catalog_code` se mantiene en la vista técnica. Pruebas: `riesgos.e2e-spec.ts`.
 
 **Resuelto (2026-10-17): las listas de las pantallas de alta y edición (MD-124).** `GET /v1/catalogs/{name}` sirve ahora `risk_criterion`, `failure_category`, `risk_level`, `risk_treatment_decision`, `responsible_type`, `cause_control_effect`, `exclusion_status`, `dimension`, `control_type`, `catalog_origin`, `loss_type` y `risk_scale` (la escala 1–5 de la matriz), todas con etiqueta es/en. Salen de los enums de la base, en su orden, así que añadir un valor no obliga a tocar el frontend; una prueba del backend (`compliance-catalogs.spec.ts`) compara las listas con el esquema de Prisma. Platform y Monkey Admin las piden y ya no escriben ninguna a mano; solo el texto de algunos enums sigue duplicado en el i18n del frontend (se unifica pantalla a pantalla).
 

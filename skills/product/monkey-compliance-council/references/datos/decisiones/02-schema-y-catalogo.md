@@ -255,7 +255,7 @@ solo guardaba una); el dominio pasa al control (D35).
    texto que no reconoce **falla la extracción** en vez de adivinar.
 3. **Las banderas**: `requires_probe` = la dimensión no es documental y el tipo es `automated` o `hybrid`;
    `requires_ai` = solo la documental; `requires_compliance_confirmation` = todo menos `automated` (R-03: en lo
-   manual evalúa el consultor; la IA no certifica).
+   manual valida el `admin_empresa`; la IA no certifica).
 4. **`policies` es una plantilla del catálogo: solo `name`** (único). `approval_status`, `valid_until` y `version`
    se eliminan: aprobar una política, hasta cuándo vale y qué versión es son estado **del cliente** y viven en la
    evidencia que él entrega. Se siembran las 10 políticas y los 16 vínculos; `control_policies` gana
@@ -314,6 +314,8 @@ causa→control; sumar Disponibilidad agrega 6 controles.
 
 ## D41 · El audit trail es inmutable en la base de datos y se retiene 7 años (MD-92)
 
+> **Enmendada por D97 (2026-10-28):** la retención de 7 años no aplica a una empresa que se archiva y se borra definitivamente; se purga con ella (queda un rastro mínimo). Sigue vigente para las demás.
+
 > La exigencia de escribir el rastro **en la misma transacción** que la acción se cumplió recién con **D52**.
 
 **Decisión:**
@@ -321,9 +323,7 @@ causa→control; sumar Disponibilidad agrega 6 controles.
    rechazan `UPDATE`, `DELETE` y `TRUNCATE` con triggers (migración `audit_append_only_triggers`), además del
    `REVOKE` que ya tenía `monkey_app`. Antes, el dueño de las tablas podía editar y borrar el histórico.
 2. **Una corrección es una fila nueva**, nunca una edición.
-3. **Retención de 7 años = no borrar nada durante 7 años + respaldos que lo sostengan.** No hay purga: a los 7 años, si
-   se decide eliminar algo, es un procedimiento aparte, aprobado por el comité y con su propia migración. No se diseña
-   hoy.
+3. **Retención de 7 años = no borrar nada durante 7 años en la base viva.** La sostiene la inmutabilidad de arriba, **no los respaldos** (D97). No hay purga salvo la de una empresa dada de baja (D97); cualquier otra eliminación sería un procedimiento aparte, aprobado por el comité y con su propia migración.
 4. **Qué se registra** (acciones del onboarding, campos, secretos prohibidos): `contracts/conventions.md` → *Auditoría*.
 
 **Lo que garantiza y lo que no:** un rol con permisos puede desactivar un trigger (`ALTER TABLE … DISABLE TRIGGER`) o
@@ -331,11 +331,9 @@ ser superusuario. El control que lo cubre es **organizativo**: solo el dueño de
 credenciales no están en el runtime de la app y un cambio de este tipo deja rastro en las migraciones. No se
 agrega un event trigger: sería complejidad sin un riesgo que lo justifique en el MVP.
 
-**Respaldos (lo que sostiene los 7 años):**
-- **Staging:** volcado nocturno (`pg_dump`) a MinIO. Se construye con MD-91.
-- **Producción:** depende de **P7** (dónde se aloja el Postgres). Un servicio administrado con respaldos y
-  recuperación a un punto en el tiempo lo resuelve; auto-alojado hay que operarlo. La política de 7 años del audit
-  se fija al cerrar P7. Hasta entonces el compromiso solo se puede sostener desde que haya clientes reales.
+**Respaldos (solo para recuperar tras un desastre, D97):** copia de toda la base con todas las empresas juntas, que **rota a 35 días**. No sostienen los 7 años: no se puede quitar de una copia los datos de una sola empresa, y una empresa borrada debe desaparecer también de ahí.
+- **Staging:** volcado nocturno (`pg_dump`) a MinIO, con rotación de 35 días. Se construye con MD-91.
+- **Producción:** servicio con recuperación a un punto en el tiempo y esa misma rotación (D72).
 
 **Por qué ahora y no después:** si el audit trail arranca sin ser inmutable, el histórico de los primeros clientes no
 sirve como evidencia y no se puede reconstruir. **Alcance:** `tenant.evaluations` también es inmutable y solo está

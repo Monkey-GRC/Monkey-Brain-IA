@@ -95,6 +95,7 @@ Limitan el producto o al equipo.
 | [DT-80](transversal.md#dt-80--el-veredicto-manual-usa-el-tipo-de-la-dimensión-del-control-y-no-exige-explicar-las-observaciones-abiertas) | El veredicto manual usa el tipo de la dimensión del control y no exige explicar las observaciones abiertas | [Transversal](transversal.md) |
 | [DT-81](control-tecnico.md#dt-81--el-escenario-de-despliegue-ya-no-se-pregunta-pero-su-columna-y-sus-tablas-siguen-en-la-base) | El escenario de despliegue ya no se pregunta, pero su columna y sus tablas siguen en la base | [Control técnico](control-tecnico.md) |
 | [DT-82](transversal.md#dt-82--la-lista-de-servicios-lee-cada-servicio-por-separado-y-solo-aguanta-porque-se-alargó-el-tiempo-de-la-transacción) | La lista de servicios lee cada servicio por separado y solo aguanta porque se alargó el tiempo de la transacción | [Transversal](transversal.md) |
+| [DT-83](transversal.md#dt-83--falta-el-aviso-a-los-admin_monkey-de-que-una-empresa-está-por-borrarse) | Falta el aviso a los `admin_monkey` de que una empresa está por borrarse | [Transversal](transversal.md) | 🟠 Importante |
 
 ### 🟡 Mejoras
 
