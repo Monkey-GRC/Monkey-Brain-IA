@@ -7,7 +7,7 @@ type: contract
 
 # Equipo — invitar, activar y repartir el trabajo por dimensión
 
-**Estado: ACORDADO (2026-10-27, D96; ajustado por D97, 2026-10-29); construido en el Backend y en Platform (ver «Estado de implementación»).** Reemplaza a `users-consultant-access.md`, que se retiró porque ya no hay rol de consultor. Ver `conventions.md` y `enums.md`. Tickets: MD-131, MD-132, MD-134 (pantalla Equipo), MD-158 (asignar el trabajo). **App:** Monkey Platform. Reglas: `modelo-datos.md` §5.1 y §5.2 (D63, D96).
+**Estado: ACORDADO (2026-10-27, D96; ajustado por D98, 2026-10-29); construido en el Backend y en Platform (ver «Estado de implementación»).** Reemplaza a `users-consultant-access.md`, que se retiró porque ya no hay rol de consultor. Ver `conventions.md` y `enums.md`. Tickets: MD-131, MD-132, MD-134 (pantalla Equipo), MD-158 (asignar el trabajo). **App:** Monkey Platform. Reglas: `modelo-datos.md` §5.1 y §5.2 (D63, D96).
 
 **Qué es.** El `admin_empresa` es el experto en compliance de su empresa: invita a su gente, les da una especialidad y reparte el trabajo por **dimensión**. Un `funcional` ve y hace solo lo suyo; el `auditor` ve todo en solo lectura. `admin_monkey` no entra aquí: no crea ni desactiva cuentas de una empresa.
 
@@ -35,7 +35,7 @@ Una cuenta `pending` que intenta iniciar sesión recibe `401 INVALID_CREDENTIALS
 ```json
 { "email": "juan@acme.co", "name": "Juan", "last_name": "Pérez", "role": "funcional", "dimensions": ["server", "database"] }
 ```
-`name` y `last_name` son **obligatorios** (máx. 100; D97). `role` es `admin_empresa` (otro administrador de la empresa), `funcional` o `auditor` (nunca `admin_monkey`). `dimensions` es **obligatorio y no vacío** para `funcional` y **no se envía** para los otros dos (`422 dimensions.not_allowed`). `201`:
+`name` y `last_name` son **obligatorios** (máx. 100; D98). `role` es `admin_empresa` (otro administrador de la empresa), `funcional` o `auditor` (nunca `admin_monkey`). `dimensions` es **obligatorio y no vacío** para `funcional` y **no se envía** para los otros dos (`422 dimensions.not_allowed`). `201`:
 ```json
 {
   "statusCode": 201,
@@ -65,7 +65,7 @@ Paginada (`page`, `page_size`, `sort` = `created_at`/`email` con ±, filtros `ro
 { "status": "inactive" }
 ```
 o `{ "dimensions": ["server"] }` o `{ "name": "Juan", "last_name": "Pérez" }` (corrige el nombre); se pueden combinar. No cambia el rol. **Desactivar cierra todas sus sesiones al instante** (`CC6.3`). Reglas:
-- Uno mismo solo puede corregir su nombre: desactivarse o cambiarse las especialidades es `409 LAST_ADMIN`. A otro `admin_empresa` sí se le puede corregir el nombre, desactivar y reactivar (D97); la empresa nunca se queda sin administrador.
+- Uno mismo solo puede corregir su nombre: desactivarse o cambiarse las especialidades es `409 LAST_ADMIN`. A otro `admin_empresa` sí se le puede corregir el nombre, desactivar y reactivar (D98); la empresa nunca se queda sin administrador.
 - No aplica a una cuenta `pending` (`409 USER_NOT_ACTIVATED`).
 - Quitarle una especialidad a un `funcional` que sigue siendo responsable de esa dimensión (en un servicio o en un control) responde `409 DIMENSION_IN_USE` con `error.responsibilities_count`: primero se reasigna.
 - Sobre `admin_monkey` o alguien de otra empresa: `404`.
@@ -116,7 +116,7 @@ Pone la excepción de ese control en esa dimensión. `user_id: null` **quita la 
 
 ## Lo que ve cada rol
 
-> **D97 (2026-10-29): por ahora el `funcional` atiende todo lo de sus especialidades, sin que nadie se lo asigne.** Lo que sigue sobre «responsable efectivo» (servicio y excepción por control) **se conserva en la API y en la base pero no cambia lo que nadie ve**, y la interfaz lo tiene apagado, hasta que se decida cómo repartir a personas concretas.
+> **D98 (2026-10-29): por ahora el `funcional` atiende todo lo de sus especialidades, sin que nadie se lo asigne.** Lo que sigue sobre «responsable efectivo» (servicio y excepción por control) **se conserva en la API y en la base pero no cambia lo que nadie ve**, y la interfaz lo tiene apagado, hasta que se decida cómo repartir a personas concretas.
 
 - **`funcional`:** en las listas de Cumplimiento (`controls`, `evidence`, y las pruebas de un control) recibe **solo** lo de sus especialidades, en todos los servicios de su empresa; sin especialidad que coincida, la lista llega vacía, no falla. Un recurso que existe pero no es suyo responde `403`; de otra empresa, `404` (`conventions.md`).
 - **`auditor`:** todo, en solo lectura, con la vista técnica.

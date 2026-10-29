@@ -46,7 +46,7 @@ Un `funcional` tiene **una o más especialidades**, y una especialidad es una de
 
 **Cómo se reparte.**
 
-> **D97 (2026-10-29): por ahora no hace falta asignar.** El `funcional` atiende todo lo de sus especialidades en todos los servicios, y varias personas con la misma especialidad ven y atienden lo mismo. Lo que sigue (responsable principal y excepción por control) existe en la base y la API pero no cambia lo que nadie ve; queda para cuando se decida cómo repartir a personas concretas.
+> **D98 (2026-10-29): por ahora no hace falta asignar.** El `funcional` atiende todo lo de sus especialidades en todos los servicios, y varias personas con la misma especialidad ven y atienden lo mismo. Lo que sigue (responsable principal y excepción por control) existe en la base y la API pero no cambia lo que nadie ve; queda para cuando se decida cómo repartir a personas concretas.
 >
 - Cada **servicio** tiene **un responsable principal por dimensión**: un `funcional` con esa especialidad (`service_dimension_owners`).
 - El `admin_empresa` puede asignar a otro `funcional` **un control puntual en una dimensión** (`user_control_assignments`); esa excepción manda sobre la del servicio.

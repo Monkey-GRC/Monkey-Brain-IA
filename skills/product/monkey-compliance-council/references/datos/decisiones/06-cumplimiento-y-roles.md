@@ -209,7 +209,7 @@ preparación por severidad se escribe contra esta regla; `DT-65`, el calculador 
 
 ---
 
-## D97 · El funcional atiende todo lo de sus especialidades; toda cuenta lleva nombre; un administrador puede crear a otro (2026-10-29)
+## D98 · El funcional atiende todo lo de sus especialidades; toda cuenta lleva nombre; un administrador puede crear a otro (2026-10-29)
 
 **Contexto.** Carlos Castaño (2026-10-29), al probar el flujo: confundía el «responsable» con el `funcional` y no quería que el trabajo dependiera de que alguien se lo asignara. **Ajusta D96** (puntos 5 y 6) y no toca lo demás.
 
