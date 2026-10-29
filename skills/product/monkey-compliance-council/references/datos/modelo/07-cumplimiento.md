@@ -257,7 +257,7 @@ erDiagram
         uuid id PK
         uuid tenant_id FK "RLS (D31)"
         uuid evidence_submission_id FK
-        enum reviewer_role "admin_empresa: una fila por entrega (D96); consultor y auditor, sin uso"
+        enum reviewer_role "admin_empresa: una fila por entrega (D96)"
         uuid reviewed_by FK
         datetime reviewed_at
         boolean type_ok "atributos de la evidencia (RN-01); nulo = sin revisar"
@@ -406,7 +406,7 @@ inequívoca.
 
 **`compliance_events` y `audit_logs` son dos tablas distintas.** `audit_logs` (§5.2) registra
 acciones sobre la plataforma (quién cambió qué en el sistema); `compliance_events` registra
-cambios en el estado de cumplimiento. Las dos son **append-only, 7 años, inmutables** (salvo una empresa dada de baja, D95).
+cambios en el estado de cumplimiento. Las dos son **append-only, 7 años, inmutables** (salvo una empresa dada de baja, D97).
 
 **Todo cambio de estado de un control deja un evento** (D91, REQ-044): `changed_field = 'control.state'`,
 con el estado y el semáforo anteriores en `previous_value` y los nuevos —más el control, el servicio y la
@@ -423,7 +423,7 @@ vida propia no entra al MVP.
 La IA evalúa evidencia, sugiere una conclusión y recomendaciones; **nunca da el veredicto**. El veredicto de un test documental o manual lo da el
 **`admin_empresa`** (`evaluations.confirmed_by`), y si lo da con observaciones abiertas se documenta la razón (`evaluations.closure_observation_reason`).
 
-**Las evaluaciones del servicio —la del consultor y la del auditor— están en pausa** (D68 punto 11, D77, D96). El consultor ya no existe en el producto y la calificación del auditor (certificar o no) se retoma después, según el Excel y sin cambiar el estado calculado (`P35`). La tabla `framework_assessments` y sus enums quedan sin uso; el veredicto **por test** del administrador sigue en `evaluations.confirmed_by`.
+**La evaluación del servicio por el auditor está en pausa** (D68 punto 11, D77, D96). La calificación del auditor (certificar o no) se retoma después, según el Excel y sin cambiar el estado calculado (`P35`). La tabla `framework_assessments` queda sin uso, solo con el rol `auditor` y los veredictos `certified`/`not_certified`; el veredicto **por test** del administrador sigue en `evaluations.confirmed_by` y su nota en `evaluations.verdict_note`.
 ### 7.6 Las observaciones
 
 Lo que escribe el `auditor` (§5.1) son **observaciones**, no hallazgos: un hallazgo lo detecta el sistema (§7.4) y una observación la redacta una

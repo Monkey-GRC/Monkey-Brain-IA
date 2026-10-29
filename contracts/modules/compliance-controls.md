@@ -7,7 +7,7 @@ type: contract
 
 # Cumplimiento — controles
 
-**Estado: ACORDADO, reescrito por D96 (2026-10-27): no hay propuestas ni consultor que las apruebe.** Listar, ver, crear, editar y dar de baja están construidos (2026-10-28); falta el filtro por responsable de dimensión (ver «Estado de implementación»). Ver `conventions.md` (sección «Cumplimiento: roles, vistas y decisiones») y `enums.md`. Tickets: MD-117, MD-118, MD-150, MD-156 (queda sin objeto).
+**Estado: ACORDADO, reescrito por D96 (2026-10-27): no hay propuestas que aprobar: el `admin_empresa` cambia directo.** Listar, ver, crear, editar y dar de baja están construidos (2026-10-28); falta el filtro por responsable de dimensión (ver «Estado de implementación»). Ver `conventions.md` (sección «Cumplimiento: roles, vistas y decisiones») y `enums.md`. Tickets: MD-117, MD-118, MD-150, MD-156 (queda sin objeto).
 
 **Qué es.** Un *control* del servicio es un **control del cliente** (`client_controls`, `modelo-datos.md` §7.1): el control del catálogo que el servicio heredó al contratar
 un marco, o uno propio. Todo lo que se mide cuelga de él. **Entidades:** `client_controls`, `client_control_dimensions`, `service_dimension_owners` y `user_control_assignments` (el responsable por dimensión, `users-team.md`).
@@ -291,7 +291,7 @@ Crear, editar dimensiones o dar de baja altera lo que se mide y deja además un 
 
 - `POST /v1/services/{id}/controls` (MD-150): el control propio nace `approved` y cuenta desde ya. `approval` sigue en la respuesta, siempre `approved`.
 - `PATCH /v1/controls/{id}` y `DELETE /v1/controls/{id}` (D96), solo `admin_empresa`, con `client_control.update` / `client_control.retire`, su evento de cumplimiento y, si editar dimensiones mueve algún control, el evento de estado (`cause: control_updated`). La baja es `is_active = false` (204); lo de baja deja de verse en lista y detalle (`404`) y editarlo o darlo de baja otra vez es `409 CONTROL_RETIRED`. **No está el `?include_inactive=true`.**
-- **Retirado:** `POST` y `GET /v1/controls/{id}/changes`, `has_pending_change` y el filtro `approval`. También el filtro `assigned_to`. La tabla `client_control_changes` y sus enums quedan sin uso. Los roles de las rutas ya no incluyen `consultor`.
+- **Retirado:** `POST` y `GET /v1/controls/{id}/changes`, `has_pending_change` y el filtro `approval`. También el filtro `assigned_to`. La tabla `client_control_changes` y sus enums quedan sin uso.
 - **El `funcional` ve solo lo suyo (B67, 2026-10-29):** la lista y el detalle devuelven solo los controles de los que es responsable efectivo en alguna dimensión (`users-team.md`). **Sigue:** el campo `assigned_to` de la respuesta (la primera persona responsable); `responsible` por dimensión como campo de la lista está sin construir. Al editar dimensiones no se toca la excepción de responsable de la dimensión quitada.
 - Pruebas: `Backend/test/cumplimiento/cambios.e2e-spec.ts` (crear, editar, baja) y `controles.e2e-spec.ts`.
 - **Hecho: filtrar por responsable.** Para el `funcional`, la lista y el detalle devuelven solo los controles con una dimensión de la que es responsable efectivo; en el detalle, `failing` trae solo lo de sus dimensiones.

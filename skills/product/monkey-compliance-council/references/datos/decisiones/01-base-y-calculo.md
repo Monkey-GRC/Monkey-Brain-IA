@@ -29,14 +29,14 @@ lo usan, que es lo que pasa en la realidad.
 Implica una tabla puente `service_assets` y que el activo cuelgue de la
 **organización**, no del scope de un solo servicio (§6.3).
 
-**A3 · La exclusión la propone el consultor y la aprueba el cliente; vence con el
-periodo de evaluación.** *(D78, 2026-10-13: quién propone y quién aprueba se invirtió: la propone la empresa y la aprueba el consultor. La vigencia y lo demás siguen igual.)*
+**A3 · La exclusión la decide el `admin_empresa`; vence con el
+periodo de evaluación.** *(D96, 2026-10-27: la propone y la decide el `admin_empresa` en un solo acto. La vigencia y lo demás siguen igual; el planteamiento original, con otro rol, quedó reemplazado.)*
 Tres fuentes convergen: el catálogo de TEST ya trae el *tratamiento de excepciones*
 paso a paso; el desglose SOC 2 dice que en lo automático *"es preferible no hacerlo"*;
 y el RBAC hace de *aprobar evidencia* un permiso **exclusivo de `admin_empresa`**. Una
 exclusión aprobada solo por Monkey sería inconsistente con esa matriz.
 
-- **Propone:** el consultor (rol `consultor`, D64). **Aprueba:** el cliente (`admin_empresa`).
+- **Propone y decide:** `admin_empresa`, en un solo acto (D96).
 - **Vigencia:** hasta el fin del periodo de evaluación del marco contratado. Al
   renovar, se revalida — no se hereda en silencio.
 - **En lo automático se desalienta**: requiere sustentación técnica escrita, y el
@@ -185,7 +185,7 @@ decisión A1, que solo cubría el responsable de una evidencia.
 
 **A4 (propagación) · El comité aceptó la recomendación, con dos matices que la completan.**
 
-| Tipo de cambio en el catálogo | Se propaga solo | Requiere aceptación del consultor |
+| Tipo de cambio en el catálogo | Se propaga solo | Requiere aceptación del `admin_empresa` (D96) |
 |---|---|---|
 | Corrección de redacción de un control | ✅ | |
 | Control nuevo agregado al catálogo | ✅ | |
@@ -194,8 +194,8 @@ decisión A1, que solo cubría el responsable de una evidencia.
 | Cambio en la procedencia o confianza del mapeo de un check | | ✅ |
 
 La quinta fila no estaba nombrada en la recomendación original y se cerró junto con el
-resto: un cambio de confianza en el mapeo puede invalidar evidencia que el consultor ya
-aceptó para ese cliente, así que se agrupa con lo que altera la medición, no con la
+resto: un cambio de confianza en el mapeo puede invalidar evidencia que el `admin_empresa` ya
+validó para ese cliente, así que se agrupa con lo que altera la medición, no con la
 corrección de redacción.
 
 **Y el efecto de un control nuevo se resolvió: aplica desde el siguiente periodo de
@@ -205,7 +205,7 @@ la evaluación del periodo siguiente. Esto protege un número que ya pudo habers
 un auditor, y es coherente con que la evidencia sea válida por periodo (decisión C1).
 
 Implica que `catalog_versions` (§3.5) lleve, además de qué cambió, **si ese cambio se propaga
-automáticamente o queda pendiente de aceptación por el consultor**, y que `service_frameworks`
+automáticamente o queda pendiente de aceptación por el `admin_empresa`**, y que `service_frameworks`
 sepa desde qué periodo aplica cada versión.
 
 **D14 (multi-tenancy) · Es híbrido: el cliente elige, no Monkey.**

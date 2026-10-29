@@ -25,6 +25,7 @@ Lo que sigue abierto, con lo más urgente arriba. 🚧 bloquea trabajo · ⚠️
 | [P33](#p33--advertencias-y-confirmación-al-editar-o-dar-de-baja-un-control-un-riesgo-o-una-causa) | Advertencias y confirmación al editar o dar de baja un control, un riesgo o una causa | ⚠️ Las pantallas de edición del administrador (D96); la API no espera | 2026-10-27 |
 | [P34](#p34--quien-sube-la-evidencia-y-quien-la-valida-son-la-misma-persona) | Quien sube la evidencia y quien la valida son la misma persona | No bloquea: LATER | 2026-10-27 |
 | [P35](#p35--la-calificación-del-auditor) | La calificación del auditor | No bloquea: LATER, según el Excel | 2026-10-27 |
+| [P36](#p36--la-independencia-del-auditor-qué-ve-de-la-evidencia-y-cómo-se-crea-su-cuenta) | La independencia del auditor: qué ve de la evidencia y cómo se crea su cuenta | No bloquea: LATER (MD-183) | 2026-10-28 |
 | [P13](#p13--ratificar-lo-que-desarrollo-decidió-en-las-correcciones-del-2026-10-05-d50-d51) | Ratificar lo que desarrollo decidió el 2026-10-05 (D50, D51) | No bloquea: está construido y funcionando | 2026-10-06 |
 | [P15](#p15--cómo-se-mapean-los-checks-de-nube-que-quedan-fuera) | Cómo se mapean los checks de nube que quedan fuera | No bloquea: lo no mapeado no cuenta hasta responder | 2026-10-08 |
 
@@ -50,7 +51,7 @@ Las más urgentes son **(a)** y **(c)**.
 
 **Estado:** abierto. El comité entrega un Excel con los permisos **por pantalla**; hasta que llegue, la matriz de `modelo-datos.md` §5.5 es la vigente y los tickets que dependen de ella esperan.
 
-Lo que ya está decidido: los 5 roles son fijos y no hay roles personalizados (D64); Cumplimiento vive **dentro de cada servicio**; el `funcional` ve solo sus controles y las evidencias que debe aportar.
+Lo que ya está decidido: los 4 roles son fijos y no hay roles personalizados (D96); Cumplimiento vive **dentro de cada servicio**; el `funcional` ve solo sus controles y las evidencias que debe aportar.
 Lo que falta: el detalle por pantalla de cada rol.
 
 **Qué depende:** las pantallas y los endpoints de Cumplimiento por rol.
@@ -183,7 +184,7 @@ la **matriz inherente** muestra cada riesgo antes de aplicar controles y la **ma
 1. **¿Quién declara el período auditado y cuándo?** *Recomendación: `admin_empresa`, al contratar el marco o crear el servicio; editable mientras no se haya congelado.*
 2. **¿La fecha de corte es «hoy» mientras se monitorea y se congela al emitir una evaluación del servicio (hoy en pausa, D96)?** *Recomendación: sí; así cada evaluación dice sobre qué datos se hizo.*
 
-**Respuesta provisional (D87, 2026-10-20):** se adoptaron las dos recomendaciones para poder construirlo (el criterio de desarrollo no sustituye al comité): `admin_empresa` declara el período (el consultor podrá corregirlo cuando trabaje sobre la empresa del cliente); la fecha de corte es «hoy» mientras se monitorea y se congela al emitir una evaluación. Inicio y fin pueden coincidir (Tipo I). **Sigue abierto para el comité:** si se vende Tipo I, qué pasa al llegar el período siguiente (hoy una sola fila por servicio y marco) y el nombre (el Excel dice «fecha de evaluación»).
+**Respuesta provisional (D87, 2026-10-20):** se adoptaron las dos recomendaciones para poder construirlo (el criterio de desarrollo no sustituye al comité): `admin_empresa` declara el período; la fecha de corte es «hoy» mientras se monitorea y se congela al emitir una evaluación. Inicio y fin pueden coincidir (Tipo I). **Sigue abierto para el comité:** si se vende Tipo I, qué pasa al llegar el período siguiente (hoy una sola fila por servicio y marco) y el nombre (el Excel dice «fecha de evaluación»).
 
 **Qué depende:** el resumen del servicio (MD-137), las evaluaciones del servicio (en pausa, D96) y la vigencia de las exclusiones (MD-144). Sin período la API responde `not_measured` y `409 EVALUATION_NOT_DEFINED`, también al proponer una exclusión (MD-144). **MD-168 está construido (2026-10-20, D87)**: `PUT …/evaluation-period`.
 
@@ -229,6 +230,16 @@ la **matriz inherente** muestra cada riesgo antes de aplicar controles y la **ma
 
 **Qué depende:** nada del código inmediato. Es `LATER`.
 
+## P36 · La independencia del auditor: qué ve de la evidencia y cómo se crea su cuenta
+
+**Estado:** abierto desde 2026-10-28 (MD-183, reducido por D96). El auditor es independiente en la práctica real: forma su propio juicio sobre lo que la empresa presenta como final. Hoy la empresa lo crea y puede ver todo, incluidas las versiones rechazadas de una evidencia.
+
+1. **¿El auditor ve solo la versión vigente de cada evidencia?** *Recomendación: sí; las anteriores se piden aparte, de forma explícita, y consultarlas queda en el rastro.*
+2. **¿La revisión de una evidencia pasa a ser histórico inmutable?** Hoy `PUT …/review` reemplaza la fila de la entrega (el rastro guarda el antes y el después). *Recomendación: se agrega una revisión nueva y la vigente es la última.*
+3. **¿Hace falta una declaración de independencia al crear al auditor?** *Recomendación: sí, con quién la creó y cuándo.*
+
+**Qué depende:** MD-183. No bloquea la API de observaciones (MD-154). Es `LATER`.
+
 ---
 ## Cómo se cierra un pendiente
 
@@ -249,18 +260,19 @@ Se quedan aquí como referencia; el detalle de cada una está en la decisión qu
 | **P4** | `responsible_id` sin catálogo de cargos | 2026-09-29 — cerrada por desarrollo en D30: el cargo es `organization_responsibles`. **Falta ratificarla con el comité**; no bloquea nada |
 | **P5** | Dos cifras de la documentación de la sonda | 2026-10-08 — las cifras («869 checks, 646 nativos, 223 inferidos») no tenían universo y se quitaron de `wazuh.md`; la versión de referencia es la del manager que corre en desarrollo, 4.14.6 (D55) |
 | **P6** | La lista completa de `business_model` | 2026-10-10 — D73: son las 19 del Excel más `other`; si el comité entrega más, se agregan con una migración |
-| **P7** | Dónde se aloja el Postgres de producción | 2026-10-10 — D72: servidor o servicio administrado separado de la app, con respaldos a un punto en el tiempo y rotación de 35 días (D95) |
-| **P8** | ¿Un control que crea el cliente cuenta para el marco? | 2026-10-09 — D65: sí cuenta para el porcentaje; es solo documental, va en la categoría que elige el cliente y lo aprueba el consultor |
+| **P7** | Dónde se aloja el Postgres de producción | 2026-10-10 — D72: servidor o servicio administrado separado de la app, con respaldos a un punto en el tiempo y rotación de 35 días (D97) |
+| **P8** | ¿Un control que crea el cliente cuenta para el marco? | 2026-10-09 — D65: sí cuenta para el porcentaje; es solo documental, va en la categoría que elige el cliente y lo crea directo el `admin_empresa` (D96) |
 | **P10** | Origen de `control_dimensions` y qué es `policies` | 2026-10-01 — cerrada por desarrollo en D39: la dimensión aplica si el control tiene una prueba de ella; `policies` es una plantilla. **Falta ratificar con el comité el tipo y las banderas derivados**; no bloquea nada |
 | **P11** | El nombre del proveedor en los textos de las pruebas | 2026-10-10 — D70: el cliente ve el resultado y un nombre neutro que escribe Monkey; los textos del comité son internos |
 | **P12** | Cómo se conecta Monkey a la sonda (paso 3 del control técnico) | 2026-10-10 — D71: lectura por la API con un usuario de solo lectura por grupo; solo se promete lo que tiene prueba; la IP de desarrollo es una acción de infraestructura |
 | **P16** | Cuándo un activo está «Preparado», «Casi listo» o «Requiere trabajo» | 2026-10-09 — D62: se lee con el porcentaje de tests con resultado, con los cortes de 100% y 80% *(el semáforo se conserva en D68)* |
 | **P17** | ¿El paso 3 del onboarding exige al menos una conexión comprobada? | 2026-10-10 — D69: no; se completa al definir dónde vive el servicio e «Inicio» invita a conectar |
 | **P18** | Una categoría sin nada medido, y la cobertura | 2026-10-09 — D62: no está lograda y cuenta en el denominador; la cobertura es siempre un número aparte *(D68: una categoría sin nada medido queda «en evaluación» y no cumple; la cobertura sigue aparte)* |
-| **P19** | Un consultor que atiende a varias empresas, con el correo único | 2026-10-09 — D64: una sola cuenta de Next que asigna `admin_monkey` a varias empresas |
-| **P20** | Quién reactiva a un consultor que la empresa suspendió | 2026-10-09 — D64: solo la empresa |
-| **P23** | Cómo se guarda y se muestra la evaluación del consultor y la del auditor | 2026-10-13 — D77: la del auditor va aparte y no cambia el estado; el consultor suma un veredicto general; ambas ligadas a la evaluación del servicio |
-| **P24** | Quién aprueba una exclusión si la empresa no tiene consultor | 2026-10-16 — D83: la exclusión espera y el activo sigue contando; la pantalla avisa que hay que asignar un consultor y ofrece contactar al equipo que gestiona el trámite |
-| **P28** | A quién contacta la empresa para que le asignen un consultor | 2026-10-27 — D96: obsoleta; no hay consultor |
-| **P31** | El Excel y el cerebro no coinciden en los roles | 2026-10-27 — D96: gana el Excel (cuatro roles; el `admin_empresa` valida la evidencia); la MFA sigue en los cuatro roles (D66) || **P29** | Cómo activa su cuenta un consultor | 2026-10-27 — D95: un código de activación de un solo uso, ligado a su correo, que `admin_monkey` le entrega; con él pone su contraseña y configura el segundo factor |
-| **P30** | Dónde vive el consultor y cómo se aísla cuando trabaja en un cliente | 2026-10-27 — D95: su cuenta vive en la empresa interna (la crea `bootstrap:admin`); la transacción se abre con la empresa activa de la sesión, con la asignación comprobada en cada petición, y el autor es el consultor |
+| **P19** | Una persona que atiende a varias empresas, con el correo único | 2026-10-27 — D96: obsoleta; las cuentas pertenecen a una sola empresa |
+| **P20** | Quién reactiva a quien la empresa suspendió | 2026-10-27 — D96: el `admin_empresa` desactiva y reactiva a su equipo (`users-team.md`) |
+| **P23** | Cómo se guarda y se muestra la evaluación del auditor | 2026-10-13 — D77: va aparte y no cambia el estado, ligada a la evaluación del servicio. En pausa por D96 (`P35`) |
+| **P24** | Quién aprueba una exclusión | 2026-10-27 — D96: el `admin_empresa` la propone y la decide en un solo acto; no hay espera |
+| **P28** | A quién contacta la empresa cuando una exclusión espera decisión | 2026-10-27 — D96: obsoleta; la exclusión no espera |
+| **P31** | El Excel y el cerebro no coinciden en los roles | 2026-10-27 — D96: gana el Excel (cuatro roles; el `admin_empresa` valida la evidencia); la MFA sigue en los cuatro roles (D66) |
+| **P29** | Cómo activa su cuenta quien la empresa invita | 2026-10-27 — D95, D96: un código de activación de un solo uso, ligado a su correo, que le entrega el `admin_empresa`; con él pone su contraseña y configura el segundo factor |
+| **P30** | Dónde vive una cuenta y cómo se aísla entre empresas | 2026-10-27 — D96: cada cuenta pertenece a una sola empresa y el aislamiento es el de siempre (RLS por `tenant_id`); no hay cuentas que entren a varias empresas |

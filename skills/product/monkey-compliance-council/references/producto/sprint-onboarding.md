@@ -38,7 +38,7 @@ ellas. La forma exacta de cada endpoint está en `contracts/modules/`.
 - **RBAC completo** — el onboarding asume que ya existe un
   `admin_empresa` autenticado.
 - **MFA TOTP** (MD-94) — MD-64 entrega login con JWT y refresh, sin segundo factor. **Es deuda
-  conocida, no una decisión revertida**: la exige para los 5 roles
+  conocida, no una decisión revertida**: la exige para los 4 roles
   (`modelo-datos.md` §5.3, D66).
 - **Envío de la clave de acceso por correo** (MD-69) — `admin_monkey` **copia la clave desde la
   UI de Monkey Admin**. El modelo no cambia: D24 sigue diciendo que el destino es el
