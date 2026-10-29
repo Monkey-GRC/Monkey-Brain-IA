@@ -47,7 +47,7 @@ La vista técnica de un control: los tests que lo verifican, **todos con su esta
         "is_active": true,
         "shared_with": [ { "id": "77a2…", "code": "IAC-4" } ],
         "state": "in_review",
-        "last_verdict": null,
+        "last_verdict": { "result": "compliant", "evaluated_at": "2026-10-14T18:30:00Z", "confirmed_by": { "id": "d5e6…", "name": "Camilo", "last_name": "Ortiz" } },
         "ai_suggestion": { "is_ai_generated": true, "ai_confidence": 0.74, "verdict": "compliant", "rationale": "Las tres revisiones del período están firmadas." }
       }
     ],
@@ -338,6 +338,8 @@ El **`funcional` ve solo lo suyo** quedó construido el 2026-10-29 (B67, SEG-66;
 Lo que no cambia y el código ya hace: la vigencia llega al `period_end` del servicio (D87); «vencida» se deriva al leer (`is_expired`, `DT-72`, `MD-171`); solo se excluye el activo de un test (la de un check, `excluded_check_id`, es `MD-170`, `DT-74`); y `ai_suggestion` no se guarda ni se devuelve: la IA no escribe aquí.
 
 La pantalla de exclusiones solo crea y lista: la decisión es el mismo acto (sin aviso de espera ni casilla de contacto: MD-169, `P28`).
+
+**Construido (MD-177, 2026-10-29): `GET /v1/controls/{id}/tests`.** Todas las pruebas del control ordenadas por código y paginadas (`page`, `page_size`, máx. 100), con `state` (el del motor), `type` (cómo se resuelve su dimensión en este control: `manual`, `automated`, `hybrid` o `technical_manual`), `is_mandatory`, `is_active` y `display_name` neutro. `shared_with` son los otros controles **vigentes** del servicio que llevan la prueba (D85, ordenados por código), siempre vacío en una documental (D88). `last_verdict` es `{ result, evaluated_at, confirmed_by }` del último veredicto del `admin_empresa` o `null`; `ai_suggestion` es siempre `null` porque la IA no escribe aquí. Solo `admin_empresa` y `auditor`; el `funcional` y `admin_monkey` reciben `403`. Pruebas: `test/cumplimiento/evidencia-por-test.e2e-spec.ts`. La evidencia de cada test está en `compliance-evidence.md`.
 
 ## Preguntas abiertas
 
