@@ -40,10 +40,8 @@ ellas. La forma exacta de cada endpoint está en `contracts/modules/`.
 - **MFA TOTP** (MD-94) — MD-64 entrega login con JWT y refresh, sin segundo factor. **Es deuda
   conocida, no una decisión revertida**: la exige para los 4 roles
   (`modelo-datos.md` §5.3, D66).
-- **Envío de la clave de acceso por correo** (MD-69) — `admin_monkey` **copia la clave desde la
-  UI de Monkey Admin**. El modelo no cambia: D24 sigue diciendo que el destino es el
-  `admin_email`; lo que se aplaza es la automatización. Por eso el registro debe **mostrar la
-  clave en claro una sola vez** — si no se ve ahí, el cliente no puede entrar.
+- ~~**Envío de la clave de acceso por correo** (MD-69)~~ — **Hecho en D99 (2026-10-30)**: la clave solo se
+  envía al `admin_email` y ya no se muestra en pantalla. Durante este sprint `admin_monkey` la copiaba de la UI.
 - **Conectores productivos reales** — se entrega el flujo de conexión y su UI, no la
   integración en producción.
 

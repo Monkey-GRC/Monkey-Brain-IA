@@ -44,11 +44,10 @@ requiere base de datos dedicada, y el correo administrativo de la empresa. Al en
 1. Se crea `companies` con ese `name` y con `isolation_strategy` = `dedicated` si el check
    está marcado, `shared` si no.
 2. Se genera una fila en `access_keys`, de un solo uso, con expiración.
-3. La clave se envía **al `admin_email` capturado en el formulario**.
-   > ⚠️ **En el sprint de onboarding esto todavía no ocurre.** El envío por correo está
-   > aplazado (MD-69), así que `admin_monkey` **copia la clave desde la UI de Monkey Admin**
-   > y la entrega por el canal que sea. Por eso el registro debe **mostrar la clave en claro
-   > una sola vez**: es el único medio de obtenerla. El destino sigue siendo el `admin_email`.
+3. La clave se envía **al `admin_email` capturado en el formulario** y **no se muestra en pantalla** (D99).
+   Si el correo no sale, la empresa queda creada y `admin_monkey` pulsa «reenviar», que anula la clave
+   pendiente y manda una nueva (`POST /v1/companies/{id}/access-key/regenerate`). Como solo se guarda el
+   hash, la clave anterior no se puede volver a enviar.
 4. El cliente usa la clave para crear su cuenta `admin_empresa` en Monkey Platform, **con el
    `admin_email` registrado aquí** (D43). La clave sirve una sola vez; después entra con correo y
    contraseña.
