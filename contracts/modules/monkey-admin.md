@@ -44,8 +44,8 @@ El booleano es lo que ve `admin_monkey`; el enum es lo que se guarda.
 }
 ```
 
-`201` — **la clave en claro solo aparece aquí, una sola vez.** En `access_keys` solo queda su
-hash.
+`201` — **la clave ya no viaja en la respuesta ni se muestra en ninguna pantalla (D99).** Se envía por correo al
+`admin_email` y en `access_keys` solo queda su hash. La respuesta dice si el correo salió (`delivery_status`).
 
 ```json
 {
@@ -62,9 +62,9 @@ hash.
     "updated_at": "2026-09-28T15:04:02Z",
     "access_key": {
       "id": "b1d9c3a2-5e77-4f10-8a61-c9d2e3f40a55",
-      "code": "MNK-7F3A-92KD-5QXB",
       "status": "pending",
-      "expires_at": "2026-10-05T15:04:02Z"
+      "expires_at": "2026-10-05T15:04:02Z",
+      "delivery_status": "sent"
     }
   }
 }
@@ -76,9 +76,35 @@ Accepted` y la clave llegaría después — y eso **exigiría una columna de est
 aprovisionamiento en `companies`, que hoy el modelo no tiene**. No se inventa aquí: hasta que
 P2(d) se cierre, el contrato define solo el caso `shared`, síncrono, con `201`.
 
-> **La clave se entrega copiándola de esta pantalla.** El envío automático por correo está
-> aplazado (MD-69), así que este response es el único medio de obtenerla. El destino previsto
-> sigue siendo el `admin_email` (decisión D24).
+> **La clave solo se entrega por correo (D99, cierra MD-69 para la clave de acceso).** El destino es el
+> `admin_email` (D24). `delivery_status`: `sent` (el proveedor aceptó el mensaje) o `failed` (no salió). **Un fallo
+> del correo no revierte el registro**: la empresa y su clave quedan creadas y Monkey Admin ofrece reenviar. `sent` no
+> garantiza que el mensaje llegue a la bandeja del cliente, solo que salió. Si el aislamiento es `dedicated` sigue
+> rechazado (P2d).
+
+## `POST /v1/companies/{id}/access-key/regenerate` — reenviar con una clave nueva (D99, cierra P2b)
+
+Solo `admin_monkey`. Sin cuerpo. **Anula la clave pendiente** (`revoked`), emite una nueva con vigencia completa
+(`ACCESS_KEY_TTL_HOURS`) y la envía al `admin_email` de la empresa. La clave anterior deja de servir aunque no hubiera
+vencido: el reenvío existe porque el correo se perdió o no salió. Nunca se muestra en pantalla. Deja
+`access_key.regenerate` en la misma transacción.
+
+```json
+{
+  "statusCode": 200,
+  "message": "access_key.regenerated",
+  "data": {
+    "id": "b1d9c3a2-5e77-4f10-8a61-c9d2e3f40a56",
+    "status": "pending",
+    "expires_at": "2026-10-07T15:04:02Z",
+    "delivery_status": "sent"
+  }
+}
+```
+
+Con `delivery_status: "failed"` la respuesta sigue siendo `200`: la clave nueva existe y se puede volver a reenviar.
+Errores: `404` empresa inexistente (o la interna de Monkey), `409 ACCESS_KEY_NOT_PENDING` si la clave ya se canjeó
+(la empresa ya tiene su `admin_empresa`: no hay nada que reenviar), `409 COMPANY_ALREADY_DEACTIVATED` si está archivada.
 
 ## `GET /v1/companies` — listar empresas
 
@@ -134,13 +160,6 @@ Componente 1, así que un error de tipeo hay que poder corregirlo antes de que e
 Solo mientras la clave esté `pending`. Con la clave `used`, `409 CONFLICT`
 (`company.already_onboarded`): el nombre ya está reflejado en `organizations`.
 
-## `POST /v1/companies/{id}/access-key/regenerate` — regenerar clave
-
-⚠️ **Existencia pendiente** — pregunta abierta (b). Revoca la clave vigente y emite una nueva.
-
-`201` con el mismo bloque `access_key` del registro, código en claro incluido. La anterior pasa
-a `revoked`.
-
 ## `POST /v1/companies/{id}/deactivation` — archivar (D97)
 
 Solo `admin_monkey`. **Archiva** la empresa; el borrado definitivo ocurre solo al vencer `archive_until`.
@@ -172,7 +191,7 @@ No es un endpoint: lo ejecuta una tarea programada al vencer `archive_until`, co
 | 409 | `COMPANY_NAME_TAKEN` | Ya existe una empresa activa con esa razón social |
 | 409 | `ADMIN_EMAIL_TAKEN` | Ese `admin_email` ya es administrativo de otra empresa |
 | 409 | `COMPANY_ALREADY_ONBOARDED` | Se intenta editar tras el canje de la clave |
-| 409 | `ACCESS_KEY_NOT_PENDING` | Se intenta regenerar una clave ya usada |
+| 409 | `ACCESS_KEY_NOT_PENDING` | Se intenta reenviar la clave de una empresa que ya la canjeó (D99) |
 | 409 | `FRAMEWORK_NOT_AVAILABLE` | Se eligió un marco que aún no está construido (`coming_soon`, D50) |
 | 422 | `VALIDATION_FAILED` | `name` vacío o >255, `admin_email` inválido |
 | 422 | `DEDICATED_DATABASE_NOT_AVAILABLE` | **Temporal**: `requires_dedicated_database: true` mientras el aprovisionamiento dedicado no exista (P2d). Clave i18n `company.dedicated_not_available` |
@@ -181,13 +200,14 @@ No es un endpoint: lo ejecuta una tarea programada al vencer `archive_until`, co
 Claves i18n: `company.created`, `company.list`, `company.updated`,
 `company.name_taken`, `company.admin_email_taken`, `company.already_onboarded`,
 `access_key.regenerated`, `access_key.not_pending`, `validation.failed`.
+Texto del correo: `contracts/modules/monkey-admin.md` no lo define; vive en el Backend y es solo español por ahora.
 
 ## Notas
 
 - Esta UI es **interna del equipo Monkey**: aquí sí se puede usar lenguaje técnico. En Monkey Platform
   también se usa el vocabulario del dominio (D80), pero explicado al cliente (`philosophy.md`).
 - El check de base dedicada debe advertir que **la decisión no se revierte sin migrar datos**.
-- La clave se muestra **una sola vez**; la UI debe decirlo explícitamente.
+- La clave **no se muestra nunca** en Monkey Admin (D99): la UI dice a qué correo salió, si salió, y ofrece reenviar.
 
 ## Preguntas abiertas
 
@@ -195,7 +215,7 @@ De `modelo-datos-pendientes.md` P2. **Ninguna se resuelve aquí.**
 
 | | Pregunta | Qué define en este contrato |
 |---|---|---|
-| b | ¿Cuánto dura la clave y se puede regenerar o reenviar? | El valor de `expires_at` y si existe `/access-key/regenerate` |
+| b | ~~¿Cuánto dura la clave y se puede regenerar o reenviar?~~ | **Cerrada por D99**: se reenvía con una clave nueva; la vigencia sigue siendo `ACCESS_KEY_TTL_HOURS` (7 días) |
 | c | ¿Se puede corregir nombre o correo antes del canje? | Si existe `PATCH /v1/companies/{id}` y qué campos admite |
 | d | ¿Aprovisionar una base dedicada es instantáneo? | Si el registro es `201` síncrono o `202` con `provisioning_status` |
 | e | ¿Puede haber más de un correo administrativo? | Si `admin_email` es string o array |
@@ -209,12 +229,12 @@ Implementado en `Backend/src/features/companies` y `Frontend/src/app/features/co
 
 | Endpoint | Estado |
 |---|---|
-| `POST /v1/companies` | ✅ Solo el caso `shared`. Empresa, clave **y marcos contratados** en la misma transacción (D47); la clave se muestra una vez en un diálogo de Monkey Admin. El formulario lista los 7 marcos del catálogo (D50): SOC 2 elegible y los otros 6 deshabilitados («próximamente») |
+| `POST /v1/companies` | ✅ Solo el caso `shared`. Empresa, clave **y marcos contratados** en la misma transacción (D47); la clave se envía al `admin_email` (D99; antes se mostraba una vez en un diálogo). El formulario lista los 7 marcos del catálogo (D50): SOC 2 elegible y los otros 6 deshabilitados («próximamente») |
 | `GET /v1/companies` | ✅ Paginado, `sort` = `created_at`/`name` (± ), filtro `status`. **Excluye la empresa interna de Monkey** (la del `admin_monkey`), que no es un cliente |
 | `GET /v1/companies/{id}` | ✅ Con historial de claves. La empresa interna responde `404` |
 | `PATCH /v1/companies/{id}` | ❌ Espera a P2(c) |
 | `POST /v1/companies/{id}/deactivation` · `/reactivation` · `GET /v1/companies/pending-purge` · borrado definitivo | ✅ D97. `GET /v1/companies` oculta las archivadas por defecto (`status=deactivated` las muestra). La tarea del borrado corre cada `COMPANY_PURGE_INTERVAL_MINUTES` (60 por defecto; `0` la apaga) |
-| `POST /v1/companies/{id}/access-key/regenerate` | ❌ Espera a P2(b) |
+| `POST /v1/companies/{id}/access-key/regenerate` | ✅ D99. Anula la pendiente, emite otra y la envía por correo |
 
 Decisiones de implementación, dentro de lo que el contrato ya asumía:
 

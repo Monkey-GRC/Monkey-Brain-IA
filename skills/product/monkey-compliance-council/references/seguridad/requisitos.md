@@ -44,11 +44,11 @@ Estado de un vistazo (**recontado el 2026-10-29** a partir de la columna Estado;
 | A. Aislamiento entre empresas (el riesgo #1 del producto) | 6 | 1 | 1 | 2 | 0 | 10 |
 | B. Autenticación y sesión | 7 | 1 | 2 | 1 | 0 | 11 |
 | C. Autorización | 5 | 1 | 3 | 1 | 0 | 10 |
-| D. Datos y secretos | 7 | 3 | 2 | 4 | 3 | 19 |
+| D. Datos y secretos | 7 | 4 | 2 | 4 | 3 | 20 |
 | E. Auditoría y trazabilidad | 5 | 0 | 2 | 0 | 0 | 7 |
 | F. Confidencialidad del proveedor del motor | 0 | 0 | 1 | 0 | 0 | 1 |
 | G. Desarrollo y entrega | 4 | 1 | 0 | 1 | 0 | 6 |
-| **Total** | **34** | **7** | **11** | **9** | **3** | **64** |
+| **Total** | **34** | **8** | **11** | **9** | **3** | **65** |
 
 ---
 
@@ -130,6 +130,8 @@ Estado de un vistazo (**recontado el 2026-10-29** a partir de la columna Estado;
 | **SEG-52** | ✅ D60 | Un activo dado de baja no existe para nadie: no se valida, activa, programa, edita ni evalúa (`404`), y sus llaves guardadas se borran; los activos que descubrió se dan de baja con ella | `readAsset`/`findProbeTarget`/`queueExecution` solo ven activos `active`; `retireAsset` anula `encrypted_credentials` | `test/control-tecnico/conexion.e2e-spec.ts` («un activo dado de baja no se puede operar…») | D59, D60 |
 | **SEG-53** | ✅ D61 | El servicio solo puede enlazar activos que sean **de esa conexión y de su empresa**; un id ajeno, inventado o de otra conexión se rechaza (`422`), y otra empresa ve `404`. Un activo descubierto no se opera por su cuenta | `setServiceAssets` valida contra los hijos activos de la conexión dentro de `withScope` (RLS); `readAsset`/`findProbeTarget`/`queueExecution` solo ven conexiones | `test/control-tecnico/conexion.e2e-spec.ts` («solo se pueden enlazar activos de ESA conexión…», «los activos descubiertos no son conexiones…») | D61 |
 | **SEG-55** | ⚪ retirado (D96) | ~~Un consultor solo trabaja en una empresa con una asignación **activa** y la que él eligió; la asignación y la empresa se comprueban en cada petición, la empresa puede suspenderla y cada elección o cambio de empresa queda en la auditoría de esa empresa~~ Ya no hay consultor ni empresa de trabajo por sesión. | — | — | D96 |
+| **SEG-71** | 🟡 D99 | La clave de acceso de una empresa nueva solo sale del sistema por correo al `admin_email`: no viaja en ninguna respuesta, no se loguea, no entra a la auditoría ni al texto de un error; reenviarla anula la anterior; y en producción el servidor no arranca sin un servicio de correo real | `Mailer` (puerto); `MAIL_PROVIDER` ≠ `log` en producción; el registro y el reenvío devuelven solo `delivery_status`; `access_key.email` sin la clave | `test/auditoria/clave-por-correo.e2e-spec.ts`. **El proveedor de correo recibe la clave en claro (es el canal): ver DT-85** | D99, D43 |
+
 
 ## E. Auditoría y trazabilidad
 

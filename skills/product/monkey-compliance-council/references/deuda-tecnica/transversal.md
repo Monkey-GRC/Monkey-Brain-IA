@@ -204,3 +204,12 @@ Lo que no pertenece a un solo módulo (pruebas, CI, auditoría, traducciones, en
 - **Qué está parchado:** D97 y D72 prometen que los respaldos generales rotan y que los datos de una empresa borrada desaparecen de ellos en máximo 35 días. Hoy solo existe `scripts/deploy/backup-staging.sh` (`pg_dump` nocturno a MinIO, expira a 30 días, deja 7 copias en la VPS). Que se ejecute cada noche no se verifica desde el repo, ninguna prueba lo ejecuta y para producción no hay nada construido.
 - **Por qué:** es lo mínimo para tener respaldo en staging mientras se construye producción; la promesa de D97 (y el texto de términos del servicio que la repite) depende de esto, por eso no es una mejora.
 - **Qué lo cierra:** programar el respaldo de staging y avisar si una noche falla; construir en producción el respaldo con recuperación a un punto en el tiempo y rotación de 35 días como máximo; y dejar una comprobación que falle si el respaldo más reciente tiene más de un día o el más antiguo pasa de 35. Al cerrarla, SEG-35 pasa a ✅ y se borra esta entrada.
+
+### DT-85 · La clave de acceso viaja en claro por un servicio de correo externo y el resultado del envío no se guarda
+
+🟠 Importante
+
+- **Qué está parchado:** D99 envía la clave al `admin_email` por correo. (1) El mensaje lleva la clave en claro y pasa por el servicio de correo y por el buzón del cliente: es el canal de entrega, pero la clave es de un solo uso y vence a los 7 días, no más fuerte que eso. (2) El envío es directo, sin cola ni reintentos: si el servicio falla, `admin_monkey` ve «no se pudo enviar» y reenvía a mano. (3) `delivery_status` solo viaja en la respuesta; el listado de empresas no muestra que el último envío falló.
+- **Por qué:** es lo mínimo para cerrar MD-69 sin construir un sistema de notificaciones.
+- **Qué lo cierra:** una cola de envíos con reintentos y su estado guardado, la clave entregada como enlace de un solo uso en vez de texto, y el estado del último envío en el listado. Entra junto con DT-83 (aviso de borrado) cuando exista el sistema de correo y notificaciones.
+

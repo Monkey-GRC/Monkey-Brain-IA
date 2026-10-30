@@ -96,6 +96,7 @@ Limitan el producto o al equipo.
 | [DT-82](transversal.md#dt-82--la-lista-de-servicios-lee-cada-servicio-por-separado-y-solo-aguanta-porque-se-alargó-el-tiempo-de-la-transacción) | La lista de servicios lee cada servicio por separado y solo aguanta porque se alargó el tiempo de la transacción | [Transversal](transversal.md) |
 | [DT-83](transversal.md#dt-83--falta-el-aviso-a-los-admin_monkey-de-que-una-empresa-está-por-borrarse) | Falta el aviso a los `admin_monkey` de que una empresa está por borrarse | [Transversal](transversal.md) | 🟠 Importante |
 | [DT-84](transversal.md#dt-84--el-respaldo-con-rotación-a-35-días-solo-existe-como-script-de-staging-y-nada-comprueba-que-corra) | El respaldo con rotación a 35 días solo existe como script de staging, y nada comprueba que corra | [Transversal](transversal.md) | 🟠 Importante |
+| [DT-85](transversal.md#dt-85--la-clave-de-acceso-viaja-en-claro-por-un-servicio-de-correo-externo-y-el-resultado-del-envío-no-se-guarda) | La clave de acceso viaja en claro por un servicio de correo externo y el resultado del envío no se guarda | [Transversal](transversal.md) | 🟠 Importante |
 
 ### 🟡 Mejoras
 

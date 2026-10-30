@@ -67,7 +67,7 @@ Si el código y esta lista difieren, manda el código y se corrige esta lista.
 
 | App · feature | Qué hace | Contrato / decisión |
 |---|---|---|
-| Admin · `companies` | **Referencia del admin.** Registro de empresas; la clave de acceso se muestra una sola vez. | `monkey-admin.md` |
+| Admin · `companies` | **Referencia del admin.** Registro de empresas; la clave de acceso solo se envía por correo (nunca se muestra, D99) y se reenvía con una nueva. | `monkey-admin.md` |
 | Admin · `auth` | Login por email; solo admite `admin_monkey`. | `auth.md` |
 | Admin · `users` | **Del modelo viejo**, sin endpoint; se rehace con el módulo de Usuarios. | — |
 | Platform · `auth` | Activación de cuenta en dos pasos e inicio de sesión; rechaza `admin_monkey`. Sesión en `core/domain/services/session.service.ts`. | `auth.md` · D51 |

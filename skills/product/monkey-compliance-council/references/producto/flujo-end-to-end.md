@@ -30,7 +30,8 @@ Al enviar el formulario:
   ese cliente.
 - Se genera una `access_keys` de un solo uso, con expiración.
 - La clave se envía **al correo administrativo** que se acaba de capturar — ese correo
-  es el destino, no un canal aparte.
+  es el destino, no un canal aparte. **No se muestra en pantalla** (D99); si el correo no llega,
+  `admin_monkey` reenvía una clave nueva desde Monkey Admin.
 
 **Entidades:** `companies` (con `name`, `isolation_strategy`), `access_keys`.
 **Fuente:** `modelo-datos.md` §4, decisiones D24 y D25.

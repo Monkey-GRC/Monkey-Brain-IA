@@ -284,6 +284,9 @@ Lo marca `admin_monkey` al registrar la empresa. No se revierte sin migrar datos
 ### `access_key_status` — `access_keys.status`
 `pending` Pendiente · `used` Usada · `expired` Expirada · `revoked` Revocada *(también el estado de los códigos de activación de cuentas, D95)*
 
+### `access_key_delivery_status` — `access_key.delivery_status` (D99)
+`sent` Enviada (el servicio de correo aceptó el mensaje) · `failed` No se pudo enviar *(no se guarda: viaja solo en la respuesta del registro y del reenvío)*
+
 ### `user_role` — `users.role`
 `admin_monkey` · `admin_empresa` · `funcional` · `auditor`.
 
