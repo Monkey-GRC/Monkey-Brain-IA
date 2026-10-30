@@ -120,6 +120,12 @@ SESSION_MAX_DURATION=28800        # tope absoluto: 8 h
 TOKEN_HASH_PEPPER="..."           # HMAC de refresh tokens y claves de acceso; cambiarlo cierra todas las sesiones
 ACTIVATION_CODE_TTL_HOURS=168       # horas que sirve un código de activación de cuenta (D95, D96). Opcional: 168 (7 días). Aún no la lee nadie: la usará el módulo de equipo al emitir el código
 
+# Correo (D99). Lo usa el envío de la clave de acceso.
+MAIL_PROVIDER="log"               # `log` (solo escribe el mensaje en el log; el servidor NO arranca así en producción) o el servicio real
+MAIL_API_KEY=""                   # credencial del servicio de correo; obligatoria si MAIL_PROVIDER no es `log`. Nunca en el repo
+MAIL_FROM=""                      # remitente, p. ej. «Monkey <no-reply@tu-dominio>»; el dominio debe estar verificado en el servicio
+PLATFORM_APP_URL="http://localhost:4201"  # dónde canjea la clave el cliente (Monkey Platform); sin barra final
+
 # Componente 3 (D46)
 CREDENTIALS_ENCRYPTION_KEY="..."  # 32 bytes en base64 (AES-256-GCM): cifra las credenciales de los sistemas que
                                   # el cliente conecta. OBLIGATORIA (sin ella la app no arranca). Si se pierde o se

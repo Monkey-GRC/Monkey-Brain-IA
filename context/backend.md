@@ -69,7 +69,7 @@ manda el código y se corrige esta lista.
 | Feature | Qué hace | Contrato / decisión |
 |---|---|---|
 | `auth` | Login, refresh, logout, `me`, activación de cuenta en dos pasos, segundo factor (D94), activación de las cuentas que crea el administrador con un código de un solo uso (D95, D96). **Feature de referencia** (4 capas completas). | `contracts/modules/auth.md` · `users-team.md` · D43, D51, D94, D95, D96 |
-| `companies` | Registro de empresas por `admin_monkey`; marcos contratados; clave de acceso de un solo uso. | `contracts/modules/monkey-admin.md` · D47, D50 |
+| `companies` | Registro de empresas por `admin_monkey`; marcos contratados; clave de acceso de un solo uso que se **envía por correo** (D99; puerto `Mailer`, adaptadores en `infrastructure/mail`) y se reenvía con una nueva. | `contracts/modules/monkey-admin.md` · D47, D50 |
 | `users` | *(D96, sin construir)* El equipo de la empresa: el `admin_empresa` invita a `funcional` y `auditor`, edita y desactiva sus cuentas, y reparte el trabajo por dimensión (`service_dimension_owners`, `user_control_assignments`). | `contracts/modules/users-team.md` · D96 · MD-131, MD-132, MD-134, MD-158 |
 | `catalogs` | Opciones de los formularios con etiqueta según `Accept-Language`. Valores en `src/common/catalogs/onboarding-catalogs.ts`; solo regulaciones y marcos salen de la base. | `contracts/enums.md` |
 | `onboarding` | Componente 1 (contexto organizacional) y derivación del avance para `me`. | `contracts/modules/onboarding-organizational-context.md` · D44 |

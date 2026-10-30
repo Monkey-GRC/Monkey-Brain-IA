@@ -149,7 +149,8 @@ convención de **todos** los módulos, no de uno. La tabla es append-only: se ag
 | `action` | Cuándo | Quién | `tenant_id` |
 |---|---|---|---|
 | `company.register` | `admin_monkey` registra la empresa | `admin_monkey` | nulo |
-| `access_key.regenerate` | `admin_monkey` regenera o reenvía la clave | `admin_monkey` | la empresa |
+| `access_key.regenerate` | `admin_monkey` reenvía la clave: anula la pendiente y emite otra (D99) | `admin_monkey` | nulo |
+| `access_key.email` | el correo de la clave salió o falló (`result = success`/`error`); nunca lleva la clave (D99) | `admin_monkey` | nulo |
 | `access_key.redeem` | el cliente canjea la clave (también si falla: `result = error`) | nuevo `admin_empresa`, o `attempted_email` | la empresa |
 | `user.create` | se crea una cuenta, incluida la de `admin_empresa` al canjear | quien la crea | la empresa |
 | `auth.login` | inicio de sesión correcto | el usuario | su empresa |
