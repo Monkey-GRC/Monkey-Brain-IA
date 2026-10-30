@@ -197,3 +197,10 @@ Lo que no pertenece a un solo módulo (pruebas, CI, auditoría, traducciones, en
 - **Por qué:** el sistema de correos y de notificaciones es una funcionalidad aparte, que no bloquea el resto.
 - **Qué lo cierra:** construir el correo y las notificaciones en la app, enviarlos a todos los `admin_monkey` al menos 3 días antes del vencimiento, sin tocar la purga.
 
+### DT-84 · El respaldo con rotación a 35 días solo existe como script de staging, y nada comprueba que corra
+
+🟠 Importante
+
+- **Qué está parchado:** D97 y D72 prometen que los respaldos generales rotan y que los datos de una empresa borrada desaparecen de ellos en máximo 35 días. Hoy solo existe `scripts/deploy/backup-staging.sh` (`pg_dump` nocturno a MinIO, expira a 30 días, deja 7 copias en la VPS). Que se ejecute cada noche no se verifica desde el repo, ninguna prueba lo ejecuta y para producción no hay nada construido.
+- **Por qué:** es lo mínimo para tener respaldo en staging mientras se construye producción; la promesa de D97 (y el texto de términos del servicio que la repite) depende de esto, por eso no es una mejora.
+- **Qué lo cierra:** programar el respaldo de staging y avisar si una noche falla; construir en producción el respaldo con recuperación a un punto en el tiempo y rotación de 35 días como máximo; y dejar una comprobación que falle si el respaldo más reciente tiene más de un día o el más antiguo pasa de 35. Al cerrarla, SEG-35 pasa a ✅ y se borra esta entrada.

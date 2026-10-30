@@ -96,6 +96,7 @@ Limitan el producto o al equipo.
 | [DT-81](control-tecnico.md#dt-81--el-escenario-de-despliegue-ya-no-se-pregunta-pero-su-columna-y-sus-tablas-siguen-en-la-base) | El escenario de despliegue ya no se pregunta, pero su columna y sus tablas siguen en la base | [Control técnico](control-tecnico.md) |
 | [DT-82](transversal.md#dt-82--la-lista-de-servicios-lee-cada-servicio-por-separado-y-solo-aguanta-porque-se-alargó-el-tiempo-de-la-transacción) | La lista de servicios lee cada servicio por separado y solo aguanta porque se alargó el tiempo de la transacción | [Transversal](transversal.md) |
 | [DT-83](transversal.md#dt-83--falta-el-aviso-a-los-admin_monkey-de-que-una-empresa-está-por-borrarse) | Falta el aviso a los `admin_monkey` de que una empresa está por borrarse | [Transversal](transversal.md) | 🟠 Importante |
+| [DT-84](transversal.md#dt-84--el-respaldo-con-rotación-a-35-días-solo-existe-como-script-de-staging-y-nada-comprueba-que-corra) | El respaldo con rotación a 35 días solo existe como script de staging, y nada comprueba que corra | [Transversal](transversal.md) | 🟠 Importante |
 
 ### 🟡 Mejoras
 
