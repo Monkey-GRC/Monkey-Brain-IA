@@ -7,7 +7,7 @@ type: contract
 
 # Cumplimiento — validación y auditoría
 
-**Estado: ACORDADO, reescrito por D96 (2026-10-27).** Construido: exclusiones MD-144, revisión de la evidencia MD-127, veredicto MD-155; el Backend ya quedó ajustado a este texto salvo lo que lista «Estado de implementación». Ver `conventions.md` (sección «Cumplimiento») y `enums.md`. Tickets: MD-144, MD-154, MD-155, MD-127.
+**Estado: ACORDADO, reescrito por D96 (2026-10-27).** Construido: exclusiones MD-144, revisión de la evidencia MD-127, veredicto MD-155, observaciones del auditor MD-154; el Backend ya quedó ajustado a este texto salvo lo que lista «Estado de implementación». Ver `conventions.md` (sección «Cumplimiento») y `enums.md`. Tickets: MD-144, MD-154, MD-155, MD-127.
 
 **Qué es.** El **`admin_empresa` es el experto en compliance** (D96): valida la evidencia, da el veredicto de las pruebas manuales y decide las exclusiones. El **`funcional`** sube la evidencia y repara lo suyo, y el **`auditor`** revisa y escribe observaciones que la empresa debe atender; no califica por ahora. **Entidades:** `evaluations`, `evidence_submissions`, `evidence_reviews`, `audit_observations`, `exclusions` (`modelo-datos.md` §7.3 a §7.6). **App:** Monkey Platform.
 Los cambios de controles, riesgos y causas están en `compliance-controls.md` y `compliance-risks.md`; el resumen del servicio, en `compliance-overview.md`; y quién es responsable de qué, en `users-team.md`.
@@ -101,7 +101,7 @@ su evidencia** (`PUT /v1/evidence-submissions/{id}/review`): sobre ella responde
 { "result": "compliant", "note": "Las tres revisiones del período están firmadas por la dirección." }
 ```
 
-Si el **control de origen** tiene **observaciones abiertas** (criterio provisional, D85), el veredicto exige además la razón por la que se da igual:
+Si el **control de origen** tiene **observaciones abiertas** (criterio provisional, D85: cuentan solo las de ese control y solo las que están `open`; una respondida, una cerrada, una de otro control o de un servicio completo no piden nada), el veredicto exige además la razón por la que se da igual. Sin ella, `422 closure_reason.required` y no se escribe ninguna evaluación. La razón en blanco no vale:
 
 ```json
 { "result": "compliant", "closure_observation_reason": "La observación abierta es de forma y no afecta al control.", "note": "…" }
@@ -174,17 +174,30 @@ Una observación **no es un hallazgo**: el hallazgo lo detecta el sistema y la o
 
 | Endpoint | Quién | Cuerpo | Respuesta |
 |---|---|---|---|
-| `POST /v1/services/{service_id}/observations` | `auditor` | `{ "type", "body", "client_control_id"?, "evidence_submission_id"? }` | `201` la observación, `open` |
-| `GET /v1/services/{service_id}/observations` | ver tabla | filtros `status`, `type`, `client_control_id` | `200` paginada |
-| `GET /v1/observations/{id}` | ver tabla | — | `200` |
-| `PATCH /v1/observations/{id}` | **solo su autor** | `{ "body": "…" }` mientras no esté cerrada | `200` |
-| `POST /v1/observations/{id}/answer` | `admin_empresa`; `funcional` responsable del control | `{ "answer_note": "…", "answer_evidence_id"?: "…" }` | `200`, pasa a `answered` |
-| `PATCH /v1/observations/{id}` | **solo su autor** | `{ "status": "closed" }` o `{ "status": "open" }` | `200` |
+| `POST /v1/services/{service_id}/observations` | `auditor` | `{ "type", "body" (máx. 5000), "client_control_id"?, "evidence_submission_id"? }` | `201` la observación, `open` |
+| `GET /v1/services/{service_id}/observations` | `admin_empresa` y `auditor`: todas · `funcional`: las de sus controles | filtros `status`, `type`, `client_control_id`; `page`, `page_size` (máx. 100) | `200` paginada, de la más reciente a la más antigua |
+| `GET /v1/observations/{id}` | los mismos | — | `200`; el `funcional` de un control que no es suyo, o de un servicio completo: `403` |
+| `PATCH /v1/observations/{id}` | **solo su autor** (`auditor`) | **una sola cosa:** `{ "body": "…" }` (máx. 5000) mientras no esté cerrada, o `{ "status": "closed" }`, o `{ "status": "open" }` | `200` |
+| `POST /v1/observations/{id}/answer` | `admin_empresa`; `funcional` responsable del control | `{ "answer_note": "…" (máx. 2000), "answer_evidence_id"?: "…" }` | `200`, pasa a `answered` |
 
-- Una observación puede referirse a un servicio completo (sin `client_control_id`), a un control o a una evidencia; si trae ambos, la evidencia debe ser de ese control.
-- **Solo quien la escribió la cierra** o la devuelve a `open` (no queda conforme). Solo se cierra una `answered`. **Una cerrada no se reabre**: si hace falta algo más, se crea otra. Nunca se borra.
-- Responder exige `answer_note`; `answer_evidence_id` es una entrega de evidencia de la misma empresa.
-- Un `funcional` ve las observaciones de los controles de los que es responsable (en cualquier dimensión); las de un servicio completo, no.
+**Sobre qué habla.** Un servicio completo (sin `client_control_id`), un control o una evidencia.
+- **Solo evidencia:** la observación queda también en el control de esa entrega (`client_control_id` se completa solo), porque una entrega pertenece a un único control; así la ve su responsable.
+- **Control y evidencia a la vez:** la evidencia debe ser de ese control; si no, `422` con `evidence_submission_id: control.mismatch`.
+- **No existe, o es de otro servicio u otra empresa** (control o evidencia): `404`.
+- **Control dado de baja:** no se le abren observaciones nuevas (`409 CONTROL_RETIRED`); las que ya tenía se siguen leyendo.
+
+**Quién y cuándo.**
+- **Solo quien la escribió** la edita, la cierra o la devuelve a `open` (no queda conforme). Otro auditor de la misma empresa, el `admin_empresa`, el `funcional` y `admin_monkey` reciben `403`; ese `403` va **antes** que cualquier error de estado.
+- **Un PATCH hace una sola cosa.** Ni vacío (`422 body_or_status.required`) ni texto y estado juntos (`422 body_or_status.exclusive`). El estado admite solo `open` y `closed`.
+- Solo se cierra, o se devuelve, una `answered`. **Una cerrada no se reabre ni se toca**: si hace falta algo más, se crea otra. **Nunca se borra** (SEG-69: lo impone la base, no solo la API).
+- Responder exige `answer_note` (en blanco, `422 required`); `answer_evidence_id` es una entrega de un control **del mismo servicio** (si no, `404`). Responde el `admin_empresa`, o el `funcional` si el control es suyo; las de un servicio completo las atiende solo el `admin_empresa`.
+- **Devolver a `open` conserva la última respuesta** (`answer_note`, `answer_evidence_id`, `answered_by`, `answered_at`) hasta que la empresa dé otra. La respuesta anterior queda en el rastro de auditoría (`before_state` de `observation.answer`), que es lo único que la conserva.
+
+**Quién la ve.** `admin_empresa` y `auditor`: todas. El `funcional`: las de los controles de los que es responsable, en cualquier dimensión (SEG-66); las de un servicio completo, no. La lista le llega filtrada (vacía si no tiene ningún control); el detalle de una ajena de su empresa es `403`, de otra empresa `404`. `admin_monkey`: `403`.
+
+**Precedencia de errores de estado.** `OBSERVATION_CLOSED` manda sobre los demás: una cerrada no admite nada (editar, responder, cerrar o devolver). Después, `OBSERVATION_NOT_OPEN` al responder una ya respondida e `INVALID_TRANSITION` al cerrar o devolver una abierta. Dos peticiones a la vez sobre la misma observación se atienden una tras otra (la fila se bloquea): la segunda ve el estado ya cambiado y recibe el `409` que le toca.
+
+**Las opciones** de `type` y `status` las sirve `GET /v1/catalogs/audit_observation_type` y `/audit_observation_status` (`enums.md`).
 
 ## Exclusiones
 
@@ -244,10 +257,11 @@ Paginada, de la más reciente a la más antigua. Filtros `test_id`, `asset_id`, 
 | 409 | `TEST_HAS_NO_ASSETS` | El servicio no tiene activos de la dimensión del test: no hay sobre qué dar el veredicto |
 | 409 | `EXCLUSION_ALREADY_EXISTS` | Ya hay una aprobada y vigente del mismo activo en el mismo test |
 | 409 | `EVALUATION_NOT_DEFINED` | La evaluación del servicio no tiene período o fecha de corte |
-| 409 | `OBSERVATION_CLOSED` | Editar, responder o cambiar una observación cerrada |
-| 409 | `OBSERVATION_NOT_OPEN` | Responder una que no está `open` |
+| 409 | `CONTROL_RETIRED` | Abrir una observación sobre un control dado de baja |
+| 409 | `OBSERVATION_CLOSED` | Editar, responder, cerrar o devolver una observación cerrada (manda sobre los otros dos) |
+| 409 | `OBSERVATION_NOT_OPEN` | Responder una que ya está `answered` |
 | 409 | `INVALID_TRANSITION` | Cerrar una que no está `answered`, o devolver a `open` una que no lo está |
-| 422 | `VALIDATION_FAILED` | Campos: `required`, `enum.invalid`, `closure_reason.required` (veredicto con observaciones abiertas), `note.required` (rechazar una evidencia sin `note`) |
+| 422 | `VALIDATION_FAILED` | Campos: `required`, `enum.invalid`, `closure_reason.required` (veredicto con observaciones abiertas), `note.required` (rechazar una evidencia sin `note`), `control.mismatch` (la evidencia no es del control), `body_or_status.required` / `body_or_status.exclusive` (un PATCH de observación) |
 
 Claves i18n: `control_test.list`, `verdict.issued`, `verdict.list`, `observation.*`, `exclusion.list`, `exclusion.created`.
 
@@ -320,7 +334,10 @@ Todos con el mismo sobre (`conventions.md`); `message` es la clave i18n del erro
 |---|---|---|
 | `test_verdict.issue` | veredicto de un test (también deja el evento `control.state` de cada control que cambie de estado, D91) | `admin_empresa` |
 | `evidence_review.update` | se valida o se rechaza una evidencia (crear o reemplazar la propia; sin los atributos en el detalle) | `admin_empresa` |
-| `observation.create` · `.update` · `.answer` · `.close` · `.return` | ciclo de una observación | autor (`auditor`) o empresa |
+| `observation.create` · `.update` · `.close` · `.return` | registrar, editar el texto, cerrar y devolver a `open` una observación | `auditor` (su autor) |
+| `observation.answer` | la empresa responde | `admin_empresa` o `funcional` |
+
+La auditoría de una observación lleva el texto (`body`, `answer_note`) antes y después: es lo que conserva una respuesta que el auditor devuelve y la empresa reemplaza. Nunca el contenido de una evidencia.
 | `exclusion.create` | se decide una exclusión (con `compliance_events` al aprobar o vencer) | `admin_empresa` |
 
 ## Estado de implementación
@@ -333,7 +350,7 @@ Todos con el mismo sobre (`conventions.md`); `message` es la clave i18n del erro
 - **Exclusiones.** `POST` solo `admin_empresa`: nace `approved` con `decided_by`/`decided_at`, deja el evento `exclusion.approve` y, si mueve un control, su evento de estado (`cause: exclusion_approved`). Auditoría `exclusion.create`. Se retiró el `PATCH /v1/exclusions/{id}`, el campo de espera de decisión y `ALREADY_DECIDED`. Dos creaciones a la vez de lo mismo se serializan (candado de la transacción) y la segunda es `409 EXCLUSION_ALREADY_EXISTS`; el índice único parcial «una pendiente» queda como red de seguridad de datos viejos. `pending` y `rejected` quedan en el enum sin uso.
 - **Pruebas:** `revision-evidencia`, `veredictos`, `eventos-estado`, `exclusiones` y `evidencias` en `Backend/test/cumplimiento/`.
 
-El **`funcional` ve solo lo suyo** quedó construido el 2026-10-29 (B67, SEG-66; ver `users-team.md`): controles, evidencia, riesgos y hallazgos se filtran por el responsable efectivo de cada dimensión. Falta por construir las **observaciones (MD-154)**, que solo escribe el `auditor`.
+El **`funcional` ve solo lo suyo** quedó construido el 2026-10-29 (B67, SEG-66; ver `users-team.md`): controles, evidencia, riesgos y hallazgos se filtran por el responsable efectivo de cada dimensión. Las **observaciones (MD-154)** quedaron construidas el 2026-10-29 (abajo).
 
 Lo que no cambia y el código ya hace: la vigencia llega al `period_end` del servicio (D87); «vencida» se deriva al leer (`is_expired`, `DT-72`, `MD-171`); solo se excluye el activo de un test (la de un check, `excluded_check_id`, es `MD-170`, `DT-74`); y `ai_suggestion` no se guarda ni se devuelve: la IA no escribe aquí.
 
@@ -341,9 +358,12 @@ La pantalla de exclusiones solo crea y lista: la decisión es el mismo acto (sin
 
 **Construido (MD-177, 2026-10-29): `GET /v1/controls/{id}/tests`.** Todas las pruebas del control ordenadas por código y paginadas (`page`, `page_size`, máx. 100), con `state` (el del motor), `type` (cómo se resuelve su dimensión en este control: `manual`, `automated`, `hybrid` o `technical_manual`), `is_mandatory`, `is_active` y `display_name` neutro. `shared_with` son los otros controles **vigentes** del servicio que llevan la prueba (D85, ordenados por código), siempre vacío en una documental (D88). `last_verdict` es `{ result, evaluated_at, confirmed_by }` del último veredicto del `admin_empresa` o `null`; `ai_suggestion` es siempre `null` porque la IA no escribe aquí. Solo `admin_empresa` y `auditor`; el `funcional` y `admin_monkey` reciben `403`. Pruebas: `test/cumplimiento/evidencia-por-test.e2e-spec.ts`. La evidencia de cada test está en `compliance-evidence.md`.
 
+**Construido (MD-154, 2026-10-29): las observaciones del auditor.** Tabla `tenant.audit_observations` (RLS por empresa, restricciones de coherencia y un trigger que impone en la base que nunca se borran y que una cerrada no se toca, SEG-69; solo desaparecen con la purga de una empresa archivada, D97). Cinco endpoints (arriba), permisos SEG-70, rastro en la misma transacción (`observation.*`). **No mueven el porcentaje**: no escriben evaluaciones ni eventos de cumplimiento (lo comprueba una prueba). Dos reglas que salían de otros documentos y quedan cerradas: el veredicto exige la razón cuando el control de origen tiene observaciones `open` (D85, antes la mitad de `DT-80`), y un servicio con observaciones no se borra (`SERVICE_HAS_EVALUATIONS`: son historia, igual que las evaluaciones). Los tipos y estados se sirven en `GET /v1/catalogs/{nombre}`. Pruebas: `test/cumplimiento/observaciones.e2e-spec.ts`, el bloque final de `veredictos.e2e-spec.ts` y `src/features/compliance/domain/observation-lifecycle.spec.ts`. **Fuera de alcance, a propósito:** las pantallas (esperan los permisos por pantalla del comité, `P3`) y el aviso a la empresa de que tiene una observación nueva (el sistema de correos y notificaciones no existe todavía, `MD-69`; mientras tanto la empresa la ve al entrar al servicio).
+
 ## Preguntas abiertas
 
 - **`P26`**: período y fecha de corte de la evaluación del servicio. Mientras no se definan, crear una exclusión responde `409 EVALUATION_NOT_DEFINED`.
 - **`P3`**: el detalle por pantalla puede ajustar la tabla de «Quién puede qué».
 - **`P34`**: quien sube la evidencia y quien la valida son la misma persona.
+- **`P37`**: criterios de las observaciones que desarrollo fijó sin que el comité los pidiera (qué es «abierta» para el veredicto, controles dados de baja, la evidencia de una respuesta, conservar la última respuesta, aviso a la empresa).
 - **Reportes en PDF y Excel** del auditor: el contenido está por definir, no tienen contrato todavía.

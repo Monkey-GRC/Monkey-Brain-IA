@@ -26,6 +26,7 @@ Lo que sigue abierto, con lo más urgente arriba. 🚧 bloquea trabajo · ⚠️
 | [P34](#p34--quien-sube-la-evidencia-y-quien-la-valida-son-la-misma-persona) | Quien sube la evidencia y quien la valida son la misma persona | No bloquea: LATER | 2026-10-27 |
 | [P35](#p35--la-calificación-del-auditor) | La calificación del auditor | No bloquea: LATER, según el Excel | 2026-10-27 |
 | [P36](#p36--la-independencia-del-auditor-qué-ve-de-la-evidencia-y-cómo-se-crea-su-cuenta) | La independencia del auditor: qué ve de la evidencia y cómo se crea su cuenta | No bloquea: LATER (MD-183) | 2026-10-28 |
+| [P37](#p37--criterios-de-las-observaciones-del-auditor-que-desarrollo-fijó-sin-que-el-comité-los-pidiera) | Criterios de las observaciones del auditor que desarrollo fijó sin que el comité los pidiera | No bloquea: está construido (MD-154) y funciona; se ajusta si el PO decide otra cosa | 2026-10-29 |
 | [P13](#p13--ratificar-lo-que-desarrollo-decidió-en-las-correcciones-del-2026-10-05-d50-d51) | Ratificar lo que desarrollo decidió el 2026-10-05 (D50, D51) | No bloquea: está construido y funcionando | 2026-10-06 |
 | [P15](#p15--cómo-se-mapean-los-checks-de-nube-que-quedan-fuera) | Cómo se mapean los checks de nube que quedan fuera | No bloquea: lo no mapeado no cuenta hasta responder | 2026-10-08 |
 
@@ -239,6 +240,19 @@ la **matriz inherente** muestra cada riesgo antes de aplicar controles y la **ma
 3. **¿Hace falta una declaración de independencia al crear al auditor?** *Recomendación: sí, con quién la creó y cuándo.*
 
 **Qué depende:** MD-183. No bloquea la API de observaciones (MD-154). Es `LATER`.
+
+## P37 · Criterios de las observaciones del auditor que desarrollo fijó sin que el comité los pidiera
+
+**Estado:** abierto desde 2026-10-29 (MD-154). El Excel y `modelo-datos.md` §7.6 definen las observaciones, pero no estos detalles; desarrollo los resolvió con el criterio más sencillo para poder construir y los dejó anotados aquí para que el PO los ratifique o los cambie. Es lo mismo que D85 hizo con las observaciones abiertas («criterio provisional de desarrollo»).
+
+1. **¿Qué es una observación «abierta» para exigir la razón del veredicto?** Hoy: `status = open` y solo en el **control de origen** (D85). Una respondida (`answered`) ya no la exige. *Alternativa:* exigirla también mientras esté respondida y sin cerrar, o mirar los controles que comparten la prueba. *Recomendación: dejarlo como está; la empresa ya atendió la respondida.*
+2. **¿Se abren observaciones sobre un control dado de baja?** Hoy: no (`409 CONTROL_RETIRED`); las que ya tenía se siguen leyendo. *Recomendación: dejarlo como está.*
+3. **¿La evidencia que respalda una respuesta puede ser de cualquier control o solo del mismo servicio?** Hoy: de un control del mismo servicio. *Recomendación: dejarlo como está.*
+4. **Si el auditor comenta solo una evidencia, ¿la observación queda en el control de esa evidencia?** Hoy: sí (una entrega pertenece a un único control), y así la ve el `funcional` responsable. *Recomendación: dejarlo como está.*
+5. **Al devolver una observación a `open`, ¿se conserva la última respuesta?** Hoy: sí, hasta que la empresa dé otra; la anterior queda solo en el rastro de auditoría (no hay tabla de historial de respuestas). *Alternativa:* guardar cada respuesta en una tabla aparte. *Recomendación: dejarlo como está mientras nadie pida ver el historial de respuestas en pantalla.*
+6. **¿La empresa debe enterarse de que tiene una observación nueva?** Hoy no hay aviso (no existe el sistema de correos y notificaciones, `MD-69`). *Recomendación: sí, por correo y en la app, cuando exista ese sistema.*
+
+**Qué depende:** nada del código inmediato; el comportamiento actual está en `contracts/modules/compliance-audit.md` y `modelo/07-cumplimiento.md` §7.6. Si el PO cambia alguna respuesta, se ajusta el contrato y la prueba que la cubre (`test/cumplimiento/observaciones.e2e-spec.ts`, `veredictos.e2e-spec.ts`). Es `LATER`.
 
 ---
 ## Cómo se cierra un pendiente

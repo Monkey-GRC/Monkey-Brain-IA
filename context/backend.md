@@ -54,6 +54,8 @@ Clean Architecture + feature-based. Cada feature en `src/features/<nombre>/`:
 
 Dependencias: `Presentation → Application → Domain` e `Infrastructure → Domain`.
 
+Una feature grande se agrupa por subfuncionalidad dentro de cada capa: `compliance/<capa>/<sub>/` (por ejemplo `compliance/presentation/observations/`), con lo compartido en `<capa>/shared/`. En `auth`, los casos de uso van en `application/use-cases/<sub>/`. Las reglas y los nombres están en `skills/backend/add-feature.md`.
+
 Lo transversal vive fuera de las features: `src/common/` (sobre `ResponseDto`, `DomainError`, filtro
 global de excepciones, paginación, decoradores `@Public`/`@Roles`/`@CurrentUser`, `RolesGuard`,
 `TenantScope`, `Principal`, puertos como `TokenHasher` y `AuditLogWriter`) y `src/infrastructure/`

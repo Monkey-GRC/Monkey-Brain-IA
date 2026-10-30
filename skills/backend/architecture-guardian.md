@@ -51,6 +51,10 @@ emitir un veredicto.
 9. **Prisma schema:** los modelos se agregan en el archivo de su dominio bajo
    `prisma/schema/<catalog|platform|tenant|audit>/`, nunca en un archivo monolítico.
 
+10. **Carpetas legibles:** ninguna carpeta de código con más de ~9 archivos sueltos. Si una feature crece, se
+    agrupa por subfuncionalidad dentro de cada capa (`<capa>/<sub>/`, ver `add-feature.md`); nunca se
+    mezclan archivos de varias subfuncionalidades en una misma carpeta.
+
 ## Formato de salida esperado
 
 Lista de hallazgos, cada uno con: archivo:línea, regla violada, por qué es un

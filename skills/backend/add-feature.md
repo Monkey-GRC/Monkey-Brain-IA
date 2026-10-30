@@ -36,6 +36,10 @@ src/features/<nombre>/
 └── <nombre>.module.ts   provide: XRepository → useClass: XPrismaRepository
 ```
 
+**Features grandes: se agrupa por subfuncionalidad.** Cuando una carpeta pasa de unos 8 archivos, dentro de cada capa se crean subcarpetas por subfuncionalidad: `<capa>/<sub>/`. Es lo que hace `compliance` (`controls`, `evidence`, `exclusions`, `observations`, `overview`, `periods`, `responsibles`, `risks`, `verdicts`): `domain/controls/`, `application/controls/`, `infrastructure/controls/` y `presentation/controls/`. En ese caso el repositorio abstracto vive junto a su regla en `domain/<sub>/` y el caso de uso, su DTO y su validación en `application/<sub>/` (sin las carpetas `repositories/`, `use-cases/` ni `dtos/`). Lo que usan varias subfuncionalidades va en `<capa>/shared/`. En `auth` solo se agrupan los casos de uso (`application/use-cases/{session,mfa,access-key,activation}/`) y en `technical-control` el controlador interno del trabajador (`presentation/runner/`).
+
+**Nombres:** inglés, `kebab-case` y `<sujeto>.<rol>.ts`: `.controller`, `.use-case` / `.use-cases`, `.dto`, `.query`, `.responses`, `-response.mapper`, `.repository`, `.prisma.repository`, `.validation`, `.spec`. La subcarpeta ya dice la subfuncionalidad, pero el archivo conserva su nombre completo para poder buscarlo.
+
 **Lo que no es de una sola feature va fuera de ella**, para que ninguna feature importe el
 interior de otra:
 
