@@ -26,8 +26,8 @@ cambios con aprobación), §7.5 (el veredicto) y §7.6 (las observaciones).
 | Responsables de la organización (MD-105) | MD-133 cargos en la API (**construido**) · MD-135 cargos en pantalla |
 | Medición y resumen (MD-106) | MD-137 resumen del servicio · MD-138 motor de cálculo · MD-139 estado del activo |
 | Exclusiones y cierre (MD-107) | MD-144 exclusiones (**construido**; para usarlo de verdad faltan MD-168 —el período, `P26`; **API construida 2026-10-20 (D87)**, falta su pantalla— ; MD-170 exclusión de un check; MD-171 deuda) · MD-145 evaluaciones inmutables · MD-147 verificación del backend · MD-149 revisión de pantallas y demo |
-| Auditoría (MD-152) | MD-154 observaciones del auditor · MD-155 veredicto manual del `admin_empresa` (**construido**) |
-| Acceso (MD-153), prerrequisito | MD-157 rol auditor en el backend: **construido**. Desbloquea MD-154 |
+| Auditoría (MD-152) | MD-154 observaciones del auditor (**API construida**; las pantallas esperan `P3`) · MD-155 veredicto manual del `admin_empresa` (**construido**) |
+| Acceso (MD-153), prerrequisito | MD-157 rol auditor en el backend: **construido**. Desbloqueó MD-154 |
 
 ## Lo que cambia con el motor del comité (D68, 2026-10-10)
 

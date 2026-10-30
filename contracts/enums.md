@@ -294,7 +294,7 @@ nuevo manda estos cuatro en minúscula; la API expone los del modelo.
 `observation` Observación · `recommendation` Recomendación · `information_request` Solicitud de información
 
 ### `audit_observation_status` — `audit_observations.status`
-`open` Abierta · `answered` Respondida · `closed` Cerrada. `admin_empresa` o el `funcional` dueño del control la pasan a `answered`; solo quien la escribió (el `auditor`) la cierra o la devuelve a `open`.
+`open` Abierta · `answered` Respondida · `closed` Cerrada. `admin_empresa` o el `funcional` dueño del control la pasan a `answered`; solo quien la escribió (el `auditor`) la cierra o la devuelve a `open`. Una cerrada no se reabre. Las dos listas (`audit_observation_type` y `audit_observation_status`) las sirve `GET /v1/catalogs/{nombre}`.
 *(Contrato: `modules/compliance-audit.md`.)*
 
 ### `control_change_type` — `client_control_changes.change_type`
@@ -432,7 +432,7 @@ Ya definidos en `modelo-datos.md` (§7 y §8): `mitigate|accept|transfer|avoid`,
 
 ## Cumplimiento — contratos de endpoints (MD-108)
 
-**Qué listas sirve `GET /v1/catalogs/{name}` (2026-10-17; `assessor_role` y `assessment_verdict` ya no, D96).** Además de las del onboarding, sirve las de cumplimiento y las del catálogo maestro: `risk_criterion`, `failure_category`, `risk_level`, `risk_treatment_decision`, `responsible_type`, `cause_control_effect`, `exclusion_status`, `assessor_role`, `assessment_verdict`, `dimension`, `control_type`, `catalog_origin`, `loss_type` y `risk_scale` (valores `1`–`5`, de la matriz 5×5). La respuesta es la de siempre (`value` + `label` según `Accept-Language`), en el orden del enum. **Ningún cliente escribe estas listas a mano**; la fuente es el enum de la base y la etiqueta, `i18n/<idioma>/catalogs.json` del backend.
+**Qué listas sirve `GET /v1/catalogs/{name}` (2026-10-17; `assessor_role` y `assessment_verdict` ya no, D96).** Además de las del onboarding, sirve las de cumplimiento y las del catálogo maestro: `risk_criterion`, `failure_category`, `risk_level`, `risk_treatment_decision`, `responsible_type`, `cause_control_effect`, `exclusion_status`, `audit_observation_type`, `audit_observation_status`, `assessor_role`, `assessment_verdict`, `dimension`, `control_type`, `catalog_origin`, `loss_type` y `risk_scale` (valores `1`–`5`, de la matriz 5×5). La respuesta es la de siempre (`value` + `label` según `Accept-Language`), en el orden del enum. **Ningún cliente escribe estas listas a mano**; la fuente es el enum de la base y la etiqueta, `i18n/<idioma>/catalogs.json` del backend.
 
 Valores que usan `modules/compliance-*.md`. Los de las tablas ya existentes (`dimension`, `trust_criterion`, `risk_criterion`, `risk_level`, `failure_category`, `risk_treatment_decision`, `evidence_review`,
 `audit_observation_*`, `control_change_*`) no se repiten.

@@ -462,4 +462,14 @@ erDiagram
   el `admin_empresa` da el veredicto del test **documental**. Si ese veredicto es negativo, el test falla y el porcentaje baja.
 - **Se escribe en la misma transacción que la acción** (`audit_logs`, D52). La observación no se borra.
 
+**Cómo quedó construido (MD-154)** — decisiones que el modelo no fijaba y que el PO debe ratificar (`P37`):
+
+- **Una entrega pertenece a un único control**, así que si el auditor solo manda la evidencia, `client_control_id` se completa con el de esa entrega (la ve su responsable). Si manda las dos, deben coincidir.
+- **Sobre un control dado de baja no se abren observaciones nuevas**; las que ya tenía se conservan.
+- **`answer_evidence_id` es una entrega de un control del mismo servicio.**
+- **«Abierta» es `status = open`.** Con observaciones abiertas en el **control de origen**, el veredicto exige `closure_observation_reason` (D85, criterio provisional); una respondida o cerrada deja de pedirla.
+- **Devolver a `open` conserva la última respuesta**; la anterior queda en `audit_logs` (`before_state`). No hay tabla de historial de respuestas.
+- **La base lo impone** (SEG-69): `audit_observations` no admite `DELETE` ni `TRUNCATE`, una cerrada no admite ningún `UPDATE`, lo que identifica a la observación (`tenant_id`, `service_id`, `client_control_id`, `evidence_submission_id`, `created_by`, `type`, `created_at`) no cambia nunca y solo existen los pasos `open → answered`, `answered → open` y `answered → closed`. La única forma de borrarla es el borrado definitivo de una empresa archivada (D97). `CHECK`: quien la cierra es siempre quien la escribió, y respondida o cerrada exige su respuesta.
+- **Un servicio con observaciones no se borra** (son historia, igual que las evaluaciones).
+
 ---
