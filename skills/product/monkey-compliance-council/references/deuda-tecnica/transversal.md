@@ -173,13 +173,13 @@ Lo que no pertenece a un solo módulo (pruebas, CI, auditoría, traducciones, en
 - **Por qué:** cada escritura tiene que tomar la foto de antes y llamar a `recordControlStateChanges`; se cableó en las que el ticket construía. Los activos viven en otra feature (`technical-control`) y el vencimiento no tiene un proceso que lo escriba.
 - **Qué lo cierra:** llamar al mismo registrador desde cada una de esas escrituras (con su causa) y, para el vencimiento, el proceso diario de `DT-72`. Mientras tanto el historial de un control puede omitir un cambio causado por una de ellas; el estado que se muestra siempre es el correcto porque se deriva.
 
-### DT-80 · El veredicto manual usa el tipo de la dimensión del control y no exige explicar las observaciones abiertas
+### DT-80 · El veredicto manual usa el tipo de la dimensión del control
 
 🟡 Mejora
 
-- **Qué está parchado:** `catalog.tests.type` es texto libre del comité («Manual», «Mixta», «Prueba de diseño…»), así que no sirve para saber si una prueba la resuelve una persona. El veredicto (MD-155) usa el tipo de la **dimensión del control** (`client_control_dimensions.type`): `manual` y `technical_manual` admiten veredicto; `automated` e `hybrid`, no (`409 TEST_NOT_MANUAL`). Además `closure_observation_reason` se acepta y se guarda, pero no se exige cuando el control de origen tiene observaciones abiertas (D85), porque las observaciones (MD-154) no existen.
-- **Por qué:** es el único dato estructurado que distingue lo manual de lo medido; las observaciones se construyen en otro ticket.
-- **Qué lo cierra:** que el comité clasifique cada prueba como manual o automática (o fijar el criterio y normalizar `tests.type`) y exigir la razón de cierre al construir las observaciones (MD-154).
+- **Qué está parchado:** `catalog.tests.type` es texto libre del comité («Manual», «Mixta», «Prueba de diseño…»), así que no sirve para saber si una prueba la resuelve una persona. El veredicto (MD-155) usa el tipo de la **dimensión del control** (`client_control_dimensions.type`): `manual` y `technical_manual` admiten veredicto; `automated` e `hybrid`, no (`409 TEST_NOT_MANUAL`). *(La otra mitad de esta deuda, exigir la razón cuando el control de origen tiene observaciones abiertas, la cerró MD-154: `422 closure_reason.required`.)*
+- **Por qué:** es el único dato estructurado que distingue lo manual de lo medido.
+- **Qué lo cierra:** que el comité clasifique cada prueba como manual o automática (o fijar el criterio y normalizar `tests.type`).
 
 ### DT-82 · La lista de servicios lee cada servicio por separado y solo aguanta porque se alargó el tiempo de la transacción
 
