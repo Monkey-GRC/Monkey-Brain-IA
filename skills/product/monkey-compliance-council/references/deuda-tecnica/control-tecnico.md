@@ -84,7 +84,6 @@ Parches del Componente 3 del onboarding (conexión de activos, la sonda) y del p
 - **Por qué:** Hasta ahora nadie lo pedía
 - **Qué lo cierra:** Pantalla de sistemas dados de baja, cuando el comité diga si se restauran
 
-
 ## Paso 3 del control técnico: el modelo de conexión (D48)
 
 ### DT-32 · No hay vínculo activo ↔ agente
@@ -115,9 +114,9 @@ Parches del Componente 3 del onboarding (conexión de activos, la sonda) y del p
 
 🟠 Importante
 
-- **Qué está parchado:** El modelo de rol entre cuentas / federación de identidad sin contraseñas (como en AWS, GCP, Azure) no está decidido y las integraciones de la sonda son solo de registros. **2026-10-07:** una prueba con un motor de configuración y un usuario con llaves estáticas funcionó, pero no es el modelo definitivo (ver DT-43 a DT-45 y P14)
+- **Qué está parchado:** El modelo de rol entre cuentas / federación de identidad sin contraseñas (como en AWS, GCP, Azure) no está decidido y las integraciones de la sonda son solo de registros. **2026-10-07:** una prueba con el motor de nube (Prowler, D100) y un usuario con llaves estáticas funcionó, pero no es el modelo definitivo (ver DT-43 a DT-45 y P14 C)
 - **Por qué:** Decisión de arquitectura
-- **Qué lo cierra:** Decidir el modelo con el comité (P14); mientras tanto `ac_01` queda «próximamente»
+- **Qué lo cierra:** Decidir el modelo de credenciales (P14 C; el rol de cada motor ya lo cerró D100); mientras tanto `ac_01` queda «próximamente»
 
 ### DT-43 · El motor de nube se probó en el mismo servidor que la sonda y con llaves estáticas del cliente guardadas allí
 
@@ -150,7 +149,6 @@ Parches del Componente 3 del onboarding (conexión de activos, la sonda) y del p
 - **Por qué:** Se puso para investigar
 - **Qué lo cierra:** Pedir un usuario de base **solo lectura** y un rol de API de solo lectura por grupo; autorizar la IP de desarrollo en la API si se quiere probar
 
-
 ## Ejecución del motor de nube (D57)
 
 ### DT-51 · El trabajador usa un proxy de Docker que filtra por ruta, no por contenido
@@ -159,7 +157,7 @@ Parches del Componente 3 del onboarding (conexión de activos, la sonda) y del p
 
 - **Qué está parchado:** Un trabajador comprometido podría pedir un contenedor con montajes del servidor: es acceso amplio a Docker aunque no sea el socket directo
 - **Por qué:** Se aceptó para desarrollo: código nuestro, sin puertos de entrada, aislado en su propia red
-- **Qué lo cierra:** Ejecutar el motor como tarea en la nube (un adaptador `ScanEngine` nuevo, sin socket), o un Docker sin privilegios dedicado a los escaneos. Depende de `D72` y `P14`
+- **Qué lo cierra:** Ejecutar el motor como tarea en la nube (un adaptador `ScanEngine` nuevo, sin socket), o un Docker sin privilegios dedicado a los escaneos. Depende de `D72` y `P14` C
 
 ### DT-52 · El trabajador solo conoce AWS, una corrida a la vez por réplica, y el canal de llaves entrega llaves de larga vida
 
@@ -176,7 +174,6 @@ Parches del Componente 3 del onboarding (conexión de activos, la sonda) y del p
 - **Qué está parchado:** la primera corrida en un servidor nuevo la descarga y puede tardar minutos (el límite de 25 min corre sobre la ejecución, no sobre la descarga). Un redespliegue a mitad de una corrida la pierde (el backend la cierra por tiempo a los 30 min)
 - **Por qué:** Una sola VPS de desarrollo
 - **Qué lo cierra:** Descargar la imagen en el despliegue; no redesplegar durante un escaneo, o drenar antes
-
 
 ## Flujo de conexión de la nube (D58)
 
