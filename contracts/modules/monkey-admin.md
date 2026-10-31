@@ -189,7 +189,7 @@ No es un endpoint: lo ejecuta una tarea programada al vencer `archive_until`, co
 | 409 | `COMPANY_NOT_DEACTIVATED` | Se reactiva una empresa que no está archivada (D97) |
 | 409 | `COMPANY_ARCHIVE_EXPIRED` | Se reactiva una empresa cuyo plazo ya venció (D97) |
 | 409 | `COMPANY_NAME_TAKEN` | Ya existe una empresa activa con esa razón social |
-| 409 | `ADMIN_EMAIL_TAKEN` | Ese `admin_email` ya es administrativo de otra empresa |
+| 409 | `ADMIN_EMAIL_TAKEN` | Ese `admin_email` ya es administrativo de otra empresa, o ya es el correo de un usuario de la plataforma (el correo es único global: la clave no se podría canjear) |
 | 409 | `COMPANY_ALREADY_ONBOARDED` | Se intenta editar tras el canje de la clave |
 | 409 | `ACCESS_KEY_NOT_PENDING` | Se intenta reenviar la clave de una empresa que ya la canjeó (D99) |
 | 409 | `FRAMEWORK_NOT_AVAILABLE` | Se eligió un marco que aún no está construido (`coming_soon`, D50) |
@@ -247,7 +247,7 @@ Decisiones de implementación, dentro de lo que el contrato ya asumía:
   `expired` (nadie actualiza la fila al vencer). La "vigente" es la de `expires_at` más reciente,
   porque `access_keys` no tiene `created_at`.
 - **`COMPANY_NAME_TAKEN`** compara sin mayúsculas ni espacios repetidos, solo contra empresas
-  `active`. **`ADMIN_EMAIL_TAKEN`** compara contra todas. Las dos son validaciones de aplicación: la
+  `active`. **`ADMIN_EMAIL_TAKEN`** compara contra todas y, además, contra los usuarios de cualquier empresa (por `find_login_candidates`, porque `users` tiene RLS por empresa). Las dos son validaciones de aplicación: la
   base no tiene índice único para ellas.
 - **Audit trail:** `company.create` en `audit_logs` con `tenant_id` nulo (acción de plataforma); la
   clave nunca entra, ni en claro ni en hash.
