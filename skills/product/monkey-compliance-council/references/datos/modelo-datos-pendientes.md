@@ -15,7 +15,7 @@ Lo que sigue abierto, con lo más urgente arriba. 🚧 bloquea trabajo · ⚠️
 | P | Pregunta | ¿Qué espera por ella? | Abierta desde |
 |---|---|---|---|
 | [P3](#p3--qué-ve-y-qué-hace-cada-rol-en-cada-pantalla-de-cumplimiento) | Qué ve y qué hace cada rol en cada pantalla de Cumplimiento | 🚧 Las pantallas y endpoints de Cumplimiento por rol (espera el Excel del comité) | — |
-| [P14](#p14--motores-de-evaluación-rol-de-cada-uno-y-cómo-se-relacionan-con-el-modelo) | Motores de evaluación: rol de cada uno y su relación con el modelo | 🚧 El adaptador de nube y el cálculo de cobertura en nube; no Cumplimiento | 2026-10-07 |
+| [P14](#p14--motores-de-evaluación-rol-de-cada-uno-y-cómo-se-relacionan-con-el-modelo) | Motores de evaluación: unidad de evaluación, conexión, catálogo y legal (el rol de cada motor se cerró en D100) | 🚧 El cálculo de cobertura en nube; no Cumplimiento | 2026-10-07 |
 | [P2](#p2--el-flujo-de-la-clave-de-acceso--5-detalles-sin-definir) | El flujo de la clave de acceso: 5 detalles sin definir (urgentes: a y c) | ⚠️ Condiciona la pantalla de canje (hoy hecha como código a mano, D51) | — |
 | [P9](#p9--datos-del-excel-que-hay-que-corregir-o-confirmar) | Datos del Excel que hay que corregir o confirmar | ⚠️ La dimensión Aplicación del cálculo y las causas que ve el cliente | — |
 | [P21](#p21--el-uso-de-los-logos-de-marcas-de-terceros) | El uso de los logos de marcas de terceros en el marketplace | ⚠️ Publicar el marketplace con logos a clientes reales; no bloquea construirlo | 2026-10-10 |
@@ -87,18 +87,15 @@ Inconsistencias **dentro del propio archivo del comité**, que el seed carga tal
 ## P14 · Motores de evaluación: rol de cada uno y cómo se relacionan con el modelo
 
 **Estado:** abierto desde 2026-10-07. Nace de una prueba real: un escaneo de configuración de una cuenta de AWS
-(292 hallazgos, 70 checks, 8 servicios, 17 regiones) hecho con una herramienta distinta de la sonda. Choca con la
-decisión de «validador único» (D13, `wazuh.md`): **no se cierra D13 hasta que el comité responda A1**. Bloquea el
-adaptador de nube y el cálculo de cobertura en nube; no bloquea el módulo de Cumplimiento.
+(292 hallazgos, 70 checks, 8 servicios, 17 regiones) hecho con una herramienta distinta de la sonda. **A1 y A2 se cerraron en D100 (2026-10-31)**: Prowler maneja la nube; Wazuh sigue con servidores, BD y endpoints. Siguen abiertas B, C, D y E. Bloquean el
+cálculo de cobertura en nube; no bloquean el módulo de Cumplimiento.
 
-**Propuesta de desarrollo (no decidida):** el catálogo, los checks y su mapeo a controles son de Monkey; los motores
-son adaptadores intercambiables que solo entregan resultados crudos en un formato único (`check_results`). La sonda
-cubriría servidores, BD y endpoints; un motor de configuración, la nube.
+**Decidido (D100):** el catálogo, los checks y su mapeo a controles son de Monkey; los motores son adaptadores que solo entregan resultados crudos en un formato único (`check_results`). Prowler cubre la nube; Wazuh, servidores, BD y endpoints (configuración, amenazas en tiempo real e incidentes).
 
 **A. Rol de los motores**
-1. ¿Se acepta que un motor distinto cubra la nube y se cierra D13? ¿La sonda queda solo con servidores, BD y endpoints?
-2. ¿Cómo se llama ese motor frente al cliente? La regla de confidencialidad aplica igual.
-3. ¿Hay un tercer motor previsto (Azure, GCP, SaaS)?
+1. ~~¿Se acepta que un motor distinto cubra la nube?~~ **Cerrada en D100:** Prowler maneja la nube; Wazuh sigue con servidores, BD y endpoints.
+2. ~~¿Cómo se llama ese motor frente al cliente?~~ **Cerrada en D100:** ninguno se nombra (D70).
+3. ¿Hay un tercer motor previsto (SaaS)? Azure y GCP los cubre Prowler.
 
 **B. Unidad de evaluación** *(B1 y B3 respondidas en D53: el activo es la cuenta y se evalúan solo las regiones declaradas)*
 2. Una instancia en la nube es también un servidor (`ac_02`). ¿Se enlaza el recurso hallado con el activo del servidor, o son cosas separadas?

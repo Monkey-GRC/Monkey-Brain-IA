@@ -58,7 +58,7 @@ que les corresponde.
 
 | Término | Tabla | Qué es |
 |---|---|---|
-| **Sonda / capacidad automática** | `automated_capabilities` | El mecanismo que evalúa sin intervención humana. Validador único. **Nunca se nombra al proveedor frente al cliente** |
+| **Sonda / capacidad automática** | `automated_capabilities` | El mecanismo que evalúa sin intervención humana. Hay dos motores (D100): la sonda en servidores, BD y endpoints, y el motor de nube en AWS, Azure y GCP. **Nunca se nombra al proveedor frente al cliente** |
 | **Plataforma de conexión** | `capability_platforms` | Lo que el cliente elige al conectar (D67): un proveedor de nube (AWS, Azure…), un sistema operativo (Linux, Windows…) o un motor de base de datos (PostgreSQL…). Tiene disponibilidad y logo; no es el hosting |
 | **Ejecución** | `executions` | Una corrida de la sonda sobre un activo. **No es una Evaluación** |
 | **Política SCA** | `sca_policies` | El benchmark que corre la sonda (`cis_alma_linux_8`), con su archivo YAML y su número de checks |
