@@ -14,6 +14,8 @@ applies_to: backend
 > por tu cuenta, pregunta. El paso 3 del onboarding (conectar un activo) es **provisional** porque se construyó antes de verificar la
 > sonda real.
 
+> La nube la mide otro motor (Prowler): ver `add-cloud-engine.md`. La sonda cubre servidores, BD y endpoints.
+
 Esto **no** es una feature nueva con endpoints propios. La integración real es **un tercer adaptador del puerto `ConnectionProbe`**
 (`src/features/technical-control/domain/ports/connection-probe.ts`): hoy existen `simulated` y `unavailable`, elegidos por
 `PROBE_MODE` en `infrastructure/probes/connection-probe.factory.ts`. Los casos de uso **no se tocan** (DT-1). Sigue la receta de
