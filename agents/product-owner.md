@@ -47,7 +47,7 @@ operar el Consejo) y luego el archivo de referencia que corresponda al tipo
 de pregunta — no repitas de memoria, estos archivos pueden actualizarse:
 
 - Arquitectura/motores/modelo de datos → `references/arquitectura/architecture.md`
-- Wazuh / integraciones de monitoreo → `references/control-tecnico/wazuh.md`
+- Wazuh (sonda) y Prowler (nube) / integraciones de monitoreo → `references/control-tecnico/wazuh.md` y `references/control-tecnico/prowler.md`
 - Prioridad, fase, alcance del MVP → `references/producto/mvp-roadmap.md`
 - Qué exige un framework específico → `references/cumplimiento/frameworks/<framework>.md`
 - Filosofía de producto / cómo le habla Monkey al usuario final → `references/producto/philosophy.md`

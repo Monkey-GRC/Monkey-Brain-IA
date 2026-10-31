@@ -226,7 +226,7 @@
         {
           "id": "control-tecnico",
           "path": "skills/product/monkey-compliance-council/references/control-tecnico/README.md",
-          "description": "Los motores que miden: la sonda (wazuh.md, wazuh-operacion.md, wazuh-api.md, wazuh-compliance.md) y el motor de nube (cruce-nube-aws.md). El índice enruta por pregunta."
+          "description": "Los motores que miden: la sonda (wazuh.md, wazuh-operacion.md, wazuh-api.md, wazuh-compliance.md) y el motor de nube (prowler.md, cruce-nube-aws.md, flujo-conexion-nube.md). El índice enruta por pregunta."
         },
         {
           "id": "council",
@@ -264,6 +264,21 @@
       "id": "add-wazuh-integration",
       "path": "skills/backend/add-wazuh-integration.md",
       "description": "Cómo agregar una feature NestJS que consuma la API de Wazuh, siguiendo Clean Architecture. Consultar wazuh-integration-expert para los hechos de API/infra antes de implementar."
+    },
+    {
+      "id": "senior-backend-engineer",
+      "path": "skills/backend/senior-backend-engineer/SKILL.md",
+      "description": "Punto de partida del backend: qué leer antes, mapa del repo, principios de criterio, flujo, anti-patrones y definición de terminado. Enruta a las demás recetas."
+    },
+    {
+      "id": "senior-frontend-engineer",
+      "path": "skills/frontend/senior-frontend-engineer/SKILL.md",
+      "description": "Punto de partida de los dos frontends: qué leer antes, mapa de cada app, principios de criterio, flujo, anti-patrones y definición de terminado. Enruta a las demás recetas."
+    },
+    {
+      "id": "add-cloud-engine",
+      "path": "skills/backend/add-cloud-engine.md",
+      "description": "Cómo extender el control técnico de la nube (Prowler): validación de la conexión, trabajador aislado, lectura del resultado, nuevos proveedores y ejecutores."
     }
   ],
   "entrypointNote": "CLAUDE.md fija las reglas obligatorias antes de cualquier decision. README.md describe la estructura del repo.",

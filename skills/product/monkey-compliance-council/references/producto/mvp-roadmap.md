@@ -77,7 +77,7 @@ El **sprint 1** cubre los épicos 1 a 5 y está detallado aparte en `sprint-onbo
 | 7 | **Motor de evidencias** | Cadena de custodia completa: origen, fecha, responsable, versión, integridad | `modelo-datos.md` §7.3 |
 | 8 | **Motor de riesgos ("Cumplimiento")** | Registro de riesgo y causa, scoring cualitativo, tratamiento con dueño. **Módulo aparte que no bloquea nada.** La fórmula del riesgo residual está adoptada (D75); faltan datos del catálogo y quién define el apetito (`P22`, MD-151) | D23, confirmada por el comité el 2026-09-26 |
 | 9 | **Dashboard y modo guiado** | Vista por defecto con estado cualitativo, porcentaje de avance y cobertura juntos, y el vocabulario y los códigos del dominio (D80); nunca un % solo. La vista técnica detallada **no es un modo ni un botón: es la pantalla de los roles `auditor` y `admin_empresa`** (D63, D81, D96; mientras no se definan los permisos por pantalla, `P3`) | `philosophy.md` |
-| 10 | **Integración de la sonda** | La base del agente on-prem/híbrido. Confidencialidad total: nunca se nombra al proveedor, en ninguna pantalla, notificación ni texto generado por IA | `wazuh.md` |
+| 10 | **Integración de la sonda y del motor de nube** | La sonda es la base del agente on-prem/híbrido; el motor de nube evalúa las cuentas. Confidencialidad total: nunca se nombra al proveedor, en ninguna pantalla, notificación ni texto generado por IA | `wazuh.md` |
 | 11 | **Conectores cloud/SaaS/IdP** | 12-15 conectores: AWS o Azure, GitHub, Google Workspace o M365, Okta o Entra ID, Slack | columna MUST de este archivo |
 | 12 | **Equipo, validación y auditoría** | El `admin_empresa` invita a `funcional` (con su especialidad por dimensión) y a `auditor`, reparte el trabajo por dimensión, **valida la evidencia**, da el veredicto de lo manual y edita controles, riesgos y causas directamente (D96). El `auditor` (lo crea `admin_empresa`) ve todos los servicios de su empresa en solo lectura, con vista técnica, escribe observaciones con estado y descarga evidencias y reportes; **su calificación queda para después** (`P35`). **Está en el MVP** | `modelo-datos.md` §5.1 y §7.6 |
 
@@ -87,10 +87,10 @@ técnico: reescribir el cálculo de cumplimiento (MD-56).
 
 ## Riesgos del producto a vigilar
 
-- Los cuatro líderes ya integran IA agéntica agresivamente — la ventana de diferenciación por "IA + simplicidad" se cierra rápido. Mitigación: priorizar on-prem/híbrido vía Wazuh y la experiencia guiada como foso, no la IA sola.
+- Los cuatro líderes ya integran IA agéntica agresivamente — la ventana de diferenciación por "IA + simplicidad" se cierra rápido. Mitigación: priorizar la medición de on-prem/híbrido (Wazuh) y de nube (Prowler) bajo un mismo modelo de controles, y la experiencia guiada como foso, no la IA sola.
 - Simplificar demasiado y perder credibilidad frente a auditores. Mitigación: la vista detallada tipo matriz siempre accesible, para el rol `auditor`.
 - Falsa sensación de seguridad si la IA "explica de más". Mitigación: disclaimers claros de que Monkey prepara evidencia, no certifica.
-- Complejidad subestimada de conectores on-prem. Mitigación: apalancar Wazuh en vez de construir un agente propio desde cero.
+- Complejidad subestimada de conectores on-prem. Mitigación: apalancar Wazuh en la sonda y Prowler en la nube en vez de construir agentes o escáneres propios desde cero.
 - Fuga de datos entre tenants en la capa de IA — el riesgo más severo posible. Mitigación: aislamiento arquitectónico desde el día 1, pruebas automatizadas continuas.
 
 ## Alcance que viene del material fuente (no del Consejo)
@@ -124,7 +124,7 @@ decisiones de modelo sino de roadmap:
 
 **Checks de nube — SHOULD, y urgente.** De los 61 TEST del catálogo, los **11 de nube
 (`T-CLD-*`) no tienen ni un check automático**, pese a que el comité decidió que el
-validador único cubre *"servidores, BD y nube"* (decisión puesta en duda por `P14`: la sonda no ingiere hoy configuración de nube). Consecuencia directa: un cliente con
+validador único cubre *"servidores, BD y nube"*; D100 lo acotó: la nube la mide Prowler (D53–D58) y Wazuh se queda con servidores, BD y endpoints (configuración, amenazas en tiempo real e incidentes). Consecuencia directa: un cliente con
 escenario **"Solo nube (gestionada)"** —que es un perfil de cliente normal, no un caso
 borde— verá su cobertura técnica en 0% y su cumplimiento casi enteramente documental. El
 modelo ya lo reporta con honestidad (cobertura pendiente), pero el hueco es real y

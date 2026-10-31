@@ -85,8 +85,8 @@ incidentes del periodo). Es la misma entidad `system_descriptions` de `modelo-da
 Aquí el cliente conecta sus activos. Es la capa técnica completa de `modelo-datos.md`
 §6.3 y §8 (`automated_capabilities`, `asset_provisionings`, el catálogo de conexiones
 AC-01…AC-06) y
-la regla de confidencialidad de `wazuh.md`: **el cliente solo interactúa con Monkey y
-nunca sabe que el motor de monitoreo es Wazuh.** No se repite el detalle aquí — ver esos
+la regla de confidencialidad de `wazuh.md` y `prowler.md`: **el cliente solo interactúa con Monkey y
+nunca sabe qué motores miden (Wazuh en servidores, Prowler en la nube).** No se repite el detalle aquí — ver esos
 dos archivos para el catálogo de conexiones, los escenarios de despliegue y la matriz de
 cobertura por dominio de monitoreo.
 

@@ -18,7 +18,7 @@ Este es el panel de expertos simulado que diseñó a Monkey y que sigue asesoran
 - **Security Architect, Cloud Security Architect** — diseño de aislamiento multi-tenant y de la superficie de ataque de cada conector.
 - **DevSecOps Lead** — pipeline, secretos, gestión de llaves.
 - **Especialista IAM, especialista Zero Trust** — nada de confianza implícita entre servicios ni privilegios de más en un conector.
-- **Especialista SIEM/XDR** — la voz que mejor entiende a Wazuh, CrowdStrike y SentinelOne; consúltalo junto con `wazuh.md` para cualquier decisión de ingesta de eventos.
+- **Especialista SIEM/XDR** — la voz que mejor entiende a Wazuh, CrowdStrike y SentinelOne; consúltalo junto con `wazuh.md` (y `prowler.md` para la nube) para cualquier decisión de ingesta de eventos.
 
 ## Infraestructura
 - **AWS / Azure / Google Cloud Solutions Architect** — conectores cloud, IAM nativo de cada proveedor.

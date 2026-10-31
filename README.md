@@ -8,7 +8,7 @@ Contexto portable de IA para el proyecto Monkey — cubre cuatro repos:
 - **Frontend-Platform** (`Monkey-GRC/Frontend-Platform`) — la **plataforma del
   cliente final**: el onboarding donde se descubren y declaran sus servicios y
   activos, y el estado de cumplimiento que ve.
-- **monkey-cis-sync** — sincroniza el catálogo de checks desde Wazuh. ⚠️ Hoy es una carpeta
+- **monkey-cis-sync** — sincroniza el catálogo de checks de la sonda (Wazuh); el de nube (Prowler) se carga desde el Backend con `npm run cloud:extract|load|verify` (D56). ⚠️ Hoy es una carpeta
   de scripts Python, **no un repo git**: no tiene historial ni remoto.
 
 Este folder es su **propio repo independiente**, separado del código de
@@ -76,6 +76,7 @@ Monkey-Brain-IA/
 │   └── wazuh-integration-expert.md# rol: especialista consultado en API/infra de Wazuh, no ejecutor
 └── skills/
     ├── backend/                   # skills técnicas de implementación (NestJS)
+    │   ├── senior-backend-engineer/SKILL.md # punto de partida: criterio, mapa y definición de terminado
     │   ├── add-feature.md
     │   ├── add-prisma-model.md
     │   ├── add-i18n-error.md
@@ -83,6 +84,7 @@ Monkey-Brain-IA/
     │   ├── feature-builder.md
     │   └── architecture-guardian.md
     ├── frontend/                  # skills técnicas de implementación (Angular)
+    │   ├── senior-frontend-engineer/SKILL.md # punto de partida: criterio, mapa y definición de terminado
     │   ├── add-feature.md
     │   ├── call-backend-api.md
     │   ├── add-translation.md
@@ -196,6 +198,6 @@ Dos cosas que conviene saber antes de abrirlas:
 
 - `conexion_api_wazuh_monkey.txt` **contiene credenciales en texto plano**. No se
   copia a ningún repo y esa password debería rotarse.
-- **La dependencia de Wazuh es confidencial frente al cliente final.** En el
+- **La dependencia de Wazuh y de Prowler es confidencial frente al cliente final.** En el
   producto se habla de "sonda" o "capacidad automática", nunca del proveedor por su
   nombre — ver `philosophy.md`.

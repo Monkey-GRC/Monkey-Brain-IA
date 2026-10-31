@@ -76,8 +76,8 @@ Toda respuesta de la IA de Monkey debe poder desplegarse en "ver el razonamiento
 
 ## La sonda no se nombra
 
-**Regla del comité, de `conexion_api_wazuh_monkey.txt`: la dependencia de Wazuh es
-confidencial frente al cliente final.** En la superficie del producto se habla de
+**Regla del comité, de `conexion_api_wazuh_monkey.txt`: la dependencia de Wazuh (y de
+Prowler) es confidencial frente al cliente final.** En la superficie del producto se habla de
 "sonda", "capacidad automática" o "evaluación automática" — nunca de Wazuh, ni de
 Prowler, ni de ningún proveedor por su nombre. Aplica a pantallas, notificaciones,
 reportes exportables y cualquier texto que genere la IA. El proveedor es un
