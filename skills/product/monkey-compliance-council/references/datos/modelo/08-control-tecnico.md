@@ -138,9 +138,4 @@ conexión (self-service / aprovisionar agente) · recolección (estado "Conectad
 real) · análisis (hallazgos en lenguaje de negocio / reglas y SCA) · evidencia continua ·
 cumplimiento por marco.
 
-**Validador único (D13), reabierto por P14:** el comité evaluó un segundo proveedor para nube (Prowler) y **lo descartó**; eso
-sigue vigente hasta que responda `P14` A1. Una prueba de desarrollo del 2026-10-07 con ese motor sobre AWS (292 hallazgos) y la
-verificación de D48 (la sonda solo ingiere registros de la nube) hacen que la decisión **no esté demostrada**, no que esté
-revocada. `automated_capabilities.provider` queda por extensibilidad.
-
----
+**Dos motores con roles distintos (D100, cierra P14 A1; acota el «validador único» del comité):** Prowler maneja todo lo de la nube (AWS, Azure, GCP y demás; D53–D58, `control-tecnico/prowler.md`) y Wazuh sigue con servidores, BD y endpoints: configuración (SCA), monitoreo de amenazas en tiempo real y respuesta ante incidentes (`control-tecnico/wazuh.md`). La verificación de D48 (la sonda solo ingiere registros de la nube) ya lo anticipaba. `automated_capabilities.provider` los distingue.

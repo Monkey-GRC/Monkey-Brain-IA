@@ -20,6 +20,9 @@ Los Common Criteria (CC1-CC9) son el núcleo de solapamiento más grande con ISO
 ## Wazuh
 Wazuh incluye una guía dedicada "Using Wazuh for TSC 2017 requirements" y ruleset pre-etiquetado para TSC — ver `../../control-tecnico/wazuh.md`.
 
+## Prowler (nube)
+El motor de nube trae su propio mapeo a SOC 2: de los 171 checks que lista, 165 reciben una prueba `T-CLD` y 133 asignaciones quedan corroboradas por ese mapeo (D56). Es un insumo con procedencia `engine_native`; **gana el mapeo del comité** — ver `../../control-tecnico/prowler.md`.
+
 ## Fuentes
 - [2025 Trust Services Criteria for SOC 2 — Secureframe](https://secureframe.com/hub/soc-2/trust-services-criteria)
 - [Trust Services Criteria for SOC 2 — Drata](https://drata.com/learn/soc-2/trust-services-criteria)

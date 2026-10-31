@@ -19,7 +19,7 @@ las citas) y este mapa dice dónde buscarla.
 | **Cómo el modelo de usuarios sostiene SOC 2** | `modelo-datos.md` §5.6 |
 | **Secretos y cifrado de credenciales** | `schema-implementacion.md` §4 · D46 · [`../deuda-tecnica/`](../deuda-tecnica/README.md) DT-5 |
 | **Auditoría, inmutabilidad y retención** | D41 · `modelo-datos.md` §7.4 · D72 |
-| **Confidencialidad del proveedor del motor** | `CLAUDE.md` · [`../producto/philosophy.md`](../producto/philosophy.md) · [`../control-tecnico/wazuh.md`](../control-tecnico/wazuh.md) · D70 |
+| **Confidencialidad del proveedor del motor** | `CLAUDE.md` · [`../producto/philosophy.md`](../producto/philosophy.md) · [`../control-tecnico/wazuh.md`](../control-tecnico/wazuh.md) · [`../control-tecnico/prowler.md`](../control-tecnico/prowler.md) · D70 |
 | **Principios de arquitectura no negociables** (aislamiento fuerte, eventos inmutables, IA separada del plano de datos, API-first) | [`../arquitectura/architecture.md`](../arquitectura/architecture.md) |
 | **La IA no certifica ni presenta inferencia como hecho** | `philosophy.md` |
 | **Privacidad y leyes** | [`../cumplimiento/frameworks/`](../cumplimiento/README.md) (GDPR, LGPD, CCPA/CPRA, HIPAA…) y el catálogo de `regulations` (14, sembradas con `npm run reference:load`; ver `contracts/enums.md`) |

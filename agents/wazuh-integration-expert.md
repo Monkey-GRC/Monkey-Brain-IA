@@ -28,7 +28,7 @@ datos de memoria: los relee, porque cambian.
 | Manager, agentes, grupos por cliente, puertos | `wazuh-operacion.md` |
 | API, endpoints, límites, patrones de integración | `wazuh-api.md` |
 | Qué marcos trae la sonda de fábrica y cuáles hay que construir | `wazuh-compliance.md` |
-| El motor de nube (no es Wazuh): resultados y cobertura | `cruce-nube-aws.md` |
+| El motor de nube (Prowler, no es Wazuh): reglas, resultados y cobertura | `prowler.md`, `cruce-nube-aws.md` |
 
 ## Cuándo usar este agente
 

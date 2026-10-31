@@ -14,7 +14,7 @@ CAPA DE RAZONAMIENTO (IA)
 MOTOR DE COMPLIANCE │ MOTOR DE RIESGOS │ MOTOR DE EVIDENCIAS │ MOTOR DE INTEGRACIONES
   (mapeo multi-       (registro, scoring,  (recolección,       (conectores cloud/
    framework)          tratamiento)         versionado, cadena   on-prem/agentes,
-                                             de custodia)         incluye Wazuh)
+                                             de custodia)         sonda y motor de nube)
         │
 CAPA DE DATOS Y ACTIVOS
   Servicios · Scope/Alcance · Insumos de revisión (apps, BD, servidores,
@@ -81,13 +81,13 @@ Este modelo es el activo más valioso del producto: agregar un framework nuevo d
 Mantiene el mapa vivo entre controles atómicos y requisitos de cada framework, calcula el "readiness" (cualitativo: Preparado = 100%, Casi listo = 80% o más, Requiere trabajo = menos; se muestra junto con el porcentaje de avance y la cobertura, nunca el porcentaje solo, D80), y explica cada brecha con su código y la plantilla de 7 campos (`philosophy.md`). Incluye gestión de excepciones auditable cuando un control no aplica.
 
 ### Motor de Riesgos
-Identificación automática (a partir de hallazgos de conectores, incluido Wazuh) y manual (riesgos de proceso). Scoring probabilidad × impacto, pero nunca expuesto crudo al usuario de negocio — se traduce a Alto/Medio/Bajo + frase de impacto. Incluye registro básico de riesgo de vendors integrado (no un módulo aparte).
+Identificación automática (a partir de hallazgos de conectores, de la sonda y del motor de nube) y manual (riesgos de proceso). Scoring probabilidad × impacto, pero nunca expuesto crudo al usuario de negocio — se traduce a Alto/Medio/Bajo + frase de impacto. Incluye registro básico de riesgo de vendors integrado (no un módulo aparte).
 
 ### Motor de Evidencias
-Toda evidencia conserva origen, fecha, responsable, versión e integridad verificable (hash) — es lo primero que pide un auditor. Tipos: automática (conectores, incluido Wazuh), operativa (logs/alertas), documental (políticas, contratos), generada por IA (siempre etiquetada como tal, nunca presentada como evidencia primaria). Cadena de custodia append-only: una nueva versión nunca sobrescribe.
+Toda evidencia conserva origen, fecha, responsable, versión e integridad verificable (hash) — es lo primero que pide un auditor. Tipos: automática (conectores, sonda y motor de nube), operativa (logs/alertas), documental (políticas, contratos), generada por IA (siempre etiquetada como tal, nunca presentada como evidencia primaria). Cadena de custodia append-only: una nueva versión nunca sobrescribe.
 
 ### Motor de Integraciones
-Dos patrones: (a) conectores API-first para SaaS/cloud (OAuth, rotación de credenciales) y (b) un **agente ligero descargable** para entornos on-prem (incluye o se apoya en Wazuh — ver `wazuh.md`) que reporta por canal saliente cifrado, sin abrir puertos entrantes al datacenter del cliente.
+Tres patrones: (a) conectores API-first para SaaS/cloud (OAuth, rotación de credenciales) y (b) un **agente ligero descargable** para entornos on-prem (incluye o se apoya en Wazuh, la sonda — ver `wazuh.md`) y (c) un **motor de nube** (Prowler, que maneja todo lo de la nube, en un trabajador aislado con un rol de solo lectura del cliente — ver `prowler.md`) que reporta por canal saliente cifrado, sin abrir puertos entrantes al datacenter del cliente.
 
 ## Stack técnico de referencia
 
@@ -97,14 +97,14 @@ Dos patrones: (a) conectores API-first para SaaS/cloud (OAuth, rotación de cred
 | Base de datos transaccional | PostgreSQL con row-level security multi-tenant | Estándar de la industria, JSONB para evidencia heterogénea sin sacrificar integridad relacional |
 | Grafo de conocimiento contextual | Base de grafos o modelado de grafo sobre Postgres | El modelo contextual (activos↔personas↔riesgos↔controles↔evidencia) es intrínsecamente un grafo |
 | Búsqueda de evidencia | Índice vectorial + full-text | RAG para que la IA ancle respuestas a datos reales del tenant |
-| Cola de eventos | Broker de eventos (Kafka o equivalente gestionado) | Desacopla conectores de alta variabilidad (incluido el flujo de alertas de Wazuh) del motor de compliance |
-| Orquestación de agentes/colectores | Workers en contenedores + agente ligero on-prem | Ver `wazuh.md` |
+| Cola de eventos | Broker de eventos (Kafka o equivalente gestionado) | Desacopla conectores de alta variabilidad (incluido el flujo de alertas de la sonda y los resultados del motor de nube) del motor de compliance |
+| Orquestación de agentes/colectores | Workers en contenedores + agente ligero on-prem | Ver `wazuh.md` y `prowler.md` |
 | Frontend | SPA con estados de carga narrados (nunca spinners mudos) | Filosofía de producto — ver `philosophy.md` |
 
 ## Principios de arquitectura no negociables
 
 - **Multi-tenant con aislamiento fuerte** en almacenamiento e inferencia de IA — el AI Security Expert lo marca como riesgo #1 del producto.
-- **Arquitectura basada en eventos**: cada hallazgo de un conector (incluido Wazuh) es un evento inmutable que alimenta el motor de compliance y el de IA, permitiendo auditar "qué sabía el sistema y cuándo".
+- **Arquitectura basada en eventos**: cada hallazgo de un conector (incluidos la sonda y el motor de nube) es un evento inmutable que alimenta el motor de compliance y el de IA, permitiendo auditar "qué sabía el sistema y cuándo".
 - **Separación estricta entre el plano de datos del cliente y el plano de inferencia de IA**: los prompts al LLM nunca incluyen credenciales ni secretos.
 - **API-first**: toda funcionalidad de la UI pasa por la misma API pública versionada.
 

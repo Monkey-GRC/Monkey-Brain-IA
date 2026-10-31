@@ -102,7 +102,7 @@ para después (D46). Hoy no hay conectores reales: la comprobación es `unavaila
 finge una conexión** (Automatizado ≠ Operativo).
 
 **Entidades:** `assets`, `automated_capabilities`.
-**Fuente:** `modulos/onboarding.md`, Componente 3; `wazuh.md`.
+**Fuente:** `modulos/onboarding.md`, Componente 3; `wazuh.md`; `prowler.md`.
 
 ## 7. Módulo de Cumplimiento *(no completo)*
 

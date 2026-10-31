@@ -23,7 +23,7 @@ construir: recibe una tarea concreta del **tech-lead** y la ejecuta.
 
 ## Contexto obligatorio antes de empezar
 
-1. `../context/backend.md`
+1. `../context/backend.md` y `../skills/backend/senior-backend-engineer/SKILL.md` (criterio, mapa y definición de terminado)
 2. `../skills/backend/architecture-guardian.md` si la tarea toca capas o dependencias
    entre módulos.
 3. La skill que aplique (`../skills/backend/add-feature.md`, `../skills/backend/add-prisma-model.md`,

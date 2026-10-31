@@ -44,5 +44,5 @@ tránsito y gestión de claves y secretos (`T-CLD-002`: la cuenta no tiene esos 
 
 ## Pendiente
 
-- **Azure y GCP** no se han escaneado (sin cuentas); el formato de salida puede diferir (P14 C5).
+- **Azure y GCP:** la prueba con una cuenta real está planificada para más adelante (P14 C5).
 - **Regiones declaradas:** se escaneó donde había recursos; la cuenta debe declararlas (D53).

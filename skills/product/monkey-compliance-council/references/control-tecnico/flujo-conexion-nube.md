@@ -85,5 +85,5 @@ sequenceDiagram
 | Resultado | Se guarda entero o no se guarda, con su rastro; una empresa nunca ve el de otra | RLS y pruebas de aislamiento (SEG-01, SEG-36) |
 
 ## Qué falta (honesto)
-Azure y GCP (sin cuentas de prueba), el canal de agente para servidores y bases de datos (`DT-57`, D71), el enlace de «un clic» (`DT-55`), la redacción de
+Azure y GCP (por probar más adelante con una cuenta real), el canal de agente para servidores y bases de datos (`DT-57`, D71), el enlace de «un clic» (`DT-55`), la redacción de
 los hallazgos para el cliente (`P14` E2) y el cálculo de cumplimiento, que es otro módulo.
