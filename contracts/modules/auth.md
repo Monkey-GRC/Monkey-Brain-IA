@@ -17,7 +17,8 @@ contraseña. En los responses `name` y `last_name` pueden venir `null`; la UI mu
 **App:** Monkey Platform (`Frontend-Platform`) y Monkey Admin (`Frontend`) comparten estos
 endpoints.
 
-> **Segundo factor (D94, SEG-16).** Con MFA_REQUIRED activo (por defecto), ni login ni edeem abren la sesión: devuelven un **paso intermedio** y la sesión se abre en mfa/verify o mfa/setup/confirm. Ver «Segundo factor» más abajo.
+> **Segundo factor (D94, SEG-16).** Con MFA_REQUIRED activo (por defecto), ni login ni 
+edeem abren la sesión: devuelven un **paso intermedio** y la sesión se abre en mfa/verify o mfa/setup/confirm. Ver «Segundo factor» más abajo.
 
 ## Activación de la cuenta: dos pasos (D51)
 
@@ -142,6 +143,32 @@ Una cuenta que crea el `admin_empresa` —`funcional` o `auditor`— nace `pendi
 | --- | --- |
 | `POST /v1/auth/activate/lookup` | `{ code }` → `{ email, expires_at }`. No gasta el código |
 | `POST /v1/auth/activate` | `{ code, email, password }` → como el canje: `201` con `next_step: mfa_setup` y la cookie `mnk_mfa` (sin sesión) |
+## Contraseña: cambio y recuperación (SEG-14, D101)
+
+**La contraseña no vence por calendario** (D101): rotarla a la fuerza cansa a la persona, la lleva a elegir claves más débiles o parecidas a la anterior, y no protege si los datos ya se filtraron. Lo que sí hay es el control en manos de la persona: cambiarla cuando quiera y recuperarla si la olvidó. Cambiarla además es la respuesta ante una sospecha. `users.password_changed_at` se conserva (cuándo se cambió por última vez) pero ya no gobierna ningún acceso.
+
+Reglas comunes de toda contraseña nueva: la política de SEG-13, **distinta de la actual y de las 5 anteriores** (`422 PASSWORD_REUSED`). Al guardarla se cierran las demás sesiones de la persona, se audita (`auth.password_changed` o `auth.password_reset`, sin la contraseña) y se le avisa por correo. Guardarla no limpia el bloqueo de la cuenta.
+
+### Cambio voluntario — `POST /v1/auth/password/change` (con sesión)
+
+```json
+{ "current_password": "…", "new_password": "…", "code": "123456" }
+```
+
+`code` es el TOTP vigente de la propia persona (*step-up*, el mismo de D97) **o** se envía `recovery_code`. `204`; la sesión actual sigue y las demás se cierran.
+
+- Contraseña actual equivocada → `403 CURRENT_PASSWORD_INVALID`; suma al bloqueo de la cuenta (5 intentos, 15 min).
+- Código equivocado → `401 MFA_CODE_INVALID`; suma igual.
+- Más de **3 cambios en 24 h** → `429 PASSWORD_CHANGE_LIMIT` (evita rotar hasta volver a la anterior).
+
+### Olvidé mi contraseña
+
+1. `POST /v1/auth/password/forgot` `{ "email" }` → **siempre `202`** y el mismo cuerpo, exista o no la cuenta (no revela cuentas). Solo envía el correo a una cuenta `active`. El enlace es de **un solo uso, dura 30 min**, se guarda solo como HMAC y uno nuevo invalida los anteriores. Límite: 5 enlaces por cuenta cada hora; pasado ese tope sigue respondiendo `202` y no envía otro (así el límite tampoco delata la cuenta). No hay tope por dirección en las rutas públicas todavía: necesita saber la IP real detrás del proxy (DT-37).
+2. `POST /v1/auth/password/reset` `{ "token", "new_password", "code" | "recovery_code" }` → `204`. Exige también el segundo factor. Enlace que no sirve (no existe, venció, ya se usó): `401 PASSWORD_RESET_INVALID`. Cierra **todas** las sesiones de la persona; entra de nuevo con la contraseña nueva.
+3. ¿Perdió también el segundo factor? El `admin_empresa` lo restablece (`DELETE /v1/users/{id}/mfa`, D94) y Monkey al administrador por script; luego repite el paso 1.
+
+Una cuenta `pending` no tiene contraseña que recuperar: se activa con su código (D95).
+
 ## `POST /v1/auth/refresh`
 
 Sin cuerpo; usa la cookie de refresh. `200` con `data: null` y cookies renovadas. Pasado el
@@ -174,12 +201,16 @@ llama al arrancar para saber si hay sesión y dónde continuar.
 | 401  | `MFA_CODE_INVALID`      | El código (o el de recuperación) es incorrecto o ya se usó. Cuenta como intento fallido |
 | 409  | `MFA_SETUP_NOT_STARTED` | Se confirmó la configuración sin haber pedido el QR (`mfa/setup`) |
 | 409  | `MFA_NOT_ENABLED`       | Se pidió regenerar códigos o restablecer a alguien que no tiene el segundo factor |
-| 429  | `RATE_LIMITED`            | Límite por IP en los endpoints de auth                                                |
+| 403  | `CURRENT_PASSWORD_INVALID` | La contraseña actual del cambio voluntario es incorrecta. Suma al bloqueo de la cuenta |
+| 422  | `PASSWORD_REUSED`         | La contraseña nueva es la actual o una de las 5 anteriores |
+| 429  | `PASSWORD_CHANGE_LIMIT`   | Más de 3 cambios en 24 h |
+| 401  | `PASSWORD_RESET_INVALID`  | El enlace de recuperación no existe, venció o ya se usó (no se dice cuál) |
+| 429  | `RATE_LIMITED`            | Más de 100 peticiones por minuto por usuario o de 1000 por empresa (SEG-19); incluye `retry_after_seconds` y la cabecera `Retry-After`. Solo en rutas con sesión |
 | 429  | `ACCESS_KEY_RATE_LIMITED` | 10 intentos fallidos con la clave en 15 min desde una misma dirección (`redeem` y `redeem/lookup`; D51, DT-37) |
 
 Claves i18n: `auth.account_created`, `auth.logged_in`, `auth.logged_out`,
 `auth.invalid_credentials`, `auth.session_expired`, `auth.account_locked`,
-`auth.account_inactive`, `auth.mfa_required`, `auth.mfa_setup_required`, `auth.mfa_setup_started`, `auth.mfa_enabled`, `auth.mfa_recovery_regenerated`, `access_key.invalid`, `access_key.already_used`,
+`auth.account_inactive`, `auth.mfa_required`, `auth.mfa_setup_required`, `auth.mfa_setup_started`, `auth.mfa_enabled`, `auth.mfa_recovery_regenerated`, `auth.password_changed`, `auth.password_reset_requested`, `auth.current_password_invalid`, `auth.password_reused`, `auth.password_change_limit`, `auth.password_reset_invalid`, `access_key.invalid`, `access_key.already_used`,
 `access_key.expired`, `auth.access_key_found`, `auth.access_key_rate_limited`, `user.email_taken`, `validation.failed`.
 
 ## Notas
