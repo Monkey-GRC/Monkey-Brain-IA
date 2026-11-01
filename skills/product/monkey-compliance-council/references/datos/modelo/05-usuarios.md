@@ -87,7 +87,7 @@ erDiagram
         datetime last_login_at "nullable"
         int failed_login_attempts "bloqueo: 5 intentos"
         datetime locked_until "nullable, 15 min"
-        datetime password_changed_at "expira a los 90 dias"
+        datetime password_changed_at "ultimo cambio, no vence (D101)"
         text mfa_secret_encrypted "nullable, AES-256"
         datetime created_at
     }
@@ -199,7 +199,7 @@ erDiagram
 | Sesión | 30 min de inactividad, 8 h máximo | Reduce la ventana de una sesión robada |
 | Contraseña — longitud | 12+ caracteres | NIST SP 800-63 |
 | Contraseña — complejidad | mayúscula + minúscula + número + símbolo | Encarece la fuerza bruta |
-| Contraseña — expiración | 90 días | Requisito SOC 2 |
+| Contraseña — expiración | No vence (D101). Cambio voluntario con contraseña actual + segundo factor; recuperación por correo + segundo factor | Fatiga de contraseñas (NIST SP 800-63B) |
 | MFA | TOTP obligatoria para **los 4 roles** (D66, D96: el Excel la deja en «No» para el `funcional`; por ratificar con el comité) | Protege el acceso crítico |
 | Cifrado en reposo | AES-256 (bcrypt+salt para contraseñas, secreto MFA cifrado) | Requisito NIST |
 | Cifrado en tránsito | TLS 1.3 + HSTS | Requisito PCI DSS |

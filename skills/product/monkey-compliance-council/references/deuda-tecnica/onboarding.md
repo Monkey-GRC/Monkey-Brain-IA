@@ -70,6 +70,7 @@ Parches de los Componentes 1 y 2 del onboarding y del registro de empresa. Conte
 - **Qué está parchado:** 10 fallos por dirección cada 15 min, compartido por `redeem/lookup` y `redeem`; con varias réplicas el tope real es por réplica y se reinicia al reiniciar. Tras un proxy, `req.ip` es el del proxy salvo que se configure `trust proxy`
 - **Por qué:** No hay Redis ni un limitador común en el backend
 - **Qué lo cierra:** Un limitador compartido (Redis o la base) para todos los endpoints públicos, y revisar `trust proxy` en el despliegue
+- **También aplica a (SEG-19):** el límite general por usuario y por empresa (`RateLimitGuard`) vive igual en la memoria de la instancia; las rutas públicas (ingreso, «olvidé mi contraseña») no tienen tope por dirección hasta que se configure `trust proxy`, porque sin él todos los clientes detrás del proxy compartirían un solo cajón
 
 ### DT-38 · Las categorías de cada marco siguen siendo las 5 de SOC 2
 
