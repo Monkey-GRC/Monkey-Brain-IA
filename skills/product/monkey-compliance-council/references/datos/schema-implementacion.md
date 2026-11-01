@@ -120,11 +120,14 @@ SESSION_MAX_DURATION=28800        # tope absoluto: 8 h
 TOKEN_HASH_PEPPER="..."           # HMAC de refresh tokens y claves de acceso; cambiarlo cierra todas las sesiones
 ACTIVATION_CODE_TTL_HOURS=168       # horas que sirve un código de activación de cuenta (D95, D96). Opcional: 168 (7 días). Aún no la lee nadie: la usará el módulo de equipo al emitir el código
 
-# Correo (D99). Lo usa el envío de la clave de acceso.
+# Correo (D99, D101). Lo usan la clave de acceso y los correos de la contraseña (enlace de recuperación y aviso de cambio). Todos comparten la plantilla de marca
+# (`common/mail/brand-email.ts`); el logo (`assets/email-logo.png`, que el Dockerfile copia) viaja INCRUSTADO en el correo (`cid:`), no como una URL: se ve aunque la dirección
+# de la app no sea pública (local) y aunque el cliente bloquee imágenes remotas.
 MAIL_PROVIDER="log"               # `log` (solo escribe el mensaje en el log; el servidor NO arranca así en producción) o el servicio real
 MAIL_API_KEY=""                   # credencial del servicio de correo; obligatoria si MAIL_PROVIDER no es `log`. Nunca en el repo
 MAIL_FROM=""                      # remitente, p. ej. «Monkey <no-reply@tu-dominio>»; el dominio debe estar verificado en el servicio
 PLATFORM_APP_URL="http://localhost:4201"  # dónde canjea la clave el cliente (Monkey Platform); sin barra final
+ADMIN_APP_URL=""                  # dónde abre el enlace de recuperar la contraseña el admin_monkey (Monkey Admin); sin valor usa PLATFORM_APP_URL (D101)
 
 # Componente 3 (D46)
 CREDENTIALS_ENCRYPTION_KEY="..."  # 32 bytes en base64 (AES-256-GCM): cifra las credenciales de los sistemas que
