@@ -2,14 +2,14 @@
 id: add-wazuh-integration
 name: Integrar el backend con la sonda (Wazuh)
 description: Cómo construir el adaptador real de la sonda en el backend NestJS (puerto ConnectionProbe de technical-control), respetando las reglas del modelo, la confidencialidad del proveedor y las decisiones aún abiertas (D48, D71). Consultar al wazuh-integration-expert para los hechos de API/infra.
-type: skill
+type: recipe
 applies_to: backend
 ---
 
 # Skill: Integrar el backend con la sonda (Wazuh)
 
 > **Antes de escribir una línea, lee `D48` y `D71`** (`../product/monkey-compliance-council/references/datos/`) y
-> `deuda-tecnica/control-tecnico.md` (**DT-32 a DT-36**). Quién instala los agentes, cómo se asigna cada empresa a su grupo y cómo
+> la deuda de la sonda (**DT-32, DT-33 y DT-34** en `deuda-tecnica/control-tecnico.md`; **DT-35** en `onboarding.md`; **DT-36** en `entrega.md`). Quién instala los agentes, cómo se asigna cada empresa a su grupo y cómo
 > lee Monkey los resultados **siguen sin decidirse**: si lo que vas a construir depende de una de esas respuestas, no la resuelvas
 > por tu cuenta, pregunta. El paso 3 del onboarding (conectar un activo) es **provisional** porque se construyó antes de verificar la
 > sonda real.
@@ -35,10 +35,10 @@ de la respuesta y las restricciones de seguridad/rendimiento.
 3. **Dónde se guardan los resultados** — en las tablas de `modelo-datos.md` §8: `executions` (qué corrió sobre qué activo; un fallo
    de ejecución es un problema de **conexión**, no un incumplimiento), `check_results` (el dato crudo) y `execution_logs`. La
    interpretación (`evaluations`) la hace el motor de cumplimiento, no el adaptador.
-4. **Controller** — la feature `technical-control` ya expone los endpoints del contrato (`contracts/modules/onboarding-technical-control.md`).
+4. **Controller** — la feature `technical-control` ya expone los endpoints del contrato (`contracts/onboarding/conexion-activos/README.md`).
    **Nunca** reexpongas la API de Wazuh 1:1 al frontend.
 
-## Reglas del modelo que no se rompen (de `control-tecnico/wazuh.md`)
+## Reglas del modelo que no se rompen (de `arquitectura/control-tecnico/motores/wazuh.md`)
 
 - **Clave compuesta de tres partes: `platform` + `policy_id` + `check_id`.** Nunca solo `check_id`: el mismo ID significa cosas
   distintas entre políticas y plataformas (D6).
@@ -65,7 +65,7 @@ pruebas del comité sí lo nombran (D70) y **no deben salir a la UI**.
 - No asumas la convención `cliente_<nombre>` para los grupos: no es una regla de Monkey.
 - Toda lectura de datos de Monkey pasa por `prisma.withScope` (RLS). Credenciales de la API cifradas, nunca en el repo.
 - Cambios de firewall o puertos en el servidor de la sonda son decisión crítica (`../../agents/tech-lead.md`).
-- Cualquier requisito nuevo se registra en `../product/monkey-compliance-council/references/seguridad/requisitos.md`.
+- Cualquier requisito nuevo se registra en `../product/monkey-compliance-council/references/seguridad/<módulo>.md`.
 
 ## Rendimiento
 

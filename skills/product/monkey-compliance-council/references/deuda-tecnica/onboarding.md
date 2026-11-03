@@ -1,6 +1,94 @@
 # Deuda técnica — Onboarding
 
-Parches de los Componentes 1 y 2 del onboarding y del registro de empresa. Contexto: [`README.md`](README.md).
+Parches vigentes de [Onboarding](../arquitectura/onboarding/README.md). Tablero y reglas: [`README.md`](README.md).
+
+## Componente 3 — Control Técnico (D46)
+
+### DT-3 · `ac_04` a `ac_06` se completaron por analogía
+
+🟠 Importante
+
+- **Qué está parchado:** con sus equivalentes en nube (método, permisos, evidencia generada); la evidencia de `ac_02`/`ac_03` también la redactó desarrollo
+- **Por qué:** El brain solo da la ficha completa de `ac_01` a `ac_03`
+- **Qué lo cierra:** Revisión del comité; ajustar el seed (`prisma/seed/reference/data.ts`; los datos de Héctor coinciden con los míos, así que el contenido es el mismo y sigue pendiente de revisión)
+
+### DT-4 · Credenciales por conexión definidas por desarrollo
+
+🟠 Importante
+
+- **Qué está parchado:** (`account_id` + `read_only_role`; `db_user` + `db_password`; SSH o agente). No hay instalador del agente: «instalar el agente de Monkey» es una promesa sin entrega, y el cliente no recibe instrucciones
+- **Por qué:** El contrato muestra un solo ejemplo (SSH)
+- **Qué lo cierra:** Definir con el equipo de la sonda qué pide cada conexión y cómo se entrega el agente (token de enrolamiento, instrucciones, expiración)
+
+### DT-7 · «Híbrido» ofrece las 6 conexiones
+
+🟡 Mejora
+
+- **Qué está parchado:** y el cliente usa las que le sirvan
+- **Por qué:** El contrato dice «combinación de los anteriores»
+- **Qué lo cierra:** Ratificar con el comité
+
+### DT-8 · El tipo del activo se deduce de la conexión
+
+🟡 Mejora
+
+- **Qué está parchado:** `network_device` y `documentation` no tienen forma de darse de alta (ninguna conexión los produce)
+- **Por qué:** Evita preguntar dos veces
+- **Qué lo cierra:** Decidir cómo se inventarían esos tipos
+
+### DT-9 · `responsible_id` se acepta en la API pero no hay forma de crear cargos
+
+🟠 Importante
+
+- **Qué está parchado:** (`organization_responsibles`): ni endpoint ni pantalla. La UI lo oculta
+- **Por qué:** El Módulo de Usuarios no existe
+- **Qué lo cierra:** Módulo de Usuarios / Cumplimiento
+
+### DT-11 · Un activo dado de baja no se puede ver ni restaurar
+
+🟡 Mejora
+
+- **Qué está parchado:** *2026-10-09: editar (`PATCH`) y dar de baja (`DELETE`) ya existen para los activos; `GET /v1/assets/{id}` se añadió fuera del contrato.* **La baja no borra** (conserva el historial) y **no hay forma de restaurar** un sistema dado de baja ni de verlos
+- **Por qué:** Hasta ahora nadie lo pedía
+- **Qué lo cierra:** Pantalla de sistemas dados de baja, cuando el comité diga si se restauran
+
+## Paso 3 del control técnico: el modelo de conexión (D48)
+
+### DT-35 · Conexión a la nube diferida
+
+🟠 Importante
+
+- **Qué está parchado:** El modelo de rol entre cuentas / federación de identidad sin contraseñas (como en AWS, GCP, Azure) no está decidido y las integraciones de la sonda son solo de registros. **2026-10-07:** una prueba con el motor de nube (Prowler, D100) y un usuario con llaves estáticas funcionó, pero no es el modelo definitivo (ver DT-43 a DT-45 y P14 C)
+- **Por qué:** Decisión de arquitectura
+- **Qué lo cierra:** Decidir el modelo de credenciales (P14 C; el rol de cada motor ya lo cerró D100); mientras tanto `ac_01` queda «próximamente»
+
+## Flujo de conexión de la nube (D58)
+
+### DT-55 · La plantilla del rol se descarga y se crea a mano
+
+🟡 Mejora
+
+- **Qué está parchado:** El enlace de «un clic» de CloudFormation exige que la plantilla esté en un bucket de S3
+- **Por qué:** Hace falta una cuenta y un bucket públicos de solo lectura; no vale la pena para la demo
+- **Qué lo cierra:** Publicar la plantilla en S3 y devolver `launch_url` en `connection_setup`
+
+### DT-63 · Un activo descubierto no se puede editar
+
+🟠 Importante
+
+- **Qué está parchado:** (criticidad, responsable, nombre): `PATCH /v1/assets/{id}` solo atiende conexiones y nace en «Media» sin responsable
+- **Por qué:** D61 llegó sin la edición del activo hijo
+- **Qué lo cierra:** Endpoint para editar el activo descubierto (criticidad y responsable, sin tocar lo que lee la nube) y su pantalla
+
+## Marketplace de plataformas (D67)
+
+### DT-81 · El escenario de despliegue ya no se pregunta, pero su columna y sus tablas siguen en la base
+
+🟡 Mejora
+
+- **Qué está parchado:** D92 retiró la pregunta «dónde vive tu servicio» y todo el código que la usaba, pero `services.deployment_scenario`, la tabla `catalog.deployment_scenario_capabilities`, su siembra en `reference:load` y el enum `tenant.deployment_scenario` siguen en la base y en el schema de Prisma, sin ningún uso.
+- **Por qué:** quitarlos es una migración destructiva (`DROP COLUMN`, `DROP TABLE`, `DROP TYPE`) sobre la base compartida y pierde los valores que algunos servicios ya declararon. Se hace aparte, cuando el comité haya ratificado D92: si lo rechazara, el escenario se restituye sin recargar nada.
+- **Qué lo cierra:** una migración que borre la columna, la tabla y el enum; quitar `deployment_scenario_capabilities` de `seed-reference.ts` y de `reference/data.ts`, y borrar `DEPLOYMENT_SCENARIO` de los modelos de Prisma. Al cerrarla, bórrese esta entrada.
 
 ## Componente 2 — Contexto del Servicio (D45)
 
@@ -44,67 +132,6 @@ Parches de los Componentes 1 y 2 del onboarding y del registro de empresa. Conte
 - **Por qué:** Decisión de diseño más amable con el cliente
 - **Qué lo cierra:** Retirarlo del contrato o implementarlo
 
-
-## Registro de empresa, contrato de marcos (D47) y activación de la cuenta (D51)
-
-### DT-26 · Los marcos se contratan solo al registrar la empresa
-
-🟠 Importante
-
-- **Qué está parchado:** No hay forma de añadir, pausar o cancelar un marco **después** (ni endpoint ni pantalla), ni historial del contrato. Una empresa que ya existía antes de la migración 26 **no tiene contrato** y no podría declarar servicios (no se rellenó hacia atrás: no había datos)
-- **Por qué:** Hoy solo existe SOC 2 (los otros seis se ofrecen pero no se pueden contratar, D50)
-- **Qué lo cierra:** `PATCH` / pantalla de «Marcos» en Monkey Admin cuando haya un segundo marco (Fase 1) y una regla para el histórico
-
-### DT-27 · El contrato guarda solo el marco y la fecha
-
-🟡 Mejora
-
-- **Qué está parchado:** (sin vigencia, precio ni condiciones comerciales) y se contrata la **versión vigente** del marco al registrar
-- **Por qué:** El brain no define el contrato comercial
-- **Qué lo cierra:** Definirlo con el comité si el contrato debe llevar más
-
-### DT-37 · El límite de intentos con la clave de acceso vive en la memoria de la instancia
-
-🟠 Importante
-
-- **Qué está parchado:** 10 fallos por dirección cada 15 min, compartido por `redeem/lookup` y `redeem`; con varias réplicas el tope real es por réplica y se reinicia al reiniciar. Tras un proxy, `req.ip` es el del proxy salvo que se configure `trust proxy`
-- **Por qué:** No hay Redis ni un limitador común en el backend
-- **Qué lo cierra:** Un limitador compartido (Redis o la base) para todos los endpoints públicos, y revisar `trust proxy` en el despliegue
-- **También aplica a (SEG-19):** el límite general por usuario y por empresa (`RateLimitGuard`) vive igual en la memoria de la instancia; las rutas públicas (ingreso, «olvidé mi contraseña») no tienen tope por dirección hasta que se configure `trust proxy`, porque sin él todos los clientes detrás del proxy compartirían un solo cajón
-
-### DT-38 · Las categorías de cada marco siguen siendo las 5 de SOC 2
-
-🟠 Importante
-
-- **Qué está parchado:** El comité confirmó (opción 2, D50) que cada marco use sus categorías nativas (ISO 27001: 4 temas; PCI DSS: 12 requisitos; NIST CSF: 6 funciones…), pero `requirements.trust_criterion_id` es una FK a `trust_criteria` (enum de los 5 TSC) y `service_trust_criteria` filtra con ellas. Hoy no estorba porque solo SOC 2 está construido
-- **Por qué:** Sin segundo marco construido, migrar el modelo sería un cambio grande sin uso
-- **Qué lo cierra:** Al sembrar el primer marco que no sea SOC 2: generalizar `trust_criteria` a **dominios por marco** (`framework_id`, `code`, `name`, `is_mandatory`) y `service_trust_criteria` a `service_framework_domains`. Mientras tanto, la pantalla pregunta por «categorías de SOC 2»
-
-### DT-40 · La lista de 18 normas de protección de datos la depuró desarrollo, no el comité
-
-🟡 Mejora
-
-- **Qué está parchado:** Salió PCI DSS y entraron la Ley 21.719 (CL), y las de UY, EC, PA y CR; las leyes con su vigencia están verificadas en fuentes públicas pero no se contrastaron con el Excel del comité
-- **Por qué:** El comité pidió depurar la lista y delegó la investigación
-- **Qué lo cierra:** Que el comité ratifique la lista. Mientras tanto, empresas que marcaron PCI DSS perdieron esa marca (la migración la borró)
-
-### DT-41 · «Contactar a mercadeo» es un mock
-
-🟡 Mejora
-
-- **Qué está parchado:** El modal de un marco no contratado (Monkey Platform) invita a hablar con mercadeo, pero el botón solo cierra el modal: no hay formulario, correo ni registro de interés
-- **Por qué:** El comité pidió un mock por ahora
-- **Qué lo cierra:** Un canal real (formulario que llegue a ventas, con la empresa y el marco de interés)
-
-### DT-42 · Los textos «auditoría» de Inicio y de «Mis servicios» no se cambiaron a «consultoría»
-
-🟡 Mejora
-
-- **Qué está parchado:** El comité pidió el cambio en la pantalla del marco y del servicio; `home` y `services-list` aún dicen «auditoría»
-- **Por qué:** Fuera de lo pedido
-- **Qué lo cierra:** Una pasada de textos con el comité
-
-
 ## Componente 1 — Contexto Organizacional (D44)
 
 ### DT-18 · Sin guardado parcial en el servidor
@@ -115,3 +142,22 @@ Parches de los Componentes 1 y 2 del onboarding y del registro de empresa. Conte
 - **Por qué:** Columnas `NOT NULL`
 - **Qué lo cierra:** Volver opcionales las columnas y mover la validación de completitud a la aplicación, si el comité quiere borradores
 
+## Transversal
+
+### DT-77 · Evaluar los riesgos antes de declarar activos se exige solo en la pantalla
+
+🟠 Importante
+
+- **Qué está parchado:** D89 pide evaluar los riesgos de un servicio antes de declarar sus activos, pero solo lo imponen la pantalla (el asistente del alta, el botón «Nueva conexión» cerrado y un guard en las rutas de conexión de Platform). Además, **los textos de las escalas de 1 a 5 viven en las traducciones de Platform** (copiados del Excel; el inglés lo tradujo desarrollo, `DT-21`), no en una lista que sirva el Backend. El Backend no lo comprueba: quien llame a `POST /v1/assets` o a `PUT /v1/services/:id/connections/:connectionId/assets` puede declarar activos con riesgos sin evaluar.
+- **Por qué:** se construyó primero en Frontend para verlo funcionar y ajustar la regla antes de fijarla en la API; el Backend exige tocar las e2e que crean un servicio y un activo de seguidas.
+- **Qué lo cierra:** `409 RISKS_NOT_EVALUATED` al crear una conexión o asignar activos a un servicio con riesgos vigentes sin probabilidad o impacto. Debe aplicar solo a conexiones **nuevas** (los servicios que ya tienen activos no se tocan) y la regla de «cuántos faltan» (`riskProgress` en Platform) debe vivir en un solo sitio. Contrato: `contracts/onboarding/conexion-activos/README.md`.
+
+## Funcionalidad que el brain menciona y aún no tiene contrato
+
+### DT-82 · La lista de servicios lee cada servicio por separado y solo aguanta porque se alargó el tiempo de la transacción
+
+🟠 Importante
+
+- **Qué está parchado:** `GET /v1/services` lee los servicios de uno en uno dentro de una sola transacción, y cada lectura son varias consultas seguidas (criterios, marcos, proveedores, conexiones y dos conteos). Contra la base remota (~100 ms por consulta) unos cuantos servicios pasaban de los 5 s de Prisma y la lista (y el detalle) respondían 500 con `P2028`. Se subió el límite de esas dos lecturas a 30 s.
+- **Por qué:** es lo mínimo que lo arregla sin reescribir la lectura; el costo crece con el número de servicios y con la latencia a la base.
+- **Qué lo cierra:** leer la página entera en pocas consultas (los conteos de requisitos y controles con un `groupBy` para todos los servicios de la página, y las relaciones con un solo `findMany`), de modo que el tiempo no dependa de cuántos servicios haya. Al cerrarla, bórrese esta entrada y `READ_TRANSACTION`.

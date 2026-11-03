@@ -2,7 +2,7 @@
 id: architecture-guardian
 name: Architecture Guardian
 description: Checklist para revisar cambios de código contra las reglas de Clean Architecture y feature-based del repo, y detectar violaciones de capas.
-type: skill
+type: recipe
 applies_to: backend
 ---
 

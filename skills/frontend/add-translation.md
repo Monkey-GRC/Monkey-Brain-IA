@@ -2,7 +2,7 @@
 id: add-translation
 name: Agregar una traducción (i18n)
 description: Cómo agregar claves de texto nuevas usando ngx-translate, manteniendo en y es sincronizados.
-type: skill
+type: recipe
 applies_to: frontend
 ---
 

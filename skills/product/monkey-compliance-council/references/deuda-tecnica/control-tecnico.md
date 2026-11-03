@@ -1,6 +1,6 @@
-# Deuda técnica — Control Técnico
+# Deuda técnica — Control técnico
 
-Parches del Componente 3 del onboarding (conexión de activos, la sonda) y del paso 3. Contexto: [`README.md`](README.md).
+Parches vigentes de [Control técnico](../arquitectura/control-tecnico/README.md). Tablero y reglas: [`README.md`](README.md).
 
 ## Componente 3 — Control Técnico (D46)
 
@@ -9,7 +9,7 @@ Parches del Componente 3 del onboarding (conexión de activos, la sonda) y del p
 🔴 Crítica
 
 - **Qué está parchado:** No existen conectores productivos: `PROBE_MODE=simulated` da por buena una conexión con credenciales completas (y nunca la marca `operational`: queda `warning`); sin él, `validate` responde `503 CONNECTION_UNAVAILABLE`
-- **Por qué:** El sprint entrega el flujo y la UI, no la integración (`onboarding-technical-control.md`)
+- **Por qué:** El sprint entrega el flujo y la UI, no la integración (`contracts/onboarding/conexion-activos/README.md`)
 - **Qué lo cierra:** Un adaptador real de `ConnectionProbe` (sin tocar los casos de uso) y retirar las etiquetas de «modo demostración». Mientras tanto el backend **se niega a arrancar** con `simulated` en producción
 
 ### DT-2 · «n/18» y `checks_available` son constantes
@@ -19,70 +19,6 @@ Parches del Componente 3 del onboarding (conexión de activos, la sonda) y del p
 - **Qué está parchado:** (18/18 y 402). Nadie ha definido cuáles son las 18 capacidades técnicas. *2026-10-08: hay un seed de 662 checks de nube (D56), aún no cargado en la base compartida; los de la sonda siguen en 0*
 - **Por qué:** El contrato las nombra sin listarlas
 - **Qué lo cierra:** Que el comité entregue las 18 y se siembren los checks; la cobertura pasa a calcularse
-
-### DT-3 · `ac_04` a `ac_06` se completaron por analogía
-
-🟠 Importante
-
-- **Qué está parchado:** con sus equivalentes en nube (método, permisos, evidencia generada); la evidencia de `ac_02`/`ac_03` también la redactó desarrollo
-- **Por qué:** El brain solo da la ficha completa de `ac_01` a `ac_03`
-- **Qué lo cierra:** Revisión del comité; ajustar el seed (`prisma/seed/reference/data.ts`; los datos de Héctor coinciden con los míos, así que el contenido es el mismo y sigue pendiente de revisión)
-
-### DT-4 · Credenciales por conexión definidas por desarrollo
-
-🟠 Importante
-
-- **Qué está parchado:** (`account_id` + `read_only_role`; `db_user` + `db_password`; SSH o agente). No hay instalador del agente: «instalar el agente de Monkey» es una promesa sin entrega, y el cliente no recibe instrucciones
-- **Por qué:** El contrato muestra un solo ejemplo (SSH)
-- **Qué lo cierra:** Definir con el equipo de la sonda qué pide cada conexión y cómo se entrega el agente (token de enrolamiento, instrucciones, expiración)
-
-### DT-5 · Llave de cifrado en el `.env`
-
-🟠 Importante
-
-- **Qué está parchado:** `CREDENTIALS_ENCRYPTION_KEY` (AES-256-GCM) no tiene rotación ni gestor de secretos; el formato `v1.` deja espacio para versionar la llave, pero no hay procedimiento
-- **Por qué:** Alcance del sprint
-- **Qué lo cierra:** Gestor de secretos / KMS en producción y un procedimiento de rotación (re-cifrar con `v2`)
-
-### DT-7 · «Híbrido» ofrece las 6 conexiones
-
-🟡 Mejora
-
-- **Qué está parchado:** y el cliente usa las que le sirvan
-- **Por qué:** El contrato dice «combinación de los anteriores»
-- **Qué lo cierra:** Ratificar con el comité
-
-### DT-8 · El tipo del activo se deduce de la conexión
-
-🟡 Mejora
-
-- **Qué está parchado:** `network_device` y `documentation` no tienen forma de darse de alta (ninguna conexión los produce)
-- **Por qué:** Evita preguntar dos veces
-- **Qué lo cierra:** Decidir cómo se inventarían esos tipos
-
-### DT-9 · `responsible_id` se acepta en la API pero no hay forma de crear cargos
-
-🟠 Importante
-
-- **Qué está parchado:** (`organization_responsibles`): ni endpoint ni pantalla. La UI lo oculta
-- **Por qué:** El Módulo de Usuarios no existe
-- **Qué lo cierra:** Módulo de Usuarios / Cumplimiento
-
-### DT-10 · La UI promete «te avisaremos» cuando la evaluación automática esté disponible, y no existe ningún aviso
-
-🟠 Importante
-
-- **Qué está parchado:** (ni correo ni notificación)
-- **Por qué:** Mensaje honesto para el modo `unavailable`
-- **Qué lo cierra:** Construir las notificaciones **o** reescribir el mensaje. No dejar la promesa sin mecanismo
-
-### DT-11 · Un activo dado de baja no se puede ver ni restaurar
-
-🟡 Mejora
-
-- **Qué está parchado:** *2026-10-09: editar (`PATCH`) y dar de baja (`DELETE`) ya existen para los activos; `GET /v1/assets/{id}` se añadió fuera del contrato.* **La baja no borra** (conserva el historial) y **no hay forma de restaurar** un sistema dado de baja ni de verlos
-- **Por qué:** Hasta ahora nadie lo pedía
-- **Qué lo cierra:** Pantalla de sistemas dados de baja, cuando el comité diga si se restauran
 
 ## Paso 3 del control técnico: el modelo de conexión (D48)
 
@@ -110,14 +46,6 @@ Parches del Componente 3 del onboarding (conexión de activos, la sonda) y del p
 - **Por qué:** La UI nació del contrato, no de la cobertura
 - **Qué lo cierra:** Mostrar qué sistemas tienen evaluación real y marcar el resto «próximamente»
 
-### DT-35 · Conexión a la nube diferida
-
-🟠 Importante
-
-- **Qué está parchado:** El modelo de rol entre cuentas / federación de identidad sin contraseñas (como en AWS, GCP, Azure) no está decidido y las integraciones de la sonda son solo de registros. **2026-10-07:** una prueba con el motor de nube (Prowler, D100) y un usuario con llaves estáticas funcionó, pero no es el modelo definitivo (ver DT-43 a DT-45 y P14 C)
-- **Por qué:** Decisión de arquitectura
-- **Qué lo cierra:** Decidir el modelo de credenciales (P14 C; el rol de cada motor ya lo cerró D100); mientras tanto `ac_01` queda «próximamente»
-
 ### DT-43 · El motor de nube se probó en el mismo servidor que la sonda y con llaves estáticas del cliente guardadas allí
 
 🔴 Crítica
@@ -141,13 +69,6 @@ Parches del Componente 3 del onboarding (conexión de activos, la sonda) y del p
 - **Qué está parchado:** 17 regiones dieron 292 hallazgos y 64 de los 97 fallos estaban fuera de la región en uso
 - **Por qué:** Prueba de viabilidad
 - **Qué lo cierra:** Escanear solo las regiones declaradas, y decidir cómo cuenta un check de cuenta (P14 B3). Hasta entonces no calcular cobertura en nube sobre estos datos
-
-### DT-36 · El `.env` de pruebas usa el superusuario de la base de la sonda y un usuario de API con permisos amplios
-
-🟠 Importante
-
-- **Por qué:** Se puso para investigar
-- **Qué lo cierra:** Pedir un usuario de base **solo lectura** y un rol de API de solo lectura por grupo; autorizar la IP de desarrollo en la API si se quiere probar
 
 ## Ejecución del motor de nube (D57)
 
@@ -177,14 +98,6 @@ Parches del Componente 3 del onboarding (conexión de activos, la sonda) y del p
 
 ## Flujo de conexión de la nube (D58)
 
-### DT-55 · La plantilla del rol se descarga y se crea a mano
-
-🟡 Mejora
-
-- **Qué está parchado:** El enlace de «un clic» de CloudFormation exige que la plantilla esté en un bucket de S3
-- **Por qué:** Hace falta una cuenta y un bucket públicos de solo lectura; no vale la pena para la demo
-- **Qué lo cierra:** Publicar la plantilla en S3 y devolver `launch_url` en `connection_setup`
-
 ### DT-57 · El canal de agente solo existe como diseño:
 
 🟠 Importante
@@ -192,14 +105,6 @@ Parches del Componente 3 del onboarding (conexión de activos, la sonda) y del p
 - **Qué está parchado:** la pantalla no ofrece servidores ni bases de datos con agente, y el backend responde «no disponible» al validarlos. Tampoco se genera el comando de instalación ni se pre-registra el agente (D54)
 - **Por qué:** Alcance de la etapa: solo AWS
 - **Qué lo cierra:** Adaptador de la sonda de servidores en el backend y el instalador de Monkey (D71). Hasta entonces sus plataformas están `coming_soon` (D67)
-
-### DT-58 · `Frontend-Platform` no tiene pruebas automáticas
-
-🟡 Mejora
-
-- **Qué está parchado:** (0 archivos de prueba) y la verificación de la pantalla de conexión fue una corrida manual con un navegador (2026-10-09)
-- **Por qué:** El repo nunca tuvo pruebas
-- **Qué lo cierra:** Pruebas de componente del panel de conexión y del formulario, y un recorrido de navegador en el CI (`DT-20`)
 
 ### DT-59 · El sistema operativo de un servidor de la nube es una inferencia
 
@@ -233,13 +138,13 @@ Parches del Componente 3 del onboarding (conexión de activos, la sonda) y del p
 - **Por qué:** El descubrimiento se probó contra AWS real, la evaluación posterior aún no
 - **Qué lo cierra:** Correr «Evaluar ahora» sobre la cuenta real y comparar los `resource_uid`
 
-### DT-63 · Un activo descubierto no se puede editar
+### DT-64 · La preparación por servicio no tiene pantalla
 
-🟠 Importante
+🟡 Mejora
 
-- **Qué está parchado:** (criticidad, responsable, nombre): `PATCH /v1/assets/{id}` solo atiende conexiones y nace en «Media» sin responsable
-- **Por qué:** D61 llegó sin la edición del activo hijo
-- **Qué lo cierra:** Endpoint para editar el activo descubierto (criticidad y responsable, sin tocar lo que lee la nube) y su pantalla
+- **Qué está parchado:** El estado de preparación **por servicio** existe en la API (`?service_id=`) pero **no tiene pantalla**. Las etiquetas de S3 y Lambda no se leen (cada una exige una llamada más). Los activos de una región que el cliente quita de la conexión siguen activos aunque la pantalla no los muestre
+- **Por qué:** Se priorizó la conexión
+- **Qué lo cierra:** Pantalla de preparación por servicio; leer etiquetas de S3/Lambda; dar de baja los activos de regiones retiradas
 
 ### DT-66 · El estado de preparación de un activo se calcula por severidad
 
@@ -249,36 +154,36 @@ Parches del Componente 3 del onboarding (conexión de activos, la sonda) y del p
 - **Por qué:** Se construyó antes de D62
 - **Qué lo cierra:** Cablear `GET /v1/assets/{id}/readiness` a `evaluateAssetReadiness` (`features/compliance`, MD-139), que ya calcula el porcentaje con los cortes de D62, y retirar `readiness.ts`
 
-### DT-64 · La preparación por servicio no tiene pantalla
+## Transversal
 
-🟡 Mejora
-
-- **Qué está parchado:** El estado de preparación **por servicio** existe en la API (`?service_id=`) pero **no tiene pantalla**. Las etiquetas de S3 y Lambda no se leen (cada una exige una llamada más). Los activos de una región que el cliente quita de la conexión siguen activos aunque la pantalla no los muestre
-- **Por qué:** Se priorizó la conexión
-- **Qué lo cierra:** Pantalla de preparación por servicio; leer etiquetas de S3/Lambda; dar de baja los activos de regiones retiradas
-
-## Marketplace de plataformas (D67)
-
-### DT-68 · Los logos no vienen del kit de cada marca
-
-🟡 Mejora
-
-- **Qué está parchado:** Los 16 iconos de `Frontend-Platform/public/providers/` (cada uno con su variante `-dark.svg`) salen de colecciones de iconos de marca (Simple Icons, Devicon y Logos), no de los kits de cada proveedor. Varios son una **sustitución**: Microsoft 365 usa el logo de Microsoft, Google Workspace la «G» de Google, HP-UX el logo de HP, macOS el de Apple y Solaris un icono genérico de Unix. Oracle, AIX y SQL Server no se ven tan nítidos como los demás
-- **Por qué:** Cada kit es un portal distinto y los kits traen logos de distinta forma y peso; una fuente de iconos cuadrados permitió que todos se vean del mismo tamaño en los dos temas
-- **Qué lo cierra:** Resolver el uso de marcas (`P21`), reemplazar cada icono por el del kit oficial de su plataforma (con su versión para tema oscuro) y revisar que sigan viéndose del mismo tamaño
-
-### DT-69 · Las dimensiones de cada control no coinciden con las que define el comité
+### DT-48 · `check_results` no tiene política de retención ni de partición
 
 🟠 Importante
 
-- **Qué está parchado:** D39 derivó las dimensiones de cada control de las pruebas y sembró **210** filas en `control_dimensions` (118 documentales, 43 de servidores, 18 de bases de datos, 31 de nube, ninguna de aplicación). El comité las define en la hoja `Controles Monkey`, columnas L a P (D68): **191** (118, 25, 17 y 31; aplicación «NO APLICA» en los 118 controles). La hoja `Análisis TEST x Control` da otra cifra y las dos hojas no coinciden en 6 celdas (IAC-1, IAC-7, IAC-8, IAC-9, IAC-12 en servidores y MON-3 en bases de datos)
-- **Por qué:** Se derivaron de las pruebas antes de que el comité entregara el motor de evaluación (D68). Una dimensión de más o de menos cambia qué controles quedan `INCOMPLETO`
-- **Qué lo cierra:** Cargar `control_dimensions` desde `Controles Monkey` L a P, reconciliar las 6 celdas con el comité y actualizar `catalog:verify`
+- **Qué está parchado:** Es la tabla de mayor volumen (11.352 checks posibles × activos × corrida cada 6 h) y D41 fija 7 años solo para la auditoría. Sin decidir qué se conserva (¿toda corrida, o solo cambios de estado?), RLS y los índices se degradan y el almacenamiento crece sin tope
+- **Por qué:** Se omitió al diseñar §8
+- **Qué lo cierra:** Decidir retención (propuesta: cada corrida un periodo corto y, para el histórico largo, solo transiciones de estado + la última foto) y particionar por mes. Registrarlo como decisión `D-n`
 
-### DT-81 · El escenario de despliegue ya no se pregunta, pero su columna y sus tablas siguen en la base
+### DT-49 · El módulo de operación continua no tiene contrato
 
-🟡 Mejora
+🟠 Importante
 
-- **Qué está parchado:** D92 retiró la pregunta «dónde vive tu servicio» y todo el código que la usaba, pero `services.deployment_scenario`, la tabla `catalog.deployment_scenario_capabilities`, su siembra en `reference:load` y el enum `tenant.deployment_scenario` siguen en la base y en el schema de Prisma, sin ningún uso.
-- **Por qué:** quitarlos es una migración destructiva (`DROP COLUMN`, `DROP TABLE`, `DROP TYPE`) sobre la base compartida y pierde los valores que algunos servicios ya declararon. Se hace aparte, cuando el comité haya ratificado D92: si lo rechazara, el escenario se restituye sin recargar nada.
-- **Qué lo cierra:** una migración que borre la columna, la tabla y el enum; quitar `deployment_scenario_capabilities` de `seed-reference.ts` y de `reference/data.ts`, y borrar `DEPLOYMENT_SCENARIO` de los modelos de Prisma. Al cerrarla, bórrese esta entrada.
+- **Qué está parchado:** *2026-10-08: propuesta escrita en `contracts/control-tecnico.md` (la conexión quedó en `contracts/onboarding/conexion-activos/README.md`); falta acordarla con frontend.*  `contracts/` solo cubre el onboarding C3. No hay forma acordada de listar ejecuciones, resultados, reglas de programación ni el Centro de Control Técnico (§8)
+- **Por qué:** Se construyó primero el alta de activos
+- **Qué lo cierra:** Acordar `contracts/control-tecnico.md` con frontend **antes** de construir endpoints
+
+### DT-50 · El intérprete `check_results → evaluations` solo cubre el motor de nube
+
+🟠 Importante
+
+- **Qué está parchado:** *2026-10-09: construido el intérprete puro, el calculador de preparación por activo y la persistencia de una corrida (`executions`, `check_results`, `asset_resources`, en una transacción con su rastro; 8 pruebas contra Postgres). *2026-10-14 (MD-117): los activos aplicables de un test ya se determinan por la dimensión del activo (servidor, base de datos, nube, aplicación; `modelo-datos.md` §2).* *2026-10-22: **el motor de nube ya escribe `evaluations`** al cerrar una corrida (misma transacción que `check_results`): una fila por control del servicio, test de nube y activo, con `origin: automated` y el porcentaje de lo decidido que pasó. «Todo o nada»: un fallo ⇒ `non_compliant`; lo no decidido (`not_run`, `invalid`) ⇒ `pending`; sin filas en ningún check del test ⇒ `not_applicable`. Solo cuentan los checks ratificados por el comité (`READINESS_INCLUDE_PROPOSED=true` cuenta también los propuestos, solo desarrollo y demostración). **Sigue sin hacerse:** `invalid` se guarda como `pending` (`evaluation_result` no tiene `error`); los activos descubiertos dentro de la cuenta (servidores, bases de datos) no reciben evaluación propia, solo la cuenta; las filas de `findings` (necesitan los siete campos, `P14` E2); y la sonda de servidores, que no escribe aún.* Los umbrales del activo son los de D62 (DT-66).*  R-04 dice que «Monkey interpreta el criterio», pero no está escrito dónde vive el criterio (`tests.compliance_criterion` es texto libre), cómo se determinan los activos aplicables de un control (R-02), qué pasa con un resultado sin check conocido (hoy se descartaría en silencio) ni cómo se registran las exclusiones
+- **Por qué:** §9 especifica el cálculo, no la interpretación
+- **Qué lo cierra:** §9 ya fija cómo se lee la sonda (`passed` → cumple, `failed` → no cumple, `invalid` → error, `not_run` → pendiente) y el estado del test (D68). Falta que la sonda de servidores escriba `evaluations`, las filas de `findings` y los activos descubiertos, y fijar con el comité el `error` de un test automatizado (hoy `pending`)
+
+### DT-78 · La guía de corrección de una prueba técnica es una traducción automática sin revisar, y el filtro del proveedor es una red de seguridad
+
+🟠 Importante
+
+- **Qué está parchado:** `catalog.checks.remediation_es` y `title_es` los escribió la IA a partir del texto original del motor (D90); nadie los ha revisado. La respuesta los marca `is_ai_generated` y la pantalla los etiqueta como traducción automática. Que ningún texto nombre al proveedor lo garantiza una expresión regular que **omite** el texto si lo encuentra (no lo reescribe) y la revisión al escribir las traducciones; no es una revisión humana. El mensaje por recurso del motor (`status_detail`) no se muestra (crudo, en inglés).
+- **Por qué:** sin esto una prueba que falla no decía cómo arreglarla (B33/B34). Hacerlo bien exige la plantilla de siete campos (`P14` E2) y que el comité redacte cada hallazgo.
+- **Qué lo cierra:** revisión humana de las 558 guías ligadas a una prueba (`translation_origin = reviewed`), la plantilla de siete campos y, si el comité la quiere, la redacción propia de Monkey por hallazgo. Mientras tanto, solo hay traducción para los checks ligados a una prueba; el resto sale en inglés.

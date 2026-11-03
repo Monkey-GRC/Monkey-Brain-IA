@@ -2,7 +2,7 @@
 id: add-feature
 name: Agregar una feature nueva
 description: Pasos exactos para crear una feature completa en src/features/<nombre>, siguiendo la feature auth como referencia viva.
-type: skill
+type: recipe
 applies_to: backend
 ---
 
@@ -50,7 +50,7 @@ interior de otra:
 
 ## Pasos
 
-1. **Leer el contrato** del módulo en `contracts/modules/` y las tablas en `modelo-datos.md`. Si el
+1. **Leer el contrato** del módulo en `contracts/` y las tablas en `modelo-datos.md`. Si el
    endpoint no está en el contrato, el contrato se acuerda primero.
 2. **Entidades** en `domain/entities/`. Sin imports de `@nestjs/*`, `@prisma/*` ni de
    `infrastructure/`. Pueden importar tipos puros de `src/common/` (`TenantScope`, `UserRole`).

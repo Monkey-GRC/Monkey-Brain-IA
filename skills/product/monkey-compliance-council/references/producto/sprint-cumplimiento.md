@@ -7,7 +7,7 @@ type: reference
 
 # Sprint de Cumplimiento — alcance
 
-> **Histórico, ajustado por D96 (2026-10-27).** El `admin_empresa` valida la evidencia, da el veredicto, decide las exclusiones y edita directamente; el `funcional` ejecuta lo de su dimensión (`contracts/modules/users-team.md`). La evaluación del auditor (MD-155) está en pausa (`P35`). Los tickets de aprobación de cambios, de asignación de personal externo, de elegir empresa de trabajo y del aviso de espera de una exclusión se cerraron sin objeto. Ver `D96` en `datos/decisiones/06-cumplimiento-y-roles.md`.
+> **Histórico, ajustado por D96 (2026-10-27).** El `admin_empresa` valida la evidencia, da el veredicto, decide las exclusiones y edita directamente; el `funcional` ejecuta lo de su dimensión (`contracts/gestion-usuarios.md`). La evaluación del auditor (MD-155) está en pausa (`P35`). Los tickets de aprobación de cambios, de asignación de personal externo, de elegir empresa de trabajo y del aviso de espera de una exclusión se cerraron sin objeto. Ver `D96` en `datos/decisiones/06-cumplimiento-y-roles.md`.
 
 **Segundo entregable del MVP.** Jira, proyecto `MD`, sprint «MD Sprint 2» (2026-10-09 a 2026-10-23). Es **solo de Cumplimiento**:
 la gestión de usuarios, Monkey Admin y la infraestructura que no sirve a Cumplimiento van a otro sprint.
@@ -19,7 +19,7 @@ cambios con aprobación), §7.5 (el veredicto) y §7.6 (las observaciones).
 
 | Épico | Tickets |
 |---|---|
-| Fundación (MD-101) | MD-108 contratos (escritos en `contracts/modules/compliance-*.md`) · MD-109 glosario · MD-110 almacenamiento de evidencias · MD-113 rastro de auditoría (listo) · MD-114 idiomas en Platform · MD-115 componentes compartidos |
+| Fundación (MD-101) | MD-108 contratos (escritos en `contracts/cumplimiento/`) · MD-109 glosario · MD-110 almacenamiento de evidencias · MD-113 rastro de auditoría (listo) · MD-114 idiomas en Platform · MD-115 componentes compartidos |
 | Controles (MD-102) | MD-117 listar y ver (**construido**) · MD-118 proponer edición o baja (**construido**) · MD-150 proponer un control propio (**construido**) |
 | Riesgos y causas (MD-103) | MD-122 riesgos y causas (**construido**) · MD-123 evaluación 5×5 y tratamiento (**construido**) |
 | Evidencias (MD-104) | MD-126 subir (**construido**) · MD-127 validación de la evidencia por el `admin_empresa` (D96; **construido**, D88) · MD-128 Descripción del Sistema como archivo (listo) |
@@ -73,4 +73,4 @@ responder una observación desde la empresa, y los reportes en PDF y Excel (cont
 
 ## Preguntas abiertas que tocan este sprint
 
-`modelo-datos-pendientes.md`: **P3** (permisos por pantalla), **P22** (lo que falta para calcular el riesgo), **P26** (período y fecha de corte de una evaluación).
+`datos/pendientes/README.md`: **P3** (permisos por pantalla), **P22** (lo que falta para calcular el riesgo), **P26** (período y fecha de corte de una evaluación).

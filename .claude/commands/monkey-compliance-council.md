@@ -1,1 +1,0 @@
-../../skills/product/monkey-compliance-council/SKILL.md

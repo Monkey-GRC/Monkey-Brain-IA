@@ -55,3 +55,6 @@ assets/*.pptx
 # infraestructura). Son datos del cliente: no se versionan, aunque el repo sea privado.
 assets/soc2/
 assets/*.html
+
+# Preferencias personales de Claude Code en este repo (rutas absolutas, aprobaciones locales)
+.claude/settings.local.json

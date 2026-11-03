@@ -21,9 +21,8 @@
         "description": "VF2 (2026-10-10), FUENTE MAESTRA; reemplaza a la VF del 2026-09-15, cuyas hojas no cambiaron. FUENTE MAESTRA. 17 hojas anteriores: modelo RBAC (4 roles, matriz de permisos, 12 politicas de seguridad), contexto de empresa y de servicio, activos del scope + catálogo de conexiones AC-01..AC-06, 10 riesgos (metodología 5x5), 56 causas con 92 relaciones riesgo-causa, 119 controles de catálogo (118 asignados; CPL-1 es la Descripcion del Sistema) sobre 302 puntos de enfoque (729 relaciones), 61 requisitos TSC, 61 TEST de 23 campos con 228 asignaciones control-TEST, y 11.352 checks de 77 politicas SCA sobre 18 plataformas con 20 referencias de mapeo. IMPORTANTE: estas cifras salen de los datos crudos de las hojas, NO de la hoja Resumen, que quedo desactualizada (declara 658 relaciones). NUEVAS en VF2: 'MODELO EVALUACIÓN MONKEY' (prototipo del motor de cumplimiento y de riesgos: reglas RN-01..RN-25, 8 casos, 15 validaciones, 10 decisiones pendientes), 'REQUISITOS EVALUACIÓN MONKEY' (REQ-001..REQ-051) y 'PROMPT DESARROLLO MONKEY' (referencia, no se adopta: D68).",
         "consumedBy": [
           "skills/product/monkey-compliance-council/references/datos/modelo-datos.md",
-          "skills/product/monkey-compliance-council/references/modulos/onboarding.md",
           "skills/product/monkey-compliance-council/references/producto/philosophy.md",
-          "skills/product/monkey-compliance-council/references/cumplimiento/frameworks/soc2.md",
+          "skills/product/monkey-compliance-council/references/arquitectura/catalogo-maestro/marcos/soc2.md",
           "skills/product/monkey-compliance-council/references/datos/modelo/09-calculo-cumplimiento.md"
         ]
       },
@@ -35,7 +34,7 @@
         "description": "Anatomía real de requisito, control del cliente, plan de testeo con muestreo y las tres banderas por test.",
         "consumedBy": [
           "skills/product/monkey-compliance-council/references/datos/modelo-datos.md",
-          "skills/product/monkey-compliance-council/references/cumplimiento/frameworks/soc2.md"
+          "skills/product/monkey-compliance-council/references/arquitectura/catalogo-maestro/marcos/soc2.md"
         ]
       },
       {
@@ -45,7 +44,7 @@
         "description": "Lógica bool_and, tercer veredicto REVISAR, frescura de escaneos y los tres tags de compliance (tsc/soc_2/nelson).",
         "consumedBy": [
           "skills/product/monkey-compliance-council/references/datos/modelo-datos.md",
-          "skills/product/monkey-compliance-council/references/control-tecnico/wazuh.md"
+          "skills/product/monkey-compliance-council/references/arquitectura/control-tecnico/motores/wazuh.md"
         ]
       },
       {
@@ -55,8 +54,8 @@
         "warning": "Contiene credenciales en texto plano. No copiar a ningún repo; rotar la password.",
         "description": "Endpoints, flujo del conector, clave compuesta policy_id+check_id, estados de resultado y confidencialidad de la sonda.",
         "consumedBy": [
-          "skills/product/monkey-compliance-council/references/control-tecnico/wazuh-api.md",
-          "skills/product/monkey-compliance-council/references/control-tecnico/wazuh.md"
+          "skills/product/monkey-compliance-council/references/arquitectura/control-tecnico/motores/wazuh-api.md",
+          "skills/product/monkey-compliance-council/references/arquitectura/control-tecnico/motores/wazuh.md"
         ]
       },
       {
@@ -89,59 +88,53 @@
       "description": "Decide qué se construye y en qué orden usando el marco del Consejo (monkey-compliance-council). No implementa ni supervisa código. Escala decisiones estratégicas al usuario que está usando la herramienta.",
       "model": "sonnet",
       "consults": "skills/product/monkey-compliance-council",
-      "delegates_to": "tech-lead"
+      "delegates_to": "monkey-dev-flow"
     },
     {
       "id": "tech-lead",
       "path": "agents/tech-lead.md",
-      "description": "Supervisa a backend-senior, frontend-senior y qa. No implementa código. Escala decisiones críticas al usuario y reporta corto. También vigila que context/backend.md, context/frontend.md y contracts/ se mantengan al día, y le pregunta al usuario antes de actualizarlos.",
+      "description": "Supervisa a backend-senior, frontend-senior y qa. No implementa código. Escala decisiones críticas al usuario y reporta corto. También vigila que context/backend.md, context/frontend.md y contracts/ se mantengan al día, y le pregunta al usuario antes de actualizarlos. (en Claude Code lo ejecuta la skill monkey-dev-flow; no es un subagente)",
       "model": "sonnet",
-      "applies_to": [
-        "backend",
-        "frontend"
-      ],
-      "supervises": [
-        "backend-senior",
-        "frontend-senior",
-        "qa"
-      ],
-      "maintains": [
-        "context/backend.md",
-        "context/frontend.md"
-      ]
+      "applies_to": ["backend", "frontend"],
+      "supervises": ["backend-senior", "frontend-senior", "qa"],
+      "maintains": ["context/backend.md", "context/frontend.md"]
     },
     {
       "id": "backend-senior",
       "path": "agents/backend-senior.md",
       "description": "Implementa código bajo tareas asignadas por el tech-lead. No decide alcance ni arquitectura.",
-      "model": "haiku",
-      "reports_to": "tech-lead"
+      "model": "sonnet",
+      "reports_to": "monkey-dev-flow"
     },
     {
       "id": "frontend-senior",
       "path": "agents/frontend-senior.md",
       "description": "Implementa código Angular bajo tareas asignadas por el tech-lead. No decide alcance ni arquitectura. Equivalente exacto de backend-senior para el repo frontend.",
-      "model": "haiku",
-      "reports_to": "tech-lead"
+      "model": "sonnet",
+      "reports_to": "monkey-dev-flow"
     },
     {
       "id": "qa",
       "path": "agents/qa.md",
       "description": "Prueba punto a punto los cambios de backend-senior o frontend-senior antes de que el tech-lead reporte al usuario.",
-      "model": "haiku",
-      "reports_to": "tech-lead"
+      "model": "sonnet",
+      "reports_to": "monkey-dev-flow"
     },
     {
       "id": "wazuh-integration-expert",
       "path": "agents/wazuh-integration-expert.md",
       "description": "Especialista consultado (no ejecutor) en la sonda (Wazuh): API, agentes, grupos por cliente y marcos que trae etiquetados. Responde a tech-lead/backend-senior cuando el backend necesita integrarse con ella.",
       "model": "sonnet",
-      "consults": "skills/product/monkey-compliance-council/references/control-tecnico",
-      "reports_to": "tech-lead",
-      "consulted_by": [
-        "tech-lead",
-        "backend-senior"
-      ]
+      "consults": "skills/product/monkey-compliance-council/references/arquitectura/control-tecnico/motores",
+      "reports_to": "monkey-dev-flow",
+      "consulted_by": ["tech-lead", "backend-senior"]
+    },
+    {
+      "id": "architecture-reviewer",
+      "path": "agents/architecture-reviewer.md",
+      "description": "Revisa un cambio ya hecho contra las reglas de arquitectura (capas, imports entre features, withScope, auditoria atomica, contrato). No implementa.",
+      "model": "sonnet",
+      "reports_to": "monkey-dev-flow"
     }
   ],
   "skills": [
@@ -174,9 +167,7 @@
       "id": "monkey-compliance-council",
       "path": "skills/product/monkey-compliance-council/SKILL.md",
       "description": "El 'Consejo' de expertos simulados (estrategia, compliance, seguridad, infraestructura, IA, UX) que diseñó a Monkey como plataforma de Continuous Compliance con IA. Cubre arquitectura, filosofía de producto, roadmap MVP y 14 frameworks de cumplimiento (SOC 2, ISO 27001, PCI DSS, HIPAA, NIST CSF, CIS Controls, GDPR, NIS2, DORA, FedRAMP, CCPA/CPRA, LGPD, CMMC, SOC 1). Referencias en skills/product/monkey-compliance-council/references/. Obligatoria para CUALQUIER agente antes de construir o rediseñar una pantalla, un endpoint o un flujo (ver CLAUDE.md).",
-      "usedBy": [
-        "todos los agentes"
-      ],
+      "usedBy": ["todos los agentes"],
       "references": [
         {
           "id": "modelo-datos",
@@ -185,18 +176,13 @@
         },
         {
           "id": "modelo-datos-decisiones",
-          "path": "skills/product/monkey-compliance-council/references/datos/modelo-datos-decisiones.md",
+          "path": "skills/product/monkey-compliance-council/references/datos/decisiones/README.md",
           "description": "Registro de las decisiones que cerraron el modelo relacional, con la fuente y el razonamiento de cada una. Se consulta para no reabrir debates, no para construir."
         },
         {
           "id": "modelo-datos-pendientes",
-          "path": "skills/product/monkey-compliance-council/references/datos/modelo-datos-pendientes.md",
+          "path": "skills/product/monkey-compliance-council/references/datos/pendientes/README.md",
           "description": "Las decisiones del modelo que solo el comité puede cerrar (la lista vive en ese archivo). Si sigue ahí, no se resuelve por cuenta propia."
-        },
-        {
-          "id": "onboarding",
-          "path": "skills/product/monkey-compliance-council/references/modulos/onboarding.md",
-          "description": "Los 3 componentes del onboarding (Contexto Organizacional, Contexto del Servicio, Control Técnico) y a qué entidad de modelo-datos.md va cada campo que se le pregunta al cliente."
         },
         {
           "id": "flujo-end-to-end",
@@ -214,6 +200,11 @@
           "description": "Los 4 motores, capas funcionales y stack de referencia."
         },
         {
+          "id": "arquitectura-modulos",
+          "path": "skills/product/monkey-compliance-council/references/arquitectura/README.md",
+          "description": "Indice de la arquitectura: el C4 del sistema (contexto, contenedores, componentes) y un directorio por modulo del producto (autenticacion, gestion de usuarios, roles y permisos, onboarding con sus 3 componentes, control tecnico, cumplimiento con sus componentes), cada uno con su C4, su modelo relacional, sus flujos de informacion y sus mejoras."
+        },
+        {
           "id": "mvp-roadmap",
           "path": "skills/product/monkey-compliance-council/references/producto/mvp-roadmap.md",
           "description": "MUST/SHOULD/LATER/NO BUILD y fases."
@@ -225,7 +216,7 @@
         },
         {
           "id": "control-tecnico",
-          "path": "skills/product/monkey-compliance-council/references/control-tecnico/README.md",
+          "path": "skills/product/monkey-compliance-council/references/arquitectura/control-tecnico/motores/README.md",
           "description": "Los motores que miden: la sonda (wazuh.md, wazuh-operacion.md, wazuh-api.md, wazuh-compliance.md) y el motor de nube (prowler.md, cruce-nube-aws.md, flujo-conexion-nube.md). El índice enruta por pregunta."
         },
         {
@@ -235,7 +226,7 @@
         },
         {
           "id": "frameworks",
-          "path": "skills/product/monkey-compliance-council/references/cumplimiento/frameworks/",
+          "path": "skills/product/monkey-compliance-council/references/arquitectura/catalogo-maestro/marcos/",
           "description": "14 frameworks con fuente y fecha verificada."
         }
       ]
@@ -279,6 +270,36 @@
       "id": "add-cloud-engine",
       "path": "skills/backend/add-cloud-engine.md",
       "description": "Cómo extender el control técnico de la nube (Prowler): validación de la conexión, trabajador aislado, lectura del resultado, nuevos proveedores y ejecutores."
+    },
+    {
+      "id": "monkey-dev-flow",
+      "path": "skills/process/monkey-dev-flow/SKILL.md",
+      "description": "Flujo de punta a punta de una tarea de desarrollo: clasifica, contexto del modulo, delega en subagentes, verifica y cierra."
+    },
+    {
+      "id": "monkey-preflight",
+      "path": "skills/process/monkey-preflight/SKILL.md",
+      "description": "Imprime lo que el cerebro sabe de un modulo: contrato, enums, decisiones, pendientes abiertas, deuda y seguridad."
+    },
+    {
+      "id": "monkey-ui-copy",
+      "path": "skills/process/monkey-ui-copy/SKILL.md",
+      "description": "Reglas de texto y pantallas para el usuario final: lenguaje GRC con codigos, estado y porcentaje juntos, 7 campos, que nunca nombrar."
+    },
+    {
+      "id": "monkey-security-review",
+      "path": "skills/process/monkey-security-review/SKILL.md",
+      "description": "Revisa un cambio contra los requisitos de seguridad registrados (SEG-n) segun lo que cambia."
+    },
+    {
+      "id": "monkey-registry",
+      "path": "skills/process/monkey-registry/SKILL.md",
+      "description": "Alta y cierre de registros D, P, DT y SEG con su siguiente ID, su ficha por modulo y su tablero."
+    },
+    {
+      "id": "monkey-closeout",
+      "path": "skills/process/monkey-closeout/SKILL.md",
+      "description": "Cierre de una tarea: lista de cierre y verificacion de integridad del cerebro (check-brain.py)."
     }
   ],
   "entrypointNote": "CLAUDE.md fija las reglas obligatorias antes de cualquier decision. README.md describe la estructura del repo.",
@@ -299,56 +320,80 @@
         "description": "Tabla valor snake_case a etiqueta es/en de todos los enums del onboarding, con las opciones literales del Excel del comite. Marca donde el Excel gana sobre modelo-datos.md."
       },
       {
-        "path": "contracts/modules/monkey-admin.md",
+        "path": "contracts/empresas.md",
         "description": "Registro del tenant y clave de acceso: companies, access_keys. La clave se devuelve en claro una sola vez."
       },
       {
-        "path": "contracts/modules/auth.md",
+        "path": "contracts/autenticacion.md",
         "description": "Canje de la clave, login, refresh, logout, segundo factor (D94) y activacion de cuentas con codigo de un solo uso (D95)."
       },
       {
-        "path": "contracts/modules/users-team.md",
+        "path": "contracts/gestion-usuarios.md",
         "description": "Equipo: el administrador invita a funcional y auditor, activan su cuenta y se reparte el trabajo por dimension (D96)."
       },
       {
-        "path": "contracts/modules/onboarding-organizational-context.md",
+        "path": "contracts/onboarding/contexto-organizacional.md",
         "description": "Componente 1: los 10 campos del Contexto Organizacional, una vez por empresa."
       },
       {
-        "path": "contracts/modules/onboarding-service-context.md",
+        "path": "contracts/onboarding/contexto-servicio.md",
         "description": "Componente 2: los 16 campos del Contexto del Servicio, repetible. Dispara el clonado del catalogo."
       },
       {
-        "path": "contracts/modules/onboarding-technical-control.md",
+        "path": "contracts/onboarding/conexion-activos/README.md",
         "description": "Componente 3: catálogo de plataformas y flujo conectar-validar-activar-programar sobre ac_01 a ac_06. El proveedor del motor de monitoreo NO aparece."
       },
       {
-        "path": "contracts/modules/control-tecnico-operacion.md",
+        "path": "contracts/onboarding/conexion-activos/conectar.md",
+        "description": "Conexion de activos: las conexiones que se ofrecen, el marketplace y como se declara un activo."
+      },
+      {
+        "path": "contracts/onboarding/conexion-activos/validar.md",
+        "description": "Conexion de activos: validar la conexion, descubrir los activos de la cuenta y elegir los del servicio."
+      },
+      {
+        "path": "contracts/onboarding/conexion-activos/gestionar.md",
+        "description": "Conexion de activos: editar, quitar, activar, programar y listar."
+      },
+      {
+        "path": "contracts/control-tecnico.md",
         "description": "Control tecnico, operacion continua: ejecuciones, estado de preparacion, hallazgos, vista tecnica y API interna del trabajador."
       },
       {
-        "path": "contracts/modules/compliance-controls.md",
+        "path": "contracts/cumplimiento/controles.md",
         "description": "Cumplimiento, acciones de proteccion: listar y ver, control propio, edicion y baja directas por el administrador de la empresa, con confirmacion."
       },
       {
-        "path": "contracts/modules/compliance-risks.md",
+        "path": "contracts/cumplimiento/riesgos.md",
         "description": "Cumplimiento, riesgos y causas: gestion, vinculos, evaluacion 5x5 y tratamiento con responsable."
       },
       {
-        "path": "contracts/modules/compliance-evidence.md",
+        "path": "contracts/cumplimiento/evidencia.md",
         "description": "Cumplimiento, evidencias: subida con huella SHA-256 y version, descarga con enlace firmado, aprobacion solo del administrador de la empresa."
       },
       {
-        "path": "contracts/modules/compliance-responsibles.md",
+        "path": "contracts/onboarding/cargos-responsables.md",
         "description": "Cumplimiento, cargos responsables de la organizacion y la persona que los ocupa."
       },
       {
-        "path": "contracts/modules/compliance-overview.md",
+        "path": "contracts/cumplimiento/resumen.md",
         "description": "Cumplimiento, resumen del servicio por marco y categoria con vista tecnica, (las evaluaciones del servicio estan en pausa)."
       },
       {
-        "path": "contracts/modules/compliance-audit.md",
-        "description": "Cumplimiento y auditoria: tests y veredictos, observaciones del auditor y exclusiones."
+        "path": "contracts/cumplimiento/README.md",
+        "description": "Cumplimiento, indice de sus contratos y lo que comparten: quien puede que sobre pruebas, evidencia, observaciones y exclusiones."
+      },
+      {
+        "path": "contracts/cumplimiento/veredictos.md",
+        "description": "Cumplimiento, tests de un control, que fallo y como corregirlo, y el veredicto de una prueba manual."
+      },
+      {
+        "path": "contracts/cumplimiento/observaciones.md",
+        "description": "Cumplimiento, observaciones del auditor y su respuesta por la empresa."
+      },
+      {
+        "path": "contracts/cumplimiento/exclusiones.md",
+        "description": "Cumplimiento, exclusiones de un activo en un test."
       }
     ]
   }

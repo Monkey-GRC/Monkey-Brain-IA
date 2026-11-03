@@ -1,6 +1,6 @@
 # Cómo está implementado el schema
 
-Complementa a `modelo-datos.md` (el **qué**: tablas y relaciones) y a `modelo-datos-decisiones.md`
+Complementa a `modelo-datos.md` (el **qué**: tablas y relaciones) y a `datos/decisiones/README.md`
 (el **por qué**). Este archivo es el **cómo** en el Backend: Prisma, Postgres, RLS, roles,
 migraciones y despliegue. Si algo choca con `modelo-datos.md`, gana el modelo. Absorbe la bitácora
 "decisiones de la reconstrucción del schema" (septiembre de 2026), que se retiró de `assets/`.
@@ -300,7 +300,7 @@ desechable, ver §13):
   ni en un servicio administrado, por simplicidad y costo. **No existe un backend de staging propio** (D86): hay un solo entorno desplegado, y lo que solo tendría sentido con un staging (bucket, cuenta de servicio y `.env` aparte, repetir las pruebas) está congelado hasta que se necesite.
 - **CI** (`ci.yml`, PR #17 del Backend): en cada PR a `develop`/`main` levanta un Postgres vacío y corre lint, build, pruebas
   unitarias, migraciones desde cero, carga de catálogos, los verificadores (`catalog`, `reference`, `clone`, `audit`) y las pruebas
-  de aislamiento (`npm run test:e2e`, ver `seguridad/requisitos.md`). **No bloquea el merge ni el despliegue** mientras la
+  de aislamiento (`npm run test:e2e`, ver [`seguridad/`](../seguridad/README.md)). **No bloquea el merge ni el despliegue** mientras la
   organización no tenga el plan GitHub Team (DT-41).
 - **CD** (`deploy-dev.yml`, push a `develop`): `scp-action` copia el código y `ssh-action`
   (con `script_stop: true`) comprueba el entorno, migra y corre `docker compose build backend && up -d`. **Los archivos de entorno (`.env` del backend y

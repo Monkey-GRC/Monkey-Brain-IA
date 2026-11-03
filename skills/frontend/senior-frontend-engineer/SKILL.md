@@ -20,7 +20,7 @@ archivos de `skills/frontend/` (un nivel arriba de esta carpeta); aquí se enlaz
 2. **Producto primero.** Todo lo que un usuario final vea pasa por `/monkey-compliance-council` y `philosophy.md`: vocabulario de GRC y códigos
    siempre visibles, **cada uno con su explicación** (en qué falla, qué impacto tiene, qué hacer); estado y porcentaje de avance juntos, con la
    cobertura al lado; nunca el nombre de Wazuh ni de Prowler ("sonda", "evaluación automática").
-3. **Contrato primero.** `contracts/conventions.md`, `contracts/enums.md`, `contracts/modules/*.md`. El frontend **nunca hardcodea listas de opciones**:
+3. **Contrato primero.** `contracts/conventions.md`, `contracts/enums.md`, `contracts/<módulo>.md`. El frontend **nunca hardcodea listas de opciones**:
    las pide al backend (catálogos) y traduce el `valor` snake_case con su etiqueta. Si el endpoint no está, no se mockea de forma permanente: se acuerda.
 4. **Lee la feature vecina** como plantilla: `Frontend/.../features/companies`; en Platform, `compliance`, `team` o `services`.
 

@@ -18,11 +18,11 @@ Esta skill fija **cómo se decide y se construye** en `Backend`. Las recetas pas
 
 1. **Producto primero.** Si la tarea cambia lo que ve un usuario, un endpoint, el modelo o una prioridad, ejecuta `/monkey-compliance-council`
    y sigue su ruteo (`CLAUDE.md`). Trabajo mecánico (typo, bug ya diagnosticado) no lo necesita.
-2. **Contrato primero.** `contracts/conventions.md`, `contracts/enums.md` y `contracts/modules/<módulo>.md`. Si el endpoint no está,
+2. **Contrato primero.** `contracts/conventions.md`, `contracts/enums.md` y `contracts/<módulo>.md`. Si el endpoint no está,
    se acuerda antes de construir. Opciones de enum: gana el Excel del comité; nombre de campo: gana `modelo-datos.md`.
 3. **Modelo y decisiones.** Solo el módulo que toques en `datos/modelo/`. Si dependes de una pregunta abierta (`P-n`), **pregunta, no resuelvas**.
 4. **Lee el código vecino.** `src/features/auth` es la plantilla de las cuatro capas; `companies` la de CRUD paginado; `compliance` la de una feature grande.
-5. **Seguridad.** `seguridad/requisitos.md`: si el cambio crea un requisito nuevo, añade su `SEG-n`.
+5. **Seguridad.** [`seguridad/`](../../product/monkey-compliance-council/references/seguridad/README.md): si el cambio crea un requisito nuevo, añade su `SEG-n`.
 
 ## 2. El mapa del repo
 

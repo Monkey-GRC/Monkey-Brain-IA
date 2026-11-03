@@ -2,7 +2,7 @@
 id: add-feature
 name: Agregar una feature nueva (frontend)
 description: Pasos para crear una feature completa en src/app/features/<nombre>, siguiendo el patrón de la feature companies (la referencia viva).
-type: skill
+type: recipe
 applies_to: frontend
 ---
 

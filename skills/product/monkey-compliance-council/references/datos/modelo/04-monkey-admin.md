@@ -56,7 +56,7 @@ requiere base de datos dedicada, y el correo administrativo de la empresa. Al en
 
 ### 4.2b Archivar y borrar una empresa (D97)
 
-Una empresa se **archiva** (`status = deactivated`, con `deactivated_at` y `archive_until`) y, al vencer el plazo que eligió `admin_monkey` (6 meses por defecto), se **borra definitivamente** con todo lo suyo. Al archivar: sin accesos, sin motores y sin datos nuevos; usuarios, asignaciones y datos quedan guardados y se toma una copia cifrada. Reversible solo dentro del plazo; avisa a los `admin_monkey` 3 días antes (correo y app); los respaldos generales rotan a 35 días. Del borrado solo sobrevive el rastro mínimo (`company_purge_log`: nombre, fecha y hora, quién). Archivar, reactivar y borrar son seguros ante peticiones o réplicas simultáneas: la condición va en el `UPDATE` y la purga toma un candado por empresa. Contrato: `monkey-admin.md`; requisito: SEG-68; enmienda a D41.
+Una empresa se **archiva** (`status = deactivated`, con `deactivated_at` y `archive_until`) y, al vencer el plazo que eligió `admin_monkey` (6 meses por defecto), se **borra definitivamente** con todo lo suyo. Al archivar: sin accesos, sin motores y sin datos nuevos; usuarios, asignaciones y datos quedan guardados y se toma una copia cifrada. Reversible solo dentro del plazo; avisa a los `admin_monkey` 3 días antes (correo y app); los respaldos generales rotan a 35 días. Del borrado solo sobrevive el rastro mínimo (`company_purge_log`: nombre, fecha y hora, quién). Archivar, reactivar y borrar son seguros ante peticiones o réplicas simultáneas: la condición va en el `UPDATE` y la purga toma un candado por empresa. Contrato: `contracts/empresas.md`; requisito: SEG-68; enmienda a D41.
 
 ### 4.3 Aislamiento de datos (multi-tenancy)
 

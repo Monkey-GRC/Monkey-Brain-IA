@@ -2,13 +2,13 @@
 id: add-cloud-engine
 name: Integrar el motor de nube (Prowler) en el backend
 description: Cómo extender el control técnico de la nube (nuevo proveedor, nuevo canal de credenciales o nuevo ejecutor del motor) sin romper el aislamiento ni la confidencialidad. Consultar prowler.md y D53–D58, D100 antes de implementar.
-type: skill
+type: recipe
 applies_to: backend
 ---
 
 # Skill: Integrar el motor de nube (Prowler)
 
-> **Antes de escribir una línea, lee** `control-tecnico/prowler.md` y `D53`–`D58` y `D100`
+> **Antes de escribir una línea, lee** `arquitectura/control-tecnico/motores/prowler.md` y `D53`–`D58` y `D100`
 > (`../product/monkey-compliance-council/references/datos/`), `SEG-26`, `SEG-46`, `SEG-47` y `deuda-tecnica/control-tecnico.md`
 > (`DT-43`, `DT-44`, `DT-45`, `DT-50`, `DT-52`). Prowler maneja **todo lo de la nube** (AWS, Azure, GCP y demás); la sonda (Wazuh) es otro
 > motor, con `add-wazuh-integration.md`. Lo que siga abierto en `P14` (B a E) y `P15` **se pregunta, no se resuelve**.
