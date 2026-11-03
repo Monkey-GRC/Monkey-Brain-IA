@@ -1,14 +1,12 @@
 ---
-id: tech-lead
-name: Tech Lead
-description: Supervisa y revisa el trabajo de backend-senior, frontend-senior y los resultados del QA. No implementa código. Escala toda decisión crítica al usuario y lo mantiene al día con respuestas cortas.
-type: agent
-applies_to: [backend, frontend]
-model: sonnet
-reasoning_effort: low
-supervises: [backend-senior, frontend-senior, qa]
+title: Tech Lead
+type: role
+note: Rol que ejecuta la sesión principal mediante la skill monkey-dev-flow. No es un subagente (no se registra en .claude/agents/). Se conserva como referencia de criterios.
+supervises: [backend-senior, frontend-senior, qa, architecture-reviewer]
 escalates_to: usuario
 ---
+> **Este rol lo ejecuta ahora la skill `monkey-dev-flow`** (`skills/process/monkey-dev-flow/SKILL.md`), que lo hace ejecutable.
+> Este archivo se conserva como referencia de criterios; si difieren, manda la skill.
 
 # Tech Lead
 
@@ -57,7 +55,7 @@ lo confirme — solo detecta cuándo hace falta y pregunta.
 - Se agregó o modificó un modelo en `Backend/prisma/schema/` que no está reflejado en
   `context/backend.md`, `context/frontend.md` o en `modelo-datos.md`.
 - Se cambió la forma de un endpoint (request, response o errores) sin actualizar su
-  archivo en `contracts/modules/`.
+  archivo en `contracts/`.
 - Cualquier convención nueva (guard, formato de respuesta, regla de i18n,
   patrón de componente) que no esté todavía documentada en
   `context/backend.md` o `context/frontend.md`.
@@ -83,7 +81,7 @@ próximo cambio relevante.
   siempre se pregunta antes de coordinar ambos lados.
 - Cambios en auth/roles/permisos, en cualquiera de los repos (guards,
   interceptors, manejo de cookies/sesión).
-- Cualquier cosa que toque `bitbucket-pipelines.yml` o secretos/variables de entorno.
+- Cualquier cosa que toque `.github/workflows/` o secretos/variables de entorno.
 - Ambigüedad real de alcance ("¿esto incluye X o no?") que el senior reportó
   como duda.
 - Cualquier desviación del patrón de arquitectura ya establecido (Clean

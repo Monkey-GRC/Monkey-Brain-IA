@@ -21,45 +21,13 @@ CAPA DE DATOS Y ACTIVOS
   nubes, documentación) · Responsables · Configuraciones · Logs
 ```
 
-Los cuatro motores son **independientes del framework**: ninguno "sabe" nativamente qué es SOC 2 o ISO 27001. Una capa de mapeo traduce **controles atómicos** (p. ej. "MFA obligatorio para administradores") a los requisitos de cada framework soportado (ver `cumplimiento/frameworks/`). Este es el "pecado original" que Monkey evita: modelar el producto alrededor de un solo framework y parchear los demás encima, que es lo que hace ilegibles a las herramientas GRC clásicas.
+Los cuatro motores son **independientes del framework**: ninguno "sabe" nativamente qué es SOC 2 o ISO 27001. Una capa de mapeo traduce **controles atómicos** (p. ej. "MFA obligatorio para administradores") a los requisitos de cada framework soportado (ver [`catalogo-maestro/marcos/`](catalogo-maestro/marcos/README.md)). Este es el "pecado original" que Monkey evita: modelar el producto alrededor de un solo framework y parchear los demás encima, que es lo que hace ilegibles a las herramientas GRC clásicas.
 
-## Modelo de datos — entidades núcleo
+## Modelo de datos — la idea estructural
 
-El modelo relacional completo, con atributos, cardinalidades y diagrama, vive en `modelo-datos.md`. Resumen de la estructura:
-
-```
-Empresa / tenant (`companies`)          — existe desde Monkey Admin; lleva el aislamiento
- └─ Organización (`organizations`)      — el negocio que declara el cliente dentro del tenant
-     ├─ Responsables organizacionales   (COO, TI, Cumplimiento, Proceso, CISO, propietario del activo)
-     ├─ Insumos de revisión             (los activos reales; cuelgan de la ORGANIZACIÓN, no
-     │                                   del servicio — se vinculan vía `service_assets`)
-     ├─ Riesgos del cliente             (qué puede salir mal; impacto, probabilidad)
-     │   └─ Causas                      (N:M — por qué está pasando)
-     │       └─ Controles del cliente   (N:M — la medida que lo ataca)
-     └─ Servicios                       (lo que se certifica; unidad de evaluación)
-         ├─ Scope / Alcance             (lo declarado: cuántos servidores, nubes, apps, BD)
-         ├─ Marcos contratados          (por servicio — SOC 2, ISO 27001, PCI DSS…)
-         └─ Evaluaciones                (histórico inmutable) → Hallazgos (dónde falla)
-
-Catálogo maestro (global, sin tenant)   — lo cura Monkey; existe antes de cualquier cliente
- ├─ Marcos
- │   └─ Requisitos                      (CC6.1, A.8.5… — pertenecen al marco)
- │       └─ Puntos de enfoque           (el punto de anclaje: el control se vincula AQUÍ)
- └─ Controles atómicos                  (independientes del marco; se vinculan a puntos de enfoque)
-     ├─ Dimensiones aplicables          (Política/Documental, Servidor, Base de datos, App, Nube)
-     ├─ Plan de testeo                  (criterio de auditor: pasos dependientes, población, muestreo)
-     ├─ Tests                           (por dimensión; con banderas requiere-sonda / requiere-IA /
-     │   │                               confirmación humana del cumplimiento)
-     │   └─ Exclusiones                 (checks que no se miden, con justificación)
-     ├─ Evidencia requerida             (qué se exige y quién responde) → entregada (archivo + hash)
-     └─ Medición                        (peso y fórmula por dimensión; default lineal)
-
-Capa de operación técnica (Motor de Integraciones — ver modelo-datos.md §8):
- Capacidad automática (sonda, con proveedor interno)
-  └─ Aprovisionamiento por activo  (conexión validada + cobertura técnica 18/18)
-      └─ Regla de schedule         (cada cuánto corre, sobre qué grupo de activos)
-          └─ Ejecución             (progreso, estado, reintento) → Resultados + Logs técnicos
-```
+El modelo relacional completo, con atributos y cardinalidades, vive en `../datos/modelo/` (el diagrama de todo
+junto, en `../datos/modelo/10-diagrama-global.md`). Las tablas de cada módulo y por qué son así, en el
+`02-modelo.md` de su directorio ([`README.md`](README.md)). Aquí solo lo que ningún diagrama dice:
 
 El cumplimiento de un marco **se deriva** recorriendo requisitos → puntos de enfoque →
 controles. Nunca se almacena como atributo del marco. Y el activo cuelga de la

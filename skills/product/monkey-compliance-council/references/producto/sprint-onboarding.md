@@ -15,10 +15,10 @@ proyecto `MD`, épicos MD-57 a MD-61.
 servicio y conectar al menos un activo, y ver su catálogo de cumplimiento listo para empezar a
 medirse.
 
-**Fuente de cada componente:** `modulos/onboarding.md`, que transcribe
+**Fuente de cada componente:** `arquitectura/onboarding/README.md`, que transcribe
 `assets/TSC INTERGRAL SOC 2 DETALLADO VF2.xlsx` (hojas *Contexto Empresa*, *Contexto del
 servicio*, *Activos del Servicio (SCOPE)*). Si algo de aquí contradice esas fuentes, ganan
-ellas. La forma exacta de cada endpoint está en `contracts/modules/`.
+ellas. La forma exacta de cada endpoint está en `contracts/`.
 
 ## Dentro de alcance
 
@@ -87,13 +87,13 @@ solo activo conectado y sigue siendo una demo honesta.
 - **La pregunta 11 del Componente 1 no se construye.** El comité vetó "framework a nivel de
   empresa": se elige en el Componente 2, por servicio. No es un olvido si no aparece.
 - **Cinco preguntas del flujo de la clave siguen abiertas** (P2 en
-  `modelo-datos-pendientes.md`), y dos de ellas condicionan la pantalla del día 1-2.
+  `datos/pendientes/README.md`), y dos de ellas condicionan la pantalla del día 1-2.
 
 ## Criterios de aceptación
 
 1. Un `admin_empresa` nuevo completa los 3 componentes sin salir del flujo guiado.
 2. Los 10 + 16 campos quedan persistidos exactamente con los tipos y opciones de
-   `modulos/onboarding.md` y `contracts/enums.md`.
+   `arquitectura/onboarding/README.md` y `contracts/enums.md`.
 3. Al elegir marco en el Componente 2, el catálogo queda disponible en el escenario del cliente
    sin acción manual: controles clonados en `client_controls`, requisitos, puntos de enfoque y tests
    referenciados con FK.

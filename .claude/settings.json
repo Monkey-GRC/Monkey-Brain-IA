@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "additionalDirectories": [
+      "../Backend",
+      "../Frontend",
+      "../Frontend-Platform",
+      "../monkey-cis-sync"
+    ],
+    "allow": [
+      "Bash(git status *)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(git branch *)",
+      "Bash(npm run lint *)",
+      "Bash(npm run build *)",
+      "Bash(npm test *)",
+      "Bash(npm run test *)"
+    ],
+    "ask": [
+      "Bash(git reset --hard *)",
+      "Bash(git checkout -- *)",
+      "Bash(git clean *)",
+      "Bash(rm -rf *)"
+    ],
+    "deny": [
+      "Bash(git commit *)",
+      "Bash(git -C * commit *)",
+      "Bash(git push *)",
+      "Bash(git -C * push *)",
+      "Bash(gh pr create *)",
+      "Bash(gh pr merge *)",
+      "Read(//**/.env)",
+      "Read(//**/.env.local)",
+      "Read(//**/.env.development)",
+      "Read(//**/.env.staging)",
+      "Read(//**/.env.production)",
+      "Read(//**/.env.test)",
+      "Read(//**/runner.env)",
+      "Read(//**/*credentials*.json)",
+      "Read(//**/conexion_api_*)",
+      "Read(//**/*.pem)",
+      "Read(//**/id_rsa*)",
+      "Read(~/.claude/.credentials.json)",
+      "Edit(//**/.env)",
+      "Edit(//**/.env.local)",
+      "Edit(//**/.env.development)",
+      "Edit(//**/.env.staging)",
+      "Edit(//**/.env.production)",
+      "Edit(//**/.env.test)",
+      "Edit(//**/runner.env)",
+      "Edit(//**/*credentials*.json)",
+      "Edit(//**/conexion_api_*)",
+      "Edit(//**/*.pem)",
+      "Edit(//**/id_rsa*)"
+    ]
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/session-start.sh",
+            "timeout": 15
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/pre-bash-guard.sh",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/post-edit-guard.sh",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/stop-closeout.sh",
+            "timeout": 60
+          }
+        ]
+      }
+    ]
+  }
+}

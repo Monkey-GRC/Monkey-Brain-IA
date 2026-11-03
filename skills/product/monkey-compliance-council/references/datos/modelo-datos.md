@@ -9,15 +9,15 @@ actual del backend es el punto de partida que se está rehaciendo. Dos consecuen
 - **Si el código hace algo distinto de lo que dice el comité, gana el comité.** Ellos
   hicieron el análisis funcional. Que una tabla o una fórmula ya exista no es argumento.
 - **Que algo no esté construido no es un pendiente del modelo.** Si está aquí, está
-  decidido. Lo único abierto está en `modelo-datos-pendientes.md`.
+  decidido. Lo único abierto está en `datos/pendientes/README.md`.
 
 | Archivo | Para qué |
 |---|---|
 | **este** (índice) + `modelo/` | Qué tablas hay, cómo se relacionan y cómo se calcula el cumplimiento; el contenido está en `modelo/`, un archivo por módulo |
-| `modelo-datos-decisiones.md` | Por qué se decidió cada cosa, con su fuente |
-| `modelo-datos-pendientes.md` | Las preguntas que solo el comité puede responder |
+| `datos/decisiones/README.md` | Por qué se decidió cada cosa, con su fuente |
+| `datos/pendientes/README.md` | Las preguntas que solo el comité puede responder |
 | `flujo-end-to-end.md` | El recorrido de un cliente, módulo por módulo, en orden |
-| `modulos/onboarding.md` | El detalle campo por campo de los 3 componentes del onboarding |
+| `arquitectura/onboarding/README.md` | El detalle campo por campo de los 3 componentes del onboarding |
 
 ## Cómo leer este documento
 
@@ -68,5 +68,29 @@ el nombre en inglés.
 | 8 | Control Técnico | La operación continua de la sonda | [`modelo/08-control-tecnico.md`](modelo/08-control-tecnico.md) |
 | 9 | El cálculo | Cómo se deriva el cumplimiento: activo → test → control → categoría → marco, con sus estados y reglas | [`modelo/09-calculo-cumplimiento.md`](modelo/09-calculo-cumplimiento.md) |
 | 10 | Diagrama global | Todo junto | [`modelo/10-diagrama-global.md`](modelo/10-diagrama-global.md) |
+
+### Equivalencia § ↔ módulo de arquitectura
+
+Los § **no se renumeran** (todo el cerebro los cita), pero el resto del cerebro se organiza por módulo
+(`STANDARD.md` §2b). Esta tabla es el puente: dado un §, qué módulos de
+[`arquitectura/`](../arquitectura/README.md) lo documentan por dentro.
+
+| § | Módulo de arquitectura |
+|---|---|
+| 0, 1, 2, 10 | Transversales al modelo; sin módulo propio. §2 (dimensiones) lo usan [Cumplimiento](../arquitectura/cumplimiento/README.md) y [Catálogo maestro](../arquitectura/catalogo-maestro/README.md) |
+| 3 | [Catálogo maestro](../arquitectura/catalogo-maestro/README.md) |
+| 4.1 a 4.2b | [Empresas](../arquitectura/empresas/README.md) |
+| 4.3 y 4.4 | [Aislamiento multi-tenant](../arquitectura/aislamiento-tenant/README.md) |
+| 5.1, 5.5 | [Roles y permisos](../arquitectura/roles-permisos/README.md) |
+| 5.2 (usuarios, reparto) | [Gestión de usuarios](../arquitectura/gestion-usuarios/README.md) |
+| 5.2 (sesiones, códigos) y 5.3 | [Autenticación](../arquitectura/autenticacion/README.md) |
+| 5.2 (`audit_logs`) | [Trazabilidad](../arquitectura/trazabilidad/README.md) |
+| 5.4 | [Contexto organizacional](../arquitectura/onboarding/contexto-organizacional/README.md) (los cargos) |
+| 6.1 · 6.2 · 6.3 | [Contexto organizacional](../arquitectura/onboarding/contexto-organizacional/README.md) · [Contexto del servicio](../arquitectura/onboarding/contexto-servicio/README.md) · [Conexión de activos](../arquitectura/onboarding/conexion-activos/README.md) |
+| 7.1 a 7.3, 7.6 | [Cumplimiento](../arquitectura/cumplimiento/README.md) y sus componentes |
+| 7.2 | [Cumplimiento · Riesgos](../arquitectura/cumplimiento/riesgos/README.md) |
+| 7.4 | [Trazabilidad](../arquitectura/trazabilidad/README.md) (eventos) y [Cumplimiento](../arquitectura/cumplimiento/README.md) (evaluaciones) |
+| 8 | [Control técnico](../arquitectura/control-tecnico/README.md) |
+| 9 | [Cumplimiento · Motor](../arquitectura/cumplimiento/motor/README.md) |
 
 ---

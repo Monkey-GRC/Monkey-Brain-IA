@@ -2,7 +2,7 @@
 id: feature-builder
 name: Feature Builder
 description: Checklist para construir una feature nueva end-to-end en src/features/<nombre>, respetando Clean Architecture y el patrón de la feature auth.
-type: skill
+type: recipe
 applies_to: backend
 ---
 
@@ -24,7 +24,7 @@ el ejemplo de CRUD paginado). La usa típicamente el agente `backend-senior` (ve
 
 Lee, en este orden:
 1. `../../context/backend.md`
-2. El contrato del módulo en `../../contracts/modules/` y `../../contracts/conventions.md`
+2. El contrato del módulo en `../../contracts/` y `../../contracts/conventions.md`
 3. `add-feature.md` (los pasos exactos)
 4. El código real de `src/features/auth/**` como plantilla viva.
 
@@ -42,7 +42,7 @@ Lee, en este orden:
 - [ ] Respuestas envueltas en `ResponseDto`; errores con el `error.code` del contrato.
 - [ ] Claves i18n en `i18n/es` e `i18n/en`.
 - [ ] Toda acción que **cambia datos** pasa su `AuditIntent` al método del repositorio, que la escribe **en la misma transacción** (SEG-36; sin secretos en `after_state`). `AuditLogWriter.write` queda solo para intentos fallidos.
-- [ ] Revisado contra `seguridad/requisitos.md` y, si cambia algo, una fila nueva `SEG-n`.
+- [ ] Revisado contra [`seguridad/`](../product/monkey-compliance-council/references/seguridad/README.md) y, si cambia algo, una fila nueva `SEG-n`.
 - [ ] Prueba e2e en `Backend/test/` (aislamiento entre empresas y, si audita, que el rastro sea atómico).
 
 ## Restricciones

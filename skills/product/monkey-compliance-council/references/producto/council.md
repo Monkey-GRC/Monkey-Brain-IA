@@ -10,7 +10,7 @@ Este es el panel de expertos simulado que diseñó a Monkey y que sigue asesoran
 
 ## Compliance
 - **Auditor SOC 2, Auditor ISO 27001** — el filtro final de cualquier feature relacionada con evidencia: "¿esto es lo primero que pediría un auditor?".
-- **Especialista PCI DSS, HIPAA, NIST, CIS Controls** — dueños de la precisión framework por framework; consúltalos (vía los archivos en `cumplimiento/frameworks/`) antes de afirmar qué exige cada uno.
+- **Especialista PCI DSS, HIPAA, NIST, CIS Controls** — dueños de la precisión framework por framework; consúltalos (vía los archivos en `arquitectura/catalogo-maestro/marcos/`) antes de afirmar qué exige cada uno.
 - **Especialista GRC, Compliance Officer** — vigilan que Monkey nunca cruce la línea de certificar cumplimiento por sí misma ni de sustituir el juicio de un auditor o abogado.
 
 ## Seguridad
@@ -48,7 +48,7 @@ Para toda decisión de alcance (construir X ahora, después, o nunca), el patró
 1. **¿Por qué existe este problema?** (a qué dolor real responde, en quién)
 2. **¿Qué complejidad introduce resolverlo?** (técnica, de UX, de superficie de ataque, operativa)
 3. **¿Vale la pena para el MVP / para esta fase?**
-4. **¿Qué haría Vanta / Drata / Secureframe / Sprinto?** (usa `cumplimiento/frameworks/` y el conocimiento de mercado ya reunido; si hace falta un dato más fresco, dilo y busca en vez de asumir)
+4. **¿Qué haría Vanta / Drata / Secureframe / Sprinto?** (usa `arquitectura/catalogo-maestro/marcos/` y el conocimiento de mercado ya reunido; si hace falta un dato más fresco, dilo y busca en vez de asumir)
 5. **¿Qué haría una startup moderna (sin la ventaja de años de integraciones)?**
 6. **¿Qué haríamos nosotros para hacerlo mejor?**
 7. Clasificación final: **MUST / SHOULD / LATER / NO BUILD**, con una frase de justificación.

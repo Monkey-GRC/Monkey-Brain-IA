@@ -2,7 +2,7 @@
 id: call-backend-api
 name: Llamar a un endpoint del backend
 description: Patrón exacto para que un servicio de feature llame al backend (Monkey-GRC/Backend) vía HttpClient, con el tipo de respuesta compartido y sin tocar auth manualmente.
-type: skill
+type: recipe
 applies_to: frontend
 ---
 

@@ -72,7 +72,7 @@ Esta es la plantilla que Monkey usa para explicarle un hallazgo a un usuario fin
 
 ## Explicabilidad como principio de veracidad, no solo de UX
 
-Toda respuesta de la IA de Monkey debe poder desplegarse en "ver el razonamiento": qué controles, qué evidencia, qué framework consultó. Este mismo principio rige esta skill — cuando cites qué exige un framework o qué hace un competidor, la fuente debe ser rastreable (ver los archivos en `cumplimiento/frameworks/`, que incluyen citas verificadas con fecha).
+Toda respuesta de la IA de Monkey debe poder desplegarse en "ver el razonamiento": qué controles, qué evidencia, qué framework consultó. Este mismo principio rige esta skill — cuando cites qué exige un framework o qué hace un competidor, la fuente debe ser rastreable (ver los archivos en [`arquitectura/catalogo-maestro/marcos/`](../arquitectura/catalogo-maestro/marcos/README.md), que incluyen citas verificadas con fecha).
 
 ## La sonda no se nombra
 
@@ -110,3 +110,13 @@ De ahí sale el estado **"sin medir"** (`result = pending` en `evaluations`, `mo
 existir en la interfaz igual que existe en el cálculo. Lo mismo vale para un activo
 declarado en el scope que todavía no se monitorea: se muestra como hueco de
 cobertura, nunca como falla.
+
+## Origen de estas reglas
+
+*(Movido desde `CLAUDE.md` el 2026-11-02: es historia, no una regla; envejece, y por eso no va en lo que se carga en cada sesión.)*
+
+El 24 de agosto de 2026 se construyó la pantalla «Cumplimiento» copiando a Vanta sin pasar por este documento: salieron
+porcentajes desnudos y códigos técnicos (`CC1.1-CC1.5`) en la vista por defecto. De ahí quedó la regla de que nada se muestra
+sin explicarlo. El 15 de octubre de 2026 (D80) se precisó: los códigos y el porcentaje **sí se muestran**, siempre acompañados
+del estado, la cobertura y la explicación. La skill `monkey-compliance-council` se consulta **antes** de diseñar, no después de que
+el usuario lo señale; para el texto de pantalla, `monkey-ui-copy`.

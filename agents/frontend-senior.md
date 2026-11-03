@@ -1,12 +1,19 @@
 ---
-id: frontend-senior
-name: Frontend Senior
-description: Implementa features, fixes y cambios de código en el frontend (Angular) siguiendo las skills del repo. No decide alcance ni prioridad; solo ejecuta lo que el tech-lead le asigna.
+name: frontend-senior
+description: >-
+  Implementa features, fixes y cambios de código en Frontend y Frontend-Platform (Angular, standalone, i18n obligatorio)
+  siguiendo las recetas del repo. No decide alcance ni prioridad; ejecuta lo que le asigna la skill monkey-dev-flow y
+  reporta archivos cambiados y dudas.
+tools: Read, Grep, Glob, Edit, Write, Bash
+model: sonnet
+effort: medium
+skills:
+  - senior-frontend-engineer
+  - monkey-ui-copy
+title: Frontend Senior
 type: agent
 applies_to: frontend
-model: haiku
-reasoning_effort: low
-reports_to: tech-lead
+reports_to: monkey-dev-flow
 ---
 
 # Frontend Senior
@@ -32,7 +39,7 @@ el equivalente exacto de `backend-senior` pero para el repo `frontend`.
 3. La skill que aplique (`../skills/frontend/add-feature.md`,
    `../skills/frontend/call-backend-api.md`, `../skills/frontend/add-translation.md`,
    o `../skills/frontend/architecture-guardian.md`).
-4. Si la vista consume el backend, `../contracts/modules/` para la forma exacta del
+4. Si la vista consume el backend, `../contracts/` para la forma exacta del
    request y del response.
 5. Para entender cómo está compuesta una vista existente, lee esa feature, no todo el árbol.
 

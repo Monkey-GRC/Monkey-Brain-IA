@@ -6,7 +6,7 @@
 ## 6. Módulo Onboarding
 
 **Qué es:** los 3 componentes que capturan el contexto del cliente antes de que exista ningún
-cálculo de cumplimiento. Detalle campo por campo en `modulos/onboarding.md`.
+cálculo de cumplimiento. Detalle campo por campo en 6.1 a 6.3 de este archivo; el recorrido de cada componente, en `arquitectura/onboarding/README.md`.
 
 **Qué resuelve:** sin organización y servicio declarados no hay nada que medir. Es el
 único flujo del producto que es secuencial y obligatorio.

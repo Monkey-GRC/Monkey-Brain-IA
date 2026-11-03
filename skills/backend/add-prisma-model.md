@@ -2,7 +2,7 @@
 id: add-prisma-model
 name: Agregar o editar un modelo Prisma
 description: Cómo agregar/modificar un modelo en el schema Prisma multi-archivo (una base, cuatro schemas de Postgres) y aplicar la migración.
-type: skill
+type: recipe
 applies_to: backend
 ---
 
@@ -43,7 +43,7 @@ Los antiguos `prisma/central/` y `prisma/tenant/` (una base por cliente) **ya no
    nunca se mezclan con el cambio de schema en la misma migración (la validación contra la shadow
    falla). Toda tabla nueva de `tenant`/`platform` necesita su política RLS; toda tabla nueva de
    `catalog`, las cuatro políticas de lectura/escritura (`schema-implementacion.md` §5). `npm run test:e2e` (`Backend/test/aislamiento/rls-cobertura`) **falla** si una tabla de cliente queda sin RLS, sin `FORCE`, sin política
-   o sin `tenant_id`/`company_id`: corre en el CI (`seguridad/requisitos.md`, SEG-05).
+   o sin `tenant_id`/`company_id`: corre en el CI ([`seguridad/aislamiento-tenant.md`](../product/monkey-compliance-council/references/seguridad/aislamiento-tenant.md), SEG-05).
 5. `npm run prisma:generate` si el paso anterior no regeneró el cliente (`generated/prisma`).
 6. Datos iniciales: `prisma/seed/seed-reference.ts` (`npm run reference:load`) para catálogos de referencia y `bootstrap-admin.ts` para el primer administrador, con los valores sensibles desde
    el `.env`, nunca en git.

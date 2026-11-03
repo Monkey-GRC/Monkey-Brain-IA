@@ -2,7 +2,7 @@
 id: architecture-guardian
 name: Architecture Guardian (frontend)
 description: Checklist para revisar cambios de código del frontend contra las reglas de capas (core/shared/features) y detectar violaciones.
-type: skill
+type: recipe
 applies_to: frontend
 ---
 

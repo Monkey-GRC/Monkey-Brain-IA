@@ -2,8 +2,11 @@
 
 Recorrido completo de lo que le pasa a una empresa cliente, en orden, con la entidad y
 la fuente exacta de cada paso. No repite el detalle campo por campo — para eso están
-`modelo-datos.md`, `modulos/onboarding.md` y `modelo-datos-decisiones.md`; este archivo es el
+`modelo-datos.md`, `arquitectura/onboarding/README.md` y `datos/decisiones/README.md`; este archivo es el
 mapa de cómo se encadenan.
+
+**Este archivo es el recorrido desde el producto.** El detalle técnico de cada paso (las piezas que participan, las
+tablas que se tocan y las secuencias) está en el módulo que lo implementa: [`../arquitectura/`](../arquitectura/README.md).
 
 > [!warning] ⚠️ Módulos aún no completos
 > **Usuarios** (asignación fina de permisos) y **Cumplimiento**
@@ -59,7 +62,7 @@ contrata el marco al registrar la empresa** (paso 1, D47) y el cliente lo elige,
 declarar su servicio (Componente 2).
 
 **Entidad:** `organizations`.
-**Fuente:** `modulos/onboarding.md`, Componente 1.
+**Fuente:** [`arquitectura/onboarding/contexto-organizacional/`](../arquitectura/onboarding/contexto-organizacional/README.md).
 
 ## 4. Contexto del Servicio (antes, Componente 2 del onboarding; desde D89 se hace cuando el cliente quiera)
 
@@ -70,7 +73,7 @@ Una vez por servicio (repetible). Dieciséis campos, incluida la Descripción de
 manual separada.
 
 **Entidades:** `services`, `service_trust_criteria`, `subservice_organizations`, `service_frameworks`, `system_descriptions`.
-**Fuente:** `modulos/onboarding.md`, Componente 2.
+**Fuente:** [`arquitectura/onboarding/contexto-servicio/`](../arquitectura/onboarding/contexto-servicio/README.md).
 
 ## 5. Clonado del catálogo
 
@@ -102,7 +105,7 @@ para después (D46). Hoy no hay conectores reales: la comprobación es `unavaila
 finge una conexión** (Automatizado ≠ Operativo).
 
 **Entidades:** `assets`, `automated_capabilities`.
-**Fuente:** `modulos/onboarding.md`, Componente 3; `wazuh.md`; `prowler.md`.
+**Fuente:** [`arquitectura/onboarding/conexion-activos/`](../arquitectura/onboarding/conexion-activos/README.md) y [`arquitectura/control-tecnico/`](../arquitectura/control-tecnico/README.md).
 
 ## 7. Módulo de Cumplimiento *(no completo)*
 
@@ -120,7 +123,7 @@ servicio.
 
 ## 8. Módulo de Usuarios *(no completo)*
 
-En cualquier momento (no es un paso del onboarding): `admin_empresa`, que es el experto en compliance de la empresa (D96), invita más usuarios y les asigna rol: `funcional` o `auditor`. La cuenta nace pendiente y la persona la activa con un código de un solo uso que el administrador le entrega (`contracts/modules/users-team.md`).
+En cualquier momento (no es un paso del onboarding): `admin_empresa`, que es el experto en compliance de la empresa (D96), invita más usuarios y les asigna rol: `funcional` o `auditor`. La cuenta nace pendiente y la persona la activa con un código de un solo uso que el administrador le entrega (`contracts/gestion-usuarios.md`).
 
 - A cada `funcional` le da una o más **especialidades**, que son las dimensiones (documental, aplicación, servidores, bases de datos, nube), y reparte el trabajo **por servicio y dimensión**: «Juan lleva servidores de este servicio». Puede reasignar un control puntual.
 - El `funcional` ve solo lo suyo: sube la evidencia, arregla lo que falle en su dimensión y lo marca listo. El `admin_empresa` **valida** (cumple, o rechaza con motivo) y da el veredicto de lo manual.

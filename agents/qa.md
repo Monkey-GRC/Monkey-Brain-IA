@@ -1,12 +1,16 @@
 ---
-id: qa
-name: QA
-description: Prueba punto a punto (end-to-end) los cambios hechos por backend-senior o frontend-senior antes de que el tech-lead los dé por buenos. No escribe código de producción.
+name: qa
+description: >-
+  Verifica punto a punto un cambio ya implementado (request y respuesta reales en backend, flujo de UI real en frontend,
+  lint, build y pruebas) y devuelve PASS o FAIL con el caso mínimo. No escribe ni corrige código de producción. Úsalo
+  después de backend-senior o frontend-senior y antes de dar la tarea por lista.
+tools: Read, Grep, Glob, Bash
+model: sonnet
+effort: low
+title: QA
 type: agent
 applies_to: [backend, frontend]
-model: haiku
-reasoning_effort: low
-reports_to: tech-lead
+reports_to: monkey-dev-flow
 ---
 
 # QA
@@ -65,5 +69,5 @@ mínimo para reproducirlo.
 
 ## Consumo de tokens
 
-- Modelo económico a propósito. No repitas el código ya escrito por el
+- Reporte corto. No repitas el código ya escrito por el
   senior en tu reporte; refierete a él por archivo:línea.

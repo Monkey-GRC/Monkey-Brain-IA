@@ -61,7 +61,7 @@ No solo "auditorías completadas": medir el tiempo que el usuario pasa **entendi
 
 En orden de dependencia: cada uno necesita el anterior construido. Es el ordenamiento del
 trabajo, no una fuente nueva de decisiones — si algo choca con `modelo-datos.md`,
-`modulos/onboarding.md`, `philosophy.md` o `wazuh.md`, ganan ellos.
+`arquitectura/onboarding/README.md`, `philosophy.md` o `wazuh.md`, ganan ellos.
 
 El **sprint 1** cubre los épicos 1 a 5 y está detallado aparte en `sprint-onboarding.md`
 (épicos MD-57 a MD-61 en Jira).
@@ -69,9 +69,9 @@ El **sprint 1** cubre los épicos 1 a 5 y está detallado aparte en `sprint-onbo
 | # | Épico | Qué entra | Fuente |
 |---|---|---|---|
 | 1 | **Fundación RBAC y Auth** | `companies`, `users`, los 4 roles fijos (sin roles personalizados), sesiones, aislamiento por tenant (dedicado o RLS). MFA obligatoria para los 4 roles, **en el sprint de acceso y usuarios (MD-94)** | `modelo-datos.md` §4 y §5 |
-| 2 | **Onboarding — Contexto Organizacional** | Componente 1: 10 campos de identidad, perfil y jurisdicción → `organizations` | `modulos/onboarding.md` |
-| 3 | **Onboarding — Contexto del Servicio** | Componente 2: 16 campos por servicio, incluida la Descripción del Sistema (10 secciones AICPA) → `services` y lo que cuelga de ella | `modulos/onboarding.md` |
-| 4 | **Onboarding — Control Técnico** | Componente 3: catálogo `ac_01`…`ac_06`, flujo conectar → validar → activar → programar. **El cliente nunca ve el proveedor del motor** | `modulos/onboarding.md`, `wazuh.md` |
+| 2 | **Onboarding — Contexto Organizacional** | Componente 1: 10 campos de identidad, perfil y jurisdicción → `organizations` | `arquitectura/onboarding/README.md` |
+| 3 | **Onboarding — Contexto del Servicio** | Componente 2: 16 campos por servicio, incluida la Descripción del Sistema (10 secciones AICPA) → `services` y lo que cuelga de ella | `arquitectura/onboarding/README.md` |
+| 4 | **Onboarding — Control Técnico** | Componente 3: catálogo `ac_01`…`ac_06`, flujo conectar → validar → activar → programar. **El cliente nunca ve el proveedor del motor** | `arquitectura/onboarding/README.md`, `wazuh.md` |
 | 5 | **Catálogo maestro y clonado** | Marcos, requisitos, puntos de enfoque y el control atómico. Al elegir marco, el catálogo queda disponible sin pasos manuales: controles clonados, requisitos y puntos de enfoque referenciados con FK (D3) | `modelo-datos.md` §3 |
 | 6 | **Motor de cumplimiento (cálculo)** | Cumplimiento derivado por par servicio × marco, nunca un % de empresa completa; recorrido requisitos → puntos de enfoque → controles, nunca almacenado como atributo del marco | `modelo-datos.md` §9 (D68: el motor del comité; reemplaza la agregación de D62) |
 | 7 | **Motor de evidencias** | Cadena de custodia completa: origen, fecha, responsable, versión, integridad | `modelo-datos.md` §7.3 |
@@ -119,7 +119,7 @@ de cumplimiento global (%)" queda derogado por la decisión de medir por servici
 
 ## Trabajo que sale de las decisiones del modelo (16 sep 2026)
 
-Al cerrar el modelo relacional (`modelo-datos-decisiones.md`) quedaron dos cosas que no son
+Al cerrar el modelo relacional (`datos/decisiones/README.md`) quedaron dos cosas que no son
 decisiones de modelo sino de roadmap:
 
 **Checks de nube — SHOULD, y urgente.** De los 61 TEST del catálogo, los **11 de nube
@@ -141,3 +141,14 @@ de cumplimiento descarta del denominador todo check cuyo resultado no encuentra,
 produce una exclusión de facto sin justificación ni rastro — justo lo que el material
 fuente llama deshonesto ante un auditor. Hay que corregirlo antes de mostrarle un
 porcentaje a un cliente real.
+
+## Estado vigente del proyecto: reconstrucción
+
+*(Movido desde `CLAUDE.md` el 2026-11-02: es estado del proyecto, no una regla permanente.)*
+
+- El proyecto está en **reconstrucción**. `datos/modelo-datos.md` es el plan vigente; el schema actual de `Backend` es el punto de
+  partida que se rehace, no la referencia.
+- Si Monkey hoy hace algo de una forma y el comité propuso otra, **se hace caso al comité**. Que una tabla, un enum o un cálculo ya
+  exista no es argumento para conservarlo.
+- Que algo no exista aún en el schema no es un pendiente: si está en `modelo-datos.md`, está decidido y listo para construirse. Solo
+  queda abierto lo que está en `datos/pendientes/`.

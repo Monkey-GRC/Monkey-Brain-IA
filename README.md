@@ -36,15 +36,15 @@ IA pueda:
    `manifest.json` es el índice máquina-legible de los recursos.
 2. Antes de tocar código, leer solo el `context/` del repo en que se trabaja
    (`backend.md` o `frontend.md`).
-3. Si la tarea calza con un agente definido en `agents/`, adoptar ese rol/checklist.
-4. Si la tarea calza con una skill definida en `skills/` (técnica de backend
-   en `skills/backend/`, técnica de frontend en `skills/frontend/`, de
-   producto/compliance en `skills/product/`, transversal en `skills/shared/`),
-   seguir sus pasos en orden.
+3. **En Claude Code** las tareas de desarrollo entran por la skill `monkey-dev-flow` y los roles de `agents/` son subagentes
+   reales (ver «Cómo se carga en Claude Code»). **En otra herramienta**, si la tarea calza con un agente de `agents/`,
+   adoptar ese rol/checklist.
+4. Si la tarea calza con una skill de `skills/` (proceso en `skills/process/`, técnica de backend en `skills/backend/`, de
+   frontend en `skills/frontend/`, de producto/compliance en `skills/product/`), seguir sus pasos en orden.
 5. Antes de crear o mover módulos, revisar el `architecture-guardian.md` del repo que
    corresponda (`skills/backend/` o `skills/frontend/`) para no violar la regla de capas.
 6. Antes de construir un endpoint o un formulario, leer el módulo correspondiente de
-   `contracts/modules/`.
+   `contracts/`.
 7. **Todo lo que deba escalarse (decisión crítica, pregunta, aprobación) va
    siempre hacia el usuario que está usando la herramienta en ese momento** —
    nunca a un nombre fijo ni a una persona específica del dominio de negocio.
@@ -93,7 +93,28 @@ Monkey-Brain-IA/
         └── monkey-compliance-council/  # "el Consejo": cerebro de producto/compliance (mapa en references/README.md)
 ```
 
+## Cómo se carga en Claude Code
+
+Claude Code se abre **siempre desde este repo**; los repos hermanos (`Backend`, `Frontend`, `Frontend-Platform`,
+`monkey-cis-sync`) se alcanzan por `permissions.additionalDirectories`. El contenido real vive en `skills/` y `agents/`
+(portable); `.claude/` solo lo expone a Claude Code:
+
+| Pieza | Dónde vive | Cómo se registra |
+|---|---|---|
+| Reglas permanentes | `CLAUDE.md` | Se carga al arrancar |
+| Permisos y hooks | `.claude/settings.json` + `.claude/hooks/` | Claude Code los lee y recarga solos |
+| Skills | `skills/process/`, `skills/backend/`, `skills/frontend/`, `skills/product/` | Symlinks en `.claude/skills/` |
+| Subagentes | `agents/*.md` (frontmatter con `name`, `description`, `tools`, `model`) | Symlinks en `.claude/agents/` |
+
+Skills de proceso: `monkey-dev-flow` (el flujo), `monkey-preflight`, `monkey-ui-copy`, `monkey-security-review`,
+`monkey-registry` y `monkey-closeout`. Las recetas planas de `skills/backend/` y `skills/frontend/` (`type: recipe`) no son skills:
+las enruta cada `senior-*-engineer`.
+
 ## Equipo de agentes (jerarquía fija)
+
+> **En Claude Code**, el rol del `tech-lead` lo ejecuta la sesión principal con la skill `monkey-dev-flow`, y los demás son
+> subagentes (`backend-senior`, `frontend-senior`, `qa`, `architecture-reviewer`, `product-owner`, `wazuh-integration-expert`).
+> El diagrama de abajo sigue siendo el modelo conceptual.
 
 ```
                           usuario (quien está usando la herramienta ahora)
@@ -140,7 +161,7 @@ Monkey-Brain-IA/
   reportes de avance — es consultado puntualmente por `tech-lead` o
   `backend-senior` cuando el backend necesita comunicarse con la sonda
   (API REST, SCA, syscollector, vulnerabilidades, grupos por cliente).
-  Responde con hechos de `references/control-tecnico/`, nunca escribe código de producción — la
+  Responde con hechos de `references/arquitectura/control-tecnico/motores/`, nunca escribe código de producción — la
   implementación la sigue haciendo `backend-senior` con
   `skills/backend/add-wazuh-integration.md`. Cualquier cambio de
   firewall/puertos del VPS o de dónde se guardan las credenciales de la API
@@ -150,10 +171,8 @@ Monkey-Brain-IA/
 Ningún agente escala a un nombre propio ni a un rol de negocio específico —
 siempre a **quien está operando la herramienta en esa sesión**.
 
-Modelos asignados (pensado para bajo consumo de tokens): `product-owner`,
-`tech-lead` y `wazuh-integration-expert` = sonnet (requieren juicio, no
-solo ejecución mecánica), `backend-senior`, `frontend-senior` y `qa` =
-haiku. Todos con reportes cortos y formato fijo (ver cada archivo de
+Modelos asignados: todos los subagentes usan `sonnet`; cambian el `effort` (`medium` para quienes implementan o
+deciden, `low` para `qa` y `wazuh-integration-expert`). Todos con reportes cortos y formato fijo (ver cada archivo de
 agente), y todos leen la parte del código que necesitan en vez de repos completos, para
 minimizar tokens.
 
@@ -165,13 +184,12 @@ minimizar tokens.
   campos `path` son relativos a esta carpeta (`Monkey-Brain-IA/`).
 - `skills/` está organizada en categorías claras a nivel de carpeta:
   `backend/` (implementación NestJS), `frontend/` (implementación Angular),
-  `product/` (producto/estrategia/compliance), `integrations/` (conocimiento
+  `process/` (el flujo de trabajo: preflight, cierre, registros, seguridad, copy), `product/` (producto/estrategia/compliance), `integrations/` (conocimiento
   de sistemas externos que el backend consume, p. ej. Wazuh) y `shared/`
   (transversales, no atadas a un repo). Cualquier skill nueva va dentro de
   la categoría que corresponda, no suelta en la raíz de `skills/`.
-- Nada del contenido propio de esta carpeta es específico de un vendor: no
-  hay sintaxis de herramienta, así que puede copiarse o enlazarse desde la
-  config propia de cualquier herramienta.
+- El contenido de `skills/`, `agents/`, `references/` y `contracts/` no depende de un vendor y puede copiarse o enlazarse
+  desde la config de cualquier herramienta. **`.claude/` es específico de Claude Code**: ahí solo hay permisos, hooks y symlinks.
 - **Excepción explícita**: `skills/product/monkey-compliance-council/` se
   importó íntegro y se dejó en su formato original de Claude Code Skill
   (`SKILL.md` con frontmatter `name`/`description` + `references/`), porque

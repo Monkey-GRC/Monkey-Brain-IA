@@ -2,7 +2,7 @@
 id: add-i18n-error
 name: Agregar un error manejado con i18n
 description: Cómo agregar un error de negocio nuevo, con su error.code del contrato y su mensaje traducido, que recoge el filtro global de excepciones.
-type: skill
+type: recipe
 applies_to: backend
 ---
 
@@ -15,7 +15,7 @@ con `message` ya traducido según `Accept-Language` (`nestjs-i18n`, archivos en 
 ## Pasos
 
 1. Tomar el `error.code` de la tabla de errores del contrato del módulo
-   (`contracts/modules/*.md`). Si no está, el contrato se actualiza primero.
+   (`contracts/<módulo>.md`). Si no está, el contrato se actualiza primero.
 2. Agregarlo al tipo `DomainErrorCode` en `src/common/errors/domain-error.ts` y a
    `DOMAIN_ERROR_CATALOG` en `domain-error.catalog.ts`, con su status HTTP y su clave i18n
    (`<archivo>.<clave>`, p. ej. `company.name_taken` → `i18n/<lang>/company.json`, clave `name_taken`).

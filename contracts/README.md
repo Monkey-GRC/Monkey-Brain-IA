@@ -16,24 +16,41 @@ te toca. Si lo que vas a construir no está aquí, el contrato se acuerda primer
 
 ## Estructura
 
+**Un módulo, un archivo; un módulo con componentes, una carpeta** — los mismos nombres que
+`references/arquitectura/` (`STANDARD.md` §2b). Si sabes de qué parte del producto hablas, sabes qué contrato abrir.
+
+### Transversal
+
 | Archivo | Qué trae |
 |---|---|
-| `conventions.md` | Lo transversal: sobre de respuesta, forma del error, i18n, multi-select, fechas, paginación |
-| `enums.md` | Tabla única `valor` ↔ etiqueta es ↔ etiqueta en, para todos los enums del onboarding |
-| `modules/monkey-admin.md` | Registro del tenant y clave de acceso (`companies`, `access_keys`) |
-| `modules/monkey-admin-catalog.md` | Monkey Admin: ver y gestionar el catálogo maestro (marcos, controles, riesgos, causas, pruebas y evidencias) |
-| `modules/auth.md` | Canje de la clave, login, refresh |
-| `modules/users-team.md` | Equipo: el administrador invita a `funcional` y `auditor`, activan su cuenta y se reparte el trabajo por dimensión |
-| `modules/onboarding-organizational-context.md` | Componente 1 — 10 campos |
-| `modules/onboarding-service-context.md` | Componente 2 — 16 campos, repetible por servicio |
-| `modules/onboarding-technical-control.md` | Componente 3 del onboarding — escenario, scope, conexión de activos (rol, llaves, agente), validación, activación |
-| `modules/compliance-controls.md` | Cumplimiento: controles (listar, ver, crear un control propio, editar y dar de baja directamente, con confirmación) |
-| `modules/compliance-risks.md` | Cumplimiento: riesgos y causas, vínculos, evaluación 5×5 y tratamiento |
-| `modules/compliance-evidence.md` | Cumplimiento: evidencias (subir con huella y versión, descargar con enlace firmado, aprobar o rechazar) |
-| `modules/compliance-responsibles.md` | Cumplimiento: los cargos responsables de la organización |
-| `modules/compliance-overview.md` | Cumplimiento: el resumen del servicio por marco y categoría, (las evaluaciones del servicio están en pausa, D96) |
-| `modules/compliance-audit.md` | Cumplimiento: tests y veredictos, observaciones del auditor, y exclusiones |
-| `modules/control-tecnico-operacion.md` | Módulo de operación continua (§8): ejecuciones, estado de preparación, hallazgos, vista técnica y API interna del trabajador. Empieza donde acaba el Componente 3 |
+| [`conventions.md`](conventions.md) | Sobre de respuesta, forma del error, i18n, multi-select, fechas, paginación |
+| [`enums.md`](enums.md) | Índice de los enums: `valor` ↔ etiqueta es ↔ etiqueta en. Los valores viven en [`enums/`](enums/) con la misma estructura por módulo y componente |
+
+### Por módulo
+
+| Módulo | Contrato | Qué trae |
+|---|---|---|
+| Autenticación | [`autenticacion.md`](autenticacion.md) | Canje de la clave, login, refresh, segundo factor, activación y contraseña |
+| Gestión de usuarios | [`gestion-usuarios.md`](gestion-usuarios.md) | El administrador invita a `funcional` y `auditor`, activan su cuenta y se reparte el trabajo |
+| Empresas | [`empresas.md`](empresas.md) | Registro del tenant y clave de acceso (`companies`, `access_keys`) |
+| Catálogo maestro | [`catalogo-maestro.md`](catalogo-maestro.md) | Monkey Admin: ver y gestionar el catálogo (marcos, controles, riesgos, causas, pruebas, evidencias) |
+| Onboarding | [`onboarding/contexto-organizacional.md`](onboarding/contexto-organizacional.md) | Componente 1 — 10 campos de la empresa |
+| | [`onboarding/contexto-servicio.md`](onboarding/contexto-servicio.md) | Componente 2 — 16 campos, repetible por servicio |
+| | [`onboarding/conexion-activos/`](onboarding/conexion-activos/README.md) | Componente 3 — conexión de activos: rol, llaves, agente, validación y activación  — partido en `conectar`, `validar` y `gestionar` |
+| | [`onboarding/cargos-responsables.md`](onboarding/cargos-responsables.md) | Los cargos de la organización que responden ante el auditor |
+| Control técnico | [`control-tecnico.md`](control-tecnico.md) | Operación continua: ejecuciones, preparación, hallazgos y API interna del trabajador |
+| Cumplimiento | [`cumplimiento/controles.md`](cumplimiento/controles.md) | Controles: listar, ver, crear un control propio, editar y dar de baja |
+| | [`cumplimiento/resumen.md`](cumplimiento/resumen.md) | El resumen del servicio por marco y categoría |
+| | [`cumplimiento/evidencia.md`](cumplimiento/evidencia.md) | Evidencias: subir con huella y versión, descargar con enlace firmado, validar o rechazar |
+| | [`cumplimiento/veredictos.md`](cumplimiento/veredictos.md) | Los tests de un control, qué falló y cómo corregirlo, y el veredicto de una prueba manual |
+| | [`cumplimiento/observaciones.md`](cumplimiento/observaciones.md) | Lo que escribe el auditor y cómo lo responde la empresa |
+| | [`cumplimiento/exclusiones.md`](cumplimiento/exclusiones.md) | Sacar un activo de un test, con vigencia |
+| | [`cumplimiento/riesgos.md`](cumplimiento/riesgos.md) | Riesgos y causas, vínculos, evaluación 5×5 y tratamiento |
+
+Lo que comparten los contratos de Cumplimiento (quién puede qué y el estado general) está en
+[`cumplimiento/README.md`](cumplimiento/README.md).
+
+Cómo funciona cada módulo por dentro: [`references/arquitectura/`](../skills/product/monkey-compliance-council/references/arquitectura/README.md).
 
 ## Formato de cada módulo
 
@@ -41,7 +58,7 @@ Propósito en una línea → entidades de `modelo-datos.md` que toca → tabla d
 real** de request y response por endpoint → tabla de errores → preguntas abiertas.
 
 El contrato dice **qué**, no **por qué**. El porqué de una decisión vive en
-`skills/product/monkey-compliance-council/references/datos/modelo-datos-decisiones.md`.
+`datos/decisiones/README.md`.
 
 ## Quién manda si hay conflicto
 
