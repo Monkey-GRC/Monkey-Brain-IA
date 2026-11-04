@@ -7,11 +7,38 @@ type: contract
 
 # Cumplimiento — exclusiones
 
-**Contexto común** (quién puede qué, estado general y la tabla de permisos de los tres contratos de validación y auditoría): [`README.md`](README.md).
-
-## Exclusiones
+| | |
+|---|---|
+| **Estado** | **ACORDADO** (D96), construido (2026-10-28, B66) |
+| **App** | Monkey Platform |
+| **Contexto común** | Quién puede qué, estado general y errores comunes: [`README.md`](README.md) |
+| **Entidades** | `exclusions` (`modelo-datos.md` §7.2) · enums: [`enums.md`](../enums.md) (`exclusion_status`) |
 
 Excluir un **activo de un test** cambia lo que se mide (D74). **El `admin_empresa` la propone y la decide en un solo acto** (D96): la exclusión nace **aprobada**, con su justificación, su vigencia y quién la aprobó (REQ-008 del Excel). Vence al final del período de evaluación; al renovar se revalida. El veredicto de la sonda nunca se sobrescribe. Los estados `pending` y `rejected` quedan sin uso.
+
+## Índice de endpoints
+
+| Método | Ruta | Quién | Para qué |
+|---|---|---|---|
+| `POST` | [`/v1/services/{service_id}/exclusions`](#post-v1servicesservice_idexclusions--decidir-una-exclusión) | `admin_empresa` | Decidir una exclusión |
+| `GET` | [`/v1/services/{service_id}/exclusions`](#get-v1servicesservice_idexclusions--listar-exclusiones) | `admin_empresa` · `auditor` | Listar exclusiones |
+
+## El objeto exclusión
+
+| Campo | Tipo | Qué es |
+|---|---|---|
+| `id` | uuid | |
+| `service_id` | uuid | La exclusión es de un activo en un test **de un servicio** (D83) |
+| `test` | `{ id, display_name }` | |
+| `asset` | `{ id, name }` | |
+| `justification` | string | Obligatoria |
+| `technical_justification` | string \| null | Obligatoria si el test es automático |
+| `status` | enum `exclusion_status` | Siempre `approved` desde D96 |
+| `is_expired` | boolean | Derivado de `valid_until` |
+| `valid_from`, `valid_until` | date | |
+| `proposed_by`, `decided_by` | `{ id, name, last_name }` | **Son la misma persona** (se conservan para no cambiar la tabla) |
+| `requested_at`, `decided_at` | datetime | **El mismo instante** |
+| `decision_note` | string \| null | |
 
 ```json
 {
@@ -33,9 +60,23 @@ Excluir un **activo de un test** cambia lo que se mide (D74). **El `admin_empres
 }
 ```
 
-`proposed_by` y `decided_by` son la misma persona, y `requested_at` y `decided_at` el mismo instante: se conservan para no cambiar la tabla.
+---
 
-### `POST /v1/services/{service_id}/exclusions`
+### POST /v1/services/{service_id}/exclusions — Decidir una exclusión
+
+| | |
+|---|---|
+| **Quién** | `admin_empresa` |
+| **Éxito** | `201`, `status: "approved"` |
+| **Errores** | `403` · `404` · `409 EXCLUSION_ALREADY_EXISTS` · `409 EVALUATION_NOT_DEFINED` · `422 VALIDATION_FAILED` |
+
+#### Request
+| Campo | Tipo | Obligatorio | Regla |
+|---|---|---|---|
+| `test_id` | uuid | sí | Debe aplicarle al activo |
+| `asset_id` | uuid | sí | Debe pertenecer al servicio; si no, `404` |
+| `justification` | string | sí | |
+| `technical_justification` | string | si el test es automático | La sonda no se sobrescribe sin sustento técnico |
 
 ```json
 {
@@ -46,17 +87,35 @@ Excluir un **activo de un test** cambia lo que se mide (D74). **El `admin_empres
 }
 ```
 
-- Solo `admin_empresa`. `justification` es obligatoria. `technical_justification` es **obligatoria si el test es automático**: la sonda no se sobrescribe sin sustento técnico.
-- La vigencia **no la manda el cliente**: empieza hoy y termina en el `period_end` de la evaluación del servicio. Si esa evaluación no tiene período, `409 EVALUATION_NOT_DEFINED` (`P26`).
-- El activo debe pertenecer al servicio y el test aplicarle; si no, `404`. Repetir una exclusión aprobada y vigente de lo mismo es `409 EXCLUSION_ALREADY_EXISTS`.
-- Responde `201`, `status: "approved"`: **el activo sale del universo aplicable del test** (su resultado pasa a `excluded`) y queda el evento `exclusion.approve`.
+#### Response `201`
+El objeto exclusión de arriba.
 
-### `GET /v1/services/{service_id}/exclusions`
+> - La vigencia **no la manda el cliente:** empieza hoy y termina en el `period_end` de la evaluación del servicio. Si esa evaluación no tiene período, `409 EVALUATION_NOT_DEFINED` (`P26`).
+> - Repetir una exclusión aprobada y vigente de lo mismo es `409 EXCLUSION_ALREADY_EXISTS`.
+> - **El activo sale del universo aplicable del test** (su resultado pasa a `excluded`) y queda el evento `exclusion.approve`.
 
-Paginada, de la más reciente a la más antigua. Filtros `test_id`, `asset_id`, `expired` (`true`/`false`). Una cuya `valid_until` ya pasó trae `is_expired: true` y **el activo vuelve a contar**; para renovarla se crea una nueva (se revalida, no se hereda). La leen `admin_empresa` y `auditor`.
+### GET /v1/services/{service_id}/exclusions — Listar exclusiones
 
-**No hay `PATCH`:** ya nadie decide sobre lo propuesto por otro (`conventions.md`). Dejar sin efecto una exclusión vigente antes de que venza es `LATER`.
-## Errores
+| | |
+|---|---|
+| **Quién** | `admin_empresa` · `auditor` |
+| **Éxito** | `200`, paginada, de la más reciente a la más antigua |
+| **Errores** | `403` · `404` |
+
+#### Parámetros (query)
+| Campo | Tipo | Obligatorio | Regla |
+|---|---|---|---|
+| `page`, `page_size` | integer | no | Ver `conventions.md` |
+| `test_id`, `asset_id` | uuid | no | Filtro |
+| `expired` | boolean | no | `true`/`false` |
+
+> Una cuya `valid_until` ya pasó trae `is_expired: true` y **el activo vuelve a contar**; para renovarla se crea una nueva (se revalida, no se hereda).
+>
+> **No hay `PATCH`:** ya nadie decide sobre lo propuesto por otro (`conventions.md`). Dejar sin efecto una exclusión vigente antes de que venza es `LATER`.
+
+---
+
+## Errores del módulo
 
 Los errores comunes (`FORBIDDEN`, `NOT_FOUND`, `VALIDATION_FAILED`) están en [`README.md`](README.md#errores-comunes); aquí solo los propios.
 
@@ -65,13 +124,19 @@ Los errores comunes (`FORBIDDEN`, `NOT_FOUND`, `VALIDATION_FAILED`) están en [`
 | 409 | `EXCLUSION_ALREADY_EXISTS` | Ya hay una aprobada y vigente del mismo activo en el mismo test |
 | 409 | `EVALUATION_NOT_DEFINED` | La evaluación del servicio no tiene período o fecha de corte |
 
-Claves i18n: `exclusion.list`, `exclusion.created`.
+**Claves i18n:** `exclusion.list`, `exclusion.created`.
 
 ## Auditoría
 
 | `action` | Cuándo | Quién |
 |---|---|---|
-| `exclusion.create` | se decide una exclusión (con `compliance_events` al aprobar o vencer) | `admin_empresa` |
+| `exclusion.create` | Se decide una exclusión (con `compliance_events` al aprobar o vencer) | `admin_empresa` |
+
+## Preguntas abiertas
+
+- **`P26`:** período y fecha de corte de la evaluación del servicio. Mientras no se definan, crear una exclusión responde `409 EVALUATION_NOT_DEFINED`.
+
+---
 
 ## Estado de implementación
 
@@ -82,7 +147,3 @@ Claves i18n: `exclusion.list`, `exclusion.created`.
 Lo que no cambia y el código ya hace: la vigencia llega al `period_end` del servicio (D87); «vencida» se deriva al leer (`is_expired`, `DT-72`, `MD-171`); solo se excluye el activo de un test (la de un check, `excluded_check_id`, es `MD-170`, `DT-74`); y `ai_suggestion` no se guarda ni se devuelve: la IA no escribe aquí.
 
 La pantalla de exclusiones solo crea y lista: la decisión es el mismo acto (sin aviso de espera ni casilla de contacto: MD-169, `P28`).
-
-## Preguntas abiertas
-
-- **`P26`**: período y fecha de corte de la evaluación del servicio. Mientras no se definan, crear una exclusión responde `409 EVALUATION_NOT_DEFINED`.

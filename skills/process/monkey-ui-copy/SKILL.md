@@ -30,9 +30,9 @@ desnudos y códigos técnicos sin explicar.
 ## 3. Quién ve qué
 
 - **Vista técnica** (estados del motor, pruebas, puntos de enfoque, matrices): `auditor` y `admin_empresa` (D81, D96), mientras
-  los permisos por pantalla sigan abiertos (`P3`). No es un modo ni un botón: es lo que ese rol ve.
-- El `funcional` ve la vista de negocio, que ya usa el vocabulario y los códigos del dominio.
-- El `admin_empresa` es el experto en compliance de su empresa y quien valida; el `funcional` ejecuta lo de su dimensión;
+  (D102: el comité no entregará el Excel por pantalla). No es un modo ni un botón: es lo que ese rol ve.
+- El `responsable` y el `delegado` ven la vista de negocio de **sus controles**, con el vocabulario y los códigos del dominio, y el avance de lo suyo (nunca el de la empresa).
+- El `admin_empresa` es el experto en compliance de su empresa y quien valida; el `responsable` es dueño de sus controles y el `delegado` los ejecuta (D102);
   el `auditor` revisa y no califica por ahora (D96).
 
 ## 4. Lo que el texto nunca hace

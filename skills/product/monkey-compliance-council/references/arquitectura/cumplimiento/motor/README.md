@@ -65,7 +65,7 @@ probar el cumplimiento sin levantar Postgres.
 
 ## Dos cosas que el motor no hace
 
-- **No sabe de roles.** Qué ve cada rol (`funcional` solo lo suyo, vista técnica solo `auditor` y `admin_empresa`)
+- **No sabe de roles.** Qué ve cada rol (`responsable` y `delegado` solo lo suyo, vista técnica solo `auditor` y `admin_empresa`)
   lo decide la capa de aplicación (`application/shared/view-access.ts` y los casos de uso).
 - **No sabe de tiempo.** La vigencia de una exclusión o el corte del período los resuelve quien carga los datos
   (`service-snapshot.loader`) o el [resumen](../resumen/README.md). El motor solo recibe estados ya resueltos.

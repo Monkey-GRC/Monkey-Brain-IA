@@ -49,6 +49,9 @@ def main():
         lines = t.split('\n')
         for i in range(1, len(lines) - 1):
             if lines[i].strip() == '' and lines[i - 1].startswith('|') and lines[i + 1].startswith('|'):
+                # Dos tablas seguidas son válidas: la segunda empieza con su encabezado y su fila separadora.
+                if i + 2 < len(lines) and re.match(r'^\|[\s:|-]+\|\s*$', lines[i + 2]) and '---' in lines[i + 2]:
+                    continue
                 errors.append(f'{rel(p)}:{i + 1}: tabla partida por una línea en blanco')
         for m in link.finditer(t):
             u, anc = m.group(1), (m.group(2) or '')[1:]
@@ -59,6 +62,23 @@ def main():
                 errors.append(f'{rel(p)}: enlace roto -> {u}')
             elif anc and target.endswith('.md') and target in anchors and anc not in anchors[target]:
                 errors.append(f'{rel(p)}: anclaje roto -> {u}#{anc}')
+        r = rel(p)
+        if r.startswith('contracts' + os.sep):
+            fence = False
+            # Formato de enums: una tabla por enum, nunca una línea corrida («`low` Baja · `high` Alta»).
+            if r.startswith('contracts' + os.sep + 'enums' + os.sep):
+                for i, l in enumerate(lines):
+                    if l.startswith('```'):
+                        fence = not fence
+                    if not fence and re.match(r'^`[a-z0-9_]+`\s+[^|`]+\s·\s`[a-z0-9_]+`', l):
+                        errors.append(f'{r}:{i + 1}: enum en línea corrida; usa una tabla (contracts/README.md, «Formato de un enum»)')
+            # Formato de contratos: cada ficha de endpoint trae su fila «Quién» (contracts/README.md, «Formato de un contrato»).
+            elif os.path.basename(p) not in ('README.md', 'conventions.md', 'enums.md'):
+                for i, l in enumerate(lines):
+                    if l.startswith('```'):
+                        fence = not fence
+                    if not fence and re.match(r'^#{2,4} (GET|POST|PUT|PATCH|DELETE) /', l) and not any('**Quién**' in x for x in lines[i + 1:i + 8]):
+                        warns.append(f'{r}:{i + 1}: ficha de endpoint sin fila «Quién» ({l[:60]})')
         size = len(t.encode('utf-8'))
         if size > SIZE_LIMIT and not any(rel(p).endswith(x) for x in SIZE_EXCEPTIONS):
             warns.append(f'{rel(p)}: {size // 1024} KB (>25 KB, STANDARD.md §3)')

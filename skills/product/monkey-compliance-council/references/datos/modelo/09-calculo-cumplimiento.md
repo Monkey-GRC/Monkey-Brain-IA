@@ -146,7 +146,7 @@ o quede pendiente o en error, vuelve a romperlo. Las simulaciones 1 a 6 y las va
 
 ### Qué ve cada rol, y el semáforo
 
-Los estados de arriba (efectivo, incompleto, vencido…) y las listas de controles son **la vista técnica**: es la pantalla de los roles `auditor` y `admin_empresa` (D81, D96; mientras `P3` siga abierta). **El cliente** (`admin_empresa`, `funcional`)
+Los estados de arriba (efectivo, incompleto, vencido…) y las listas de controles son **la vista técnica**: es la pantalla de los roles `auditor` y `admin_empresa` (D81, D96). **El cliente** (`admin_empresa`, `responsable`, `delegado`)
 ve por defecto la vista de negocio (REQ-049): el semáforo cualitativo primero, y en qué falla y su avance (`philosophy.md`).
 
 | Semáforo | Cuándo (sobre el avance del nivel) |
@@ -169,7 +169,7 @@ de estado (REQ-043, REQ-044): se cumple con el historial inmutable de evaluacion
 
 ### La trazabilidad de una falla
 
-Modelo de navegación del producto, con **responsable y tratamiento en cada nivel**. Es lo que se le muestra a `admin_empresa` y `funcional` (en qué falla y su avance); los códigos técnicos solo los ve el auditor (D63):
+Modelo de navegación del producto, con **responsable y tratamiento en cada nivel**. Es lo que se le muestra a `admin_empresa`, `responsable` y `delegado` (en qué falla y su avance, cada uno de lo suyo); los códigos técnicos solo los ve el auditor (D63):
 
 | Nivel | Lleva a | Responsable | Tratamiento |
 |---|---|---|---|

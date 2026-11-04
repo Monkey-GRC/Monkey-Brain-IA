@@ -7,6 +7,10 @@ type: contract
 
 # Contratos de Cumplimiento
 
+> Formato de cada contrato: [`../README.md`](../README.md#formato-de-un-contrato).
+
+## Índice
+
 | Contrato | Qué cubre |
 |---|---|
 | [`controles.md`](controles.md) | Controles: listar, ver, crear uno propio, editar y dar de baja |
@@ -17,29 +21,37 @@ type: contract
 | [`observaciones.md`](observaciones.md) | Lo que escribe el auditor y cómo lo responde la empresa |
 | [`exclusiones.md`](exclusiones.md) | Sacar un activo de un test, con vigencia |
 
-**Estado: ACORDADO, reescrito por D96 (2026-10-27).** Construido: exclusiones MD-144, revisión de la evidencia MD-127, veredicto MD-155, observaciones del auditor MD-154; el Backend ya quedó ajustado a este texto salvo lo que lista «Estado de implementación». Ver `conventions.md` (sección «Cumplimiento») y `enums.md`. Tickets: MD-144, MD-154, MD-155, MD-127.
+| | |
+|---|---|
+| **Estado** | **ACORDADO**, reescrito por D96 (2026-10-27) y ajustado por D102 (2026-11-03: dueño, ejecutor y revisión en dos niveles; por construir en el sprint 3) |
+| **App** | Monkey Platform |
+| **Entidades** | `evaluations`, `evidence_submissions`, `evidence_reviews`, `audit_observations`, `exclusions` (`modelo-datos.md` §7.3 a §7.6) |
+| **Tickets** | MD-144, MD-154, MD-155, MD-127 · sprint 3: MD-193, MD-194 |
 
-**Qué es.** El **`admin_empresa` es el experto en compliance** (D96): valida la evidencia, da el veredicto de las pruebas manuales y decide las exclusiones. El **`funcional`** sube la evidencia y repara lo suyo, y el **`auditor`** revisa y escribe observaciones que la empresa debe atender; no califica por ahora. **Entidades:** `evaluations`, `evidence_submissions`, `evidence_reviews`, `audit_observations`, `exclusions` (`modelo-datos.md` §7.3 a §7.6). **App:** Monkey Platform.
+Construido: exclusiones MD-144, revisión de la evidencia MD-127, veredicto MD-155, observaciones del auditor MD-154; el Backend ya quedó ajustado a este texto salvo lo que lista «Estado de implementación». Ver `conventions.md` (sección «Cumplimiento») y `enums.md`.
+
+**Qué es.** El **`admin_empresa` es el experto en compliance** (D96): valida la evidencia, da el veredicto de las pruebas manuales y decide las exclusiones. El **`responsable`** (dueño del control) y su **`delegado`** (ejecutor) suben la evidencia y reparan lo suyo (D102); el responsable además revisa lo que suben sus delegados, y el **`auditor`** revisa y escribe observaciones que la empresa debe atender; no califica por ahora. 
 Los cambios de controles, riesgos y causas están en `contracts/cumplimiento/controles.md` y `contracts/cumplimiento/riesgos.md`; el resumen del servicio, en `contracts/cumplimiento/resumen.md`; y quién es responsable de qué, en `contracts/gestion-usuarios.md`.
 
 ## Quién puede qué
 
-| Acción | `admin_empresa` | `funcional` | `auditor` |
+| Acción | `admin_empresa` | `responsable` y `delegado` | `auditor` |
 |---|---|---|---|
 | Ver los tests de un control (vista técnica, D81) | ✓ | `403` | ✓ |
 | Ver qué falló y cómo corregirlo en una prueba de nube (hallazgos) | ✓ | ✓ solo la suya | ✓ |
 | Dar el veredicto de un test manual | ✓ | `403` | `403` |
-| Validar o rechazar una evidencia (atributos y revisión) | ✓ | `403` | `403` |
+| Revisar (validar o rechazar) una evidencia | ✓ cualquiera | ✓ **solo el `responsable` dueño**, lo que no subió él (`delegado`: `403`) | `403` |
 | Escribir, editar y cerrar una observación | `403` | `403` | ✓ las suyas |
 | Ver las observaciones | todas | **las de los controles de los que es responsable** | todas |
 | Responder una observación | ✓ | ✓ solo de un control suyo | `403` |
 | Decidir una exclusión (la propone y la aprueba en un acto) | ✓ | `403` | `403` |
 | Ver las exclusiones | ✓ | `403` | ✓ |
+
 ## Errores comunes
 
 | HTTP | `error.code` | Cuándo |
 |---|---|---|
-| 403 | `FORBIDDEN` | El rol no puede; cerrar una observación que no escribió; el `funcional` no es responsable de ese control |
+| 403 | `FORBIDDEN` | El rol no puede; cerrar una observación que no escribió; el control no es del `responsable` o `delegado` que lo pide |
 | 404 | `NOT_FOUND` | El control, el test, el activo, la observación o la exclusión no existen para esta empresa |
 | 422 | `VALIDATION_FAILED` | Campos: `required`, `enum.invalid`, `closure_reason.required` (veredicto con observaciones abiertas), `note.required` (rechazar una evidencia sin `note`), `control.mismatch` (la evidencia no es del control), `body_or_status.required` / `body_or_status.exclusive` (un PATCH de observación) |
 
@@ -49,8 +61,8 @@ Los cambios de controles, riesgos y causas están en `contracts/cumplimiento/con
 
 - **Pruebas:** `revision-evidencia`, `veredictos`, `eventos-estado`, `exclusiones` y `evidencias` en `Backend/test/cumplimiento/`.
 
-El **`funcional` ve solo lo suyo** quedó construido el 2026-10-29 (B67, SEG-66; ver `contracts/gestion-usuarios.md`): controles, evidencia, riesgos y hallazgos se filtran por el responsable efectivo de cada dimensión. Las **observaciones (MD-154)** quedaron construidas el 2026-10-29 (abajo).
+El **`funcional` ve solo lo suyo** quedó construido el 2026-10-29 (B67, SEG-66) **por dimensión; D102 (2026-11-03) lo reemplaza: el `responsable` y el `delegado` ven solo los controles de los que son dueño o ejecutor** (ver `contracts/gestion-usuarios.md`, por construir). Hoy controles, evidencia, riesgos y hallazgos se filtran por el responsable efectivo de cada dimensión. Las **observaciones (MD-154)** quedaron construidas el 2026-10-29 (abajo).
 
 ## Preguntas abiertas (comunes)
 
-- **`P3`**: el detalle por pantalla puede ajustar la tabla de «Quién puede qué».
+- **`P3` está cerrada (D102):** el comité no entregará el Excel por pantalla; manda la matriz de `modelo/05-usuarios.md` §5.5.

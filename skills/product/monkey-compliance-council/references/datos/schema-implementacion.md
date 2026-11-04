@@ -209,7 +209,7 @@ usuario.
 
 **Otras funciones `SECURITY DEFINER` (mismo patrón: angostas, `search_path` fijo, `REVOKE … FROM PUBLIC; GRANT EXECUTE … TO monkey_app`):** `platform.find_mfa_challenge(token_hash)` (D94) y `platform.find_activation_code(code_hash)` (D95, D96; antes de conocer el tenant).
 
-**Columnas denormalizadas por RLS:** `sessions` y `user_control_assignments` llevan `company_id`
+**Columnas denormalizadas por RLS:** `sessions`, `user_groups` y `client_control_assignments` llevan `company_id`
 propio (el ER solo llegaba a la empresa vía `user_id`), para que la política sea una comparación
 simple y no una subconsulta.
 

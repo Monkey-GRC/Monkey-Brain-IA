@@ -210,6 +210,11 @@
           "description": "MUST/SHOULD/LATER/NO BUILD y fases."
         },
         {
+          "id": "sprint-usuarios",
+          "path": "skills/product/monkey-compliance-council/references/producto/sprint-usuarios.md",
+          "description": "Sprint 3 (2026-11-03 a 2026-11-16): gestion de usuarios con la cadena admin_empresa, responsable y delegado, grupos, dueno y ejecutor por control, cupo de usuarios e invitacion por correo; tickets, cronograma y criterios de aceptacion."
+        },
+        {
           "id": "sprint-onboarding",
           "path": "skills/product/monkey-compliance-council/references/producto/sprint-onboarding.md",
           "description": "Alcance aprobado del sprint de onboarding (7 dias habiles, 2026-09-28 a 2026-10-06): que entra, que queda fuera, cronograma, prioridad de lo que se cae, dependencias y criterios de aceptacion."
@@ -329,7 +334,7 @@
       },
       {
         "path": "contracts/gestion-usuarios.md",
-        "description": "Equipo: el administrador invita a funcional y auditor, activan su cuenta y se reparte el trabajo por dimension (D96)."
+        "description": "Equipo: el administrador invita a responsable, delegado y auditor, activan su cuenta, se agrupan y se asigna el dueño y el ejecutor de cada control (D96, D102)."
       },
       {
         "path": "contracts/onboarding/contexto-organizacional.md",

@@ -21,6 +21,7 @@ erDiagram
         string admin_email
         enum isolation_strategy "dedicated|shared"
         enum status "active|suspended|deactivated"
+        int max_users "cupo de usuarios contratado, lo fija admin_monkey (D103)"
         datetime created_at
         datetime updated_at
     }
@@ -35,6 +36,8 @@ erDiagram
     }
     companies ||--o{ access_keys : "se accede con"
 ```
+
+**`max_users` (D103).** El modelo de negocio cobra por usuarios creados. `admin_monkey` lo fija al registrar la empresa y lo puede subir después. Cuentan las cuentas `active`, `pending` y `suspended` (de cualquier rol); desactivar libera el cupo. No se puede fijar por debajo de las cuentas que ya cuentan.
 
 ### 4.2 El flujo de registro
 

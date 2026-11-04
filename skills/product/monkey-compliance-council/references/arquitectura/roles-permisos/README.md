@@ -9,7 +9,7 @@ es una **regla transversal** (guardas, contexto de tenant y políticas RLS) que 
 
 ## Actores
 
-Los 4 roles: `admin_monkey`, `admin_empresa`, `funcional`, `auditor`. No hay roles personalizados (D96).
+Los roles: `admin_monkey`, `admin_empresa`, `responsable`, `delegado`, `auditor`. No hay roles personalizados (D96, D102).
 
 ## Qué posee
 

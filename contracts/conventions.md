@@ -7,7 +7,20 @@ type: contract
 
 # Convenciones transversales
 
-Aplica a todos los endpoints. Los contratos de cada módulo no repiten nada de aquí.
+Aplica a todos los endpoints. Los contratos de cada módulo no repiten nada de aquí. Cómo se escribe un contrato: [`README.md`](README.md#formato-de-un-contrato).
+
+| Sección | Qué responde |
+|---|---|
+| [Base](#base) | URL, nombres, autenticación, idioma |
+| [Sobre de respuesta](#sobre-de-respuesta) | La envoltura de toda respuesta |
+| [Error](#error) | Forma del error y códigos comunes |
+| [Enums y multi-select](#enums-y-multi-select) | Qué viaja por el cable |
+| [Tipos](#tipos) | Identificadores, fechas, booleanos, nulos |
+| [Paginación](#paginación) | `page`, `page_size`, `sort` |
+| [Escritura](#escritura) | Qué hace cada verbo |
+| [Auditoría](#auditoría) | Qué acciones se registran |
+| [Textos](#textos) | Mensajes, IA y confidencialidad |
+| [Cumplimiento: roles, vistas y decisiones](#cumplimiento-roles-vistas-y-decisiones) | Lo que comparten los contratos de Cumplimiento |
 
 ## Base
 
@@ -55,15 +68,14 @@ Mismo sobre, más `error`:
 }
 ```
 
-Reglas:
-
-- `error.code` es un identificador estable en `SCREAMING_SNAKE_CASE`; el frontend puede
-  ramificar sobre él. `error.fields` solo aparece en errores de validación.
-- `field` usa **el nombre del campo del request**, con notación de punto para lo anidado y de
-  corchete para arrays: `services[0].data_types`.
-- `message` de cada campo ya viene traducido. `code` de cada campo es la clave i18n corta
-  (`enum.invalid`, `array.min`, `string.max`, `required`, `email.invalid`).
-- **Se devuelven todos los errores de validación a la vez**, no el primero.
+| Parte | Regla |
+|---|---|
+| `error.code` | Identificador estable en `SCREAMING_SNAKE_CASE`; el frontend puede ramificar sobre él |
+| `error.fields` | Solo aparece en errores de validación |
+| `field` | **El nombre del campo del request**, con notación de punto para lo anidado y de corchete para arrays: `services[0].data_types` |
+| `message` de cada campo | Ya viene traducido |
+| `code` de cada campo | Clave i18n corta: `enum.invalid`, `array.min`, `string.max`, `required`, `email.invalid` |
+| Cuántos | **Se devuelven todos los errores de validación a la vez**, no el primero |
 
 Códigos que se usan en todos los módulos:
 
@@ -189,7 +201,7 @@ Esto es un contador de campos de un formulario, **no un readiness ni un porcenta
 
 Lo que comparten todos los módulos de Cumplimiento (`contracts/cumplimiento/`). Los contratos no lo repiten.
 
-**Quién es quién.** Los 4 roles activos son `admin_monkey`, `admin_empresa`, `funcional` y `auditor` (`modelo-datos.md` §5.1, §5.5, D96). Todo se resuelve
+**Quién es quién.** Los roles activos son `admin_monkey`, `admin_empresa`, `responsable`, `delegado` y `auditor` (`modelo-datos.md` §5.1, §5.5, D96, D102). Todo se resuelve
 **en el servidor, con el rol leído de la base**, nunca con lo que mande el frontend. Cada rol trabaja en la empresa de su cuenta. El `admin_empresa` es el experto en compliance: valida, decide y edita. El acceso de `admin_monkey` al cumplimiento de una empresa (solo lectura, MD-146) tiene sus propios endpoints en Monkey Admin y
 **no está definido aquí**: hasta entonces estos endpoints le responden `403`.
 
@@ -198,13 +210,13 @@ Lo que comparten todos los módulos de Cumplimiento (`contracts/cumplimiento/`).
 | Situación | Respuesta |
 |---|---|
 | El recurso es de **otra empresa** | `404` (que exista no se informa) |
-| El `funcional` pide o escribe algo de su empresa de lo que **no es responsable** (su dimensión, `contracts/gestion-usuarios.md`) | `403` |
-| El rol no puede hacer esa acción (p. ej. el auditor o el funcional intentan validar una evidencia) | `403` |
-| Una lista que el `funcional` no puede ver completa | no falla: **devuelve solo lo suyo** (vacía si no tiene nada) |
+| El `responsable` o el `delegado` pide o escribe algo de su empresa que **no es de sus controles** (dueño o ejecutor, `contracts/gestion-usuarios.md`) | `403` |
+| El rol no puede hacer esa acción (p. ej. el auditor o el delegado intentan revisar una evidencia) | `403` |
+| Una lista que el `responsable` o el `delegado` no puede ver completa | no falla: **devuelve solo lo suyo** (vacía si no tiene nada) |
 
 **Vista de negocio y vista técnica.** Por defecto, todo `GET` de Cumplimiento devuelve la **vista de negocio**: en qué falla, con el estado cualitativo y **con los códigos**
 (`code` del control y `requirement_codes`, D80). Con **`?view=technical`** se agrega el objeto `technical` (puntos de enfoque, estados de evaluación de
-`enums.md`, pruebas). **Pueden pedirla los roles `auditor` y `admin_empresa`; para el `funcional` responde `403`**
+`enums.md`, pruebas). **Pueden pedirla los roles `auditor` y `admin_empresa`; para el `responsable` y el `delegado` responde `403`**
 (D63, D81, D96, SEG-54). La vista técnica **agrega**, nunca quita: es la de negocio más `technical`.
 
 **Cómo se mide en la vista de negocio.** El estado cualitativo (`readiness`: `ready` · `almost_ready` · `needs_work` · `not_measured`) **y** el porcentaje de avance se muestran
@@ -226,7 +238,7 @@ Reglas del cálculo en pantalla: se **trunca** a entero (nunca se redondea hacia
 
 **Lo generado por IA** viaja marcado: `"is_ai_generated": true` y `"ai_confidence"`. Una sugerencia de la IA **nunca** decide nada.
 
-**Quién decide (D96).** Ya no hay propuestas que otro apruebe: el `admin_empresa` **decide directamente** la validación de una evidencia, el veredicto de una prueba manual, las exclusiones y los cambios a controles, riesgos y causas, y cada acto queda en `audit_logs` con su nombre. Lo único que se **rechaza con motivo** es la evidencia que sube el `funcional` (`contracts/cumplimiento/evidencia.md`): el motivo es obligatorio al rechazar y opcional al validar.
+**Quién decide (D96, D102).** Ya no hay propuestas que otro apruebe: el `admin_empresa` **decide directamente** (y el `responsable` dueño, en lo de su equipo) la revisión de una evidencia, el veredicto de una prueba manual, las exclusiones y los cambios a controles, riesgos y causas, y cada acto queda en `audit_logs` con su nombre. Lo único que se **rechaza con motivo** es la evidencia que suben el ejecutor o el dueño (`contracts/cumplimiento/evidencia.md`): el motivo es obligatorio al rechazar y opcional al validar.
 **Baja, no borrado.** `DELETE` sobre un riesgo, causa o control **desactiva** (`is_active = false`) y devuelve `204`: el histórico se conserva y la fila sigue existiendo
 (las evaluaciones son inmutables). Una colección omite lo inactivo salvo `?include_inactive=true`.
 

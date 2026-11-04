@@ -33,7 +33,7 @@ Está en `P39`, con ocho preguntas. Las que más condicionan el diseño:
 |---|---|
 | ¿Entra en el sprint 3? ¿Correo, en la app, o los dos? | Define si hace falta una tabla de notificaciones o solo un puerto más |
 | ¿Qué eventos notifican? | Hoy el único disparador fiable es `compliance_events` ([Trazabilidad](../trazabilidad/README.md)) |
-| ¿Quién recibe qué? | Depende de la cadena de asignación, que es `P38` |
+| ¿Quién recibe qué? | Depende de la cadena de asignación (D102): dueño, ejecutor y `admin_empresa` |
 | ¿Frecuencia: inmediato o resumen? | Cambia por completo la arquitectura (envío directo vs. cola y planificador) |
 | Recordatorios de vencimiento | Dependen de la periodicidad de los controles, abierta en `P22` punto 2 |
 

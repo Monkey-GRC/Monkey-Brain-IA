@@ -1,20 +1,47 @@
 # Enums — Empresas
 
-Los valores de los enums de este módulo. Índice de todos: [`enums.md`](../enums.md). Por el cable viaja el **valor**; la etiqueta la resuelve i18n.
+> Índice de todos los enums: [`enums.md`](../enums.md). Por el cable viaja el **valor**; la etiqueta (es/en) la resuelve i18n. Formato: [`README.md`](../README.md#formato-de-un-enum).
 
-### `isolation_strategy` — `companies.isolation_strategy`
-`shared` Compartida (RLS) · `dedicated` Dedicada
+## `isolation_strategy`
+**Columna:** `companies.isolation_strategy` · **Quién lo fija:** `admin_monkey` al registrar la empresa. No se revierte sin migrar datos.
 
-Lo marca `admin_monkey` al registrar la empresa. No se revierte sin migrar datos.
+| Valor | Etiqueta (es) |
+|---|---|
+| `shared` | Compartida (RLS) |
+| `dedicated` | Dedicada |
 
-### `company_status` — `companies.status`
-`active` Activa · `suspended` Suspendida · `deactivated` Archivada *(D97: sin acceso hasta el borrado definitivo; solo `admin_monkey`)*
+## `company_status`
+**Columna:** `companies.status`
 
-### `company_deactivation_reason` — motivo al archivar una empresa (D97)
-`non_payment` Falta de pago · `client_request` El cliente ya no desea el servicio · `other` Otro
+| Valor | Etiqueta (es) | Qué significa |
+|---|---|---|
+| `active` | Activa | |
+| `suspended` | Suspendida | |
+| `deactivated` | Archivada | Sin acceso hasta el borrado definitivo; solo `admin_monkey` (D97) |
 
-### `access_key_status` — `access_keys.status`
-`pending` Pendiente · `used` Usada · `expired` Expirada · `revoked` Revocada *(también el estado de los códigos de activación de cuentas, D95)*
+## `company_deactivation_reason`
+**Dónde se usa:** motivo al archivar una empresa (D97).
 
-### `access_key_delivery_status` — `access_key.delivery_status` (D99)
-`sent` Enviada (el servicio de correo aceptó el mensaje) · `failed` No se pudo enviar *(no se guarda: viaja solo en la respuesta del registro y del reenvío)*
+| Valor | Etiqueta (es) |
+|---|---|
+| `non_payment` | Falta de pago |
+| `client_request` | El cliente ya no desea el servicio |
+| `other` | Otro |
+
+## `access_key_status`
+**Columna:** `access_keys.status` · **También es el estado de los códigos de activación de cuentas (D95).**
+
+| Valor | Etiqueta (es) |
+|---|---|
+| `pending` | Pendiente |
+| `used` | Usada |
+| `expired` | Expirada |
+| `revoked` | Revocada |
+
+## `access_key_delivery_status`
+**Columna:** `access_key.delivery_status` en la respuesta del registro y del reenvío (D99). **No se guarda en la base.**
+
+| Valor | Etiqueta (es) | Qué significa |
+|---|---|---|
+| `sent` | Enviada | El servicio de correo aceptó el mensaje |
+| `failed` | No se pudo enviar | |

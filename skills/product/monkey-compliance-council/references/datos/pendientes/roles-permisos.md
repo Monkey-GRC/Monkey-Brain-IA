@@ -2,20 +2,9 @@
 
 Preguntas abiertas que afectan a [Roles y permisos](../../arquitectura/roles-permisos/README.md). **Si una sigue aquí, no se resuelve por cuenta propia: se pregunta.** Tablero y reglas: [`README.md`](README.md).
 
-## P3 · Qué ve y qué hace cada rol en cada pantalla de Cumplimiento
-
-**Estado:** abierto. El comité entrega un Excel con los permisos **por pantalla**; hasta que llegue, la matriz de `modelo-datos.md` §5.5 es la vigente y los tickets que dependen de ella esperan.
-
-Lo que ya está decidido: los 4 roles son fijos y no hay roles personalizados (D96); Cumplimiento vive **dentro de cada servicio**; el `funcional` ve solo sus controles y las evidencias que debe aportar.
-Lo que falta: el detalle por pantalla de cada rol.
-
-**Qué depende:** las pantallas y los endpoints de Cumplimiento por rol.
-
----
-
 ## P34 · Quien sube la evidencia y quien la valida son la misma persona
 
-**Estado:** abierto desde 2026-10-27 (D96). El `admin_empresa` valida la evidencia y también puede subirla. Aunque su foco no es subirla, puede pasar, y entonces se califica a sí mismo.
+**Estado:** abierto desde 2026-10-27 (D96); acotado por D102 (2026-11-03). Con la cadena `admin_empresa` → `responsable` → `delegado`, **nadie revisa lo que subió él mismo**, con una excepción: cuando el `admin_empresa` es dueño de un control y sube su evidencia, solo él puede revisarla y se califica a sí mismo.
 
 *Recomendación: no bloquear por ahora; que cada validación quede en el rastro con quien subió y quien validó, y que el `auditor` externo sea el contrapeso. Si hace falta, más adelante: que no pueda validar lo que él mismo subió, o que un segundo administrador lo confirme.*
 

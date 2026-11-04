@@ -14,10 +14,7 @@ Lo que sigue abierto, con lo más urgente arriba. 🚧 bloquea trabajo · ⚠️
 
 | P | Pregunta | ¿Qué espera por ella? | Abierta desde |
 |---|---|---|---|
-| [P3](roles-permisos.md#p3--qué-ve-y-qué-hace-cada-rol-en-cada-pantalla-de-cumplimiento) | Qué ve y qué hace cada rol en cada pantalla de Cumplimiento | 🚧 Las pantallas y endpoints de Cumplimiento por rol (espera el Excel del comité) | — |
-| [P38](gestion-usuarios.md#p38--la-cadena-de-asignación-de-controles-admin_empresa--funcional--responsable) | La cadena de asignación de controles: `admin_empresa` → `funcional` → un tercer nivel (reparto por control, no por dimensión) | 🚧 Todo el sprint 3 de usuarios (modelo de datos, permisos, API y pantallas); reabre parte de D96 y D98 | 2026-11-01 |
-| [P39](notificaciones.md#p39--notificaciones-a-toda-la-cadena-de-un-control) | Notificaciones a toda la cadena de un control | 🚧 Mantener informados al administrador, al `funcional` y al tercer nivel; depende de MD-69, que no existe | 2026-11-01 |
-| [P40](gestion-usuarios.md#p40--cuentas-de-monkey-admin-y-seguridad-de-la-gestión-de-usuarios) | Cuentas de Monkey Admin y seguridad de la gestión de usuarios | ⚠️ El alcance de «usuarios de Monkey Admin» en el sprint 3 (MD-143, MD-146) | 2026-11-01 |
+| [P39](notificaciones.md#p39--notificaciones-a-toda-la-cadena-de-un-control) | Notificaciones a toda la cadena de un control | 🚧 Mantener informados al administrador, al `responsable` y al `delegado` (D102); depende de MD-69, que no existe | 2026-11-01 |
 | [P14](control-tecnico.md#p14--motores-de-evaluación-rol-de-cada-uno-y-cómo-se-relacionan-con-el-modelo) | Motores de evaluación: unidad de evaluación, conexión, catálogo y legal (el rol de cada motor se cerró en D100) | 🚧 El cálculo de cobertura en nube; no Cumplimiento | 2026-10-07 |
 | [P2](empresas.md#p2--el-flujo-de-la-clave-de-acceso--5-detalles-sin-definir) | El flujo de la clave de acceso: 5 detalles sin definir (urgentes: a y c) | ⚠️ Condiciona la pantalla de canje (hoy hecha como código a mano, D51) | — |
 | [P9](catalogo-maestro.md#p9--datos-del-excel-que-hay-que-corregir-o-confirmar) | Datos del Excel que hay que corregir o confirmar | ⚠️ La dimensión Aplicación del cálculo y las causas que ve el cliente | — |
@@ -44,8 +41,7 @@ Lo que sigue abierto, con lo más urgente arriba. 🚧 bloquea trabajo · ⚠️
 | Archivo | Pendientes | Módulo |
 |---|--:|---|
 | [`empresas.md`](empresas.md) | 2 | [Empresas](../../arquitectura/empresas/README.md) |
-| [`gestion-usuarios.md`](gestion-usuarios.md) | 2 | [Gestión de usuarios](../../arquitectura/gestion-usuarios/README.md) |
-| [`roles-permisos.md`](roles-permisos.md) | 4 | [Roles y permisos](../../arquitectura/roles-permisos/README.md) |
+| [`roles-permisos.md`](roles-permisos.md) | 3 | [Roles y permisos](../../arquitectura/roles-permisos/README.md) |
 | [`catalogo-maestro.md`](catalogo-maestro.md) | 2 | [Catálogo maestro](../../arquitectura/catalogo-maestro/README.md) |
 | [`control-tecnico.md`](control-tecnico.md) | 2 | [Control técnico](../../arquitectura/control-tecnico/README.md) |
 | [`cumplimiento.md`](cumplimiento.md) | 5 | [Cumplimiento](../../arquitectura/cumplimiento/README.md) |
@@ -89,3 +85,6 @@ Se quedan aquí como referencia; el detalle de cada una está en la decisión qu
 | **P31** | El Excel y el cerebro no coinciden en los roles | 2026-10-27 — D96: gana el Excel (cuatro roles; el `admin_empresa` valida la evidencia); la MFA sigue en los cuatro roles (D66) |
 | **P29** | Cómo activa su cuenta quien la empresa invita | 2026-10-27 — D95, D96: un código de activación de un solo uso, ligado a su correo, que le entrega el `admin_empresa`; con él pone su contraseña y configura el segundo factor |
 | **P30** | Dónde vive una cuenta y cómo se aísla entre empresas | 2026-10-27 — D96: cada cuenta pertenece a una sola empresa y el aislamiento es el de siempre (RLS por `tenant_id`); no hay cuentas que entren a varias empresas |
+| **P38** | La cadena de asignación de controles | 2026-11-03 — D102: `admin_empresa` → `responsable` → `delegado`; el dueño es una persona y la unidad es el control completo |
+| **P40** | Cuentas de Monkey Admin y seguridad de la gestión de usuarios | 2026-11-03 — D103: solo `admin_monkey`, con cupo de usuarios por empresa |
+| **P3** | Qué ve y qué hace cada rol en cada pantalla de Cumplimiento | 2026-11-03 — D102: el comité no entregará el Excel por pantalla; manda la matriz de `modelo/05-usuarios.md` §5.5 |

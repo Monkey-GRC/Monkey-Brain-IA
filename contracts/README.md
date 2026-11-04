@@ -31,7 +31,7 @@ te toca. Si lo que vas a construir no está aquí, el contrato se acuerda primer
 | Módulo | Contrato | Qué trae |
 |---|---|---|
 | Autenticación | [`autenticacion.md`](autenticacion.md) | Canje de la clave, login, refresh, segundo factor, activación y contraseña |
-| Gestión de usuarios | [`gestion-usuarios.md`](gestion-usuarios.md) | El administrador invita a `funcional` y `auditor`, activan su cuenta y se reparte el trabajo |
+| Gestión de usuarios | [`gestion-usuarios.md`](gestion-usuarios.md) | El administrador crea al equipo (`responsable`, `delegado`, `auditor`), se organizan en grupos y se asigna el dueño y el ejecutor de cada control |
 | Empresas | [`empresas.md`](empresas.md) | Registro del tenant y clave de acceso (`companies`, `access_keys`) |
 | Catálogo maestro | [`catalogo-maestro.md`](catalogo-maestro.md) | Monkey Admin: ver y gestionar el catálogo (marcos, controles, riesgos, causas, pruebas, evidencias) |
 | Onboarding | [`onboarding/contexto-organizacional.md`](onboarding/contexto-organizacional.md) | Componente 1 — 10 campos de la empresa |
@@ -52,13 +52,87 @@ Lo que comparten los contratos de Cumplimiento (quién puede qué y el estado ge
 
 Cómo funciona cada módulo por dentro: [`references/arquitectura/`](../skills/product/monkey-compliance-council/references/arquitectura/README.md).
 
-## Formato de cada módulo
+## Formato de un contrato
 
-Propósito en una línea → entidades de `modelo-datos.md` que toca → tabla de campos → **JSON
-real** de request y response por endpoint → tabla de errores → preguntas abiertas.
+Todos los archivos de este directorio siguen la misma estructura, para que se lean igual y una persona o una IA encuentre cada dato en el mismo sitio. El contrato dice **qué**, no **por qué**: el porqué de una decisión vive en `datos/decisiones/README.md` (se enlaza como `D-n`).
 
-El contrato dice **qué**, no **por qué**. El porqué de una decisión vive en
-`datos/decisiones/README.md`.
+### Estructura de un archivo de módulo
+
+1. **Cabecera** (front matter) y título.
+2. **Resumen** en una tabla de dos filas: *Estado* (acordado, construido o por construir, con su `D-n`) y *App / entidades* (de `modelo-datos.md`).
+3. **Índice de endpoints:** una tabla con método, ruta, quién puede y para qué.
+4. **Una ficha por endpoint**, siempre igual (abajo).
+5. **Reglas de negocio** del módulo, en lista corta, solo lo que no cabe en una ficha.
+6. **Errores del módulo** (tabla) y **claves i18n**.
+7. **Estado de implementación** (al final, separado): qué está construido, qué falta. Es histórico; no se mezcla con las fichas.
+8. **Preguntas abiertas** (`P-n`), si las hay.
+
+### Ficha de un endpoint
+
+````markdown
+## POST /v1/users — Crear una persona del equipo
+
+| | |
+|---|---|
+| **Quién** | `admin_empresa` · `responsable` (solo `delegado` de su equipo) |
+| **Éxito** | `201` |
+| **Errores** | `403` · `409 EMAIL_TAKEN` · `422` |
+
+### Request
+| Campo | Tipo | Obligatorio | Regla |
+|---|---|---|---|
+| `email` | string | sí | Único en toda la plataforma |
+
+```json
+{ "email": "juan@acme.co" }
+```
+
+### Response `201`
+| Campo | Tipo | Qué es |
+|---|---|---|
+| `id` | uuid | |
+
+```json
+{ "statusCode": 201, "message": "user.created", "data": { "id": "c4a1…" } }
+```
+
+### Errores
+| HTTP | Código | Cuándo |
+|---|---|---|
+| 409 | `EMAIL_TAKEN` | Ese correo ya tiene cuenta |
+
+> **Regla:** el texto explicativo va aquí, en un bloque corto. Nada de párrafos largos entre tablas.
+````
+
+Reglas del formato:
+- **Campos siempre en tabla** (nombre, tipo, obligatorio, regla); el JSON de ejemplo va **debajo**, nunca en lugar de la tabla.
+- **Query y path:** una tabla «Parámetros» con las mismas columnas que *Request*.
+- **El sobre** (`statusCode`, `message`, `data`) y la paginación están en `conventions.md`; las fichas solo muestran el `data` cuando el sobre es el estándar.
+- **Un endpoint sin cuerpo** pone «Sin cuerpo» en *Request*.
+- **Los errores comunes** (`401`, `403`, `404`, `422` genérico) se listan una vez en la cabecera de la ficha; la tabla solo trae los propios del endpoint.
+- **Los valores de enum** se escriben con su nombre (`user_role`) y enlazan a `enums.md`; nunca se copian.
+- Los **identificadores** (campos, rutas, códigos de error) van en inglés; el texto explicativo, en español.
+
+## Formato de un enum
+
+Cada enum es una **sección con una tabla**, nunca una línea corrida:
+
+````markdown
+## `asset_criticality`
+**Columna:** `assets.criticality` · **Quién lo fija:** el cliente al declarar el activo
+
+| Valor | Etiqueta (es) | Qué significa |
+|---|---|---|
+| `low` | Baja | Su caída no afecta la operación |
+| `critical` | Crítica | |
+
+> **Nota:** flujos, retirados y decisiones van aquí, debajo de la tabla, no en el título.
+````
+
+- El título es solo el nombre del enum, para que el índice lateral del editor se lea bien.
+- **«Qué significa»** se llena solo cuando el valor no se entiende por sí mismo.
+- Si un enum tiene varias etiquetas (es/en), la tabla lleva una columna por idioma.
+- Si un enum agrupa otros del mismo tema, se separan con un título `##` de grupo.
 
 ## Quién manda si hay conflicto
 

@@ -6,7 +6,7 @@ Responde: **¿quién usa Monkey y con qué sistemas externos habla?** Monkey se 
 flowchart TB
     adminMonkey["<b>admin_monkey</b><br/>Equipo de Monkey.<br/>Registra empresas y cura el catálogo."]
     adminEmpresa["<b>admin_empresa</b><br/>Experto en compliance del cliente.<br/>Valida, revisa evidencia, da veredictos."]
-    funcional["<b>funcional</b><br/>Ejecuta lo de su dimensión<br/>(sube evidencia, responde pruebas)."]
+    funcional["<b>responsable / delegado</b><br/>Dueño y ejecutor de sus controles<br/>(suben evidencia, responden pruebas)."]
     auditor["<b>auditor</b><br/>Revisa. No califica (D96)."]
 
     monkey(["<b>MONKEY</b><br/>Plataforma de Continuous Compliance.<br/>Mide el cumplimiento de un servicio<br/>frente a los marcos contratados."])

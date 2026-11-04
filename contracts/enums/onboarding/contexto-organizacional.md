@@ -1,11 +1,13 @@
 # Enums — Onboarding · Contexto organizacional
 
-Los valores de los enums de este módulo. Índice de todos: [`enums.md`](../../enums.md). Por el cable viaja el **valor**; la etiqueta la resuelve i18n.
+> Índice de todos los enums: [`enums.md`](../../enums.md). Por el cable viaja el **valor**; la etiqueta (es/en) la resuelve i18n. Formato: [`README.md`](../../README.md#formato-de-un-enum).
 
-### `size` — `organizations.size`
+## `size`
+**Columna:** `organizations.size`
+
 ⚠️ Un valor de enum no puede empezar por dígito, por eso el prefijo `from_`.
 
-| Valor | es | en |
+| Valor | Etiqueta (es) | Etiqueta (en) |
 |---|---|---|
 | `from_10_to_50` | 10-50 | 10-50 |
 | `from_51_to_200` | 51-200 | 51-200 |
@@ -15,9 +17,10 @@ Los valores de los enums de este módulo. Índice de todos: [`enums.md`](../../e
 | `from_2001_to_5000` | 2001-5000 | 2001-5000 |
 | `more_than_5000` | Más de 5000 | More than 5000 |
 
-### `industry` — `organizations.industry` · 14 valores
+## `industry`
+**Columna:** `organizations.industry` · 14 valores
 
-| Valor | es |
+| Valor | Etiqueta (es) |
 |---|---|
 | `financial_banking` | Financiero/Banca |
 | `fintech` | Fintech |
@@ -34,21 +37,37 @@ Los valores de los enums de este módulo. Índice de todos: [`enums.md`](../../e
 | `energy_utilities` | Energía/Utilities |
 | `other` | Otro |
 
-### `business_model` — `organizations.business_model` · 19 valores
+## `business_model`
+**Columna:** `organizations.business_model` · 19 valores
 
 **La lista es esta: 19 más `other`** (D73). El texto «40+ opciones» del Excel no tiene respaldo en su hoja; si el comité entrega más, se agregan con una migración y aquí.
 
-`bpo_kpo_ito` (BPO/KPO/ITO) · `call_contact_center` (Call/Contact Center) · `data_center`
-(Data Center) · `ai_ml` (IA/ML) · `service_desk` (Mesa de servicio) · `saas_paas_iaas`
-(SaaS/PaaS/IaaS) · `fintech_payments` (Fintech/Pagos) · `banking` (Banca) · `insurance`
-(Seguros) · `marketplace_ecommerce` (Marketplace/E-commerce) · `software_factory` (Fábrica de
-software) · `consulting` (Consultoría) · `telecommunications` (Telecomunicaciones) · `logistics`
-(Logística) · `healthcare` (Salud) · `edtech` (EdTech) · `manufacturing` (Manufactura) ·
-`government` (Gobierno) · `other` (Otro)
+| Valor | Etiqueta (es) |
+|---|---|
+| `bpo_kpo_ito` | BPO/KPO/ITO |
+| `call_contact_center` | Call/Contact Center |
+| `data_center` | Data Center |
+| `ai_ml` | IA/ML |
+| `service_desk` | Mesa de servicio |
+| `saas_paas_iaas` | SaaS/PaaS/IaaS |
+| `fintech_payments` | Fintech/Pagos |
+| `banking` | Banca |
+| `insurance` | Seguros |
+| `marketplace_ecommerce` | Marketplace/E-commerce |
+| `software_factory` | Fábrica de software |
+| `consulting` | Consultoría |
+| `telecommunications` | Telecomunicaciones |
+| `logistics` | Logística |
+| `healthcare` | Salud |
+| `edtech` | EdTech |
+| `manufacturing` | Manufactura |
+| `government` | Gobierno |
+| `other` | Otro |
 
-### `years_in_operation` — `organizations.years_in_operation` · opcional
+## `years_in_operation`
+**Columna:** `organizations.years_in_operation` · opcional
 
-| Valor | es |
+| Valor | Etiqueta (es) |
 |---|---|
 | `less_than_1` | Menos de 1 |
 | `from_1_to_3` | 1-3 |
@@ -56,19 +75,32 @@ software) · `consulting` (Consultoría) · `telecommunications` (Telecomunicaci
 | `from_5_to_10` | 5-10 |
 | `more_than_10` | Más de 10 |
 
-### `country` — usado por `incorporation_countries` y `client_countries`
+## `country`
+**Dónde se usa:** usado por `incorporation_countries` y `client_countries`
 
-Constitución (12): `co` Colombia · `mx` México · `pe` Perú · `cl` Chile · `ar` Argentina ·
-`br` Brasil · `ec` Ecuador · `pa` Panamá · `cr` Costa Rica · `us` USA · `es` España · `other` Otro
-
-Clientes (13): los anteriores más `eu` (UE).
+| Valor | Etiqueta (es) | Constitución (`incorporation_countries`) | Clientes (`client_countries`) |
+|---|---|---|---|
+| `co` | Colombia | sí | sí |
+| `mx` | México | sí | sí |
+| `pe` | Perú | sí | sí |
+| `cl` | Chile | sí | sí |
+| `ar` | Argentina | sí | sí |
+| `br` | Brasil | sí | sí |
+| `ec` | Ecuador | sí | sí |
+| `pa` | Panamá | sí | sí |
+| `cr` | Costa Rica | sí | sí |
+| `us` | USA | sí | sí |
+| `es` | España | sí | sí |
+| `other` | Otro | sí | sí |
+| `eu` | UE | no | sí |
 
 ⚠️ `eu` no es un país: es una región y el Excel la mezcla en la misma lista. Se conserva porque
 la fuente manda, pero el frontend la agrupa aparte.
 
-### `compliance_maturity` — `organizations.compliance_maturity`
+## `compliance_maturity`
+**Columna:** `organizations.compliance_maturity`
 
-| Valor | es |
+| Valor | Etiqueta (es) |
 |---|---|
 | `none` | Ninguna |
 | `initial_ad_hoc` | Inicial/Ad-hoc |
@@ -76,15 +108,31 @@ la fuente manda, pero el frontend la agrupa aparte.
 | `defined` | Definida |
 | `managed_certified` | Gestionada/Certificada |
 
-### `regulation` — catálogo `regulations` (tabla propia, no enum de columna) · 18 valores
+## `regulation`
+**Dónde se usa:** catálogo `regulations` (tabla propia, no enum de columna) · 18 valores
 
 Solo **normas de protección de datos personales** (D51; el comité pidió depurar la lista el 2026-10-05).
 
-`ley_1581_co` Ley 1581 (CO) · `lfpdppp_mx` LFPDPPP (MX) · `ley_29733_pe` Ley 29733 (PE) ·
-`ley_19628_cl` Ley 19628 (CL) · `ley_21719_cl` Ley 21719 (CL) · `ley_25326_ar` Ley 25326 (AR) ·
-`ley_18331_uy` Ley 18331 (UY) · `lopdp_ec` LOPDP (EC) · `ley_81_pa` Ley 81 (PA) · `ley_8968_cr` Ley 8968 (CR) ·
-`lgpd_br` LGPD (BR) · `gdpr_eu` GDPR (UE) · `lopdgdd_es` LOPDGDD (ES) · `hipaa_us` HIPAA (US) ·
-`ccpa_cpra_us` CCPA/CPRA (US) · `glba_us` GLBA (US) · `none` Ninguna · `other` Otra
+| Valor | Etiqueta (es) |
+|---|---|
+| `ley_1581_co` | Ley 1581 (CO) |
+| `lfpdppp_mx` | LFPDPPP (MX) |
+| `ley_29733_pe` | Ley 29733 (PE) |
+| `ley_19628_cl` | Ley 19628 (CL) |
+| `ley_21719_cl` | Ley 21719 (CL) |
+| `ley_25326_ar` | Ley 25326 (AR) |
+| `ley_18331_uy` | Ley 18331 (UY) |
+| `lopdp_ec` | LOPDP (EC) |
+| `ley_81_pa` | Ley 81 (PA) |
+| `ley_8968_cr` | Ley 8968 (CR) |
+| `lgpd_br` | LGPD (BR) |
+| `gdpr_eu` | GDPR (UE) |
+| `lopdgdd_es` | LOPDGDD (ES) |
+| `hipaa_us` | HIPAA (US) |
+| `ccpa_cpra_us` | CCPA/CPRA (US) |
+| `glba_us` | GLBA (US) |
+| `none` | Ninguna |
+| `other` | Otra |
 
 **Qué cambió respecto a los 14 anteriores:** salió `pci_dss` (es un estándar de la industria de tarjetas, no una norma de
 protección de datos, y ya es un marco); entraron la Ley 21.719 de Chile (publicada el 13-dic-2024, **vigente desde el
@@ -104,5 +152,15 @@ pendientes de revisión del comité: el Excel solo las trae en español (salvo `
 > (`framework_a_gestionar`) pero el comité lo **vetó**: el cliente no elige el marco en el Componente 1. Lo contrata
 > Monkey Admin al registrar la empresa (D47) y el servicio elige entre lo contratado.
 
-### `responsible_type` — `organization_responsibles.type`
-`coo` COO · `it` TI · `compliance` Cumplimiento · `process` Proceso · `ciso` CISO · `asset_owner` Propietario del activo
+## `responsible_type`
+
+**Columna:** `organization_responsibles.type` · Son los **cargos de la organización** ante el auditor (D30, D102).
+
+| Valor | Etiqueta (es) |
+|---|---|
+| `coo` | COO |
+| `it` | TI |
+| `compliance` | Cumplimiento |
+| `process` | Proceso |
+| `ciso` | CISO |
+| `asset_owner` | Propietario del activo |

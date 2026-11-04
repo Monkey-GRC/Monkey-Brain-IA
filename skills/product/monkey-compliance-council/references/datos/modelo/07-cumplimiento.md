@@ -243,7 +243,7 @@ erDiagram
     evidence_submissions {
         uuid id PK
         uuid evidence_requirement_id FK
-        uuid submitted_by FK "admin_empresa o funcional: solo aportan (D84)"
+        uuid submitted_by FK "ejecutor, dueño o admin_empresa: solo aportan (D84, D102)"
         datetime submitted_at "D79"
         string file_path
         string file_type
@@ -257,7 +257,7 @@ erDiagram
         uuid id PK
         uuid tenant_id FK "RLS (D31)"
         uuid evidence_submission_id FK
-        enum reviewer_role "admin_empresa: una fila por entrega (D96)"
+        enum reviewer_role "responsable|admin_empresa: una fila por entrega y rol (D102)"
         uuid reviewed_by FK
         datetime reviewed_at
         boolean type_ok "atributos de la evidencia (RN-01); nulo = sin revisar"
@@ -288,12 +288,12 @@ erDiagram
     }
     client_controls ||--o{ evidence_requirements : "exige"
     evidence_requirements ||--o{ evidence_submissions : "se cumple con"
-    evidence_submissions ||--o{ evidence_reviews : "la valida el admin_empresa"
+    evidence_submissions ||--o{ evidence_reviews : "la revisan el responsable dueño y el admin_empresa"
     tests ||--o{ exclusions : "excluye checks por"
 ```
 
 **Lo que D68 agrega a estas tablas** (la regla está en §9): `client_control_tests` lleva *obligatorio*, *vigente*, fechas y la justificación de una desactivación; `evidence_reviews` guarda los seis atributos que se
-validan por evidencia y la **revisión** (`pending_review`, `human_validated`; `ai_prevalidated` se **deriva** cuando la entrega tiene `ai_verdict` y ninguna revisión humana), de donde se **deriva** su estado (`evidence_state`). **La valida el `admin_empresa`** (D96): no hay `validation_status` en la entrega, la revisión es otra fila. `exclusions` puede excluir un **activo** de un test además de un check, siempre con justificación, aprobador y vigencia. Un `evaluations.result` ahora
+validan por evidencia y la **revisión** (`pending_review`, `human_validated`; `ai_prevalidated` se **deriva** cuando la entrega tiene `ai_verdict` y ninguna revisión humana), de donde se **deriva** su estado (`evidence_state`). **La revisan el `responsable` dueño y el `admin_empresa`** (D102, que ajusta D96): no hay `validation_status` en la entrega, la revisión es otra fila por rol. `exclusions` puede excluir un **activo** de un test además de un check, siempre con justificación, aprobador y vigencia. Un `evaluations.result` ahora
 distingue `error` y `excluded`.
 
 **El responsable de la evidencia es cargo *y* persona, en planos distintos** (decisión A1):
@@ -313,7 +313,7 @@ sugiere para el control sin decir a qué prueba sirve (las 89 asignaciones del E
 exclusión sin justificación aprobada no cambia el denominador — y un check que sale por
 omisión es un agujero, no una exclusión.
 
-**La evidencia la sube el `funcional` responsable de la dimensión y la valida el `admin_empresa`, en una sola revisión** (D96); el `auditor` la lee, no la revisa. El estado que consume el motor sale de esa revisión. Cada entrega tiene a lo sumo una revisión. Una entrega es histórico: la app solo la inserta y la lee (sin `UPDATE` ni `DELETE`) y `(evidence_requirement_id, version)` es único (MD-126). La IA puede sugerir un veredicto (`ai_verdict`),
+**La evidencia la sube el ejecutor, el dueño o el `admin_empresa`; la revisa el `responsable` dueño (si no la subió él) y el `admin_empresa` siempre puede** (D102); el `auditor` la lee, no la revisa. **Cada entrega tiene a lo sumo una revisión por rol** (`evidence_submission_id` + `reviewer_role` único). El estado que consume el motor sale de combinarlas: **si hay algún rechazo, rechazada; si no hay rechazos y hay al menos una validación, validada** (con dos revisiones, aprueban las dos); sin revisión, pendiente. Una revisión no se edita: se rehace con una entrega nueva. Una entrega es histórico: la app solo la inserta y la lee (sin `UPDATE` ni `DELETE`) y `(evidence_requirement_id, version)` es único (MD-126). La IA puede sugerir un veredicto (`ai_verdict`),
 siempre etiquetado como generado por IA, pero **nunca cierra un control**.
 
 ### 7.4 Evaluaciones y hallazgos (el histórico)
@@ -455,7 +455,7 @@ erDiagram
 ```
 
 - **Tres tipos:** observación, recomendación y solicitud de información (pedirle más datos a la empresa).
-- **Tres estados:** `open` → `answered` → `closed`. La empresa (`admin_empresa`, o el `funcional` responsable del control) **responde** dejando su nota y, si hace falta, una evidencia;
+- **Tres estados:** `open` → `answered` → `closed`. La empresa (`admin_empresa`, o el dueño o el ejecutor del control) **responde** dejando su nota y, si hace falta, una evidencia;
   **solo quien la escribió la cierra**. Si no queda conforme, la devuelve a `open`.
 - **Una observación cerrada no se reabre**: si hace falta algo más, se crea otra. Mientras no esté cerrada, su autor puede modificarla.
 - **Una observación no mueve el porcentaje.** El cumplimiento solo cambia por el camino de siempre: si la respuesta es un documento, entra como evidencia, se valida y

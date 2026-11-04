@@ -1,6 +1,6 @@
 # Requisitos de seguridad — Gestión de usuarios
 
-El alta y la baja de una cuenta del equipo.
+El alta y la baja de una cuenta del equipo, el cupo de usuarios y la asignación de controles (D102, D103).
 
 Tablero, estados y reglas de uso: [`README.md`](README.md). Cómo funciona el módulo: [`arquitectura/gestion-usuarios/`](../arquitectura/gestion-usuarios/README.md).
 
@@ -9,3 +9,8 @@ Tablero, estados y reglas de uso: [`README.md`](README.md). Cómo funciona el m�
 | **SEG-23** | 🟠 | Un usuario desactivado pierde el acceso y se cierran sus sesiones (CC6.3) | El guard comprueba el estado del usuario en cada petición | `test/autenticacion/autenticacion.e2e-spec.ts`: con el usuario `inactive` su sesión abierta deja de servir y no puede volver a entrar. **Falta el endpoint para desactivarlo (MD-132)** | §5.6 |
 
 *Vienen de las secciones C. del registro anterior.*
+| **SEG-72** | 🔴 D103 | El cupo de usuarios (`companies.max_users`) se hace cumplir en el servidor: no se crea ni se reactiva a nadie por encima de él, aunque dos altas lleguen a la vez | La comprobación y el alta van en la misma transacción, con la fila de la empresa bloqueada (`FOR UPDATE`); cuentan `active`, `pending` y `suspended`; `USER_LIMIT_REACHED` | **Por construir (sprint 3):** prueba de dos altas simultáneas con un solo cupo libre | D103 |
+| **SEG-73** | 🔴 D102 | Solo el `admin_empresa` pone o cambia el dueño de un control (a un `responsable` o a sí mismo); solo el `responsable` dueño pone el ejecutor, y siempre un `delegado` de su equipo; nadie asigna fuera de su empresa | `@Roles` por ruta y validación en el caso de uso (`OWNER_NOT_ELIGIBLE`, `EXECUTOR_NOT_IN_TEAM`); `client_control_assignments` con RLS por `company_id`; cada cambio en `audit_logs` con el estado antes y después, en la misma transacción | **Por construir (sprint 3):** matriz de roles por endpoint, delegado de otro equipo, dueño de otra empresa y el historial en la auditoría | D102 |
+| **SEG-74** | 🔴 D102 | La baja es una desactivación (nada se borra); un `responsable` con delegados activos o pendientes no se desactiva; quien tiene controles asignados no se desactiva sin confirmación; y desactivar cierra sus sesiones y libera su cupo | `PATCH /v1/users/{id}` en una transacción: sesiones cerradas, ejecutor o dueño limpiado y `user.update` con `controls_unassigned`; `RESPONSIBLE_HAS_DELEGATES` y `USER_HAS_ASSIGNMENTS` | **Por construir (sprint 3):** extiende la prueba de SEG-23 | D102, `CC6.3` |
+| **SEG-75** | 🔴 D102 | El código de activación solo se entrega por correo a la persona: no viaja en la respuesta de la API, ni en logs, ni en la auditoría; el correo no nombra al proveedor de la sonda ni de la nube | `Mailer` (D99) con la plantilla de invitación; la respuesta trae solo `invitation.delivery_status`; solo se guarda el HMAC (`user_activation_codes`) | **Por construir (sprint 3):** prueba de que la respuesta y `audit_logs` no contienen el código | D99, D102 |
+| **SEG-76** | 🔴 D102 | Un `responsable` y un `delegado` no ven la vista técnica ni el avance de la empresa: reciben `403` en `view=technical` y el resumen que ven es solo el de sus controles | `@Roles` y el filtro por asignación en `compliance` | **Por construir (sprint 3):** prueba por rol de `view=technical` y del resumen | D81, D102 |

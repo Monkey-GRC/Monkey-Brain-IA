@@ -7,7 +7,7 @@ Prisma · **Motor** = funciones puras.
 
 ## Leer la lista de controles
 
-`GET /v1/services/:serviceId/controls` · lo piden `admin_empresa`, `funcional` y `auditor`.
+`GET /v1/services/:serviceId/controls` · lo piden `admin_empresa`, `responsable`, `delegado` y `auditor`.
 
 ```mermaid
 sequenceDiagram
@@ -35,7 +35,7 @@ sequenceDiagram
         UC->>M: readControl(control, activos, resultados)
         M-->>UC: estado, semáforo, avance, cobertura, qué falla
     end
-    UC->>UC: si es funcional, deja solo sus controles. Filtra, ordena, pagina
+    UC->>UC: si es responsable o delegado, deja solo sus controles (D102). Filtra, ordena, pagina
     UC-->>C: página de ControlReadout
     C-->>FE: ResponseDto con el mapper del contrato
 ```
@@ -46,7 +46,7 @@ sequenceDiagram
   existe en ninguna tabla.
 - **El aislamiento por empresa pasa en dos sitios**: la comprobación explícita del servicio (paso 8) y las políticas
   RLS de Postgres (pasos 7 y 10). Si una consulta olvida `withScope`, RLS devuelve vacío o falla; no filtra mal en silencio.
-- **El funcional se filtra después de calcular** (paso 14), no en la base. Funciona, pero significa que se calculan
+- **El responsable y el delegado se filtran después de calcular** (paso 14), no en la base. Funciona, pero significa que se calculan
   todos los controles del servicio aunque el usuario vea pocos ([`../06-mejoras.md`](../06-mejoras.md), M2).
 - **«Un número fijo de consultas»**: `loadServiceSnapshot` carga todo en bloque en vez de preguntar control por
   control. Es la decisión que evita el problema de las N+1 consultas.
