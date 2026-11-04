@@ -1,6 +1,40 @@
 # Enums — Gestión de usuarios
 
-Los valores de los enums de este módulo. Índice de todos: [`enums.md`](../enums.md). Por el cable viaja el **valor**; la etiqueta la resuelve i18n.
+> Índice de todos los enums: [`enums.md`](../enums.md). Por el cable viaja el **valor**; la etiqueta (es/en) la resuelve i18n. Formato: [`README.md`](../README.md#formato-de-un-enum).
 
-### `user_status` — `users.status`
-`active` Activo · `inactive` Inactivo · `suspended` Suspendido · `pending` Pendiente de activar (D95: la cuenta existe pero aún no usó su código; no puede iniciar sesión)
+## `user_status`
+**Columna:** `users.status` · **Cupo (D103):** `active`, `pending` y `suspended` cuentan para `companies.max_users`; `inactive` no.
+
+| Valor | Etiqueta (es) | Qué significa |
+|---|---|---|
+| `active` | Activo | |
+| `inactive` | Inactivo | Dado de baja; sin acceso (CC6.3); libera el cupo |
+| `suspended` | Suspendido | |
+| `pending` | Pendiente de activar | La cuenta existe pero aún no usó su código; no puede iniciar sesión (D95) |
+
+## `assignment`
+**Dónde se usa:** filtro `assignment` de `GET /v1/assignments`.
+
+| Valor | Etiqueta (es) | Qué significa |
+|---|---|---|
+| `unassigned` | Sin asignar | El control no tiene dueño |
+| `assigned` | Asignado | |
+
+## `role_in_control`
+**Dónde se usa:** campo de cada ítem de `GET /v1/me/work`.
+
+| Valor | Etiqueta (es) | Qué significa |
+|---|---|---|
+| `owner` | Dueño | Es el `responsable` (o el `admin_empresa`) del control |
+| `executor` | Ejecutor | Es el `delegado` que lo ejecuta |
+
+## `work_bucket`
+**Dónde se usa:** filtro `bucket` de `GET /v1/me/work`.
+
+| Valor | Etiqueta (es) | Qué significa |
+|---|---|---|
+| `to_upload` | Por subir | Falta subir evidencia |
+| `rejected` | Rechazado, por rehacer | Una revisión lo rechazó |
+| `to_review` | Por revisar | **Solo `responsable`**: evidencia de su equipo por revisar |
+| `in_review` | En revisión | Subida, sin revisión completa |
+| `done` | Listo | |

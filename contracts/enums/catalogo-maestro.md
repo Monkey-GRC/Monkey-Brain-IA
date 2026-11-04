@@ -1,19 +1,43 @@
 # Enums — Catálogo maestro
 
-Los valores de los enums de este módulo. Índice de todos: [`enums.md`](../enums.md). Por el cable viaja el **valor**; la etiqueta la resuelve i18n.
+> Índice de todos los enums: [`enums.md`](../enums.md). Por el cable viaja el **valor**; la etiqueta (es/en) la resuelve i18n. Formato: [`README.md`](../README.md#formato-de-un-enum).
 
-### `dimension` — las 5 dimensiones · `control_dimensions.dimension`
+## `dimension`
+**Columna:** `control_dimensions.dimension` · **Qué es:** las 5 dimensiones en que se evalúa un control.
 
-`policy` Política / Documental · `server` Servidor · `database` Base de datos · `app`
-Aplicación · `cloud` Nube
+| Valor | Etiqueta (es) | Qué significa |
+|---|---|---|
+| `policy` | Política / Documental | Se resuelve con un documento |
+| `server` | Servidor | Servidores, físicos o en nube |
+| `database` | Base de datos | Bases de datos |
+| `app` | Aplicación | La aplicación del cliente |
+| `cloud` | Nube | Servicios gestionados en nube |
 
-### `framework_type` — `frameworks.type` (en el MVP solo se usa `attestation`)
-`attestation` Informe de auditor (SOC 1, SOC 2) · `certification` Certificación (ISO 27001) ·
-`standard` Estándar (PCI DSS, NIST CSF, CIS) · `regulation` Regulación (HIPAA y afines)
+## `framework_type`
+**Columna:** `frameworks.type` · **En el MVP** solo se usa `attestation`.
 
-### `policy_approval_status` — `policies.approval_status`
-`draft` Borrador · `pending_approval` Pendiente de aprobación · `approved` Aprobada
+| Valor | Etiqueta (es) | Ejemplos |
+|---|---|---|
+| `attestation` | Informe de auditor | SOC 1, SOC 2 |
+| `certification` | Certificación | ISO 27001 |
+| `standard` | Estándar | PCI DSS, NIST CSF, CIS |
+| `regulation` | Regulación | HIPAA y afines |
 
-### `mapping_confidence` — `checks.mapping_confidence`
-`confirmed` Confirmado · `high` Alta · `medium` Media · `low` Baja (queda para revisión).
-Valores tomados de `monkey-cis-sync`.
+## `policy_approval_status`
+**Columna:** `policies.approval_status`
+
+| Valor | Etiqueta (es) |
+|---|---|
+| `draft` | Borrador |
+| `pending_approval` | Pendiente de aprobación |
+| `approved` | Aprobada |
+
+## `mapping_confidence`
+**Columna:** `checks.mapping_confidence` · **Fuente:** valores tomados de `monkey-cis-sync`.
+
+| Valor | Etiqueta (es) | Qué significa |
+|---|---|---|
+| `confirmed` | Confirmado | |
+| `high` | Alta | |
+| `medium` | Media | |
+| `low` | Baja | Queda para revisión |

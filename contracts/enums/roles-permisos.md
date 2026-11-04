@@ -1,9 +1,17 @@
 # Enums — Roles y permisos
 
-Los valores de los enums de este módulo. Índice de todos: [`enums.md`](../enums.md). Por el cable viaja el **valor**; la etiqueta la resuelve i18n.
+> Índice de todos los enums: [`enums.md`](../enums.md). Por el cable viaja el **valor**; la etiqueta (es/en) la resuelve i18n. Formato: [`README.md`](../README.md#formato-de-un-enum).
 
-### `user_role` — `users.role`
-`admin_monkey` · `admin_empresa` · `funcional` · `auditor`.
+## `user_role`
+**Columna:** `users.role` · **Qué puede hacer cada rol:** `modelo-datos.md` §5.5.
 
-⚠️ El schema actual del Backend usa `MONKEY_ADMIN`, `CLIENT_ADMIN`, `USER`, `VIEWER`. El modelo
-nuevo manda estos cuatro en minúscula; la API expone los del modelo.
+| Valor | Etiqueta (es) | Qué significa |
+|---|---|---|
+| `admin_monkey` | Administrador de Monkey | Equipo Monkey: empresas, catálogo y cupo de usuarios |
+| `admin_empresa` | Administrador de la empresa | Experto en compliance de la empresa; crea al equipo y asigna el dueño de cada control |
+| `responsable` | Responsable | Dueño de controles; lidera un equipo de delegados |
+| `delegado` | Delegado | Miembro del equipo de un responsable; ejecuta |
+| `auditor` | Auditor | Lee todo el cumplimiento de la empresa y escribe observaciones |
+
+> **`funcional` desapareció (D102, 2026-11-03):** su lugar lo ocupan `responsable` y `delegado`.
+> ⚠️ El schema anterior del Backend usaba `MONKEY_ADMIN`, `CLIENT_ADMIN`, `USER`, `VIEWER`. La API expone los cinco del modelo, en minúscula.
