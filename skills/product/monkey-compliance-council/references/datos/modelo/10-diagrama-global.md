@@ -44,7 +44,7 @@ erDiagram
     client_causes ||--o{ mitigations : "responde con"
 
     controls ||--o{ client_controls : "particularizado en"
-    client_controls ||--o{ user_control_assignments : "asignado a"
+    client_controls ||--o| client_control_assignments : "asignado a"
     client_controls ||--o{ action_plans : "remediado con"
     controls ||--o{ control_dimensions : "se evalua en"
     controls ||--o{ control_measurements : "se califica con"

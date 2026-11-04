@@ -2,7 +2,7 @@
 
 Responde: **¿cómo llega una restricción de rol hasta lo que el usuario ve?**
 
-## 1 · Una lectura de un `funcional`
+## 1 · Una lectura de un `responsable` o `delegado`
 
 ```mermaid
 sequenceDiagram
@@ -15,7 +15,7 @@ sequenceDiagram
     G->>G: ¿el rol está en @Roles? (capa 1)
     G->>UC: Principal
     UC->>DB: carga el servicio dentro de la empresa (RLS, capa 2)
-    UC->>UC: si es funcional, deja solo las pruebas de sus especialidades (capa 3)
+    UC->>UC: si es responsable o delegado, deja solo sus controles (capa 3, D102)
     UC-->>FE: lista; vacía si no tiene especialidad que coincida
 ```
 
