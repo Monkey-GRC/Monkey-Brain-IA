@@ -32,7 +32,7 @@ empresa. `admin_monkey` fija el cupo de usuarios (`companies.max_users`, D103) y
 | Roles, grupos y asignación | `datos/modelo/05-usuarios.md` §5.1 y §5.2 |
 | Decisiones (`D-n`) | [`datos/decisiones/gestion-usuarios.md`](../../datos/decisiones/gestion-usuarios.md): `D98` (parcial), `D102`, `D103` |
 | Pendientes del comité (`P-n`) | ninguno abierto en este módulo (`P38` y `P40` cerrados); las notificaciones son `P39` |
-| Requisitos de seguridad | [`seguridad/gestion-usuarios.md`](../../seguridad/gestion-usuarios.md): `SEG-23`, `SEG-72` a `SEG-76` |
+| Requisitos de seguridad | [`seguridad/gestion-usuarios.md`](../../seguridad/gestion-usuarios.md): `SEG-23`, `SEG-72` a `SEG-77` |
 | Plan del sprint 3 | [`producto/sprint-usuarios.md`](../../producto/sprint-usuarios.md) |
 | Código | `Backend/src/features/team` |
 | Deuda vigente | ninguna: `deuda-tecnica/` no tiene archivo de este módulo |
