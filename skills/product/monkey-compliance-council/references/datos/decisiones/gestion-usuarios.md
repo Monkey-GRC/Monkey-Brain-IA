@@ -71,3 +71,21 @@ Por qué Gestión de usuarios es como es. **Se consulta para reabrir, no para co
 **Fuente:** Héctor Ríos, 2026-11-03, con las respuestas del comité a `P40`.
 
 ---
+
+## D104 · El responsable vive en «Responsables» y su equipo de delegados lo crea él, no nace con su cuenta (2026-11-05)
+
+**Contexto.** Héctor Ríos, 2026-11-05. El plan del sprint 3 (MD-188) decía que crear un `responsable` creaba también su equipo de delegados. No es lo que el comité pidió: se desvió al planificar el sprint. **Ajusta D102** (punto 3, grupos); no la reemplaza.
+
+**Decisión.**
+
+1. **Un `responsable` pertenece solo a un grupo de responsables**, el que lidera el `admin_empresa`. Al crearlo, queda en el grupo «Responsables» de la empresa (se crea si falta). Por eso el administrador puede listar a sus responsables y verlos en detalle.
+2. **El equipo de delegados no nace con el responsable.** Lo crea el propio `responsable` cuando quiere (un botón «Crear grupo»); mientras no lo cree, trabaja solo, como ya decía D102. El `admin_empresa` puede crearlo por él: puede hacer todo el flujo solo (crear al responsable y crear el equipo de ese responsable).
+3. **Un responsable lidera un solo equipo** (D102): pedir un segundo es `409`. Un delegado no existe sin equipo: no se crea un delegado hasta que su responsable tenga equipo.
+4. **El delegado ve a qué responsable pertenece**: es el líder de su grupo (no se guarda aparte) y llega en su perfil (`GET /v1/auth/me`).
+5. **Los responsables que ya existían** (cuentas `funcional` migradas en MD-186, sin grupo) se meten en «Responsables» con una migración.
+
+**Qué cambia.** `contracts/gestion-usuarios.md` (alta, «Quién puede qué», «Grupos»), `contracts/autenticacion.md` (`/auth/me`), `modelo/05-usuarios.md`, `producto/sprint-usuarios.md` y el contenido de MD-188, MD-189 y las pantallas MD-197, MD-198 y MD-200.
+
+**Fuente:** Héctor Ríos, 2026-11-05: «así es como lo quería el comité; hubo una desviación en la planificación del sprint».
+
+---

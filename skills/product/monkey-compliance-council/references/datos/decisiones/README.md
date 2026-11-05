@@ -182,3 +182,4 @@ quedan aquí:
 | D101 | La contraseña no vence por calendario; la persona la cambia cuando quiere (con su contraseña y segundo factor) y la recupera con enlace por correo + segundo factor *(enmienda §5.3, SEG-14)* | [autenticacion](autenticacion.md) |
 | D102 | Cadena de asignación `admin_empresa` → `responsable` → `delegado`: el dueño de cada control es una persona, la unidad es el control completo y la revisión es de dos niveles *(reemplaza en parte a D98, ajusta D96; cierra P38)* | [gestion-usuarios](gestion-usuarios.md) |
 | D103 | Monkey solo tiene `admin_monkey` y fija el cupo de usuarios (`companies.max_users`) de cada empresa *(cierra P40)* | [gestion-usuarios](gestion-usuarios.md) |
+| D104 | El responsable vive en «Responsables» y su equipo de delegados lo crea él (o el administrador por él); no nace con su cuenta *(ajusta D102)* | [gestion-usuarios](gestion-usuarios.md) |

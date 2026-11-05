@@ -112,7 +112,7 @@ Crea la cuenta con la clave que le entregó `admin_monkey`. **Solo se pide la co
 #### Response `201`
 | Campo | Tipo | Qué es |
 |---|---|---|
-| `user` | objeto | `id`, `email`, `name` y `last_name` (`null` hasta completar el perfil), `role`, `status`, `is_mfa_enabled`, `last_login_at`, `created_at` |
+| `user` | objeto | `id`, `email`, `name` y `last_name` (`null` hasta completar el perfil), `role`, `status`, `is_mfa_enabled`, `last_login_at`, `created_at`, y para el equipo de la empresa (D104) `group { id, name }` (`null` en `admin_empresa`, `auditor` y `admin_monkey`) y, solo en el `delegado`, `responsible { id, name, last_name }`: a quién pertenece (el líder de su grupo). **Construido en MD-188**; lo traen igual `login`, `mfa/verify` y `GET /v1/auth/me` |
 | `company` | `{ id, name }` | `name` viene de `companies`; el Componente 1 lo muestra **precargado y bloqueado** |
 | `onboarding` | `{ next_step, completed_steps }` | Dice al frontend dónde continuar sin que lo adivine |
 
