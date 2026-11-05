@@ -128,7 +128,8 @@ Una cuenta `pending` que intenta iniciar sesión recibe `401 INVALID_CREDENTIALS
 | 409 | `RESPONSIBLE_HAS_NO_TEAM` | Se crea un `delegado` en el equipo de un responsable que aún no lo ha creado (D104) |
 | 409 | `RESPONSIBLES_GROUP_INVALID` | El grupo «Responsables» de la empresa no lo lidera un `admin_empresa` (D104): el alta no lo reutiliza; se elige otro `group_id` de responsables |
 | 409 | `TEAM_ALREADY_EXISTS` | Ese `responsable` ya lidera un equipo de delegados (D104) |
-| 409 | `GROUP_NAME_TAKEN` | Ya hay un grupo con ese nombre en la empresa |
+| 409 | `GROUP_NAME_TAKEN` | Ya hay un grupo con ese nombre en la empresa, o se pide el nombre reservado «Responsables» |
+| 409 | `GROUP_RESERVED` | Se intenta renombrar el grupo por omisión «Responsables» |
 
 > **Crear un `responsable` solo lo deja en el grupo «Responsables»** (D104). Su equipo de delegados **no nace con él**: lo crea él mismo, o el administrador por él, con `POST /v1/groups`. Un `responsable` que crea un `delegado` lo pone en su equipo; si aún no tiene, `409 RESPONSIBLE_HAS_NO_TEAM`.
 
@@ -189,7 +190,7 @@ Se pueden combinar. No cambia el rol.
 | **Delegado** con confirmación | Sus controles quedan con su dueño, **sin ejecutor** |
 | **Responsable sin delegados** con confirmación | Sus controles quedan **«Sin asignar»** |
 | **Responsable con delegados** `active` o `pending` | **No se desactiva**: `409 RESPONSIBLE_HAS_DELEGATES` con `error.delegates_count`, hasta que se muevan o se desactiven. La confirmación no lo salta |
-| **Mover** a un delegado | Sus controles dejan de tener ejecutor y siguen con su dueño |
+| **Mover** a un delegado (`group_id`) | El destino debe ser el equipo (`kind = team`) de un `responsable` `active` o `pending` de la empresa (`404` si no; el mismo equipo no cambia nada). Mover a quien no es `delegado` es `422 group_id.not_allowed`. Si ejecuta controles y no hay `confirm_unassign`, `409 USER_HAS_ASSIGNMENTS`; con confirmación, sus controles dejan de tener ejecutor y siguen con su dueño. Audita `user.update` con el `group_id` antes y después y `controls_unassigned` |
 | Sobre `admin_monkey` o alguien de otra empresa | `404` |
 
 > **Nada se borra:** el historial donde participó la persona se conserva; el estado anterior queda en la auditoría (`before_state`).
@@ -222,20 +223,27 @@ Un grupo tiene un nombre y un líder; cada persona (salvo `admin_empresa` y `aud
 
 | | |
 |---|---|
-| **Quién** | `admin_empresa` (todos) · `responsable` (el suyo) |
-| **Éxito** | `200` |
+| **Quién** | `admin_empresa` (todos) · `responsable` (el suyo; lista vacía si aún no lo crea) |
+| **Éxito** | `200`, paginada |
 | **Errores** | `403` (`delegado`, `auditor`, `admin_monkey`) |
+
+#### Parámetros (query)
+| Campo | Tipo | Obligatorio | Regla |
+|---|---|---|---|
+| `page`, `page_size` | integer | no | Ver `conventions.md` |
+| `sort` | string | no | `name` o `-name`; por omisión `name` |
 
 #### Response `200`
 | Campo | Tipo | Qué es |
 |---|---|---|
 | `id` | uuid | |
-| `name` | string | |
+| `name` | string | Se guarda sin espacios sobrantes (los internos se colapsan). Dos nombres que solo difieren en mayúsculas son distintos, salvo el reservado «Responsables», que se compara sin distinguirlas |
+| `kind` | enum `group_kind` | `responsables` (lo lidera el administrador) o `team` (el equipo de delegados de un responsable) |
 | `leader` | `{ id, name, last_name, role }` | El líder del grupo |
-| `members_count` | integer | |
+| `members_count` | integer | Cuentas del grupo, de **cualquier estado** (las mismas que lista `GET /v1/users?group_id=`); el líder del equipo no cuenta |
 
 ```json
-{ "id": "9a1b…", "name": "Equipo de María", "leader": { "id": "7d2e…", "name": "María", "last_name": "Gómez", "role": "responsable" }, "members_count": 3 }
+{ "id": "9a1b…", "name": "Equipo de María", "kind": "team", "leader": { "id": "7d2e…", "name": "María", "last_name": "Gómez", "role": "responsable" }, "members_count": 3 }
 ```
 
 ### POST /v1/groups — Crear un grupo
@@ -262,6 +270,8 @@ Un grupo tiene un nombre y un líder; cada persona (salvo `admin_empresa` y `aud
 | `admin_empresa` con `leader_id` | El **equipo de delegados** de ese responsable. `404` si no es un responsable de la empresa |
 | `responsable` | **Su** equipo de delegados, con él de líder |
 
+> El grupo queda con `kind = responsables` (sin `leader_id`) o `kind = team` (con `leader_id`, o creado por un responsable). El nombre «Responsables» no se puede usar (`409 GROUP_NAME_TAKEN`).
+
 > **Un responsable lidera un solo equipo (D102, D104):** pedir otro es `409 TEAM_ALREADY_EXISTS`. Mientras no lo cree, trabaja solo. No hay creación automática: el equipo no nace con el responsable.
 
 ### PATCH /v1/groups/{id} — Renombrar un grupo
@@ -270,12 +280,14 @@ Un grupo tiene un nombre y un líder; cada persona (salvo `admin_empresa` y `aud
 |---|---|
 | **Quién** | `admin_empresa` |
 | **Éxito** | `200` |
-| **Errores** | `403` · `404` · `409 GROUP_NOT_EMPTY` (solo si se expone el borrado) |
+| **Errores** | `403` · `404` · `409 GROUP_NAME_TAKEN` · `409 GROUP_RESERVED` · `409 GROUP_NOT_EMPTY` (solo si se expone el borrado) |
 
 #### Request
 | Campo | Tipo | Obligatorio | Regla |
 |---|---|---|---|
-| `name` | string | sí | Máx. 100 |
+| `name` | string | sí | Máx. 100; único en la empresa (`409 GROUP_NAME_TAKEN`) |
+
+> **El grupo «Responsables» está reservado** (D104): es el grupo por omisión de los responsables. Nadie puede ponerle ese nombre a otro grupo, ni al crearlo ni al renombrarlo (`409 GROUP_NAME_TAKEN`), y ese grupo no se renombra (`409 GROUP_RESERVED`).
 
 ---
 
@@ -501,12 +513,12 @@ Nunca se guarda el código ni su hash (`conventions.md`). Se escribe en la misma
 | Endpoints retirados | `GET`/`PATCH /v1/services/{id}/dimension-owners[/{dimension}]` y `GET`/`PATCH /v1/controls/{id}/responsibles[/{dimension}]` |
 | Errores y campo retirados | `USER_LACKS_DIMENSION`, `DIMENSION_IN_USE` y `dimensions` del alta |
 | Revisión de evidencia | `evidence_reviewer_role` admite `responsable`; la lógica de dos niveles es MD-194 |
+| Grupos (MD-189) | `GET`/`POST`/`PATCH /v1/groups`: el responsable crea su equipo y el administrador el de un responsable o un grupo de responsables; `user_groups.kind` (`group_kind`) con un índice único parcial por líder (un equipo por responsable); «Responsables» reservado (`GROUP_RESERVED`, `GROUP_NAME_TAKEN`); mover un delegado con `PATCH /v1/users/{id}` (`group_id`, `confirm_unassign`, `USER_HAS_ASSIGNMENTS`). Ver `DT-88` |
 | Alta y lista del equipo (MD-188) | `POST`/`GET /v1/users` con `group_id`, `is_internal`, `group` y `responsible`; el responsable queda en «Responsables» y crea delegados de su equipo (`RESPONSIBLE_HAS_NO_TEAM` si no lo tiene); el alta no devuelve el código (`invitation`); migración que mete a los responsables existentes en «Responsables»; `group` y `responsible` en `/auth/me`. Ver `DT-88` y `DT-89` |
 | Cupo de usuarios (MD-187) | `USER_LIMIT_REACHED` (`409`, con `error.max_users` y `error.users_count`) en el alta, en la reactivación `inactive`→`active` y en el canje de la clave; desactivar libera el cupo. Ver `empresas.md` y SEG-72 |
 
 | Sigue por construir | Ticket |
 |---|---|
-| Crear el equipo de delegados (el responsable el suyo, el administrador el de un responsable), listar y renombrar grupos, mover un delegado | MD-189 |
 | Invitación por correo, sin código en la respuesta | MD-190 (SEG-75) |
 | Baja con aviso | MD-191 (SEG-74) |
 | Asignación de dueño y ejecutor | MD-192 (SEG-73) |
