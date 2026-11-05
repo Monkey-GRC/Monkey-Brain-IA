@@ -64,6 +64,7 @@ Pide un reporte corto: archivos cambiados y dudas.
 
 Delega en `qa` con los endpoints o pantallas tocados. `qa` no escribe código: si falla, devuelve el caso mínimo y vuelves
 al paso 5 con ese detalle. No des nada por listo sin un PASS de `qa` o, si no se pudo correr, **dilo explícitamente**.
+Con la rama ya subida, mira también el CI con `gh pr checks` y `gh run list` (solo lectura; ver `monkey-closeout` §5).
 
 ## 7. Revisar arquitectura
 

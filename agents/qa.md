@@ -56,6 +56,12 @@ encuentra un bug, lo reporta al tech-lead.
 - Casos borde de UI (lista vacía, error de red, dato no encontrado → 404 del
   backend reflejado como estado de UI, no una pantalla en blanco).
 
+## Si la rama ya está en GitHub (solo lectura)
+
+Compara tu resultado local con el del CI: `gh pr checks <PR>` o `gh run list --branch <rama> --limit 5` y, si algo falló,
+`gh run view <id> --log-failed`. Si el CI falla y tú diste PASS, **dilo**: lo habitual es que el CI corra sobre lo commiteado
+y tú sobre el árbol de trabajo (`git status --short` debe estar vacío). `gh` solo para leer: nada de PR, merge ni comentarios.
+
 ## Formato de reporte al tech-lead (obligatorio, corto)
 
 ```

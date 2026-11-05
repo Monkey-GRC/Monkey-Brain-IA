@@ -488,10 +488,10 @@ Nunca se guarda el código ni su hash (`conventions.md`). Se escribe en la misma
 | Endpoints retirados | `GET`/`PATCH /v1/services/{id}/dimension-owners[/{dimension}]` y `GET`/`PATCH /v1/controls/{id}/responsibles[/{dimension}]` |
 | Errores y campo retirados | `USER_LACKS_DIMENSION`, `DIMENSION_IN_USE` y `dimensions` del alta |
 | Revisión de evidencia | `evidence_reviewer_role` admite `responsable`; la lógica de dos niveles es MD-194 |
+| Cupo de usuarios (MD-187) | `USER_LIMIT_REACHED` (`409`, con `error.max_users` y `error.users_count`) en el alta, en la reactivación `inactive`→`active` y en el canje de la clave; desactivar libera el cupo. Ver `empresas.md` y SEG-72 |
 
 | Sigue por construir | Ticket |
 |---|---|
-| Cupo de usuarios y `USER_LIMIT_REACHED` | MD-187 (SEG-72) |
 | Alta con grupo e `is_internal`, equipo del responsable | MD-188 (`DT-86`) |
 | Grupos y mover un delegado | MD-189 |
 | Invitación por correo, sin código en la respuesta | MD-190 (SEG-75) |

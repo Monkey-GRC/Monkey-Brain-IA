@@ -380,13 +380,13 @@ Implementado en `Backend/src/features/companies` y `Frontend/src/app/features/co
 
 | Endpoint | Estado |
 |---|---|
-| `POST /v1/companies` | ✅ Solo el caso `shared`. Empresa, clave **y marcos contratados** en la misma transacción (D47); la clave se envía al `admin_email` (D99; antes se mostraba una vez en un diálogo). El formulario lista los 7 marcos del catálogo (D50): SOC 2 elegible y los otros 6 deshabilitados («próximamente»). **Falta `max_users` (D103, sprint 3)** |
+| `POST /v1/companies` | ✅ Solo el caso `shared`. Empresa, clave **y marcos contratados** en la misma transacción (D47); la clave se envía al `admin_email` (D99; antes se mostraba una vez en un diálogo). El formulario lista los 7 marcos del catálogo (D50): SOC 2 elegible y los otros 6 deshabilitados («próximamente»). `max_users` obligatorio (entero ≥ 1, D103, MD-187) y devuelto con `users_count` |
 | `GET /v1/companies` | ✅ Paginado, `sort` = `created_at`/`name` (±), filtro `status`. **Excluye la empresa interna de Monkey** (la del `admin_monkey`), que no es un cliente |
 | `GET /v1/companies/{id}` | ✅ Con historial de claves. La empresa interna responde `404` |
 | `PATCH /v1/companies/{id}` | ❌ Espera a P2(c) |
 | `POST /v1/companies/{id}/deactivation` · `/reactivation` · `GET /v1/companies/pending-purge` · borrado definitivo | ✅ D97. `GET /v1/companies` oculta las archivadas por defecto (`status=deactivated` las muestra). La tarea del borrado corre cada `COMPANY_PURGE_INTERVAL_MINUTES` (60 por defecto; `0` la apaga) |
 | `POST /v1/companies/{id}/access-key/regenerate` | ✅ D99. Anula la pendiente, emite otra y la envía por correo |
-| `PATCH /v1/companies/{id}/max-users` | ⏳ Por construir (D103, sprint 3, MD-187) |
+| `PATCH /v1/companies/{id}/max-users` | ✅ D103, MD-187. Solo `admin_monkey`; `409 MAX_USERS_BELOW_CURRENT` si baja del uso; `company.max_users_update` con antes y después (con `company_id`) en la misma transacción. El listado y el detalle traen `max_users` (`null` = empresa anterior al cupo, sin tope) y `users_count` |
 
 Decisiones de implementación, dentro de lo que el contrato ya asumía:
 

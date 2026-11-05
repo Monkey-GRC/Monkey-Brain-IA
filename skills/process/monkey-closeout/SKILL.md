@@ -19,6 +19,10 @@ for r in Monkey-Brain-IA Backend Frontend Frontend-Platform; do echo "== $r"; (c
 
 Lo que aparezca es lo que Rod tendrá que commitear. **Claude no hace commits ni PRs.**
 
+**Al entregar los comandos de commit, comprueba que el reparto cubre todos los archivos:** cada ruta de `git status` debe caer en un `git add` y, al final,
+`git status --short` debe quedar vacío. (MD-186: faltó el commit de `src` y el CI compiló sin el código nuevo: 20 errores de `tsc`.) La verificación local corre
+sobre el árbol de trabajo; el CI corre sobre lo **commiteado**, y no son lo mismo.
+
 ## 2. Lista de cierre
 
 Marca solo lo que aplique y revisa en el archivo, no de memoria:
@@ -49,7 +53,20 @@ Si cambiaste `CLAUDE.md`, `.claude/`, una skill o un subagente, corre también
 `python3 skills/process/monkey-closeout/scripts/check-claude-config.py` y sigue `STANDARD.md` §9 (los subagentes se leen al arrancar:
 las pruebas van en una sesión nueva).
 
-## 5. Reporte
+## 5. Después del push: el CI y los despliegues (solo lectura, con `gh`)
+
+Cuando Rod haya hecho el push o abierto el PR, mira lo que corre en GitHub; no des nada por bueno solo porque pasó en local:
+
+```bash
+gh pr checks <PR>                                 # estado de cada paso del CI del PR
+gh run list --branch <rama> --limit 5             # ejecuciones recientes de esa rama
+gh run view <id> --log-failed                     # solo el log de lo que falló
+gh run list --workflow deploy-dev.yml --limit 3   # el último despliegue a desarrollo
+```
+
+Un paso en rojo se reporta con su error y su archivo; no se corrige a ciegas. `gh` se usa solo para **leer**: abrir o mezclar un PR sigue siendo de Rod.
+
+## 6. Reporte
 
 ```
 Cierre: <tarea>
