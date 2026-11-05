@@ -47,7 +47,7 @@ Puede subir evidencia, pero **no es su foco**. Que quien sube también revise es
 
 ### Grupos, dueño y ejecutor (D102)
 
-- **Un grupo** (`user_groups`) tiene un nombre y un líder. El `admin_empresa` lidera uno o varios grupos de responsables (p. ej. «Responsables - Servicio IA»); cada `responsable` lidera **un** equipo de delegados. **Cada persona pertenece a un solo grupo** (`users.group_id`). Un delegado no existe sin equipo; sin equipo, la persona es un `responsable` que trabaja solo. Solo el `admin_empresa` mueve a un delegado de equipo.
+- **Un grupo** (`user_groups`) tiene un nombre y un líder. El `admin_empresa` lidera uno o varios grupos de responsables (p. ej. «Responsables - Servicio IA»); cada `responsable` queda en el grupo «Responsables» y lidera **a lo sumo un** equipo de delegados, que **crea él cuando quiere** o el administrador por él (D104): no nace con su cuenta. **Cada persona pertenece a un solo grupo** (`users.group_id`). Un delegado no existe sin equipo; sin equipo, la persona es un `responsable` que trabaja solo. Solo el `admin_empresa` mueve a un delegado de equipo.
 - **La unidad de asignación es el control completo** (`client_controls`, que cuelga de un servicio). No hay dimensión ni especialidad: quien responde por un control responde por **todas** sus pruebas. Las personas son de la empresa, no de un servicio: el mismo control en el servicio A y en el B se asigna por separado, y un control nuevo llega sin dueño.
 - **Dueño:** un `responsable` o el `admin_empresa`. **Ejecutor:** un `delegado` del equipo del dueño; si no hay, **ejecuta el dueño**. Un control tiene un dueño y a lo sumo un ejecutor.
 - **Quién asigna:** el `admin_empresa` el dueño; el `responsable` el ejecutor, entre sus delegados. Un responsable no asigna a otro responsable; el administrador no asigna directo a un delegado. Al cambiar el dueño, el ejecutor se limpia.
@@ -234,7 +234,8 @@ Lo que puede hacer cada rol. Parte de las acciones de la hoja «Modelo de Gesti�
 | Crear (invitar) `responsable`, `auditor` y otro `admin_empresa` | | ✓ | | | |
 | Crear (invitar) `delegado` | | ✓ | ✓ solo de su equipo | | |
 | Editar, desactivar y reactivar usuarios | | ✓ | | | |
-| Crear y mover grupos; mover un delegado de equipo | | ✓ | | | |
+| Crear grupos de responsables y mover un delegado de equipo | | ✓ | | | |
+| Crear el equipo de delegados de un responsable | | ✓ | ✓ solo el suyo | | |
 | Asignar el dueño de un control (a un responsable o a sí mismo) y reasignarlo | | ✓ | | | |
 | Asignar el ejecutor de un control (un delegado de su equipo) | | | ✓ solo los suyos | | |
 | Ver la carga de trabajo de cada persona | | ✓ | | | |
