@@ -47,7 +47,7 @@ Puede subir evidencia, pero **no es su foco**. Que quien sube también revise es
 
 ### Grupos, dueño y ejecutor (D102)
 
-- **Un grupo** (`user_groups`) tiene un nombre y un líder. El `admin_empresa` lidera uno o varios grupos de responsables (p. ej. «Responsables - Servicio IA»); cada `responsable` queda en el grupo «Responsables» y lidera **a lo sumo un** equipo de delegados, que **crea él cuando quiere** o el administrador por él (D104): no nace con su cuenta. **Cada persona pertenece a un solo grupo** (`users.group_id`). Un delegado no existe sin equipo; sin equipo, la persona es un `responsable` que trabaja solo. Solo el `admin_empresa` mueve a un delegado de equipo.
+- **Un grupo** (`user_groups`) tiene un nombre y un líder. El `admin_empresa` lidera uno o varios grupos de responsables (p. ej. «Responsables - Servicio IA»); cada `responsable` queda en el grupo «Responsables» y lidera **a lo sumo un** equipo de delegados, que **crea él cuando quiere** o el administrador por él (D104): no nace con su cuenta. **Cada persona pertenece a un solo grupo** (`users.group_id`). El tipo del grupo es `user_groups.kind` (`group_kind`: `responsables` o `team`) y un índice único parcial por `leader_id` donde `kind = 'team'` garantiza un solo equipo por responsable. Que un `team` lo lidere un `responsable` es una **invariante de aplicación** (un `CHECK` no cruza tablas): la mantiene la creación de grupos. Al migrar, si un responsable tenía varios equipos, el más antiguo conserva a todos los miembros y los demás quedan vacíos como grupos de responsables renombrados «… (fusionado n)»; nada se borra. Un delegado no existe sin equipo; sin equipo, la persona es un `responsable` que trabaja solo. Solo el `admin_empresa` mueve a un delegado de equipo.
 - **La unidad de asignación es el control completo** (`client_controls`, que cuelga de un servicio). No hay dimensión ni especialidad: quien responde por un control responde por **todas** sus pruebas. Las personas son de la empresa, no de un servicio: el mismo control en el servicio A y en el B se asigna por separado, y un control nuevo llega sin dueño.
 - **Dueño:** un `responsable` o el `admin_empresa`. **Ejecutor:** un `delegado` del equipo del dueño; si no hay, **ejecuta el dueño**. Un control tiene un dueño y a lo sumo un ejecutor.
 - **Quién asigna:** el `admin_empresa` el dueño; el `responsable` el ejecutor, entre sus delegados. Un responsable no asigna a otro responsable; el administrador no asigna directo a un delegado. Al cambiar el dueño, el ejecutor se limpia.
@@ -100,7 +100,8 @@ erDiagram
     user_groups {
         uuid id PK
         uuid company_id FK "lo pide el RLS"
-        string name "p. ej. Responsables - Servicio IA"
+        string name "p. ej. Responsables - Servicio IA; unico por empresa; Responsables esta reservado"
+        group_kind kind "responsables o team (D104); un responsable lidera a lo sumo un team"
         uuid leader_id FK "admin_empresa o responsable"
         datetime created_at
     }

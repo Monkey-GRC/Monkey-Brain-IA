@@ -251,7 +251,8 @@ transacción que se revierte, con el rol dueño y con `monkey_app`.
 - **Una relación hacia un modelo que aún no existe** se agrega cuando se llega a su archivo; nunca
   se deja apuntando a un modelo inexistente (Prisma no compila).
 - **Las migraciones ya aplicadas no se editan**: se corrige con una nueva.
-- **Una migración que mueve datos de una tabla con `FORCE ROW LEVEL SECURITY`** corre como dueña y no vería filas sin tenant: apaga `FORCE` solo dentro de su transacción y lo vuelve a encender al final (la RLS sigue habilitada), y una prueba comprueba el estado final (ejemplo: `20261105000300_responsables_group`, D104).
+- **Una migración que mueve datos de una tabla con `FORCE ROW LEVEL SECURITY`** corre como dueña y no vería filas sin tenant: apaga `FORCE` solo dentro de su transacción y lo vuelve a encender al final (la RLS sigue habilitada), y una prueba comprueba el estado final (ejemplos: `20261105000300_responsables_group` y `20261105000400_group_kind`, D104; esta última aborta entera si encuentra equipos duplicados en una empresa sin `admin_empresa` y se puede ejecutar dos veces).
+- **Crear una fila con nombre único dentro de una transacción** (p. ej. el grupo «Responsables» del alta): `INSERT … ON CONFLICT (…) DO NOTHING` y releer la fila ganadora. Capturar el `P2002` no sirve dentro de la misma transacción, porque un error de Postgres la deja abortada y no se puede volver a leer.
 - **`contracts/enums.md`** manda sobre `modelo-datos.md` en los valores de enum.
 - **Enums:** el estado y su cierre están en `contracts/enums.md` y en D34. Lo único abierto es la
   lista completa de `business_model` (D73: son 19 más `other`).

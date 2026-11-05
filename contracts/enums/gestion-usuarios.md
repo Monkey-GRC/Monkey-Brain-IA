@@ -12,6 +12,14 @@
 | `suspended` | Suspendido | |
 | `pending` | Pendiente de activar | La cuenta existe pero aún no usó su código; no puede iniciar sesión (D95) |
 
+## `group_kind`
+**Columna:** `user_groups.kind` · **Dónde se usa:** campo `kind` de `GET /v1/groups`. Un `responsable` lidera como mucho **un** grupo `team` (D104).
+
+| Valor | Etiqueta (es) | Qué significa |
+|---|---|---|
+| `responsables` | Grupo de responsables | Lo lidera el `admin_empresa`; ahí queda todo `responsable`. El primero es «Responsables», reservado |
+| `team` | Equipo de delegados | Lo lidera un `responsable`; ahí están sus `delegado` |
+
 ## `assignment`
 **Dónde se usa:** filtro `assignment` de `GET /v1/assignments`.
 

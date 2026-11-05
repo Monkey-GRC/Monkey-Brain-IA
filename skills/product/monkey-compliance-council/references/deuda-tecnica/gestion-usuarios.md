@@ -16,9 +16,9 @@ Parches vigentes de [Gestión de usuarios](../arquitectura/gestion-usuarios/READ
 
 🟠 Importante
 
-- **Qué está parchado:** desde MD-188 existen delegados con responsable, pero el `PATCH` conserva la lógica anterior: desactiva a cualquiera sin comprobar si un `responsable` tiene delegados activos o pendientes (`RESPONSIBLE_HAS_DELEGATES`) ni si la persona tiene controles asignados (`USER_HAS_ASSIGNMENTS`, `confirm_unassign`), y no mueve a un delegado de equipo (`group_id`). Solo devuelve la forma nueva del usuario (`group`, `responsible`, `is_internal`). Código: `UpdateTeamMemberUseCase` y `team-user.prisma.repository.ts` (`update`).
+- **Qué está parchado:** desde MD-188 existen delegados con responsable, pero el `PATCH` conserva la lógica anterior: desactiva a cualquiera sin comprobar si un `responsable` tiene delegados activos o pendientes (`RESPONSIBLE_HAS_DELEGATES`) ni si la persona tiene controles asignados (`USER_HAS_ASSIGNMENTS`, `confirm_unassign`), (mover a un delegado de equipo con `group_id` ya existe desde MD-189). Devuelve la forma nueva del usuario (`group`, `responsible`, `is_internal`). Código: `UpdateTeamMemberUseCase` y `team-user.prisma.repository.ts` (`update`).
 - **Por qué:** la lógica de baja con aviso es MD-191 (SEG-74) y mover delegados es MD-189; MD-188 solo crea y lista.
-- **Qué lo cierra:** MD-191 (`RESPONSIBLE_HAS_DELEGATES`, `USER_HAS_ASSIGNMENTS`, `confirm_unassign`, `controls_unassigned` en la auditoría) y MD-189 (mover un delegado). Mientras tanto, el administrador no debe desactivar a un responsable que tenga delegados.
+- **Qué lo cierra:** MD-191 (`RESPONSIBLE_HAS_DELEGATES`, y `USER_HAS_ASSIGNMENTS` con `confirm_unassign` y `controls_unassigned` también al dar de baja; al mover ya lo hace MD-189). Mientras tanto, el administrador no debe desactivar a un responsable que tenga delegados.
 
 ### DT-89 · El reenvío de la invitación devuelve el código de activación en la respuesta
 
