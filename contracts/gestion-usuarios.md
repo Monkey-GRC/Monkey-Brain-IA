@@ -478,16 +478,28 @@ Nunca se guarda el código ni su hash (`conventions.md`). Se escribe en la misma
 
 ## Estado de implementación
 
-**Por construir (sprint 3, 2026-11-03 a 2026-11-16).** Existe construido el modelo anterior (D96 y D98), que se **reemplaza**.
+**En construcción (sprint 3, 2026-11-03 a 2026-11-16).** MD-186 (2026-11-04) dejó hecho el esquema y retiró el modelo anterior (D96 y D98); la lógica nueva llega en los tickets que siguen.
 
-| Se elimina | Detalle |
+| Hecho en MD-186 | Detalle |
 |---|---|
-| Tablas | `user_dimensions` y `service_dimension_owners`; la columna `dimension` de `user_control_assignments` (que pasa a `client_control_assignments`, ver `modelo/05-usuarios.md` §5.2) |
-| Rol | `funcional`: el enum `user_role` pasa a `admin_monkey · admin_empresa · responsable · delegado · auditor` |
-| Endpoints | `GET`/`PATCH /v1/services/{id}/dimension-owners[/{dimension}]` y `GET`/`PATCH /v1/controls/{id}/responsibles[/{dimension}]` |
-| Errores | `USER_LACKS_DIMENSION`, `DIMENSION_IN_USE` |
-| Campo | `dimensions` del alta |
-| Código | `Backend/src/features/compliance/infrastructure/shared/control-responsibles.ts` (el responsable efectivo por dimensión) |
+| Tablas | Se eliminaron `user_dimensions`, `service_dimension_owners` y `user_control_assignments`; existen `user_groups` y `client_control_assignments` (con RLS), `users.group_id`, `users.is_internal` y `companies.max_users` |
+| Rol | `funcional` ya no existe: `user_role` es `admin_monkey · admin_empresa · responsable · delegado · auditor` (una cuenta `funcional` pasa a `responsable`) |
+| Reglas en la base | CHECK: `is_internal` solo en el `delegado`, grupo solo para `responsable` y `delegado`, ejecutor distinto del dueño |
+| Endpoints retirados | `GET`/`PATCH /v1/services/{id}/dimension-owners[/{dimension}]` y `GET`/`PATCH /v1/controls/{id}/responsibles[/{dimension}]` |
+| Errores y campo retirados | `USER_LACKS_DIMENSION`, `DIMENSION_IN_USE` y `dimensions` del alta |
+| Revisión de evidencia | `evidence_reviewer_role` admite `responsable`; la lógica de dos niveles es MD-194 |
+
+| Sigue por construir | Ticket |
+|---|---|
+| Cupo de usuarios y `USER_LIMIT_REACHED` | MD-187 (SEG-72) |
+| Alta con grupo e `is_internal`, equipo del responsable | MD-188 (`DT-86`) |
+| Grupos y mover un delegado | MD-189 |
+| Invitación por correo, sin código en la respuesta | MD-190 (SEG-75) |
+| Baja con aviso | MD-191 (SEG-74) |
+| Asignación de dueño y ejecutor | MD-192 (SEG-73) |
+| Visibilidad por dueño y ejecutor (hoy transitoria, `DT-87`) | MD-193 (SEG-76) |
+| Revisión en dos niveles | MD-194 |
+| Carga de trabajo y «Mi trabajo» | MD-195 |
 
 Lo que **sigue vigente**:
 

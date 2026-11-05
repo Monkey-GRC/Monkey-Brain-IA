@@ -34,6 +34,7 @@ la cierra). Los ID (`DT-n`) no se reutilizan. Si una deuda depende del comité, 
 | [`control-tecnico.md`](control-tecnico.md) | 22 | [Control técnico](../arquitectura/control-tecnico/README.md) |
 | [`cumplimiento.md`](cumplimiento.md) | 6 | [Cumplimiento](../arquitectura/cumplimiento/README.md) |
 | [`empresas.md`](empresas.md) | 5 | [Empresas](../arquitectura/empresas/README.md) |
+| [`gestion-usuarios.md`](gestion-usuarios.md) | 2 | [Gestión de usuarios](../arquitectura/gestion-usuarios/README.md) |
 | [`notificaciones.md`](notificaciones.md) | 2 | [Notificaciones](../arquitectura/notificaciones/README.md) |
 | [`onboarding.md`](onboarding.md) | 18 | [Onboarding](../arquitectura/onboarding/README.md) y sus tres componentes |
 | [`plataforma.md`](plataforma.md) | 4 | [Plataforma](../arquitectura/plataforma/README.md) |
@@ -112,6 +113,7 @@ Limitan el producto o al equipo.
 | [DT-83](notificaciones.md#dt-83--falta-el-aviso-a-los-admin_monkey-de-que-una-empresa-está-por-borrarse) | Falta el aviso a los `admin_monkey` de que una empresa está por borrarse | [Notificaciones](notificaciones.md) |
 | [DT-84](entrega.md#dt-84--el-respaldo-con-rotación-a-35-días-solo-existe-como-script-de-staging-y-nada-comprueba-que-corra) | El respaldo con rotación a 35 días solo existe como script de staging, y nada comprueba que corra | [Entrega](entrega.md) |
 | [DT-85](empresas.md#dt-85--la-clave-de-acceso-viaja-en-claro-por-un-servicio-de-correo-externo-y-el-resultado-del-envío-no-se-guarda) | La clave de acceso viaja en claro por un servicio de correo externo y el resultado del envío no se guarda | [Empresas](empresas.md) |
+| [DT-87](gestion-usuarios.md#dt-87--un-responsable-ve-solo-los-controles-de-los-que-es-dueño-o-ejecutor-y-el-delegado-solo-controles-evidencia-y-observaciones) | Un `responsable` ve solo los controles de los que es dueño o ejecutor, y el `delegado` solo controles, evidencia y observaciones | [Gestión de usuarios](gestion-usuarios.md) |
 
 ### 🟡 Mejoras
 
@@ -146,3 +148,4 @@ Pendientes sin urgencia.
 | [DT-73](cumplimiento.md#dt-73--evaluationsresult-no-distingue-error-ni-excluded) | `evaluations.result` no distingue `error` ni `excluded` | [Cumplimiento](cumplimiento.md) |
 | [DT-74](cumplimiento.md#dt-74--la-exclusión-de-un-check-no-tiene-endpoint) | La exclusión de un check no tiene endpoint | [Cumplimiento](cumplimiento.md) |
 | [DT-80](cumplimiento.md#dt-80--el-veredicto-manual-usa-el-tipo-de-la-dimensión-del-control) | El veredicto manual usa el tipo de la dimensión del control | [Cumplimiento](cumplimiento.md) |
+| [DT-86](gestion-usuarios.md#dt-86--el-alta-de-un-delegado-guarda-is_internal--true-y-no-asigna-grupo) | El alta de un `delegado` guarda `is_internal = true` y no asigna grupo | [Gestión de usuarios](gestion-usuarios.md) |
