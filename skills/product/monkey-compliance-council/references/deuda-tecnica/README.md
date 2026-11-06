@@ -114,7 +114,6 @@ Limitan el producto o al equipo.
 | [DT-84](entrega.md#dt-84--el-respaldo-con-rotación-a-35-días-solo-existe-como-script-de-staging-y-nada-comprueba-que-corra) | El respaldo con rotación a 35 días solo existe como script de staging, y nada comprueba que corra | [Entrega](entrega.md) |
 | [DT-85](empresas.md#dt-85--la-clave-de-acceso-viaja-en-claro-por-un-servicio-de-correo-externo-y-el-resultado-del-envío-no-se-guarda) | La clave de acceso viaja en claro por un servicio de correo externo y el resultado del envío no se guarda | [Empresas](empresas.md) |
 | [DT-87](gestion-usuarios.md#dt-87--un-responsable-ve-solo-los-controles-de-los-que-es-dueño-o-ejecutor-y-el-delegado-solo-controles-evidencia-y-observaciones) | Un `responsable` ve solo los controles de los que es dueño o ejecutor, y el `delegado` solo controles, evidencia y observaciones | [Gestión de usuarios](gestion-usuarios.md) |
-| [DT-88](gestion-usuarios.md#dt-88--el-patch-v1usersid-no-impide-desactivar-a-un-responsable-con-delegados-y-no-avisa-de-los-controles-asignados) | El `PATCH /v1/users/{id}` no impide desactivar a un responsable con delegados y no avisa de los controles asignados | [Gestión de usuarios](gestion-usuarios.md) |
 
 ### 🟡 Mejoras
 

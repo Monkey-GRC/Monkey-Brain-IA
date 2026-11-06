@@ -35,7 +35,7 @@ empresa. `admin_monkey` fija el cupo de usuarios (`companies.max_users`, D103) y
 | Requisitos de seguridad | [`seguridad/gestion-usuarios.md`](../../seguridad/gestion-usuarios.md): `SEG-23`, `SEG-72` a `SEG-77` |
 | Plan del sprint 3 | [`producto/sprint-usuarios.md`](../../producto/sprint-usuarios.md) |
 | Código | `Backend/src/features/team` |
-| Deuda vigente | [`deuda-tecnica/gestion-usuarios.md`](../../deuda-tecnica/gestion-usuarios.md): `DT-87`, `DT-88`, `DT-90` |
+| Deuda vigente | [`deuda-tecnica/gestion-usuarios.md`](../../deuda-tecnica/gestion-usuarios.md): `DT-87`, `DT-90` |
 
 ## Contenido
 

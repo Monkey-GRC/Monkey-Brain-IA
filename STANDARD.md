@@ -23,6 +23,7 @@ Cada dato vive en un solo archivo; los demás lo enlazan, no lo copian.
 | Forma de cada endpoint | `contracts/<módulo>.md` (o `contracts/<módulo>/<componente>.md`); lo transversal, en `conventions.md` |
 | Valores de cada enum | `contracts/enums/<módulo>.md` (o `<módulo>/<componente>.md`); el índice de todos, `contracts/enums.md` |
 | Convenciones y mapa de features del código | `context/backend.md` · `context/frontend.md` |
+| Cómo levantar el Backend en local (Postgres, variables de entorno, pruebas, runner) | `Backend/README.md` (no se repite aquí) |
 | Automatización con Claude Code: permisos, hooks, skills de proceso y subagentes | `.claude/settings.json` y `.claude/hooks/` · `skills/process/` · `agents/` (`.claude/skills/` y `.claude/agents/` solo contienen symlinks) |
 
 Si vas a escribir un dato que ya tiene dueño, enlázalo. Si no tiene dueño, decide uno antes de escribir.

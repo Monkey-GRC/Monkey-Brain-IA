@@ -164,7 +164,7 @@ Cada ítem es el objeto de [crear una persona](#post-v1users--crear-una-persona-
 |---|---|
 | **Quién** | `admin_empresa` |
 | **Éxito** | `200` con el usuario actualizado |
-| **Errores** | `403` · `404` · `409 LAST_ADMIN` · `409 USER_NOT_ACTIVATED` · `409 USER_HAS_ASSIGNMENTS` · `409 RESPONSIBLE_HAS_DELEGATES` · `409 USER_LIMIT_REACHED` · `422` |
+| **Errores** | `403` · `404` · `409 LAST_ADMIN` · `409 USER_NOT_ACTIVATED` · `409 USER_HAS_ASSIGNMENTS` · `409 RESPONSIBLE_HAS_DELEGATES` · `409 TEAM_LEADER_INACTIVE` · `409 USER_LIMIT_REACHED` · `422` |
 
 #### Request
 Se pueden combinar. No cambia el rol.
@@ -174,7 +174,7 @@ Se pueden combinar. No cambia el rol.
 | `status` | enum `user_status` | no | `inactive` (baja) o `active` (reactivar). La baja **cierra todas sus sesiones al instante** (CC6.3) y **libera el cupo**; reactivar vuelve a comprobar el cupo |
 | `name`, `last_name` | string | no | Corrige el nombre (máx. 100) |
 | `group_id` | uuid | no | **Mover** a un delegado a otro equipo |
-| `is_internal` | boolean | no | Solo `delegado` |
+| `is_internal` | boolean | no | Solo `delegado`: corrige si es de la compañía o externo. `422 is_internal.not_allowed` para los demás roles |
 | `confirm_unassign` | boolean | no | `true` confirma que quedarán sin dueño o sin ejecutor los controles de la persona |
 
 ```json
@@ -186,14 +186,18 @@ Se pueden combinar. No cambia el rol.
 |---|---|
 | Uno mismo | Solo puede corregir su nombre; desactivarse es `409 LAST_ADMIN`. A otro `admin_empresa` sí se le puede desactivar y reactivar (D98): la empresa nunca se queda sin administrador |
 | Cuenta `pending` | `409 USER_NOT_ACTIVATED` (no se desactiva ni se reactiva) |
-| Tiene controles asignados (dueño o ejecutor) y no hay `confirm_unassign` | `409 USER_HAS_ASSIGNMENTS` con `error.controls_count` |
+| Tiene controles asignados (dueño o ejecutor) y se le **desactiva o mueve** sin `confirm_unassign` | `409 USER_HAS_ASSIGNMENTS` con `error.controls_count` (controles distintos en los que figura como dueño o como ejecutor) |
 | **Delegado** con confirmación | Sus controles quedan con su dueño, **sin ejecutor** |
-| **Responsable sin delegados** con confirmación | Sus controles quedan **«Sin asignar»** |
+| **Responsable sin delegados** con confirmación | Sus controles quedan **«Sin asignar»** (se borra la asignación vigente) |
+| **`admin_empresa`** con controles propios, con confirmación | Sus controles quedan **«Sin asignar»** |
 | **Responsable con delegados** `active` o `pending` | **No se desactiva**: `409 RESPONSIBLE_HAS_DELEGATES` con `error.delegates_count`, hasta que se muevan o se desactiven. La confirmación no lo salta |
 | **Mover** a un delegado (`group_id`) | El destino debe ser el equipo (`kind = team`) de un `responsable` `active` o `pending` de la empresa (`404` si no; el mismo equipo no cambia nada). Mover a quien no es `delegado` es `422 group_id.not_allowed`. Si ejecuta controles y no hay `confirm_unassign`, `409 USER_HAS_ASSIGNMENTS`; con confirmación, sus controles dejan de tener ejecutor y siguen con su dueño. Audita `user.update` con el `group_id` antes y después y `controls_unassigned` |
+| **Reactivar** a un `delegado` cuyo responsable no está `active` ni `pending` | `409 TEAM_LEADER_INACTIVE`: no se reactiva a nadie en un equipo sin líder vigente; hay que **moverlo** antes a otro equipo |
+| **Reactivar** a cualquiera | Vuelve a comprobar el cupo. **No devuelve sus asignaciones**: los controles que dejó siguen «Sin asignar» |
+| Equipo de un `responsable` dado de baja | No se borra: queda con el líder inactivo y, si el responsable se reactiva, vuelve a liderarlo |
 | Sobre `admin_monkey` o alguien de otra empresa | `404` |
 
-> **Nada se borra:** el historial donde participó la persona se conserva; el estado anterior queda en la auditoría (`before_state`).
+> **Nada se borra:** el historial donde participó la persona se conserva; el estado anterior queda en la auditoría (`before_state`). Al desactivar o mover, además de `user.update` queda **una entrada `control_assignment.set` por cada control** cuyo dueño o ejecutor cambia, con su antes y después: el historial de asignaciones se lee de ahí.
 
 ---
 
@@ -475,19 +479,20 @@ En las listas de Cumplimiento (`controls`, `evidence`, pruebas de un control, ri
 | `action` | Cuándo | Quién | `tenant_id` |
 |---|---|---|---|
 | `user.create` | Se crea a una persona | `admin_empresa` o `responsable` | La empresa |
-| `user.update` | Se edita, mueve, desactiva o reactiva (`before_state`/`after_state`; `sessions_closed` y `controls_unassigned` al desactivar) | `admin_empresa` | La empresa |
+| `user.update` | Se edita, mueve, desactiva o reactiva (`before_state`/`after_state`; `sessions_closed` al desactivar y `controls_unassigned` al desactivar o mover) | `admin_empresa` | La empresa |
 | `user.activation_code_regenerate` | Se emite un código nuevo | Quien lo pide | La empresa |
 | `user.activate` | La persona activa su cuenta (también si falla: `result = error`) | La persona, o `attempted_email` | La empresa |
 | `group.create` · `group.update` | Se crea o renombra un grupo | `admin_empresa` | La empresa |
-| `control_assignment.set` | Se pone, cambia o quita el dueño o el ejecutor de un control (una entrada por control; `before_state`/`after_state` con dueño y ejecutor) | `admin_empresa` o `responsable` | La empresa |
+| `control_assignment.set` | Se pone, cambia o quita el dueño o el ejecutor de un control, **también al desactivar o mover a una persona** (una entrada por control; `before_state`/`after_state` con dueño y ejecutor) | `admin_empresa` o `responsable` (o quien desactiva o mueve) | La empresa |
 
-Nunca se guarda el código ni su hash (`conventions.md`). Se escribe en la misma transacción que la acción (D52, SEG-36). El historial de asignaciones sale de esta auditoría.
+Cada `control_assignment.set` lleva `resource = 'control_assignment'` y, dentro de `before_state` y `after_state`, el `client_control_id` junto con el `owner_id` y el `executor_id` del control. Nunca se guarda el código ni su hash (`conventions.md`). Se escribe en la misma transacción que la acción (D52, SEG-36). El historial de asignaciones sale de esta auditoría.
 
 ## Errores del módulo
 
 | HTTP | `error.code` | Cuándo |
 |---|---|---|
 | 403 | `FORBIDDEN` | El rol no puede hacer esto, o el control no es suyo |
+| 403 | `ACCOUNT_INACTIVE` | Quien hace la petición fue desactivado mientras ella se procesaba (otra baja simultánea): no se escribe nada. Así dos administradores que se desactivan a la vez nunca dejan la empresa sin administrador |
 | 404 | `NOT_FOUND` | Usuario, grupo o control inexistentes **para esta empresa** |
 | 404 / 409 / 422 / 429 | `ACTIVATION_CODE_INVALID` · `ACTIVATION_CODE_ALREADY_USED` · `ACTIVATION_CODE_EXPIRED` · `ACTIVATION_CODE_EMAIL_MISMATCH` · `ACTIVATION_CODE_RATE_LIMITED` | La activación; ver [`autenticacion.md`](autenticacion.md) |
 | 409 | `EMAIL_TAKEN` | Ese correo ya tiene cuenta |
@@ -496,6 +501,7 @@ Nunca se guarda el código ni su hash (`conventions.md`). Se escribe en la misma
 | 409 | `USER_NOT_ACTIVATED` | Se intenta desactivar o reactivar una cuenta `pending` |
 | 409 | `USER_ALREADY_ACTIVE` | Se pide otro código para una cuenta que ya activó |
 | 409 | `USER_HAS_ASSIGNMENTS` | Se desactiva o mueve a quien tiene controles, sin `confirm_unassign` (`error.controls_count`) |
+| 409 | `TEAM_LEADER_INACTIVE` | Se reactiva a un `delegado` cuyo responsable no está `active` ni `pending` |
 | 409 | `RESPONSIBLE_HAS_DELEGATES` | Se desactiva a un `responsable` con delegados activos o pendientes (`error.delegates_count`) |
 | 409 | `GROUP_NOT_EMPTY` | Se intenta borrar un grupo con miembros |
 | 409 | `EXECUTOR_NOT_IN_TEAM` | El ejecutor no es un delegado del equipo del dueño |
@@ -519,14 +525,14 @@ Nunca se guarda el código ni su hash (`conventions.md`). Se escribe en la misma
 | Endpoints retirados | `GET`/`PATCH /v1/services/{id}/dimension-owners[/{dimension}]` y `GET`/`PATCH /v1/controls/{id}/responsibles[/{dimension}]` |
 | Errores y campo retirados | `USER_LACKS_DIMENSION`, `DIMENSION_IN_USE` y `dimensions` del alta |
 | Revisión de evidencia | `evidence_reviewer_role` admite `responsable`; la lógica de dos niveles es MD-194 |
-| Grupos (MD-189) | `GET`/`POST`/`PATCH /v1/groups`: el responsable crea su equipo y el administrador el de un responsable o un grupo de responsables; `user_groups.kind` (`group_kind`) con un índice único parcial por líder (un equipo por responsable); «Responsables» reservado (`GROUP_RESERVED`, `GROUP_NAME_TAKEN`); mover un delegado con `PATCH /v1/users/{id}` (`group_id`, `confirm_unassign`, `USER_HAS_ASSIGNMENTS`). Ver `DT-88` |
+| Baja con aviso (MD-191) | `PATCH /v1/users/{id}`: `RESPONSIBLE_HAS_DELEGATES` (la confirmación no lo salta), `USER_HAS_ASSIGNMENTS` con `confirm_unassign` también al desactivar (el delegado queda sin ejecutor; el responsable sin delegados y el administrador dejan sus controles «Sin asignar»), `TEAM_LEADER_INACTIVE` al reactivar a un delegado sin líder vigente, `is_internal`, y una entrada `control_assignment.set` por control al desactivar o mover (también en el movimiento de MD-189). Crear, mover y reactivar a un delegado bloquean la fila de su responsable (`FOR SHARE`), y la baja del responsable la suya (`FOR UPDATE`): nunca queda un delegado vigente bajo un responsable inactivo. SEG-74 cumplido |
+| Grupos (MD-189) | `GET`/`POST`/`PATCH /v1/groups`: el responsable crea su equipo y el administrador el de un responsable o un grupo de responsables; `user_groups.kind` (`group_kind`) con un índice único parcial por líder (un equipo por responsable); «Responsables» reservado (`GROUP_RESERVED`, `GROUP_NAME_TAKEN`); mover un delegado con `PATCH /v1/users/{id}` (`group_id`, `confirm_unassign`, `USER_HAS_ASSIGNMENTS`) |
 | Invitación por correo (MD-190) | El alta y el reenvío envían el código por correo (después del commit); ninguna respuesta lo trae; el reenvío responde `200` con `invitation`; el correo no nombra al proveedor de la sonda ni de la nube. SEG-75 cumplido; ver `DT-90` |
-| Alta y lista del equipo (MD-188) | `POST`/`GET /v1/users` con `group_id`, `is_internal`, `group` y `responsible`; el responsable queda en «Responsables» y crea delegados de su equipo (`RESPONSIBLE_HAS_NO_TEAM` si no lo tiene); el alta no devuelve el código (`invitation`); migración que mete a los responsables existentes en «Responsables»; `group` y `responsible` en `/auth/me`. Ver `DT-88` |
+| Alta y lista del equipo (MD-188) | `POST`/`GET /v1/users` con `group_id`, `is_internal`, `group` y `responsible`; el responsable queda en «Responsables» y crea delegados de su equipo (`RESPONSIBLE_HAS_NO_TEAM` si no lo tiene); el alta no devuelve el código (`invitation`); migración que mete a los responsables existentes en «Responsables»; `group` y `responsible` en `/auth/me` |
 | Cupo de usuarios (MD-187) | `USER_LIMIT_REACHED` (`409`, con `error.max_users` y `error.users_count`) en el alta, en la reactivación `inactive`→`active` y en el canje de la clave; desactivar libera el cupo. Ver `empresas.md` y SEG-72 |
 
 | Sigue por construir | Ticket |
 |---|---|
-| Baja con aviso | MD-191 (SEG-74) |
 | Asignación de dueño y ejecutor | MD-192 (SEG-73) |
 | Visibilidad por dueño y ejecutor (hoy transitoria, `DT-87`) | MD-193 (SEG-76) |
 | Revisión en dos niveles | MD-194 |
