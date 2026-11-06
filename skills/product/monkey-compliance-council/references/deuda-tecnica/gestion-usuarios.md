@@ -20,11 +20,11 @@ Parches vigentes de [Gestión de usuarios](../arquitectura/gestion-usuarios/READ
 - **Por qué:** la lógica de baja con aviso es MD-191 (SEG-74) y mover delegados es MD-189; MD-188 solo crea y lista.
 - **Qué lo cierra:** MD-191 (`RESPONSIBLE_HAS_DELEGATES`, y `USER_HAS_ASSIGNMENTS` con `confirm_unassign` y `controls_unassigned` también al dar de baja; al mover ya lo hace MD-189). Mientras tanto, el administrador no debe desactivar a un responsable que tenga delegados.
 
-### DT-89 · El reenvío de la invitación devuelve el código de activación en la respuesta
+### DT-90 · El envío de la invitación es directo, sin cola ni reintentos, y su resultado no se guarda
 
-🟠 Importante
+🟡 Mejora
 
-- **Qué está parchado:** `POST /v1/users/{id}/activation-code` emite un código nuevo y lo devuelve en claro, y el alta no lo entrega por ningún canal (su `invitation.delivery_status` es siempre `pending`): hasta que exista el correo, una cuenta recién creada solo puede activarse reemitiendo el código desde ese endpoint. Código: `ReissueActivationCodeUseCase`, `toMemberWithCode` y `TeamMemberCreatedResponse`.
-- **Por qué:** el correo de invitación es MD-190; el contrato ya pide que el código no viaje en ninguna respuesta (SEG-75).
-- **Qué lo cierra:** MD-190 (plantilla en el `Mailer`, envío en el alta y en el reenvío, respuesta solo con `invitation`, y prueba de que ni la respuesta ni `audit_logs` contienen el código).
+- **Qué está parchado:** `POST /v1/users` y `POST /v1/users/{id}/activation-code` envían el correo de invitación en el momento, después del commit, con un solo intento. El resultado (`invitation.delivery_status`: `sent` o `failed`) solo viaja en la respuesta: no se guarda, no sale en `GET /v1/users` y no queda en `audit_logs`. Si el proceso muere entre el commit y el envío, queda una cuenta `pending` sin correo y sin rastro de que falló; la lista no distingue «sin correo» de «correo enviado». Es la misma limitación que `DT-85` para la clave de acceso de la empresa. Código: `InvitationDelivery` (`team/application/invitation/`).
+- **Por qué:** la invitación es una acción manual y el reenvío siempre está disponible mientras la cuenta esté `pending`; MD-190 entrega el canal, no la fiabilidad de la entrega.
+- **Qué lo cierra:** una cola con reintentos y un estado de entrega guardado (y visible en la lista del equipo), junto con el de la clave de acceso (`DT-85`).
 

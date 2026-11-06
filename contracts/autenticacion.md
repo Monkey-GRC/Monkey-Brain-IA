@@ -331,7 +331,7 @@ Implementado en `Backend/src/features/auth` (feature de referencia del backend),
 | `POST /v1/auth/login` | ✅ Por email; bloqueo a los 5 intentos por 15 min con `retry_after_seconds` |
 | `POST /v1/auth/refresh` | ✅ Rota el refresh token en cada uso (el anterior deja de servir) |
 | `POST /v1/auth/logout` | ✅ `204`, idempotente |
-| `POST /v1/auth/activate/lookup` · `POST /v1/auth/activate` | ✅ (D95, D96) Código de activación de un solo uso para las cuentas que crea el administrador de la empresa; mismo freno de intentos que las claves de acceso. **El alta y el envío por correo se rehacen en el sprint 3** (`gestion-usuarios.md`) |
+| `POST /v1/auth/activate/lookup` · `POST /v1/auth/activate` | ✅ (D95, D96) Código de activación de un solo uso para las cuentas que crea el administrador de la empresa; mismo freno de intentos que las claves de acceso. **El alta y el envío del código por correo están construidos (MD-188, MD-190)**: ver `gestion-usuarios.md` |
 | `GET /v1/auth/me` | ✅ `user` + `company` + `onboarding` (solo para `admin_empresa`; `login` y `redeem` lo traen igual). Desde D89 Platform solo mira si `organizational_context` está completo: declarar servicios y conectar activos ya no son pasos del onboarding, aunque la API los siga listando. `next_step` es el primer paso sin hacer y `null` si ya terminó los tres; `completed_steps` lista los hechos. **Hoy solo se deriva el Componente 1** (existe su fila en `organizations`): al completarlo, `next_step` pasa a `service_context`. Los pasos `service_context` y `technical_control` se suman a `completed_steps` cuando esos componentes existan (MD-78, MD-85) |
 
 Decisiones de implementación, dentro de lo que el contrato ya decía:

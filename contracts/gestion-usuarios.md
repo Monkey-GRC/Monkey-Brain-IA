@@ -96,7 +96,7 @@ Una cuenta `pending` que intenta iniciar sesión recibe `401 INVALID_CREDENTIALS
 | `group` | `{ id, name }` | El grupo al que pertenece |
 | `responsible` | `{ id, name, last_name }` | **Solo `delegado`**: el líder de su grupo (no se guarda aparte) |
 | `last_login_at`, `created_at` | datetime | |
-| `invitation` | `{ delivery_status, expires_at }` | `delivery_status`: `sent` · `failed` · `pending`. **Nunca trae el código** |
+| `invitation` | `{ delivery_status, expires_at }` | `delivery_status`: `sent` (el servicio de correo aceptó el mensaje) o `failed` (la cuenta existe y se reenvía con `POST /v1/users/{id}/activation-code`); `pending` queda reservado y el servidor ya no lo produce. **Nunca trae el código** |
 
 ```json
 {
@@ -211,7 +211,13 @@ Sin cuerpo.
 #### Response `200`
 | Campo | Tipo | Qué es |
 |---|---|---|
-| `invitation` | `{ delivery_status, expires_at }` | Se revoca el código vigente y **se envía uno nuevo por correo**. Solo mientras la cuenta esté `pending` |
+| `invitation` | `{ delivery_status, expires_at }` | Se revoca el código vigente y **se envía uno nuevo por correo**. Solo mientras la cuenta esté `pending`. La respuesta trae **solo** `invitation`, sin datos de la persona ni el código |
+
+```json
+{ "statusCode": 200, "message": "user.activation_code_regenerated", "data": { "invitation": { "delivery_status": "sent", "expires_at": "2026-11-12T15:04:02Z" } } }
+```
+
+> **Límites conocidos (`DT-90`):** el envío es directo, con un solo intento y sin cola. El estado `failed` solo viaja en la respuesta (no se guarda ni sale en el listado), y si el proceso muere entre crear la cuenta y enviar el correo queda una cuenta `pending` sin correo: el reenvío está siempre disponible.
 
 ---
 
@@ -514,12 +520,12 @@ Nunca se guarda el código ni su hash (`conventions.md`). Se escribe en la misma
 | Errores y campo retirados | `USER_LACKS_DIMENSION`, `DIMENSION_IN_USE` y `dimensions` del alta |
 | Revisión de evidencia | `evidence_reviewer_role` admite `responsable`; la lógica de dos niveles es MD-194 |
 | Grupos (MD-189) | `GET`/`POST`/`PATCH /v1/groups`: el responsable crea su equipo y el administrador el de un responsable o un grupo de responsables; `user_groups.kind` (`group_kind`) con un índice único parcial por líder (un equipo por responsable); «Responsables» reservado (`GROUP_RESERVED`, `GROUP_NAME_TAKEN`); mover un delegado con `PATCH /v1/users/{id}` (`group_id`, `confirm_unassign`, `USER_HAS_ASSIGNMENTS`). Ver `DT-88` |
-| Alta y lista del equipo (MD-188) | `POST`/`GET /v1/users` con `group_id`, `is_internal`, `group` y `responsible`; el responsable queda en «Responsables» y crea delegados de su equipo (`RESPONSIBLE_HAS_NO_TEAM` si no lo tiene); el alta no devuelve el código (`invitation`); migración que mete a los responsables existentes en «Responsables»; `group` y `responsible` en `/auth/me`. Ver `DT-88` y `DT-89` |
+| Invitación por correo (MD-190) | El alta y el reenvío envían el código por correo (después del commit); ninguna respuesta lo trae; el reenvío responde `200` con `invitation`; el correo no nombra al proveedor de la sonda ni de la nube. SEG-75 cumplido; ver `DT-90` |
+| Alta y lista del equipo (MD-188) | `POST`/`GET /v1/users` con `group_id`, `is_internal`, `group` y `responsible`; el responsable queda en «Responsables» y crea delegados de su equipo (`RESPONSIBLE_HAS_NO_TEAM` si no lo tiene); el alta no devuelve el código (`invitation`); migración que mete a los responsables existentes en «Responsables»; `group` y `responsible` en `/auth/me`. Ver `DT-88` |
 | Cupo de usuarios (MD-187) | `USER_LIMIT_REACHED` (`409`, con `error.max_users` y `error.users_count`) en el alta, en la reactivación `inactive`→`active` y en el canje de la clave; desactivar libera el cupo. Ver `empresas.md` y SEG-72 |
 
 | Sigue por construir | Ticket |
 |---|---|
-| Invitación por correo, sin código en la respuesta | MD-190 (SEG-75) |
 | Baja con aviso | MD-191 (SEG-74) |
 | Asignación de dueño y ejecutor | MD-192 (SEG-73) |
 | Visibilidad por dueño y ejecutor (hoy transitoria, `DT-87`) | MD-193 (SEG-76) |

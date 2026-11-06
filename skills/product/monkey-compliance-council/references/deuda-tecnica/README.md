@@ -115,7 +115,6 @@ Limitan el producto o al equipo.
 | [DT-85](empresas.md#dt-85--la-clave-de-acceso-viaja-en-claro-por-un-servicio-de-correo-externo-y-el-resultado-del-envío-no-se-guarda) | La clave de acceso viaja en claro por un servicio de correo externo y el resultado del envío no se guarda | [Empresas](empresas.md) |
 | [DT-87](gestion-usuarios.md#dt-87--un-responsable-ve-solo-los-controles-de-los-que-es-dueño-o-ejecutor-y-el-delegado-solo-controles-evidencia-y-observaciones) | Un `responsable` ve solo los controles de los que es dueño o ejecutor, y el `delegado` solo controles, evidencia y observaciones | [Gestión de usuarios](gestion-usuarios.md) |
 | [DT-88](gestion-usuarios.md#dt-88--el-patch-v1usersid-no-impide-desactivar-a-un-responsable-con-delegados-y-no-avisa-de-los-controles-asignados) | El `PATCH /v1/users/{id}` no impide desactivar a un responsable con delegados y no avisa de los controles asignados | [Gestión de usuarios](gestion-usuarios.md) |
-| [DT-89](gestion-usuarios.md#dt-89--el-reenvío-de-la-invitación-devuelve-el-código-de-activación-en-la-respuesta) | El reenvío de la invitación devuelve el código de activación en la respuesta | [Gestión de usuarios](gestion-usuarios.md) |
 
 ### 🟡 Mejoras
 
@@ -150,3 +149,4 @@ Pendientes sin urgencia.
 | [DT-73](cumplimiento.md#dt-73--evaluationsresult-no-distingue-error-ni-excluded) | `evaluations.result` no distingue `error` ni `excluded` | [Cumplimiento](cumplimiento.md) |
 | [DT-74](cumplimiento.md#dt-74--la-exclusión-de-un-check-no-tiene-endpoint) | La exclusión de un check no tiene endpoint | [Cumplimiento](cumplimiento.md) |
 | [DT-80](cumplimiento.md#dt-80--el-veredicto-manual-usa-el-tipo-de-la-dimensión-del-control) | El veredicto manual usa el tipo de la dimensión del control | [Cumplimiento](cumplimiento.md) |
+| [DT-90](gestion-usuarios.md#dt-90--el-envío-de-la-invitación-es-directo-sin-cola-ni-reintentos-y-su-resultado-no-se-guarda) | El envío de la invitación es directo, sin cola ni reintentos, y su resultado no se guarda | [Gestión de usuarios](gestion-usuarios.md) |
