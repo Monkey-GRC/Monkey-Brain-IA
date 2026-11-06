@@ -21,7 +21,7 @@ sequenceDiagram
 ```
 
 Frontera entre módulos: Gestión de usuarios **entrega** el código; Autenticación lo **canjea**. El único acoplamiento
-es la fila `user_activation_codes`. Un `responsable` solo crea delegados de **su** equipo; el `admin_empresa` crea a todos.
+es la fila `user_activation_codes`. Un `responsable` solo crea delegados de **su** equipo (`409 RESPONSIBLE_HAS_NO_TEAM` si aún no lo ha creado); el `admin_empresa` crea a todos.
 
 ## 2 · Asignar controles
 

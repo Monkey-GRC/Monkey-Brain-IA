@@ -11,14 +11,20 @@ flowchart TD
     adm["admin_empresa"] --> g1["Grupo «Responsables - Servicio IA»<br/>(líder: admin_empresa)"]
     g1 --> r1["responsable 1"]
     g1 --> r2["responsable 2"]
-    r1 --> g2["Equipo de r1 (líder: r1)"]
+    r1 -. "lo crea cuando quiere" .-> g2["Equipo de r1 (líder: r1)"]
     g2 --> d1["delegado A"]
     g2 --> d2["delegado B"]
-    r2 --> g3["Equipo de r2 (sin delegados:<br/>r2 trabaja solo)"]
+    r2 -. "no lo ha creado" .-> g3["Sin equipo:<br/>r2 trabaja solo"]
 ```
 
 Cada persona (salvo el `admin_empresa` y el `auditor`) pertenece a **un** grupo (`users.group_id`). El responsable de un
 delegado es el líder de su grupo: no se guarda aparte.
+
+**Dos tipos de grupo** (`user_groups.kind`, enum `group_kind`): `responsables` (lo lidera el `admin_empresa`; ahí queda todo
+`responsable`, por omisión en «Responsables», un nombre reservado) y `team` (el equipo de delegados de un responsable). El equipo
+**no nace con el responsable** (D104): lo crea él con un botón, o el administrador por él; hasta entonces trabaja solo. Un
+responsable lidera a lo sumo un `team`: lo garantiza un índice único parcial por `leader_id` donde `kind = 'team'`. Que un `team`
+lo lidere un `responsable` es una invariante de aplicación (un `CHECK` no cruza tablas). El nombre de un grupo es único por empresa.
 
 ## Dueño y ejecutor (no hay una fila por prueba)
 
