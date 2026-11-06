@@ -12,14 +12,6 @@ Parches vigentes de [Gestión de usuarios](../arquitectura/gestion-usuarios/READ
 - **Por qué:** es lo más seguro mientras no existe la visibilidad por dueño/ejecutor: nadie ve de más.
 - **Qué lo cierra:** MD-193 (reemplazar `control-responsibles.ts` por el alcance dueño/ejecutor en controles, evidencia, riesgos, observaciones, hallazgos y resumen propio; SEG-66 y SEG-76). Al cerrarla, reescribir también los comentarios de `get-control.use-case.ts` y `evidence.use-cases.ts` que aún hablan de dimensiones.
 
-### DT-88 · El `PATCH /v1/users/{id}` no impide desactivar a un responsable con delegados y no avisa de los controles asignados
-
-🟠 Importante
-
-- **Qué está parchado:** desde MD-188 existen delegados con responsable, pero el `PATCH` conserva la lógica anterior: desactiva a cualquiera sin comprobar si un `responsable` tiene delegados activos o pendientes (`RESPONSIBLE_HAS_DELEGATES`) ni si la persona tiene controles asignados (`USER_HAS_ASSIGNMENTS`, `confirm_unassign`), (mover a un delegado de equipo con `group_id` ya existe desde MD-189). Devuelve la forma nueva del usuario (`group`, `responsible`, `is_internal`). Código: `UpdateTeamMemberUseCase` y `team-user.prisma.repository.ts` (`update`).
-- **Por qué:** la lógica de baja con aviso es MD-191 (SEG-74) y mover delegados es MD-189; MD-188 solo crea y lista.
-- **Qué lo cierra:** MD-191 (`RESPONSIBLE_HAS_DELEGATES`, y `USER_HAS_ASSIGNMENTS` con `confirm_unassign` y `controls_unassigned` también al dar de baja; al mover ya lo hace MD-189). Mientras tanto, el administrador no debe desactivar a un responsable que tenga delegados.
-
 ### DT-90 · El envío de la invitación es directo, sin cola ni reintentos, y su resultado no se guarda
 
 🟡 Mejora
