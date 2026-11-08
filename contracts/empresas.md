@@ -386,7 +386,7 @@ Implementado en `Backend/src/features/companies` y `Frontend/src/app/features/co
 | `PATCH /v1/companies/{id}` | ❌ Espera a P2(c) |
 | `POST /v1/companies/{id}/deactivation` · `/reactivation` · `GET /v1/companies/pending-purge` · borrado definitivo | ✅ D97. `GET /v1/companies` oculta las archivadas por defecto (`status=deactivated` las muestra). La tarea del borrado corre cada `COMPANY_PURGE_INTERVAL_MINUTES` (60 por defecto; `0` la apaga) |
 | `POST /v1/companies/{id}/access-key/regenerate` | ✅ D99. Anula la pendiente, emite otra y la envía por correo |
-| `PATCH /v1/companies/{id}/max-users` | ✅ D103, MD-187. Solo `admin_monkey`; `409 MAX_USERS_BELOW_CURRENT` si baja del uso; `company.max_users_update` con antes y después (con `company_id`) en la misma transacción. El listado y el detalle traen `max_users` (`null` = empresa anterior al cupo, sin tope) y `users_count` |
+| `PATCH /v1/companies/{id}/max-users` | ✅ D103, MD-187. Solo `admin_monkey`; `409 MAX_USERS_BELOW_CURRENT` si baja del uso; `company.max_users_update` con antes y después (con `company_id`) en la misma transacción. El listado y el detalle traen `max_users` (`null` = empresa anterior al cupo, sin tope) y `users_count`. **Monkey Admin (MD-205):** el registro lo pide, la lista lo muestra junto al uso y «Cambiar cupo» lo edita; el `409` se muestra con el número de cuentas que cuentan |
 
 Decisiones de implementación, dentro de lo que el contrato ya asumía:
 
