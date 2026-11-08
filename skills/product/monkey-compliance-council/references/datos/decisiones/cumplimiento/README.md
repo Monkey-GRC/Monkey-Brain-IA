@@ -8,7 +8,7 @@ Por qué Cumplimiento es como es, partido por componente porque el módulo es gr
 |---|---|---|
 | 1 | [Motor](motor.md) | `D62` · `D68` · `D79` |
 | 2 | [Controles](controles.md) | `D65` |
-| 3 | [Resumen](resumen.md) | `D87` |
+| 3 | [Resumen](resumen.md) | `D87` · `D105` |
 | 4 | [Veredictos](veredictos.md) | `D85` · `D88` |
 | 5 | [Exclusiones](exclusiones.md) | `D74` · `D78` · `D83` |
 | 6 | [Riesgos](riesgos.md) | `D33` · `D75` · `D76` |

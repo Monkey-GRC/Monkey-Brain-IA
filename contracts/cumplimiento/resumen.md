@@ -176,6 +176,8 @@ Un bloque por **marco contratado**. Dentro, solo las categorías **en alcance** 
 
 Declara o cambia el **período auditado** de un marco del servicio y, si se quiere, **congela la fecha de corte** (D87, MD-168). Reemplaza lo anterior (es `PUT`: lo que no viene queda sin valor) y se puede repetir sin efecto extra.
 
+> **Cliente de Platform (D105, 2026-11-07).** La pantalla ya no ofrece congelar la fecha de corte: manda siempre `cutoff_date: null` (siempre «hoy», y eso descongela cualquier corte previo) y no la muestra. Lo que sí se muestra es la fecha y hora de la última revisión automática. El campo sigue en el contrato hasta que Backend decida retirarlo.
+
 #### Request
 | Campo | Tipo | Obligatorio | Regla |
 |---|---|---|---|

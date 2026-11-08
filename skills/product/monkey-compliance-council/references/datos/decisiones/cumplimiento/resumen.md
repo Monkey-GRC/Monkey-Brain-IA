@@ -23,3 +23,16 @@ Por qué este componente es como es. Lo vigente está en [`arquitectura/cumplimi
 **Fuente:** Carlos Castaño, 2026-10-20 (recomendaciones de P26), con la hoja `Pruebas` y el prototipo del Excel del comité.
 
 ---
+
+## D105 · La fecha de corte deja de ser una opción: siempre es hoy, y se muestra la última revisión automática (2026-11-07; Carlos Castaño; *ajusta D87*)
+
+**Decisión.**
+1. **Ya no se elige ni se congela la fecha de corte.** Para el cliente la evaluación se mide siempre con lo último que revisó la evaluación automática; la pantalla no ofrece «Congelar la fecha de corte» ni una fecha de corte. Esto sigue lo que ya decía D87 para el caso sin congelar («hoy»), y quita la otra mitad.
+2. **Lo que el cliente sí ve** es *cuándo fue la última revisión automática* (fecha y hora), en la conexión de la nube. Nunca nombra al proveedor del motor: se dice «evaluación automática» o «sonda» (regla 1).
+3. **Por qué:** se prevé que la sonda revise cada día (más adelante, cada hora), de modo que «la última revisión» ya es la fecha que importa y congelarla confunde más de lo que ayuda.
+4. **Las fechas del período** (inicio y fin, D87) se eligen en un **calendario**, no se escriben a mano.
+5. **Qué no cambia:** el Backend y el contrato siguen aceptando y devolviendo `cutoff_date` / `cutoff_frozen`; la pantalla nunca los envía distinto de `null`, así que guardar el período también **descongela** cualquier corte que hubiera quedado de antes. Emitir una evaluación (MD-155) seguirá congelando el corte en ese momento; eso es del motor, no de esta pantalla.
+
+**Pendiente de Héctor (backend):** si se quiere dejar el contrato sin el campo, hay que retirar `cutoff_date`/`cutoff_frozen` de `PUT …/evaluation-period` y del resumen; mientras tanto no estorba.
+
+**Fuente:** Carlos Castaño, 2026-11-07 («sigamos asumiendo que la fecha es siempre hoy, porque la idea es que se edite para que siempre haya una revisión diaria de la sonda»). Aún sin ratificar por el comité; si la ratificación cambia la decisión, se reabre aquí.

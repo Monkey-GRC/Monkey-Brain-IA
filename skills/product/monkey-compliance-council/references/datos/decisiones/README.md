@@ -1,4 +1,4 @@
-﻿		
+		
 
 # Modelo de datos — registro de decisiones
 
@@ -183,3 +183,4 @@ quedan aquí:
 | D102 | Cadena de asignación `admin_empresa` → `responsable` → `delegado`: el dueño de cada control es una persona, la unidad es el control completo y la revisión es de dos niveles *(reemplaza en parte a D98, ajusta D96; cierra P38)* | [gestion-usuarios](gestion-usuarios.md) |
 | D103 | Monkey solo tiene `admin_monkey` y fija el cupo de usuarios (`companies.max_users`) de cada empresa *(cierra P40)* | [gestion-usuarios](gestion-usuarios.md) |
 | D104 | El responsable vive en «Responsables» y su equipo de delegados lo crea él (o el administrador por él); no nace con su cuenta *(ajusta D102)* | [gestion-usuarios](gestion-usuarios.md) |
+| D105 | La fecha de corte deja de ser una opción: siempre es «hoy» y se muestra la última revisión automática; las fechas del período se eligen en un calendario *(ajusta D87)* | [cumplimiento/resumen](cumplimiento/resumen.md) |
