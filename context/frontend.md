@@ -21,7 +21,7 @@ en el admin, ni al revés.
 |---|---|---|
 | Para quién | Equipo interno de Monkey | El cliente final |
 | Para qué | Tenants, usuarios y catálogo maestro GRC | Que el cliente declare sus servicios y activos y vea su cumplimiento |
-| Features hoy | `auth`, `common`, `companies`, `users` | `assets`, `auth`, `home`, `onboarding`, `services`, `technical-control` |
+| Features hoy | `auth`, `common`, `companies`, `catalog`, `settings` | `assets`, `auth`, `home`, `onboarding`, `services`, `technical-control` |
 | Estructura de feature | `models/` + `services/` + `presentation/` | `domain/` + `presentation/` |
 | `core/` y `shared/` | `core/{guards,interceptors,services}`, `shared/models` | `core/domain/*`, `shared/domain/*` |
 | `ApiResponse<T>` | `@shared/models/api-response.model` | `@shared/domain/models/api-response.model` |
@@ -69,7 +69,7 @@ Si el código y esta lista difieren, manda el código y se corrige esta lista.
 |---|---|---|
 | Admin · `companies` | **Referencia del admin.** Registro de empresas; la clave de acceso solo se envía por correo (nunca se muestra, D99) y se reenvía con una nueva. **Cupo de usuarios (D103, MD-205):** el registro pide «Usuarios contratados» (`max_users`, entero ≥ 1; un 422 sobre ese campo se muestra junto a él); la lista trae la columna «Usuarios» (`users_count / max_users`, «sin tope» si `max_users` es `null`, y «Cupo completo» cuando se alcanza) y, por fila, «Cambiar cupo» (`CompanyQuotaForm` en un diálogo → `PATCH /v1/companies/{id}/max-users`); un `409 MAX_USERS_BELOW_CURRENT` deja el diálogo abierto y dice cuántas cuentas cuentan (el interceptor de errores ahora pasa `details` con `max_users` y `users_count`). No hay pantalla de detalle de empresa: la fila de la lista hace de detalle. | `contracts/empresas.md` · D103 · MD-205 |
 | Admin · `auth` | Login por email; solo admite `admin_monkey`. «¿Olvidaste tu contraseña?» → `/auth/forgot-password` → enlace del correo → `/auth/reset-password` (contraseña nueva + segundo factor). | `contracts/autenticacion.md` · D101 |
-| Admin · `users` | **Del modelo viejo**, sin endpoint; se rehace con el módulo de Usuarios. | — |
+| Admin · `users` | **Retirado (MD-143, D103).** Era del modelo viejo y apuntaba a servicios inexistentes; se quitaron la feature, la ruta `/users`, el ítem del menú, sus textos y `users-module.md`. `admin_monkey` no crea ni desactiva cuentas de una empresa: las personas se gestionan desde Platform (`team`). | — |
 | Platform · `auth` | Activación de cuenta en dos pasos e inicio de sesión; rechaza `admin_monkey`. Sesión en `core/domain/services/session.service.ts`. «¿Olvidaste tu contraseña?» → `/forgot-password` → enlace del correo → `/reset-password` (contraseña nueva + segundo factor). | `contracts/autenticacion.md` · D51 · D101 |
 | Platform · `onboarding` | **Referencia de la plataforma.** Componente 1 en `/onboarding`; edición posterior desde «Mi empresa». | `contracts/onboarding/contexto-organizacional.md` |
 | Platform · `services` | Alta de servicio en `/services/new`: tras guardar, **la misma pantalla sigue con el asistente de riesgos** (`app-risk-wizard`, D89) y de ahí a declarar activos; «Mis servicios» en `/services`. En el detalle, «Nueva conexión» se cierra mientras falten riesgos y su aviso reabre el mismo asistente. | `contracts/onboarding/contexto-servicio.md` · D89 |
