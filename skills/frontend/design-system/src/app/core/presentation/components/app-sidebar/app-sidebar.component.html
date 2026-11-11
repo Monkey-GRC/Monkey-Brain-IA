@@ -1,0 +1,117 @@
+<aside
+  class="mk-panel fixed inset-y-3 left-3 z-50 flex flex-col px-3 text-ink transition-all duration-300 ease-in-out"
+  [ngClass]="{
+    'w-[270px]': showLabels(),
+    'w-[84px]': !showLabels(),
+    'translate-x-0 shadow-float': isMobileOpen(),
+    '-translate-x-[120%]': !isMobileOpen(),
+    'xl:translate-x-0': true
+  }" (mouseenter)="onSidebarMouseEnter()" (mouseleave)="sidebarService.setHovered(false)">
+  <!-- Logo -->
+  <div class="flex py-6 sm:py-2" [ngClass]="centerIcons() ? 'xl:justify-center h-17' : 'justify-start'">
+    <a routerLink="/">
+      @if (showLabels()) {
+      <img class="dark:hidden" src="images/logo/logo-light.svg" [attr.alt]="'SHELL.NAV.LOGO_ALT' | translate" width="300" height="80" />
+      <img class="hidden dark:block" src="/images/logo/logo-dark.svg" [attr.alt]="'SHELL.NAV.LOGO_ALT' | translate" width="300" height="80" />
+      } @else {
+      <img class="dark:hidden h-17" src="/images/logo/icon-light.svg" [attr.alt]="'SHELL.NAV.LOGO_ALT' | translate"/>
+      <img class="hidden dark:block h-17" src="/images/logo/icon-dark.svg" [attr.alt]="'SHELL.NAV.LOGO_ALT' | translate"/>
+      }
+    </a>
+  </div>
+
+  <!-- Navigation -->
+  <div class="no-scrollbar flex min-h-0 flex-1 flex-col overflow-y-auto duration-300 ease-linear">
+    <nav class="mb-6" [attr.aria-label]="'SHELL.NAV.LABEL' | translate">
+      <div class="flex flex-col gap-4">
+        @for (section of sections; track section) {
+        @let sectionItems = getItemsBySection(section);
+
+        @if (sectionItems.length > 0) {
+        <div>
+          @if (showLabels()) {
+          <h2 class="mb-2 px-3 text-xs font-medium text-ink-faint">{{ sectionLabelKey(section) | translate }}</h2>
+          }
+
+          <ul class="flex flex-col gap-1">
+            @for (item of sectionItems; track item.name) {
+            @if (item.subItems; as children) {
+            <!-- Group: one button that only opens or closes the children (it never navigates). Its title shows «contains the active page» when a child is the current route.
+                 Collapsed menu: a flyout with the children on hover or focus. -->
+            <li #row class="relative" tabindex="-1" (mouseenter)="openFlyout(item.name, row)" (mouseleave)="closeFlyout()"
+              (focusin)="openFlyout(item.name, row)" (focusout)="onFocusOut($event, row)" (keydown.escape)="closeFlyout()">
+              <button type="button" class="menu-group-toggle group" (click)="toggleGroup(item.name)"
+                [attr.aria-expanded]="showLabels() && isOpen(item.name)" [attr.aria-controls]="groupId(item.name)"
+                [attr.aria-label]="showLabels() ? null : (labelOf(item) | translate)"
+                [attr.data-contains-active]="containsActive(item) ? '' : null"
+                [ngClass]="{ 'menu-item-contains-active': containsActive(item), 'menu-item-inactive': !containsActive(item), 'xl:justify-center': centerIcons() }">
+                <span class="menu-item-icon-size">
+                  <span class="material-symbols-outlined text-xl" [ngClass]="containsActive(item) ? 'menu-item-icon-active' : 'menu-item-icon-inactive'">{{ item.icon }}</span>
+                </span>
+                @if (showLabels()) {
+                <span class="menu-item-text truncate">{{ labelOf(item) | translate }}</span>
+                <svg class="menu-chevron-icon" [attr.data-open]="isOpen(item.name)" viewBox="0 0 20 20" fill="none"
+                  xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M4.79175 7.396L10.0001 12.6043L15.2084 7.396" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+                }
+              </button>
+
+              <div [id]="groupId(item.name)" class="menu-group-panel" [attr.data-open]="showLabels() && isOpen(item.name)">
+                <div>
+                  <ul class="flex flex-col gap-1 pt-1">
+                    @for (child of children; track child.name) {
+                    <li>
+                      <a [routerLink]="child.path" class="menu-child" (click)="onNavigate()"
+                        [ngClass]="isActive(child.path) ? 'menu-child-active' : 'menu-child-inactive'"
+                        [attr.aria-current]="isActive(child.path) ? 'page' : null">{{ labelOf(child) | translate }}</a>
+                    </li>
+                    }
+                  </ul>
+                </div>
+              </div>
+
+              @if (flyout(); as f) {
+              @if (f.name === item.name && !showLabels()) {
+              <div class="fixed z-60 pl-2" [style.top.px]="f.top" [style.left.px]="f.left">
+                <div class="min-w-52 rounded-surface border border-line bg-surface p-2 shadow-float">
+                  <p class="px-3 py-1.5 text-xs font-medium text-ink-faint">{{ labelOf(item) | translate }}</p>
+                  <ul class="flex flex-col gap-0.5">
+                    @for (child of children; track child.name) {
+                    <li>
+                      <a [routerLink]="child.path" class="menu-child pl-4!" (click)="onNavigate()"
+                        [ngClass]="isActive(child.path) ? 'menu-child-active' : 'menu-child-inactive'"
+                        [attr.aria-current]="isActive(child.path) ? 'page' : null">{{ labelOf(child) | translate }}</a>
+                    </li>
+                    }
+                  </ul>
+                </div>
+              </div>
+              }
+              }
+            </li>
+            } @else if (item.path) {
+            <!-- Simple item -->
+            <li>
+              <a [routerLink]="item.path" class="menu-item group" [attr.aria-current]="isActive(item.path) ? 'page' : null"
+                [attr.aria-label]="labelOf(item) | translate"
+                [ngClass]="{ 'menu-item-active': isActive(item.path), 'menu-item-inactive': !isActive(item.path), 'xl:justify-center': centerIcons() }">
+                <span class="menu-item-icon-size">
+                  <span class="material-symbols-outlined text-xl" [ngClass]="isActive(item.path) ? 'menu-item-icon-active' : 'menu-item-icon-inactive'">{{ item.icon }}</span>
+                </span>
+                @if (showLabels()) {
+                <span class="menu-item-text">{{ labelOf(item) | translate }}</span>
+                }
+              </a>
+            </li>
+            }
+            }
+          </ul>
+        </div>
+        }
+        }
+      </div>
+    </nav>
+  </div>
+</aside>

@@ -1,0 +1,40 @@
+<!-- Por encima del panel lateral (z-100001): se abre desde un panel y, si quedara debajo, el botón de confirmar no se vería. -->
+<div class="fixed inset-0 z-[100002] flex items-center justify-center bg-scrim p-4" role="presentation" (click)="$event.target === $event.currentTarget && cancel()">
+  <div
+    cdkTrapFocus
+    [cdkTrapFocusAutoCapture]="true"
+    role="alertdialog"
+    aria-modal="true"
+    [attr.aria-labelledby]="titleId"
+    [attr.aria-describedby]="messageKey() ? messageId : null"
+    class="w-full max-w-md rounded-panel border border-line bg-surface p-5 shadow-float md:p-6"
+  >
+    <h2 [id]="titleId" class="text-lg font-semibold text-ink">{{ titleKey() | translate: titleParams() }}</h2>
+    @if (messageKey(); as message) {
+      <p [id]="messageId" class="mt-2 text-sm text-ink-muted">{{ message | translate: messageParams() }}</p>
+    }
+
+    <div class="mt-4 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+      <button
+        type="button"
+        cdkFocusInitial
+        (click)="cancel()"
+        [disabled]="busy()"
+        class="mk-btn-secondary"
+      >
+        {{ cancelLabelKey() | translate }}
+      </button>
+      <button
+        type="button"
+        (click)="confirm()"
+        [disabled]="busy()"
+        [class]="tone() === 'danger' ? 'mk-btn-danger' : 'mk-btn'"
+      >
+        @if (busy()) {
+          <span class="material-symbols-rounded animate-spin text-[18px] leading-none" aria-hidden="true">progress_activity</span>
+        }
+        {{ confirmLabelKey() | translate }}
+      </button>
+    </div>
+  </div>
+</div>

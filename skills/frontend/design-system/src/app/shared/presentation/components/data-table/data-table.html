@@ -1,0 +1,119 @@
+<ng-template #rowTpl let-row>
+  <tr
+    class="transition hover:bg-tint focus-visible:bg-tint focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-action"
+    [class.cursor-pointer]="clickable()"
+    [attr.tabindex]="isFocusable() ? 0 : null"
+    [attr.aria-label]="isFocusable() ? labelOf(row) || null : null"
+    [attr.aria-describedby]="isFocusable() ? openHintId : null"
+    [attr.data-selected]="isSelected(row) ? '' : null"
+    (click)="activate(row, $event)"
+    (keydown.enter)="activateKey(row, $event)"
+    (keydown.space)="activateKey(row, $event, true)"
+  >
+    @if (selectable()) {
+      <td class="w-12 px-4 py-2" [class.h-14]="!compact()">
+        <input type="checkbox" class="mk-checkbox" data-select-row [attr.aria-label]="'COMMON.TABLE.SELECT_ROW' | translate: { name: labelOf(row) }" [checked]="isSelected(row)" (change)="toggle(row)" />
+      </td>
+    }
+    @for (column of columns(); track column.key) {
+      <td class="text-ink" [class]="cellPad() + ' ' + align(column) + ' ' + (column.class ?? '')">
+        @if (cellFor(column.key); as template) {
+          <ng-container *ngTemplateOutlet="template; context: { $implicit: row, row: row }" />
+        } @else {
+          {{ column.value ? (column.value(row) ?? '—') : '—' }}
+        }
+      </td>
+    }
+    @if (hasChevron()) {
+      <td class="w-10 px-2 py-2 text-right text-ink-faint" [class.h-14]="!compact()">
+        <span class="material-symbols-rounded align-middle text-[20px]" data-row-chevron aria-hidden="true">chevron_right</span>
+      </td>
+    }
+  </tr>
+</ng-template>
+
+<div class="overflow-hidden mk-surface">
+  @if (isFocusable()) {
+    <span [id]="openHintId" class="sr-only">{{ 'COMMON.TABLE.OPEN_DETAIL' | translate }}</span>
+  }
+  <div class="overflow-x-auto">
+    <table class="w-full text-left text-sm" [class]="compact() ? 'min-w-0' : 'min-w-[40rem]'" [attr.aria-busy]="loading()">
+      <caption class="sr-only">{{ captionKey() | translate }}</caption>
+      <thead [class.sr-only]="hideHeader()">
+        <tr class="border-b border-line text-xs font-medium text-ink-faint">
+          @if (selectable()) {
+            <th scope="col" class="w-12 px-4 py-3 font-medium">
+              <input type="checkbox" class="mk-checkbox" data-select-all [attr.aria-label]="'COMMON.TABLE.SELECT_ALL' | translate" [checked]="allSelected()" [indeterminate]="someSelected()" (change)="toggleAll()" />
+            </th>
+          }
+          @for (column of columns(); track column.key) {
+            <th scope="col" class="px-4 font-medium" [class]="(compact() ? 'py-2 ' : 'py-3 ') + align(column) + ' ' + (column.class ?? '')">
+              <span [class.sr-only]="column.srOnlyHeader">{{ column.headerKey | translate }}</span>
+            </th>
+          }
+          @if (hasChevron()) {
+            <th scope="col" class="w-10 px-2 py-3"><span class="sr-only">{{ 'COMMON.TABLE.OPEN_DETAIL' | translate }}</span></th>
+          }
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-line">
+        @if (loading()) {
+          <tr>
+            <td [attr.colspan]="columnCount()" class="px-4 py-10 text-center" role="status">
+              <span class="material-symbols-rounded animate-spin text-[28px] text-action" aria-hidden="true">progress_activity</span>
+              <span class="sr-only">{{ 'COMMON.LOADING' | translate }}</span>
+            </td>
+          </tr>
+        } @else {
+          @if (groupBy()) {
+            @for (group of groups(); track group.key) {
+              <tr data-group-header [attr.data-group]="group.key" class="border-b border-line bg-tint">
+                <th scope="rowgroup" [attr.colspan]="columnCount()" class="px-4 py-2.5 text-left text-sm font-semibold text-ink">
+                  <div class="flex items-center gap-3">
+                    @if (collapsible()) {
+                      <button
+                        type="button"
+                        data-group-toggle
+                        class="inline-flex min-w-0 items-center gap-1.5 rounded-control text-left font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-action"
+                        [attr.aria-expanded]="!isCollapsed(group.key)"
+                        [attr.aria-label]="(isCollapsed(group.key) ? 'COMMON.TABLE.GROUP_EXPAND' : 'COMMON.TABLE.GROUP_COLLAPSE') | translate: { name: group.label }"
+                        (click)="toggleGroup(group.key)"
+                      >
+                        <span class="material-symbols-rounded text-[20px] text-ink-faint" aria-hidden="true">{{ isCollapsed(group.key) ? 'chevron_right' : 'expand_more' }}</span>
+                        <span class="truncate">{{ group.label }}</span>
+                      </button>
+                    } @else {
+                      <span class="truncate">{{ group.label }}</span>
+                    }
+                    <span class="ml-auto shrink-0 text-xs font-medium text-ink-muted" data-group-count>{{ 'COMMON.TABLE.GROUP_COUNT' | translate: { count: group.rows.length } }}</span>
+                  </div>
+                </th>
+              </tr>
+              @if (!isCollapsed(group.key)) {
+                @for (row of group.rows; track rowKey()(row)) {
+                  <ng-container *ngTemplateOutlet="rowTpl; context: { $implicit: row }" />
+                }
+              }
+            }
+          } @else {
+            @for (row of rows(); track rowKey()(row)) {
+              <ng-container *ngTemplateOutlet="rowTpl; context: { $implicit: row }" />
+            }
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+
+  @if (!loading() && rows().length === 0) {
+    <div class="border-t border-line">
+      <ng-content select="[tableEmpty]">
+        <app-empty-state [icon]="emptyIcon()" [titleKey]="emptyTitleKey()" [descriptionKey]="emptyDescriptionKey()" />
+      </ng-content>
+    </div>
+  }
+
+  @if (page(); as p) {
+    <app-pagination class="block border-t border-line" [page]="p" [pageSizes]="pageSizes()" (pageChange)="pageChange.emit($event)" (pageSizeChange)="pageSizeChange.emit($event)" />
+  }
+</div>

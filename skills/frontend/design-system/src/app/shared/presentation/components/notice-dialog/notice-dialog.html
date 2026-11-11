@@ -1,0 +1,21 @@
+<app-modal [open]="open()" labelledBy="notice-title" describedBy="notice-message" size="md" testId="notice" (dismissed)="closed.emit()">
+  <!-- El contenido solo existe mientras el modal está abierto: así sus campos no se crean (ni roban el foco) con la página cargada. -->
+  @if (open()) {
+    <div class="flex flex-col items-center text-center">
+      <h2 id="notice-title" class="text-lg font-semibold text-ink">{{ title() }}</h2>
+      <p id="notice-message" class="mt-2 text-balance text-base text-ink-muted" data-testid="notice-message">{{ message() }}</p>
+      @if (highlight()) {
+        <!-- Una sola línea, siempre: el contenedor mide el ancho disponible y la letra se ajusta a él según el largo del dato (highlightFontSize). -->
+        <div class="mt-3 w-full @container">
+          <p class="overflow-x-auto whitespace-nowrap rounded-control border border-action/20 bg-tint px-4 py-3 text-center font-semibold text-ink"
+            [style.font-size]="highlightSize()" data-testid="notice-highlight">{{ highlight() }}</p>
+        </div>
+      }
+      @if (hint()) {
+        <p class="mt-3 text-balance text-sm text-ink-muted" data-testid="notice-hint">{{ hint() }}</p>
+      }
+      <button type="button" (click)="closed.emit()" data-testid="notice-close"
+        class="mk-btn mt-6 w-full">{{ closeLabel() }}</button>
+    </div>
+  }
+</app-modal>

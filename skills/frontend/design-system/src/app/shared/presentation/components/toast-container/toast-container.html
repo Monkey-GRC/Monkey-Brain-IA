@@ -1,0 +1,39 @@
+<div
+  role="status"
+  aria-live="polite"
+  [attr.aria-label]="'COMMON.TOAST.REGION' | translate"
+  class="pointer-events-none fixed right-4 top-4 z-(--z-toast) flex w-[calc(100%-2rem)] max-w-sm flex-col gap-2"
+  data-testid="toast-region"
+>
+  @for (item of service.toasts(); track item.id) {
+    <div
+      class="mk-enter pointer-events-auto flex items-start gap-3 p-3 text-ink shadow-float"
+      [class]="look[item.tone].card"
+      [attr.role]="item.tone === 'error' ? 'alert' : null"
+      [attr.data-tone]="item.tone"
+      data-testid="toast"
+      (mouseenter)="service.hold(item.id, 'hover')"
+      (mouseleave)="service.release(item.id, 'hover')"
+      (focusin)="service.hold(item.id, 'focus')"
+      (focusout)="service.release(item.id, 'focus')"
+    >
+      <div class="min-w-0 flex-1">
+        <app-status-indicator [tone]="look[item.tone].tone" [labelKey]="look[item.tone].labelKey" />
+        <p class="mt-1 wrap-break-word text-sm font-semibold text-ink" data-testid="toast-title">{{ item.title }}</p>
+        @if (item.message) {
+          <p class="mt-0.5 wrap-break-word text-sm text-ink-muted" data-testid="toast-message">{{ item.message }}</p>
+        }
+      </div>
+      <button
+        type="button"
+        (click)="service.dismiss(item.id)"
+        [attr.aria-label]="'COMMON.CLOSE' | translate"
+        [title]="'COMMON.CLOSE' | translate"
+        class="shrink-0 rounded-control p-1 text-ink-muted hover:bg-canvas focus:outline-none focus-visible:ring-2 focus-visible:ring-action/40"
+        data-testid="toast-close"
+      >
+        <span class="material-symbols-rounded text-[20px]" aria-hidden="true">close</span>
+      </button>
+    </div>
+  }
+</div>

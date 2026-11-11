@@ -53,7 +53,8 @@ Todo lo demás (implementación mecánica sobre un patrón aprobado, fixes menor
 | Si toca… | Delega en |
 |---|---|
 | `Backend`, `monkey-cis-sync` | `backend-senior` |
-| `Frontend` o `Frontend-Platform` | `frontend-senior` |
+| `Frontend` o `Frontend-Platform` (lógica, servicios, rutas, formularios) | `frontend-senior` |
+| Cambio **visual** en las dos apps (tokens, componentes base, menú, tablas, rediseño de una vista) | `frontend-design` (sincroniza con `skills/frontend/design-system/`; no toca lógica, rutas ni contratos) |
 | Ambos (endpoint + su consumo) | Backend primero; el frontend cuando el contrato esté fijado |
 | Alcance o prioridad dudosos | `product-owner` (consultor, no implementa) |
 

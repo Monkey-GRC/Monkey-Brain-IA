@@ -114,6 +114,13 @@
       "reports_to": "monkey-dev-flow"
     },
     {
+      "id": "frontend-design",
+      "path": "agents/frontend-design.md",
+      "description": "Dueño del sistema de diseño y de que Frontend y Frontend-Platform se vean idénticos: tokens, componentes base, menú lateral y chequeo de sincronía. No toca lógica ni contratos.",
+      "model": "sonnet",
+      "reports_to": "monkey-dev-flow"
+    },
+    {
       "id": "qa",
       "path": "agents/qa.md",
       "description": "Prueba punto a punto los cambios de backend-senior o frontend-senior antes de que el tech-lead reporte al usuario.",
@@ -270,6 +277,11 @@
       "id": "senior-frontend-engineer",
       "path": "skills/frontend/senior-frontend-engineer/SKILL.md",
       "description": "Punto de partida de los dos frontends: qué leer antes, mapa de cada app, principios de criterio, flujo, anti-patrones y definición de terminado. Enruta a las demás recetas."
+    },
+    {
+      "id": "design-system",
+      "path": "skills/frontend/design-system/README.md",
+      "description": "Sistema de diseño único de los dos frontends (vigente, estilo Vanta + Donezo): principios, qué se permite y qué no, tokens, componentes base (tabla única, tarjetas, donas, panel lateral), menú lateral con grupos que despliegan y sincronía entre apps."
     },
     {
       "id": "add-cloud-engine",
