@@ -88,3 +88,19 @@ la **matriz inherente** muestra cada riesgo antes de aplicar controles y la **ma
 **Qué depende:** nada del código inmediato; el comportamiento actual está en `contracts/cumplimiento/veredictos.md` y `modelo/07-cumplimiento.md` §7.6. Si el PO cambia alguna respuesta, se ajusta el contrato y la prueba que la cubre (`test/cumplimiento/observaciones.e2e-spec.ts`, `veredictos.e2e-spec.ts`). Es `LATER`.
 
 ---
+
+## P43 · Qué muestra «Lo que requiere atención» del Inicio
+
+**Estado:** abierto desde 2026-11-10. Fuente: sesión de rediseño, desarrollo. Hoy solo muestra código, nombre del control y servicio, que es lo único que trae `DashboardAttention`.
+
+1. **¿Qué más debe mostrar el cliente y de dónde sale?** Marco al que pertenece el control.
+2. **Prioridad o severidad:** ¿enum nuevo? ¿quién la define?
+3. **Estado de gestión:** pendiente, en curso, resuelto.
+4. **Vencimiento y responsable.**
+5. **Acciones «Resolver» y «Asignar».**
+6. **¿Una ruta de detalle de control?**
+7. **¿El texto «en qué falla / qué hacer»** de la plantilla de 7 campos?
+
+**Qué depende:** ampliar el contrato del dashboard y esa tabla; no bloquea.
+
+---

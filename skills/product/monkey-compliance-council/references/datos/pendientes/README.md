@@ -29,6 +29,9 @@ Lo que sigue abierto, con lo más urgente arriba. 🚧 bloquea trabajo · ⚠️
 | [P37](cumplimiento.md#p37--criterios-de-las-observaciones-del-auditor-que-desarrollo-fijó-sin-que-el-comité-los-pidiera) | Criterios de las observaciones del auditor que desarrollo fijó sin que el comité los pidiera | No bloquea: está construido (MD-154) y funciona; se ajusta si el PO decide otra cosa | 2026-10-29 |
 | [P13](empresas.md#p13--ratificar-lo-que-desarrollo-decidió-en-las-correcciones-del-2026-10-05-d50-d51) | Ratificar lo que desarrollo decidió el 2026-10-05 (D50, D51) | No bloquea: está construido y funcionando | 2026-10-06 |
 | [P15](control-tecnico.md#p15--cómo-se-mapean-los-checks-de-nube-que-quedan-fuera) | Cómo se mapean los checks de nube que quedan fuera | No bloquea: lo no mapeado no cuenta hasta responder | 2026-10-08 |
+| [P41](gestion-usuarios.md#p41--criterio-de-sin-ingreso-reciente-en-acceso-y-seguridad-de-cuentas-del-inicio) | Criterio de «sin ingreso reciente» en «Acceso y seguridad de cuentas» del Inicio | No bloquea: está construido de forma provisional (30 días) | 2026-11-10 |
+| [P42](gestion-usuarios.md#p42--buscar-personas-y-ver-el-detalle-de-una-persona) | Buscar personas y ver el detalle de una persona | No bloquea: el buscador y una futura página de perfil; hoy hay filtros y un panel | 2026-11-10 |
+| [P43](cumplimiento.md#p43--qué-muestra-lo-que-requiere-atención-del-inicio) | Qué muestra «Lo que requiere atención» del Inicio | No bloquea: ampliar el contrato del dashboard y esa tabla | 2026-11-10 |
 
 ---
 
@@ -44,8 +47,9 @@ Lo que sigue abierto, con lo más urgente arriba. 🚧 bloquea trabajo · ⚠️
 | [`roles-permisos.md`](roles-permisos.md) | 3 | [Roles y permisos](../../arquitectura/roles-permisos/README.md) |
 | [`catalogo-maestro.md`](catalogo-maestro.md) | 2 | [Catálogo maestro](../../arquitectura/catalogo-maestro/README.md) |
 | [`control-tecnico.md`](control-tecnico.md) | 2 | [Control técnico](../../arquitectura/control-tecnico/README.md) |
-| [`cumplimiento.md`](cumplimiento.md) | 5 | [Cumplimiento](../../arquitectura/cumplimiento/README.md) |
+| [`cumplimiento.md`](cumplimiento.md) | 6 | [Cumplimiento](../../arquitectura/cumplimiento/README.md) |
 | [`notificaciones.md`](notificaciones.md) | 1 | [Notificaciones](../../arquitectura/notificaciones/README.md) |
+| [`gestion-usuarios.md`](gestion-usuarios.md) | 2 | [Gestión de usuarios](../../arquitectura/gestion-usuarios/README.md) |
 
 ---
 

@@ -37,9 +37,9 @@ la cierra). Los ID (`DT-n`) no se reutilizan. Si una deuda depende del comité, 
 | [`gestion-usuarios.md`](gestion-usuarios.md) | 2 | [Gestión de usuarios](../arquitectura/gestion-usuarios/README.md) |
 | [`notificaciones.md`](notificaciones.md) | 2 | [Notificaciones](../arquitectura/notificaciones/README.md) |
 | [`onboarding.md`](onboarding.md) | 18 | [Onboarding](../arquitectura/onboarding/README.md) y sus tres componentes |
-| [`plataforma.md`](plataforma.md) | 4 | [Plataforma](../arquitectura/plataforma/README.md) |
+| [`plataforma.md`](plataforma.md) | 3 | [Plataforma](../arquitectura/plataforma/README.md) |
 | [`trazabilidad.md`](trazabilidad.md) | 3 | [Trazabilidad](../arquitectura/trazabilidad/README.md) |
-| [`entrega.md`](entrega.md) | 7 | **Ninguno**: pruebas, CI, despliegue, respaldos y runtime |
+| [`entrega.md`](entrega.md) | 6 | **Ninguno**: pruebas, CI, despliegue, respaldos y runtime |
 
 **La regla para clasificar una deuda nueva:** va al módulo **donde está el código que hay que cambiar**. Si toca
 varios, al más específico. Y si la deuda es de una **capacidad compartida** (la subida de archivos, el cifrado,
@@ -129,18 +129,15 @@ Pendientes sin urgencia.
 | [DT-16](onboarding.md#dt-16--evaluation_period--trimestre-natural-de-la-contratación) | `evaluation_period` = trimestre natural de la contratación | [Onboarding](onboarding.md) |
 | [DT-17](onboarding.md#dt-17--trust_criterion_required-del-contrato-no-se-usa) | `TRUST_CRITERION_REQUIRED` del contrato no se usa | [Onboarding](onboarding.md) |
 | [DT-18](onboarding.md#dt-18--sin-guardado-parcial-en-el-servidor) | Sin guardado parcial en el servidor | [Onboarding](onboarding.md) |
-| [DT-24](plataforma.md#dt-24--tailwind-avisa-de-clases-canónicas-darkbg-white003--darkbg-white3-en-platfor) | Tailwind avisa de clases canónicas (`dark:bg-white/[0.03]` → `dark:bg-white/3`) en Platfor | [Plataforma](plataforma.md) |
 | [DT-27](empresas.md#dt-27--el-contrato-guarda-solo-el-marco-y-la-fecha) | El contrato guarda solo el marco y la fecha | [Empresas](empresas.md) |
 | [DT-29](trazabilidad.md#dt-29--authlogin_failed-se-guarda-con-tenant_id-nulo) | `auth.login_failed` se guarda con `tenant_id` nulo | [Trazabilidad](trazabilidad.md) |
 | [DT-30](entrega.md#dt-30--las-pruebas-de-jest-no-corren-en-máquinas-windows-sin-el-runtime-de-visual-c) | Las pruebas de jest no corren en máquinas Windows sin el runtime de Visual C++ | [Entrega](entrega.md) |
 | [DT-40](catalogo-maestro.md#dt-40--la-lista-de-18-normas-de-protección-de-datos-la-depuró-desarrollo-no-el-comité) | La lista de 18 normas de protección de datos la depuró desarrollo, no el comité | [Catálogo maestro](catalogo-maestro.md) |
 | [DT-41](empresas.md#dt-41--contactar-a-mercadeo-es-un-mock) | «Contactar a mercadeo» es un mock | [Empresas](empresas.md) |
-| [DT-42](plataforma.md#dt-42--los-textos-auditoría-de-inicio-y-de-mis-servicios-no-se-cambiaron-a-consultoría) | Los textos «auditoría» de Inicio y de «Mis servicios» no se cambiaron a «consultoría» | [Plataforma](plataforma.md) |
 | [DT-47](trazabilidad.md#dt-47--los-cierres-automáticos-de-sesión-no-dejan-rastro) | Los cierres automáticos de sesión no dejan rastro | [Trazabilidad](trazabilidad.md) |
 | [DT-52](control-tecnico.md#dt-52--el-trabajador-solo-conoce-aws-una-corrida-a-la-vez-por-réplica-y-el-canal-de-llaves-entrega-llaves-de-larga-vida) | El trabajador solo conoce AWS, una corrida a la vez por réplica, y el canal de llaves entrega llaves de larga vida | [Control técnico](control-tecnico.md) |
 | [DT-53](control-tecnico.md#dt-53--la-imagen-del-motor-pesa-33-gb) | La imagen del motor pesa 3,3 GB: | [Control técnico](control-tecnico.md) |
 | [DT-55](onboarding.md#dt-55--la-plantilla-del-rol-se-descarga-y-se-crea-a-mano) | La plantilla del rol se descarga y se crea a mano | [Onboarding](onboarding.md) |
-| [DT-58](entrega.md#dt-58--frontend-platform-no-tiene-pruebas-automáticas) | `Frontend-Platform` no tiene pruebas automáticas | [Entrega](entrega.md) |
 | [DT-62](control-tecnico.md#dt-62--no-se-ha-verificado-que-el-identificador-de-un-recurso-descubierto-coincida-con-el-que-trae-la-evaluación) | No se ha verificado que el identificador de un recurso descubierto coincida con el que trae la evaluación | [Control técnico](control-tecnico.md) |
 | [DT-64](control-tecnico.md#dt-64--la-preparación-por-servicio-no-tiene-pantalla) | La preparación por servicio no tiene pantalla | [Control técnico](control-tecnico.md) |
 | [DT-68](catalogo-maestro.md#dt-68--los-logos-no-vienen-del-kit-de-cada-marca) | Los logos no vienen del kit de cada marca | [Catálogo maestro](catalogo-maestro.md) |
@@ -149,3 +146,4 @@ Pendientes sin urgencia.
 | [DT-74](cumplimiento.md#dt-74--la-exclusión-de-un-check-no-tiene-endpoint) | La exclusión de un check no tiene endpoint | [Cumplimiento](cumplimiento.md) |
 | [DT-80](cumplimiento.md#dt-80--el-veredicto-manual-usa-el-tipo-de-la-dimensión-del-control) | El veredicto manual usa el tipo de la dimensión del control | [Cumplimiento](cumplimiento.md) |
 | [DT-90](gestion-usuarios.md#dt-90--el-envío-de-la-invitación-es-directo-sin-cola-ni-reintentos-y-su-resultado-no-se-guarda) | El envío de la invitación es directo, sin cola ni reintentos, y su resultado no se guarda | [Gestión de usuarios](gestion-usuarios.md) |
+| [DT-99](plataforma.md#dt-99--lint-de-los-frontends-reglas-apagadas-y-dependencias-de-desarrollo-con-avisos) | Lint de los frontends: reglas apagadas y dependencias de desarrollo con avisos | [Plataforma](plataforma.md) |
