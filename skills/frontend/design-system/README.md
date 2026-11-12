@@ -26,7 +26,7 @@ Los textos siguen `monkey-ui-copy`; este documento solo cubre la capa visual.
 2. **Jerarquía por tipografía y espacio**, no por cajas. Máximo **un** nivel de contenedor.
 3. **El color significa algo**: estado (cumple / no cumple / pendiente / sin medir) y acción primaria. Nada más.
 4. **Densidad respirable**: tablas y listas para datos repetitivos; filas limpias, columnas alineadas, acciones al extremo.
-5. **El detalle va en un panel lateral**, no en una página nueva ni saturando la actual.
+5. **El detalle va en un panel lateral**, no en una página nueva ni saturando la actual. Los formularios de crear o editar, y el detalle de una persona o un grupo, van en un **modal** centrado (`form-modal`), sin X: Cancelar en el pie.
 6. Las dos apps se ven igual: lo que cambia entre ellas son rutas y alias, nunca estilos.
 
 ## 2. Qué se permite y qué no en una página
@@ -92,7 +92,7 @@ El modo oscuro redefine los mismos tokens bajo `.dark`; ninguna pantalla se escr
 
 **Borde**: `1px solid var(--color-line)`.
 
-**Entrada de pantalla**: utilidad `mk-enter` (fundido de opacidad de 150 ms; con `prefers-reduced-motion` no anima). Companies y Catalog de Admin la usan.
+**Entrada de pantalla**: utilidad `mk-enter` (fundido de opacidad de 150 ms; con `prefers-reduced-motion` se conserva, porque un fundido no es movimiento). Companies y Catalog de Admin la usan. Los modales entran con `mk-backdrop-in` (fundido del fondo) y `mk-modal-in` (fundido con escala de 0,96 a 1 en 180 ms; con `prefers-reduced-motion`, solo fundido).
 
 **Sombra**: `--shadow-soft` (mínima, en cards) y `--shadow-float` (menús, modal, drawer, sidebar en móvil, avisos `toast`). Los avisos (`toast`) flotan en la esquina superior derecha por encima de todo (`--z-toast`, 100004: drawer 100001, confirm-dialog 100002) y llevan `mk-surface-state-*` con punto y palabra; ver `components.md`. Las sombras antiguas de contenedor (`shadow-card`, `shadow-theme-*`) ya no existen en `styles.css`; el chequeo rechaza que vuelvan.
 

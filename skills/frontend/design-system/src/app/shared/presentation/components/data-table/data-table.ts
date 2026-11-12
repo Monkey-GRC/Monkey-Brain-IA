@@ -7,6 +7,69 @@ import { EmptyState } from '@shared/presentation/components/empty-state/empty-st
 
 let nextId = 0;
 
+// Punto de corte por debajo del cual la tabla se apila en tarjetas (sin desplazamiento horizontal): `lg` (1024 px), `2xl` (1536 px, tablas de muchas columnas) o `never`.
+export type TableStack = 'lg' | '2xl' | 'never';
+
+// Clases completas y literales por modo (Tailwind no ve clases armadas por pedazos).
+interface StackClasses {
+  table: string;
+  head: string;
+  body: string;
+  row: string;
+  cell: string;
+  pad: string;
+  select: string;
+  chevron: string;
+  group: string;
+  right: string;
+  center: string;
+}
+
+const STACK: Record<TableStack, StackClasses> = {
+  lg: {
+    table: 'block lg:table',
+    head: 'max-lg:sr-only',
+    body: 'block lg:table-row-group',
+    row: 'block space-y-3 p-4 lg:table-row lg:space-y-0 lg:p-0',
+    cell: 'block lg:table-cell',
+    pad: 'lg:h-14 lg:px-4 lg:py-2',
+    select: 'lg:w-12 lg:h-14 lg:px-4 lg:py-2',
+    chevron: 'lg:h-14',
+    group: 'block lg:table-row',
+    right: 'lg:text-right',
+    center: 'lg:text-center',
+  },
+  '2xl': {
+    table: 'stack-2xl block 2xl:table',
+    head: 'max-2xl:sr-only',
+    body: 'block 2xl:table-row-group',
+    row: 'block space-y-3 p-4 2xl:table-row 2xl:space-y-0 2xl:p-0',
+    cell: 'block 2xl:table-cell',
+    pad: '2xl:h-14 2xl:px-4 2xl:py-2',
+    select: '2xl:w-12 2xl:h-14 2xl:px-4 2xl:py-2',
+    chevron: '2xl:h-14',
+    group: 'block 2xl:table-row',
+    right: '2xl:text-right',
+    center: '2xl:text-center',
+  },
+  never: {
+    table: 'min-w-[40rem]',
+    head: '',
+    body: '',
+    row: '',
+    cell: '',
+    pad: 'h-14 px-4 py-2',
+    select: 'w-12 h-14 px-4 py-2',
+    chevron: 'h-14',
+    group: '',
+    right: 'text-right',
+    center: 'text-center',
+  },
+};
+
+// La compacta (panel lateral) es una lista corta: nunca se apila, solo quita el ancho mínimo.
+const COMPACT: StackClasses = { ...STACK.never, table: 'min-w-0', pad: 'px-3 py-2.5', select: 'w-12 px-4 py-2', chevron: '' };
+
 export interface TableGroup<T> {
   key: string;
   label: string;
@@ -82,6 +145,9 @@ export class DataTable<T> {
   // misma tabla (mismo borde, hover, fila activable, vacío y carga). Con `hideHeader` el encabezado queda solo para lectores de pantalla (una lista sin títulos de columna).
   readonly compact = input(false);
   readonly hideHeader = input(false);
+  // Por debajo de este ancho de pantalla cada fila pasa a ser una tarjeta apilada (cada celda con el rótulo de su columna encima) y no hay desplazamiento horizontal. Por defecto
+  // `lg`; `2xl` para tablas de muchas columnas; `never` la deja siempre como tabla (con ancho mínimo). La variante `compact` nunca se apila.
+  readonly stackBelow = input<TableStack>('lg');
   readonly emptyIcon = input('inbox');
   readonly emptyTitleKey = input('COMMON.TABLE.EMPTY_TITLE');
   readonly emptyDescriptionKey = input<string | null>(null);
@@ -92,7 +158,9 @@ export class DataTable<T> {
   readonly selectionChange = output<Set<string | number>>();
 
   protected readonly openHintId = `data-table-open-${nextId++}`;
-  protected readonly cellPad = computed(() => (this.compact() ? 'px-3 py-2.5' : 'h-14 px-4 py-2'));
+  protected readonly s = computed<StackClasses>(() => (this.compact() ? COMPACT : STACK[this.stackBelow()]));
+  protected readonly stacked = computed(() => !this.compact() && this.stackBelow() !== 'never');
+  protected readonly cellPad = computed(() => this.s().pad);
   protected readonly isFocusable = computed(() => this.clickable() && this.focusable());
   protected readonly hasChevron = computed(() => this.clickable() && this.chevron());
   protected readonly columnCount = computed(() => this.columns().length + (this.selectable() ? 1 : 0) + (this.hasChevron() ? 1 : 0));
@@ -131,7 +199,8 @@ export class DataTable<T> {
   }
 
   protected align(column: TableColumn<T>): string {
-    return column.align === 'right' ? 'text-right' : column.align === 'center' ? 'text-center' : 'text-left';
+    const s = this.s();
+    return column.align === 'right' ? s.right : column.align === 'center' ? s.center : 'text-left';
   }
 
   // Un clic en un enlace, botón o campo de la fila es de ese control, no abre la fila.

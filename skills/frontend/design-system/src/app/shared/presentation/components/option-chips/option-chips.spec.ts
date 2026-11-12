@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideTranslateService } from '@ngx-translate/core';
 import { OptionChips } from './option-chips';
 
 describe('OptionChips', () => {
@@ -7,7 +8,7 @@ describe('OptionChips', () => {
   const buttons = () => Array.from(el().querySelectorAll<HTMLButtonElement>('button'));
 
   beforeEach(() => {
-    TestBed.configureTestingModule({ imports: [OptionChips] });
+    TestBed.configureTestingModule({ imports: [OptionChips], providers: [provideTranslateService()] });
     fixture = TestBed.createComponent(OptionChips);
     fixture.componentRef.setInput('options', [
       { value: 'all', label: 'Todos' },
@@ -43,5 +44,13 @@ describe('OptionChips', () => {
     fixture.detectChanges();
     expect(buttons()[0].className).not.toBe(normal);
     expect(buttons()[0].className).toContain('py-1.5');
+  });
+
+  it('draws the optional title before the chips and uses it as the group label', () => {
+    expect(el().querySelector('span.uppercase')).toBeNull();
+    fixture.componentRef.setInput('labelKey', 'COMPLIANCE.CONTROLS.FILTER_TOPIC');
+    fixture.detectChanges();
+    expect(el().querySelector('span.uppercase')!.textContent).toContain('COMPLIANCE.CONTROLS.FILTER_TOPIC');
+    expect(el().querySelector('[role="group"]')!.getAttribute('aria-label')).toBe('COMPLIANCE.CONTROLS.FILTER_TOPIC');
   });
 });

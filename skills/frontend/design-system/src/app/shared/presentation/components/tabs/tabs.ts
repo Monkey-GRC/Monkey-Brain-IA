@@ -21,7 +21,7 @@ export interface TabItem {
   host: { class: 'block' },
   template: `
     @let ariaKey = ariaLabelKey();
-    <div role="tablist" class="flex gap-6 border-b border-line" [attr.aria-label]="ariaKey ? (ariaKey | translate) : null">
+    <div role="tablist" class="flex flex-wrap gap-x-6 gap-y-1 border-b border-line" [attr.aria-label]="ariaKey ? (ariaKey | translate) : null">
       @for (item of items(); track item.id) {
         <button
           type="button"

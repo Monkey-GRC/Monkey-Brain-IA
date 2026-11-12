@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, ElementRef, effect, input, output, 
 import { pushOverlay, takeEscape } from '@shared/presentation/components/overlay-stack/overlay-stack';
 
 const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
-const SIZES = { sm: 'max-w-sm', md: 'max-w-md', lg: 'max-w-lg', xl: 'max-w-4xl' } as const;
+const SIZES = { sm: 'max-w-sm', md: 'max-w-md', lg: 'max-w-lg', xl: 'max-w-4xl', wide: 'max-w-2xl' } as const;
 
 // La base de todos los modales de la app: el fondo oscuro, el panel y lo que un modal bien hecho debe hacer siempre. Lo de adentro lo pone quien lo usa:
 //   <app-modal [open]="abierto" labelledBy="mi-titulo" (dismissed)="cerrar()"> <h2 id="mi-titulo">…</h2> … </app-modal>
@@ -20,6 +20,8 @@ export class Modal {
   readonly describedBy = input<string | null>(null);
   readonly dismissible = input(true);
   readonly size = input<keyof typeof SIZES>('md');
+  // Con `padded` en falso el panel no lleva relleno ni scroll propio: quien lo usa reparte cabecera, cuerpo con scroll y pie fijo (`app-form-modal`).
+  readonly padded = input(true);
   // Prefijo de los `data-testid` del fondo (`<id>-backdrop`) y del panel (`<id>-dialog`), para que las pruebas de quien lo usa los encuentren.
   readonly testId = input('modal');
 
@@ -49,6 +51,10 @@ export class Modal {
 
   get sizeClass(): string {
     return SIZES[this.size()];
+  }
+
+  get panelClass(): string {
+    return `${this.sizeClass} ${this.padded() ? 'overflow-y-auto p-6' : 'flex flex-col overflow-hidden'}`;
   }
 
   // Esc: solo la capa de arriba lo atiende (un diálogo abierto sobre el modal se lo lleva primero).

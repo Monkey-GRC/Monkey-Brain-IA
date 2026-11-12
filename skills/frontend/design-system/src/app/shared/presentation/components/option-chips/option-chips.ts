@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
+import { TranslatePipe } from '@ngx-translate/core';
 
 export interface ChipOption {
   value: string;
@@ -14,6 +15,7 @@ export interface ChipOption {
 // No decide nada: solo avisa qué opción se tocó y quien la usa aplica la regla.
 @Component({
   selector: 'app-option-chips',
+  imports: [TranslatePipe],
   templateUrl: './option-chips.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -21,7 +23,9 @@ export class OptionChips {
   readonly options = input.required<ChipOption[]>();
   readonly selected = input<string[]>([]);
   readonly multiple = input(false);
-  readonly ariaLabel = input('Opciones');
+  readonly ariaLabel = input<string | null>(null);
+  // Clave i18n de un título corto que se pinta antes de los chips (a la izquierda en `lg`, encima en móvil) y sirve de `aria-label` si no se da otro.
+  readonly labelKey = input<string | null>(null);
   // Más bajas, para una barra de herramientas encima de una tabla.
   readonly compact = input(false);
 

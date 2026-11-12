@@ -3,7 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideTranslateService } from '@ngx-translate/core';
 import { PageInfo } from './table-page';
 import { StatusIndicator } from '../status-indicator/status-indicator';
-import { DataTable, TableCell, TableColumn } from './data-table';
+import { DataTable, TableCell, TableColumn, TableStack } from './data-table';
 
 interface Row { id: number; name: string; status: string }
 
@@ -27,6 +27,7 @@ interface Row { id: number; name: string; status: string }
       [collapsible]="collapsible()"
       [compact]="compact()"
       [hideHeader]="hideHeader()"
+      [stackBelow]="stackBelow()"
       (selectionChange)="selections.push($event)"
       (pageChange)="pages.push($event)"
       (pageSizeChange)="sizes.push($event)"
@@ -62,6 +63,7 @@ class Host {
   collapsible = signal(false);
   compact = signal(false);
   hideHeader = signal(false);
+  stackBelow = signal<TableStack>('lg');
   labelOf = (r: Row) => r.name;
   byId = (r: Row) => r.id;
 }
@@ -238,6 +240,15 @@ describe('DataTable', () => {
     expect(headers[0].querySelector('[data-group-toggle]')).toBeNull();
   });
 
+  it('the group header is a full-width cell, not a row, so its colspan applies', () => {
+    host.groupBy.set(() => 'a');
+    fixture.detectChanges();
+    const th = el().querySelector('[data-group-header] th[scope="rowgroup"]')!;
+    expect(th.getAttribute('colspan')).toBe(String(el().querySelectorAll('thead th[scope="col"]').length));
+    expect(th.className).not.toContain('table-row');
+    expect(th.className).toContain('table-cell');
+  });
+
   it('a collapsible group folds its rows from a button that says whether it is open', () => {
     host.groupBy.set(() => 'a');
     host.collapsible.set(true);
@@ -256,6 +267,8 @@ describe('DataTable', () => {
 
   it('the compact variant drops the minimum width and the tall rows, for lists inside a side panel', () => {
     const table = () => el().querySelector('table')!;
+    host.stackBelow.set('never');
+    fixture.detectChanges();
     expect(table().className).toContain('min-w-[40rem]');
     expect(el().querySelector('tbody td')!.className).toContain('h-14');
     host.compact.set(true);
@@ -263,6 +276,34 @@ describe('DataTable', () => {
     expect(table().className).not.toContain('min-w-[40rem]');
     expect(el().querySelector('tbody td')!.className).not.toContain('h-14');
     expect(el().querySelectorAll('tbody tr').length).toBe(2);
+  });
+
+  it('stacks into cards below lg by default, each cell labelled with its column, so nobody scrolls sideways', () => {
+    const table = el().querySelector('table')!;
+    expect(table.className).toContain('lg:table');
+    expect(table.className).not.toContain('min-w-');
+    expect(el().querySelector('thead')!.className).toContain('max-lg:sr-only');
+    expect(el().querySelector('tbody tr')!.className).toContain('lg:table-row');
+    const cells = Array.from(el().querySelectorAll('tbody tr:first-child td'));
+    expect(cells.map((c) => c.getAttribute('data-label'))).toEqual(['TEST.NAME', 'TEST.STATUS', 'TEST.OPEN', null]);
+  });
+
+  it('stackBelow 2xl stacks until 2xl, and never keeps the plain table with no labels', () => {
+    host.stackBelow.set('2xl');
+    fixture.detectChanges();
+    expect(el().querySelector('table')!.className).toContain('stack-2xl');
+    expect(el().querySelector('table')!.className).toContain('2xl:table');
+    host.stackBelow.set('never');
+    fixture.detectChanges();
+    expect(el().querySelector('table')!.className).toContain('min-w-[40rem]');
+    expect(el().querySelector('tbody td')!.hasAttribute('data-label')).toBe(false);
+  });
+
+  it('the compact variant is never stacked', () => {
+    host.compact.set(true);
+    fixture.detectChanges();
+    expect(el().querySelector('table')!.className).not.toContain('lg:table');
+    expect(el().querySelector('tbody td')!.hasAttribute('data-label')).toBe(false);
   });
 
   it('can keep the header only for screen readers (a list with no column titles)', () => {

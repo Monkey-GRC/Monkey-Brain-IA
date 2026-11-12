@@ -19,7 +19,7 @@ import { TranslatePipe } from '@ngx-translate/core';
       <p [id]="forId() + '-hint'" class="mt-1.5 text-xs text-ink-muted">{{ hint | translate }}</p>
     }
     @if (errorKey(); as error) {
-      <p [id]="forId() + '-error'" class="mt-1.5 text-xs text-bad" role="alert">{{ error | translate: errorParams() }}</p>
+      <p [id]="forId() + '-error'" class="mt-1.5 text-xs text-bad-ink" role="alert">{{ error | translate: errorParams() }}</p>
     }
   `,
 })

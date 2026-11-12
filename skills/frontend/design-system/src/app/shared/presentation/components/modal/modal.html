@@ -1,7 +1,7 @@
 @if (open()) {
-  <div class="fixed inset-0 z-[100001] flex items-center justify-center bg-scrim p-4 backdrop-blur-sm" (mousedown)="onBackdrop($event)" [attr.data-testid]="testId() + '-backdrop'">
+  <div class="mk-backdrop-in fixed inset-0 z-[100001] flex items-center justify-center bg-scrim p-4 backdrop-blur-sm" (mousedown)="onBackdrop($event)" [attr.data-testid]="testId() + '-backdrop'">
     <div #panel role="dialog" aria-modal="true" tabindex="-1" [attr.aria-labelledby]="labelledBy()" [attr.aria-describedby]="describedBy()" (keydown)="trapTab($event)" [attr.data-testid]="testId() + '-dialog'"
-      class="w-full rounded-panel border border-line bg-surface p-6 text-ink shadow-float outline-none" [class]="sizeClass">
+      class="mk-modal-in max-h-[calc(100dvh-2rem)] w-full rounded-panel border border-line bg-surface text-ink shadow-float outline-none" [class]="panelClass">
       <ng-content />
     </div>
   </div>
