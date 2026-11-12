@@ -160,6 +160,7 @@
   /* Semantic layer (design-system README section 3). Screens ask for these, not for the ramps. `.dark` redefines the same names. */
   --color-surface: #ffffff;
   --color-line: var(--color-gray-200);
+  --color-line-strong: var(--color-gray-300); /* dividers that must be seen (menu sections), not hairlines */
   --color-ink: var(--color-gray-900);
   --color-ink-muted: var(--color-gray-600);
   --color-ink-faint: var(--color-gray-500);
@@ -285,6 +286,7 @@
 
   --color-surface: var(--color-gray-900);
   --color-line: var(--color-gray-800);
+  --color-line-strong: var(--color-gray-600);
   --color-ink: var(--color-gray-100);
   --color-ink-muted: var(--color-gray-400);
   --color-ink-faint: var(--color-gray-400);
@@ -423,7 +425,7 @@
 @utility menu-item-contains-active {
   @apply font-semibold text-ink hover:bg-tint;
 }
-/* Smooth open and close. The panel is ALWAYS in the DOM (never created or destroyed by `@if`): its height goes 0fr to 1fr (no measuring) together with the opacity, 280 ms.
+/* Smooth open and close. The panel is ALWAYS in the DOM (never created or destroyed by `@if`): its height goes 0fr to 1fr (no measuring) in 200 ms ease-out, and the children fade in 160 ms.
    `visibility` is delayed on close so the children leave the tab order only when the animation ends. The chevron uses the same duration and curve. The inner wrapper
    (`& > *`) has no padding or margin on purpose: a box cannot be smaller than its own padding, so any spacing goes one level deeper.
    With `prefers-reduced-motion: reduce` the size does not animate (it jumps) and the chevron does not turn; only a short opacity fade remains. */
@@ -432,7 +434,7 @@
   grid-template-rows: 0fr;
   opacity: 0;
   visibility: hidden;
-  transition: grid-template-rows 280ms cubic-bezier(0.4, 0, 0.2, 1), opacity 280ms cubic-bezier(0.4, 0, 0.2, 1), visibility 0s linear 280ms;
+  transition: grid-template-rows 200ms cubic-bezier(0, 0, 0.2, 1), opacity 160ms cubic-bezier(0, 0, 0.2, 1), visibility 0s linear 200ms;
   & > * {
     min-height: 0;
     overflow: hidden;
@@ -452,7 +454,7 @@
 }
 @utility menu-chevron-icon {
   @apply ml-auto size-5 shrink-0 text-ink-faint;
-  transition: transform 280ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 200ms cubic-bezier(0, 0, 0.2, 1);
   &[data-open='true'] {
     transform: rotate(180deg);
   }
@@ -461,9 +463,10 @@
   }
 }
 /* A child is a whole box: hover, focus and the active page paint the full width of the panel (a `rounded-control` box), not only the letters. It is taller than the text
-   needs (44 px) and its text is indented deeper than the parent label (parent text starts at 48 px, the child at 56 px). The focus ring is inset because the panel clips overflow. */
+   needs (40 px). Its text starts where the parent's text starts (48 px: 12 px of padding + 24 px of icon + 12 px of gap); the group's list carries a subtle 1 px guide (`line`) under the
+   parent's icon (24 px from the left), so it reads as a hierarchy without spending width. The focus ring is inset because the panel clips overflow. */
 @utility menu-child {
-  @apply flex min-h-11 w-full items-center rounded-control py-2 pl-14 pr-3 text-theme-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-action/50;
+  @apply flex min-h-10 w-full items-center rounded-control py-2 pl-6 pr-3 text-theme-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-action/50;
 }
 @utility menu-child-active {
   @apply bg-tint-strong font-medium text-tint-ink;

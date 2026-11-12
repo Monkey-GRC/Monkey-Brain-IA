@@ -1,32 +1,33 @@
-import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
-import { TranslatePipe } from '@ngx-translate/core';
+import { ChangeDetectionStrategy, Component, booleanAttribute, input, output } from '@angular/core';
+import { Select, SelectOption } from '@shared/presentation/components/select/select';
 
-export interface TableFilterOption {
-  value: string;
-  /** Translation key of the option. */
-  labelKey?: string;
-  /** Text that is already data (a group name); used when there is no `labelKey`. */
-  label?: string;
-}
+export type TableFilterOption = SelectOption;
 
 /**
- * A filter of a table toolbar: the system select (standard height) with no label above it. The name of the filter is the first option («Rol») and the `aria-label`;
- * that option has the empty value and means «no filter». Emits the chosen value (`''` for none).
+ * A filter of a table toolbar: `app-select` at the standard height with no label above it. Single mode: the name of the filter is the first option («Rol», the empty
+ * value = «no filter») and the `aria-label`; emits the chosen value (`''` for none). With `multiple` the trigger shows the filter's name and how many are chosen, the options
+ * carry a checkbox, and it emits the list (`valuesChange`; an empty list = no filter).
  *
  *   <app-table-filter labelKey="TEAM.FILTERS.ROLE" [options]="roles" [value]="role()" (valueChange)="setRole($event)" />
+ *   <app-table-filter labelKey="…" [options]="statuses" multiple [values]="picked()" (valuesChange)="picked.set($event)" />
  */
 @Component({
   selector: 'app-table-filter',
-  imports: [TranslatePipe],
+  imports: [Select],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'block' },
+  host: { class: 'block min-w-44' },
   template: `
-    <select class="mk-input w-auto min-w-36" [attr.aria-label]="labelKey() | translate" (change)="onChange($event)">
-      <option value="" [selected]="!value()">{{ labelKey() | translate }}</option>
-      @for (o of options(); track o.value) {
-        <option [value]="o.value" [selected]="value() === o.value">{{ o.labelKey ? (o.labelKey | translate) : o.label }}</option>
-      }
-    </select>
+    <app-select
+      [options]="options()"
+      [multiple]="multiple()"
+      [value]="value()"
+      [values]="values()"
+      [emptyLabelKey]="multiple() ? null : labelKey()"
+      [summaryKey]="multiple() ? labelKey() : null"
+      [ariaLabelKey]="labelKey()"
+      (valueChange)="valueChange.emit($event)"
+      (valuesChange)="valuesChange.emit($event)"
+    />
   `,
 })
 export class TableFilter {
@@ -34,10 +35,9 @@ export class TableFilter {
   readonly labelKey = input.required<string>();
   readonly options = input.required<TableFilterOption[]>();
   readonly value = input('');
+  readonly multiple = input(false, { transform: booleanAttribute });
+  readonly values = input<string[]>([]);
 
   readonly valueChange = output<string>();
-
-  protected onChange(event: Event): void {
-    this.valueChange.emit((event.target as HTMLSelectElement).value);
-  }
+  readonly valuesChange = output<string[]>();
 }

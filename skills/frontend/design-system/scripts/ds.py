@@ -41,8 +41,13 @@ ANTI = [
     # Disabled is a token state, never an opacity: `disabled:cursor-not-allowed disabled:text-ink-faint` (+ `disabled:bg-tint`), hover only with `enabled:`.
     ('disabled:opacity-*', r'\bdisabled:(?:[a-z-]+:)?opacity-\d', ('.ts', '.html'), 'disabled:cursor-not-allowed disabled:text-ink-faint (+ disabled:bg-tint)'),
     ('opacity-NN on a control', r'(?<![\w-])(?:[a-z-]+:)?opacity-(?:[1-9]\d?|100)\b', ('.ts', '.html'), 'tokens: ink-faint / tint; no opacity on buttons and inputs'),
+    ('native <select>', r'<select\b', ('.ts', '.html'), 'app-select (or app-table-filter in a toolbar): the system select, with its own panel'),
     ('danger button by hand', r'\bbg-bad!|\bhover:bg-bad\b', ('.ts', '.html'), 'mk-btn-danger (enabled-only hover, tokenised disabled)'),
 ]
+# A text field written by hand (not `mk-input`) must set its own text colour, or the browser's black shows on the dark surface.
+INPUT_TAG = re.compile(r'<(?:input|textarea)\b[^>]*>', re.S)
+INPUT_OK = re.compile(r'\bmk-input\b|\bmk-checkbox\b|\btext-(?:ink|ink-muted|white|action|bad|ok|warn)\b|type="(?:checkbox|radio|file|hidden|range|color)"')
+INPUT_RULE = 'input without text colour'
 TEAL = re.compile(r'rgba\(\s*4\s*,\s*164\s*,\s*156')
 
 
@@ -198,12 +203,17 @@ def scan(root):
     """-> {pattern: [(file, line_no, line)]} for the anti-patterns, in src/app (and teal in styles.css)."""
     hits = {name: [] for name, *_ in ANTI}
     hits['teal glow (off palette)'] = []
+    hits[INPUT_RULE] = []
     src = os.path.join(root, 'src')
     for rel in walk(os.path.join(src, 'app')):
         if rel.endswith('.spec.ts') or 'status-indicator' in rel:
             continue
         ext = os.path.splitext(rel)[1]
         text = read(os.path.join(src, 'app', rel))
+        if ext in ('.ts', '.html'):
+            for m in INPUT_TAG.finditer(text):
+                if not INPUT_OK.search(m.group(0)):
+                    hits[INPUT_RULE].append(('src/app/' + rel, text.count('\n', 0, m.start()) + 1, ' '.join(m.group(0).split())[:140]))
         for n, line in enumerate(text.splitlines(), 1):
             for name, rx, exts, _ in ANTI:
                 if ext in exts and re.search(rx, line):
@@ -334,7 +344,7 @@ def cmd_check(args):
     total = 0
     folders = [f for f, _ in targets(args.only)]
     results = {f: scan(os.path.join(MONKEY, f)) for f in folders}
-    names = [n for n, *_ in ANTI] + ['teal glow (off palette)']
+    names = [n for n, *_ in ANTI] + [INPUT_RULE, 'teal glow (off palette)']
     print('  %-26s' % 'pattern' + ''.join('%12s' % APPS[f] for f in folders))
     for name in names:
         counts = [len(results[f][name]) for f in folders]

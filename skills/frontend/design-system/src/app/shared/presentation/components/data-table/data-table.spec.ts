@@ -3,6 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideTranslateService } from '@ngx-translate/core';
 import { PageInfo } from './table-page';
 import { StatusIndicator } from '../status-indicator/status-indicator';
+import { pickOption } from '../select/select.testing';
 import { DataTable, TableCell, TableColumn, TableStack } from './data-table';
 
 interface Row { id: number; name: string; status: string }
@@ -41,8 +42,8 @@ interface Row { id: number; name: string; status: string }
 class Host {
   columns: TableColumn<Row>[] = [
     { key: 'name', headerKey: 'TEST.NAME', value: (r) => r.name },
-    { key: 'status', headerKey: 'TEST.STATUS' },
-    { key: 'open', headerKey: 'TEST.OPEN' },
+    { key: 'status', headerKey: 'TEST.STATUS', align: 'center' },
+    { key: 'open', headerKey: 'TEST.OPEN', align: 'right' },
   ];
   rows = signal<Row[]>([
     { id: 1, name: 'Acceso con MFA', status: 'ready' },
@@ -110,9 +111,7 @@ describe('DataTable', () => {
   });
 
   it('emits the new page size', () => {
-    const select = el().querySelector('select') as HTMLSelectElement;
-    select.value = '50';
-    select.dispatchEvent(new Event('change'));
+    pickOption(el(), 'app-pagination app-select', '50', () => fixture.detectChanges());
     expect(host.sizes).toEqual([50]);
   });
 
@@ -311,5 +310,17 @@ describe('DataTable', () => {
     fixture.detectChanges();
     expect(el().querySelector('thead')!.className).toContain('sr-only');
     expect(el().querySelectorAll('thead th').length).toBeGreaterThan(0);
+  });
+
+  it('aligns every header like its cells and gives both the same horizontal padding', () => {
+    const heads = Array.from(el().querySelectorAll('thead th')).filter((th) => th.hasAttribute('scope') && th.getAttribute('scope') === 'col');
+    const cells = Array.from(el().querySelectorAll('tbody tr:first-child td'));
+    ['name', 'status', 'open'].forEach((_, i) => {
+      const align = (c: Element) => c.className.split(' ').filter((n) => /text-(left|center|right)$/.test(n)).join(' ');
+      const pad = (c: Element) => c.className.split(' ').filter((n) => /(^|:)px-\d/.test(n)).join(' ');
+      expect(align(heads[i])).toBe(align(cells[i]));
+      expect(pad(heads[i])).toBe(pad(cells[i]));
+      expect(pad(heads[i])).toContain('px-6');
+    });
   });
 });

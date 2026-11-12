@@ -34,8 +34,10 @@ describe('TableToolbar', () => {
     input.value = 'ana';
     input.dispatchEvent(new Event('input'));
     expect(fixture.componentInstance.typed).toEqual(['ana']);
+    expect(el().querySelector('app-search-field span.material-symbols-rounded')!.className).toContain('right-');
+    expect(input.className).toContain('pr-11');
     expect(el().querySelector('app-table-filter')).not.toBeNull();
-    expect(el().querySelector('button')!.textContent).toBe('Go');
+    expect(el().querySelector('button[actions]')!.textContent).toBe('Go');
     expect(el().querySelector('app-table-toolbar [role="group"]')!.className).toContain('flex');
   });
 

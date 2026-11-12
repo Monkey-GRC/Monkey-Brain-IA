@@ -75,3 +75,18 @@ export function groupDomId(name: string): string {
 export function canReachPath(items: readonly NavEntryLike[], role: string | undefined, path: string): boolean {
   return filterNavByRole(items, role).some((item) => item.path === path || (item.subItems ?? []).some((child) => child.path === path));
 }
+
+/** The menu draws an entry only if it is a group (with visible children) or has its own `path`; a parent left without children and without `path` draws nothing. */
+export function isRenderable(item: NavEntryLike): boolean {
+  return isGroup(item) || !!item.path;
+}
+
+/**
+ * The sections to draw, in order of first appearance, keeping only the ones that have something to draw for this role. The menu puts one divider line BETWEEN
+ * consecutive sections, so an empty section never leaves a double line and the last one never leaves a trailing line.
+ */
+export function navSections<T extends NavEntryLike & { section: string }>(items: readonly T[]): string[] {
+  const sections: string[] = [];
+  for (const item of items) if (isRenderable(item) && !sections.includes(item.section)) sections.push(item.section);
+  return sections;
+}

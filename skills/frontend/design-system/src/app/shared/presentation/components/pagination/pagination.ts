@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
+import { Select, SelectOption } from '@shared/presentation/components/select/select';
 import { PageInfo, canGoBack, canGoForward, pageWindow, visibleRange } from '@shared/presentation/components/data-table/table-page';
 
 // Pagination bar: «Showing 1–10 of 31», rows per page, previous, page numbers and next. It fetches nothing: it receives the `PageInfo` and says which page
@@ -8,7 +9,7 @@ import { PageInfo, canGoBack, canGoForward, pageWindow, visibleRange } from '@sh
 //   <app-pagination [page]="page()" [pageSizes]="[10, 25, 50]" (pageChange)="goTo($event)" (pageSizeChange)="resize($event)" />
 @Component({
   selector: 'app-pagination',
-  imports: [TranslatePipe],
+  imports: [TranslatePipe, Select],
   templateUrl: './pagination.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -30,7 +31,9 @@ export class Pagination {
     if (target >= 1 && target <= p.totalPages && target !== p.page) this.pageChange.emit(target);
   }
 
-  protected resize(event: Event): void {
-    this.pageSizeChange.emit(Number((event.target as HTMLSelectElement).value));
+  protected readonly sizeOptions = computed<SelectOption[]>(() => this.pageSizes().map((n) => ({ value: String(n), label: String(n) })));
+
+  protected resize(value: string): void {
+    this.pageSizeChange.emit(Number(value));
   }
 }

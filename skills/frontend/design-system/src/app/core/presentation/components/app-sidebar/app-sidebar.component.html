@@ -8,7 +8,7 @@
     'xl:translate-x-0': true
   }" (mouseenter)="onSidebarMouseEnter()" (mouseleave)="sidebarService.setHovered(false)">
   <!-- Logo -->
-  <div class="flex py-6 sm:py-2" [ngClass]="centerIcons() ? 'xl:justify-center h-17' : 'justify-start'">
+  <div class="mb-4 flex py-6 sm:py-2" [ngClass]="centerIcons() ? 'xl:justify-center h-17' : 'justify-start'">
     <a routerLink="/">
       @if (showLabels()) {
       <img class="dark:hidden" src="images/logo/logo-light.svg" [attr.alt]="'SHELL.NAV.LOGO_ALT' | translate" width="300" height="80" />
@@ -23,16 +23,16 @@
   <!-- Navigation -->
   <div class="no-scrollbar flex min-h-0 flex-1 flex-col overflow-y-auto duration-300 ease-linear">
     <nav class="mb-6" [attr.aria-label]="'SHELL.NAV.LABEL' | translate">
-      <div class="flex flex-col gap-4">
-        @for (section of sections; track section) {
+      <div class="flex flex-col">
+        @for (section of sections; track section; let first = $first) {
         @let sectionItems = getItemsBySection(section);
 
         @if (sectionItems.length > 0) {
+        <!-- Sections are told apart by a 1 px line (`line`) with 12 px of air on each side, also in the icons-only menu; never before the first one, so there is no double or trailing line. -->
+        @if (!first) {
+        <div role="separator" data-nav-separator class="mx-2 my-3 border-t-2 border-line-strong"></div>
+        }
         <div>
-          @if (showLabels()) {
-          <h2 class="mb-2 px-3 text-xs font-medium text-ink-faint">{{ sectionLabelKey(section) | translate }}</h2>
-          }
-
           <ul class="flex flex-col gap-1">
             @for (item of sectionItems; track item.name) {
             @if (item.subItems; as children) {
@@ -60,7 +60,7 @@
 
               <div [id]="groupId(item.name)" class="menu-group-panel" [attr.data-open]="showLabels() && isOpen(item.name)">
                 <div>
-                  <ul class="flex flex-col gap-1 pt-1">
+                  <ul class="ml-6 flex flex-col gap-1 border-l border-line pt-1" data-nav-children>
                     @for (child of children; track child.name) {
                     <li>
                       <a [routerLink]="child.path" class="menu-child" (click)="onNavigate()"
