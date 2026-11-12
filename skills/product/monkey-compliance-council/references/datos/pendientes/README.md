@@ -32,6 +32,9 @@ Lo que sigue abierto, con lo más urgente arriba. 🚧 bloquea trabajo · ⚠️
 | [P41](gestion-usuarios.md#p41--criterio-de-sin-ingreso-reciente-en-acceso-y-seguridad-de-cuentas-del-inicio) | Criterio de «sin ingreso reciente» en «Acceso y seguridad de cuentas» del Inicio | No bloquea: está construido de forma provisional (30 días) | 2026-11-10 |
 | [P42](gestion-usuarios.md#p42--buscar-personas-y-ver-el-detalle-de-una-persona) | Buscar personas y ver el detalle de una persona | No bloquea: el buscador y una futura página de perfil; hoy hay filtros y un panel | 2026-11-10 |
 | [P43](cumplimiento.md#p43--qué-muestra-lo-que-requiere-atención-del-inicio) | Qué muestra «Lo que requiere atención» del Inicio | No bloquea: ampliar el contrato del dashboard y esa tabla | 2026-11-10 |
+| [P44](integraciones.md#p44--qué-checks-de-github-cuentan-y-a-qué-pruebas-y-controles-van) | Qué checks de GitHub cuentan y a qué pruebas y controles van | No bloquea: GitHub sigue `coming_soon` hasta responder (D110) | 2026-11-12 |
+| [P45](integraciones.md#p45--en-qué-categoría-de-activo-entra-github) | En qué categoría de activo entra GitHub | No bloquea: el flujo de conexión de GitHub | 2026-11-12 |
+| [P46](integraciones.md#p46--qué-hace-la-integración-con-jira) | Qué hace la integración con Jira | No bloquea: Jira sigue `coming_soon` hasta responder (D110) | 2026-11-12 |
 
 ---
 
@@ -50,6 +53,7 @@ Lo que sigue abierto, con lo más urgente arriba. 🚧 bloquea trabajo · ⚠️
 | [`cumplimiento.md`](cumplimiento.md) | 6 | [Cumplimiento](../../arquitectura/cumplimiento/README.md) |
 | [`notificaciones.md`](notificaciones.md) | 1 | [Notificaciones](../../arquitectura/notificaciones/README.md) |
 | [`gestion-usuarios.md`](gestion-usuarios.md) | 2 | [Gestión de usuarios](../../arquitectura/gestion-usuarios/README.md) |
+| [`integraciones.md`](integraciones.md) | 3 | [Integraciones](../../arquitectura/integraciones/README.md) |
 
 ---
 

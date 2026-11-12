@@ -20,9 +20,9 @@ Parches vigentes de [Plataforma](../arquitectura/plataforma/README.md). Tablero 
 
 🟠 Importante
 
-- **Qué está parchado:** y sin revisar. *Hecho (MD-114):* Monkey Platform ya tiene i18n (es/en) en toda la app; el inglés de `Frontend-Platform/public/i18n/en/` también lo escribió desarrollo y está sin revisar. Los términos de Cumplimiento (`compliance.json`) siguen el glosario **propuesto** en MD-109, aún no aprobado por producto. Los nombres de los tipos de conexión (`ac_01`…`ac_06`) salen de la base solo en español: Platform los traduce por código (`TECHNICAL_CONTROL.CATEGORY.*`). La pantalla legacy `assets/asset-detail` (sin ruta, MD-116) no se tradujo
+- **Qué está parchado:** y sin revisar. *Hecho (MD-114):* Monkey Platform ya tiene i18n (es/en) en toda la app; el inglés de `Frontend-Platform/public/i18n/en/` también lo escribió desarrollo y está sin revisar. Los términos de Cumplimiento (`compliance.json`) siguen el glosario **propuesto** en MD-109, aún no aprobado por producto. Los textos de los tipos de conexión (`ac_01`…`ac_06`), las descripciones de los marcos, «Ninguna»/«Otra» y el grupo «Responsables» ya los traduce el backend por código (MD-211, D111). El contenido del catálogo del comité sigue solo en español: DT-100. La pantalla legacy `assets/asset-detail` (sin ruta, MD-116) no se tradujo
 - **Por qué:** El Excel solo trae español
-- **Qué lo cierra:** Revisión del comité de los dos idiomas y aprobar el glosario de MD-109; traducir `automated_capabilities.category` en el backend (o llevarlo a `catalogs.json`) para no depender del mapa del frontend
+- **Qué lo cierra:** Revisión del comité de los dos idiomas y aprobar el glosario de MD-109
 
 ## Frontends (Monkey Admin y Monkey Platform)
 

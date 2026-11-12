@@ -28,6 +28,7 @@ Un enum vive **una sola vez**, en el archivo del módulo o componente que lo pos
 | Gestión de usuarios | [`enums/gestion-usuarios.md`](enums/gestion-usuarios.md) | `user_status` · `group_kind` · `assignment` · `role_in_control` · `work_bucket` |
 | Catálogo maestro | [`enums/catalogo-maestro.md`](enums/catalogo-maestro.md) | `dimension` · `framework_type` · `policy_approval_status` · `mapping_confidence` |
 | Control técnico | [`enums/control-tecnico.md`](enums/control-tecnico.md) | `readiness` · `readiness_area` · `schedule_frequency` · `execution_status` · `severity` |
+| Integraciones | [`enums/integraciones.md`](enums/integraciones.md) | `integration_purpose` · `integration_status` · `integration_security_topic` · `integration_permission_access` |
 | Cumplimiento | [`enums/cumplimiento.md`](enums/cumplimiento.md) | `control_type` · `control_approval` · `control_change_type` · `control_change_status` · `exclusion_status` · `verdict_result` · `audit_observation_type` · `audit_observation_status` · `loss_type` · `risk_criterion` · `risk_level` · `failure_category` · `evaluation_origin` · `action_plan_status` · `risk_treatment_decision` · `evidence_state` · `evidence_review` · `reviewer_role` · `asset_result` · `test_state` · `control_state` · `rollup_state` · `cause_state` · `risk_state` · `residual_acceptance` · `assessor_role` · `cause_control_effect` |
 
 ## Reglas que valen para varios grupos
@@ -36,7 +37,7 @@ Un enum vive **una sola vez**, en el archivo del módulo o componente que lo pos
 Estos enums **no salen del Excel** (no trae opciones para ellos): son decisión de desarrollo del 2026-09-29, D34 en `datos/decisiones/catalogo-maestro.md`. Donde había una fuente (los contratos, el conector de CIS) se respetó. Si el comité entrega otros valores, gana el comité.
 
 ### Qué listas sirve `GET /v1/catalogs/{name}`
-Actualizado el 2026-10-17 (`assessor_role` y `assessment_verdict` ya no se sirven, D96). Además de las del onboarding, sirve las de cumplimiento y las del catálogo maestro:
+Actualizado el 2026-11-12 (MD-211: `integration_purpose` e `integration_status`; antes, D96 retiró `assessor_role` y `assessment_verdict`). Además de las del onboarding, sirve las de cumplimiento, las del catálogo maestro y las de integraciones (`integration_purpose` · `integration_status`):
 
 `risk_criterion` · `failure_category` · `risk_level` · `risk_treatment_decision` · `responsible_type` · `cause_control_effect` · `exclusion_status` · `audit_observation_type` · `audit_observation_status` · `dimension` · `control_type` · `catalog_origin` · `loss_type` · `risk_scale` (valores `1`–`5`, de la matriz 5×5)
 

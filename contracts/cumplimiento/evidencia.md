@@ -79,7 +79,7 @@ Los requerimientos de un control, cada uno con sus entregas (la más reciente pr
 |---|---|---|
 | `id`, `code`, `sequence`, `description`, `dimension` | | `code` es `EV-<código del control>-NN` |
 | `test` | `{ id, code, display_name }` \| null | D88: si la evidencia es de **esa** prueba del control; `null` si es un documento que el catálogo **sugiere** sin decir a qué prueba sirve (no cuenta para ninguna). `display_name` es el nombre neutro (D70) |
-| `validity_within_period` | string | |
+| `validity_within_period` | string | La vigencia del requerimiento. Si es «dentro del período de evaluación», se guarda el marcador `within_evaluation_period` y llega **traducido** según `Accept-Language` (MD-211); un período concreto (`2026-Q4`, del clonado) llega tal cual |
 | `origin` | string | `catalog` si nació de una plantilla, `own` si la agregó la empresa |
 | `responsible` | `{ id, type, person_name }` \| null | Un **cargo de la organización** (`organization_responsibles`), no una persona con cuenta; `null` hasta que el administrador lo asigna |
 | `submissions[]` | objeto | Las entregas, la más reciente primero |

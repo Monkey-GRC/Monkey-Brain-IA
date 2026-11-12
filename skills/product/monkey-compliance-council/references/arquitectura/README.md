@@ -58,6 +58,7 @@ En los diagramas, «nivel 3 del C4» se titula **piezas internas** para no confu
 | **14** | [**Aislamiento multi-tenant**](aislamiento-tenant/README.md) | RLS, `withScope` y por qué el aislamiento está en la base | [c4](aislamiento-tenant/01-c4.md) · [flujos](aislamiento-tenant/03-flujos.md) · [mejoras](aislamiento-tenant/06-mejoras.md) |
 | **15** | [**Plataforma**](plataforma/README.md) | Sobre de respuesta, errores, i18n, límites, correo, archivos y cifrado | [c4](plataforma/01-c4.md) · [flujos](plataforma/03-flujos.md) · [mejoras](plataforma/06-mejoras.md) · [carga](plataforma/07-estudio.md) |
 | **16** | [**Notificaciones**](notificaciones/README.md) | **No existe todavía**: qué sale hoy y qué bloquea `P39` | — |
+| **17** | [**Integraciones**](integraciones/README.md) | Las plataformas de terceros: catálogo, lo conectado y la frontera del conector (D110) | — |
 
 Todos los módulos del producto están documentados. Lo que se cree de aquí en adelante nace con su directorio y su
 fila en este índice.

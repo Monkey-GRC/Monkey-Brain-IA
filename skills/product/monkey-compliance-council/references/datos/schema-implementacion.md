@@ -126,8 +126,8 @@ ACTIVATION_CODE_TTL_HOURS=168       # horas que sirve un código de activación 
 MAIL_PROVIDER="log"               # `log` (solo escribe el mensaje en el log; el servidor NO arranca así en producción) o el servicio real
 MAIL_API_KEY=""                   # credencial del servicio de correo; obligatoria si MAIL_PROVIDER no es `log`. Nunca en el repo
 MAIL_FROM=""                      # remitente, p. ej. «Monkey <no-reply@tu-dominio>»; el dominio debe estar verificado en el servicio
-PLATFORM_APP_URL="http://localhost:4201"  # dónde canjea la clave el cliente (Monkey Platform); sin barra final
-ADMIN_APP_URL=""                  # dónde abre el enlace de recuperar la contraseña el admin_monkey (Monkey Admin); sin valor usa PLATFORM_APP_URL (D101)
+PLATFORM_APP_URL="http://localhost:4200"  # dónde canjea la clave el cliente (Monkey Platform); sin barra final
+ADMIN_APP_URL="http://localhost:4201" # dónde abre el enlace de recuperar la contraseña el admin_monkey (Monkey Admin); sin valor usa PLATFORM_APP_URL (D101)
 
 # Componente 3 (D46)
 CREDENTIALS_ENCRYPTION_KEY="..."  # 32 bytes en base64 (AES-256-GCM): cifra las credenciales de los sistemas que
@@ -319,7 +319,9 @@ desechable, ver §13):
   construye la etapa `build` del Dockerfile (trae el CLI de Prisma y tsx; la imagen de runtime no), **respalda** la
   base con `pg_dump` y corre `prisma migrate deploy` en un contenedor desechable con el rol dueño. Ese rol llega por el
   secret `MIGRATE_DATABASE_URL` y **solo existe en ese paso**: el `.env` del backend sigue llevando únicamente
-  `APP_DATABASE_URL`. Si algo falla, el deploy se aborta y el backend anterior sigue corriendo.
+  `APP_DATABASE_URL`. Si algo falla, el deploy se aborta y el backend anterior sigue corriendo. Después de migrar carga lo que
+  falte de los catálogos de checks de nube (`cloud:load`) y de referencia (`reference:load` + `reference:verify`: conexiones,
+  integraciones…, MD-211); los dos son idempotentes y, si fallan, avisan sin abortar porque la migración ya quedó aplicada.
 - **`Dockerfile`:** `prisma.config.ts` exige `DATABASE_URL` al cargarse (con cualquier comando), así
   que el build define un placeholder antes de `prisma generate`. `SHADOW_DATABASE_URL` no hace falta.
 - **Staging aplica con `prisma migrate deploy`**, nunca `migrate dev`.

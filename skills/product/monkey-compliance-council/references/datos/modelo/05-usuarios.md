@@ -87,6 +87,7 @@ erDiagram
         string password_hash "bcrypt+salt"
         enum role "admin_monkey|admin_empresa|responsable|delegado|auditor"
         enum status "active|inactive|suspended|pending"
+        enum preferred_language "es|en, por defecto es: idioma de sus correos (D111)"
         boolean is_mfa_enabled
         datetime last_login_at "nullable"
         int failed_login_attempts "bloqueo: 5 intentos"
@@ -252,6 +253,8 @@ Lo que puede hacer cada rol. Parte de las acciones de la hoja «Modelo de Gesti�
 | Dar el veredicto de una prueba manual que no es documental | | ✓ | ✓ de sus controles | ✓ registra, no revisa | |
 | Ejecutar o relanzar una prueba | | ✓ | ✓ solo la suya | ✓ solo la suya | solo lectura |
 | Decidir una exclusión (proponer y aprobar en un acto) | | ✓ | | | |
+| Ver las integraciones de la empresa, su estado y su detalle (D110) | | ✓ | | | ✓ solo lectura, las conectadas |
+| Ver el catálogo de integraciones y conectar una (D110) | | ✓ | | | |
 | Vista técnica (códigos, requisitos, todas las pruebas y resultados por check; D81) | | ✓ | | | ✓ |
 | Porcentaje de cumplimiento | | ✓ el de la empresa | ✓ el de lo suyo | ✓ el de lo suyo | ✓ |
 | Módulo de auditoría y registrar observaciones (§7.6) | | | | | ✓ |

@@ -38,6 +38,7 @@ type: contract
 | `POST` | [`/v1/auth/refresh`](#post-v1authrefresh--renovar-la-sesión) | Cookie de refresh | Renovar la sesión |
 | `POST` | [`/v1/auth/logout`](#post-v1authlogout--cerrar-sesión) | Con sesión | Cerrar sesión |
 | `GET` | [`/v1/auth/me`](#get-v1authme--quién-soy) | Con sesión | Quién soy y dónde continuar |
+| `PATCH` | [`/v1/auth/me/language`](#patch-v1authmelanguage--mi-idioma) | Con sesión | Guardar el idioma de la persona (para sus correos) |
 
 ---
 
@@ -195,7 +196,27 @@ Sin cuerpo.
 | **Quién** | Con sesión |
 | **Éxito** | `200` con `user`, `company` y `onboarding` (el mismo objeto del login) |
 
-Es lo que el frontend llama al arrancar para saber si hay sesión y dónde continuar.
+Es lo que el frontend llama al arrancar para saber si hay sesión y dónde continuar. `user.preferred_language` (`es` · `en`) es
+el idioma guardado de la persona (MD-211, D111); el login, el canje, la activación y `mfa/*` devuelven el mismo `user`.
+
+### PATCH /v1/auth/me/language — Mi idioma
+
+| | |
+|---|---|
+| **Quién** | Con sesión (cualquier rol, también `admin_monkey`) |
+| **Request** | `{ "language": "es" \| "en" }` |
+| **Éxito** | `204` |
+| **Errores** | `401` · `422` (`enum.invalid`) |
+
+Guarda el idioma en el que la persona usa Monkey; con él salen **sus** correos (recuperar la contraseña y el aviso de
+contraseña cambiada). El frontend lo llama al cambiar de idioma, antes de recargar, y al iniciar sesión si el idioma de la
+app no coincide con `user.preferred_language` (manda el que la persona está viendo). Deja rastro (`user.language_changed`) en
+la misma transacción.
+
+**Correos y su idioma (D111):** recuperar la contraseña y el aviso de contraseña cambiada → el idioma guardado de la
+persona. La invitación y la clave de acceso de una empresa nueva → el idioma de quien las envía (su `Accept-Language`),
+porque quien las recibe aún no tiene cuenta; la cuenta invitada nace con ese idioma. Las fechas de los correos siguen ese
+idioma.
 
 ---
 

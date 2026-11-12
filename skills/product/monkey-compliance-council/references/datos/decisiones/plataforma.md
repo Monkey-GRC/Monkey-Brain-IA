@@ -66,3 +66,20 @@ Desarrollo las aplicó; **no son decisiones del comité de producto**.
 Desarrollo las aplicó; **no son decisiones del comité de producto**.
 
 **Fuente:** Rod, sesión de rediseño de los frontends, 2026-11-10 (las fases 1 y 2 las aprobó el 2026-11-08).
+
+## D111 · Cada persona guarda su idioma y los correos salen en él; cambiar de idioma recarga la app (2026-11-12)
+
+*Decisión:*
+
+1. **La cuenta guarda su idioma** (`users.preferred_language`: `es` · `en`, por defecto `es`). Lo fija el frontend con `PATCH /v1/auth/me/language` al cambiar de idioma y al iniciar sesión si no coincide con el que la persona ve.
+2. **Los correos salen en el idioma de quien los recibe cuando se sabe:** recuperar la contraseña y el aviso de contraseña cambiada, en el idioma guardado. La invitación y la clave de acceso de una empresa nueva, en el idioma de quien las envía (quien las recibe aún no tiene cuenta); la cuenta invitada nace con ese idioma.
+3. **Cambiar de idioma recarga la aplicación** con un estado de carga, en las dos apps: todo lo que traduce el backend (catálogos, descripciones, nombres) se vuelve a pedir en el idioma nuevo sin depender de que cada pantalla lo haga.
+4. Lo que el backend sirve desde la base en un solo idioma y no es catálogo del comité (categorías de conexión, descripciones de marcos, «Ninguna»/«Otra», el grupo «Responsables») se traduce al responder, por código. El catálogo del comité queda en DT-100 (MD-212).
+
+*Por qué:* Una auditoría de MD-211 encontró correos siempre en español, vistas que no cambiaban de idioma hasta recargar y datos de la base en un solo idioma. Recargar es la forma más simple de no dejar ninguna pantalla a medias.
+
+*Qué cambia:* Columna `users.preferred_language`; `PATCH /v1/auth/me/language` y `user.preferred_language` en las respuestas de sesión (`contracts/autenticacion.md`); plantillas de correo por idioma; `LanguageService` de las dos apps recarga al cambiar.
+
+La propuso desarrollo y la aprobó el responsable de producto; **no es una decisión del comité**.
+
+**Fuente:** Rod, sesión de MD-211, 2026-11-12.

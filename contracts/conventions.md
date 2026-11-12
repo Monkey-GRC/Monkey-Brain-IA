@@ -234,7 +234,7 @@ Reglas del cálculo en pantalla: se **trunca** a entero (nunca se redondea hacia
 - No existe un número de «cumplimiento de la empresa»: la unidad es el par servicio × marco.
 
 **Textos de pruebas.** Una respuesta al cliente nunca trae el texto de una prueba del comité ni nombra al proveedor del motor. Una prueba viaja como
-`display_name` (el nombre neutro que escribe Monkey, D70). Los códigos de prueba (`T-DOC-001`) solo van en `technical`.
+`display_name` (el nombre neutro que escribe Monkey, D70). Su valor sigue `Accept-Language`: en `en` sale `display_name_en` y, si la prueba no lo tiene, el español (MD-211; el resto del catálogo solo está en español, DT-100). Los códigos de prueba (`T-DOC-001`) solo van en `technical`.
 
 **Lo generado por IA** viaja marcado: `"is_ai_generated": true` y `"ai_confidence"`. Una sugerencia de la IA **nunca** decide nada.
 

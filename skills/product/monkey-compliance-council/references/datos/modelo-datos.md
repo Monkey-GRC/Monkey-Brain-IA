@@ -87,6 +87,7 @@ Los § **no se renumeran** (todo el cerebro los cita), pero el resto del cerebro
 | 5.2 (`audit_logs`) | [Trazabilidad](../arquitectura/trazabilidad/README.md) |
 | 5.4 | [Contexto organizacional](../arquitectura/onboarding/contexto-organizacional/README.md) (los cargos) |
 | 6.1 · 6.2 · 6.3 | [Contexto organizacional](../arquitectura/onboarding/contexto-organizacional/README.md) · [Contexto del servicio](../arquitectura/onboarding/contexto-servicio/README.md) · [Conexión de activos](../arquitectura/onboarding/conexion-activos/README.md) |
+| 6.3 (`integrations`) | [Integraciones](../arquitectura/integraciones/README.md) |
 | 7.1 a 7.3, 7.6 | [Cumplimiento](../arquitectura/cumplimiento/README.md) y sus componentes |
 | 7.2 | [Cumplimiento · Riesgos](../arquitectura/cumplimiento/riesgos/README.md) |
 | 7.4 | [Trazabilidad](../arquitectura/trazabilidad/README.md) (eventos) y [Cumplimiento](../arquitectura/cumplimiento/README.md) (evaluaciones) |
