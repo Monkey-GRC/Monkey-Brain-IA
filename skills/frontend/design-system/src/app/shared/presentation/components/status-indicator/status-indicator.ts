@@ -1,7 +1,8 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
+import { StatusTone } from '@shared/domain/models/status-tone.model';
 
-export type StatusTone = 'ok' | 'bad' | 'warn' | 'neutral';
+export type { StatusTone };
 
 /** The only map tone -> token. Colour never travels alone: the label is always next to the dot. */
 export const TONE_DOT: Record<StatusTone, string> = {

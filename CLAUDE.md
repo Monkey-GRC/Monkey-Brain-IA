@@ -64,6 +64,7 @@ Rutas relativas a `skills/product/monkey-compliance-council/references/`. El rut
 | Entender el recorrido de un cliente | `producto/flujo-end-to-end.md` |
 | Saber qué exige un marco | `arquitectura/catalogo-maestro/marcos/<marco>.md` (no inventes citas ni cifras) |
 | Integrar la sonda o el motor de nube | `arquitectura/control-tecnico/motores/README.md` |
+| Tocar integraciones (catálogo, GitHub, Jira, conectores) | `arquitectura/integraciones/README.md` y `contracts/integraciones.md` |
 | Revisar seguridad | `seguridad/README.md` y la skill `monkey-security-review` |
 | Depender de una pregunta abierta | `datos/pendientes/README.md` |
 | Usar un atajo o parche | regístralo con `monkey-registry` (`DT-n`); si cierras uno, bórralo |

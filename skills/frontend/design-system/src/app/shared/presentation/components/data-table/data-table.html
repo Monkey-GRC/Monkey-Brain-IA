@@ -26,7 +26,7 @@
       </td>
     }
     @if (hasChevron()) {
-      <td class="w-10 px-2 py-2 text-right text-ink-faint" [class]="s().cell + ' ' + s().chevron">
+      <td class="w-12 py-2 pl-2 pr-4 text-right text-ink-faint" [class]="s().cell + ' ' + s().chevron">
         <span class="material-symbols-rounded align-middle text-[20px]" data-row-chevron aria-hidden="true">chevron_right</span>
       </td>
     }
@@ -48,12 +48,12 @@
             </th>
           }
           @for (column of columns(); track column.key) {
-            <th scope="col" class="px-4 font-medium" [class]="(compact() ? 'py-2 ' : 'py-3 ') + align(column) + ' ' + (column.class ?? '')">
+            <th scope="col" class="font-medium" [class]="(compact() ? 'py-2 ' : 'py-3 ') + s().padX + ' ' + align(column) + ' ' + (column.class ?? '')">
               <span [class.sr-only]="column.srOnlyHeader">{{ column.headerKey | translate }}</span>
             </th>
           }
           @if (hasChevron()) {
-            <th scope="col" class="w-10 px-2 py-3"><span class="sr-only">{{ 'COMMON.TABLE.OPEN_DETAIL' | translate }}</span></th>
+            <th scope="col" class="w-12 py-3 pl-2 pr-4"><span class="sr-only">{{ 'COMMON.TABLE.OPEN_DETAIL' | translate }}</span></th>
           }
         </tr>
       </thead>
@@ -69,7 +69,7 @@
           @if (groupBy()) {
             @for (group of groups(); track group.key) {
               <tr data-group-header [attr.data-group]="group.key" class="border-b border-line bg-tint" [class]="s().group">
-                <th scope="rowgroup" [attr.colspan]="columnCount()" class="bg-tint px-4 py-2.5 text-left text-sm font-normal" [class]="s().cell">
+                <th scope="rowgroup" [attr.colspan]="columnCount()" class="bg-tint py-2.5 text-left text-sm font-normal" [class]="s().cell + ' ' + (stacked() ? 'px-4 ' : '') + s().padX">
                   <div class="flex items-center justify-between gap-3">
                     @if (collapsible()) {
                       <button

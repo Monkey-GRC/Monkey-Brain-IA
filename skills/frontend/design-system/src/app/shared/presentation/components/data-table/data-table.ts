@@ -18,6 +18,8 @@ interface StackClasses {
   row: string;
   cell: string;
   pad: string;
+  // Horizontal padding, the SAME for a column's header and its cells (so both start and end at the same x, whatever the alignment).
+  padX: string;
   select: string;
   chevron: string;
   group: string;
@@ -32,7 +34,8 @@ const STACK: Record<TableStack, StackClasses> = {
     body: 'block lg:table-row-group',
     row: 'block space-y-3 p-4 lg:table-row lg:space-y-0 lg:p-0',
     cell: 'block lg:table-cell',
-    pad: 'lg:h-14 lg:px-4 lg:py-2',
+    pad: 'lg:h-14 lg:py-2',
+    padX: 'lg:px-6',
     select: 'lg:w-12 lg:h-14 lg:px-4 lg:py-2',
     chevron: 'lg:h-14',
     group: 'block lg:table-row',
@@ -45,7 +48,8 @@ const STACK: Record<TableStack, StackClasses> = {
     body: 'block 2xl:table-row-group',
     row: 'block space-y-3 p-4 2xl:table-row 2xl:space-y-0 2xl:p-0',
     cell: 'block 2xl:table-cell',
-    pad: '2xl:h-14 2xl:px-4 2xl:py-2',
+    pad: '2xl:h-14 2xl:py-2',
+    padX: '2xl:px-6',
     select: '2xl:w-12 2xl:h-14 2xl:px-4 2xl:py-2',
     chevron: '2xl:h-14',
     group: 'block 2xl:table-row',
@@ -58,7 +62,8 @@ const STACK: Record<TableStack, StackClasses> = {
     body: '',
     row: '',
     cell: '',
-    pad: 'h-14 px-4 py-2',
+    pad: 'h-14 py-2',
+    padX: 'px-6',
     select: 'w-12 h-14 px-4 py-2',
     chevron: 'h-14',
     group: '',
@@ -68,7 +73,7 @@ const STACK: Record<TableStack, StackClasses> = {
 };
 
 // La compacta (panel lateral) es una lista corta: nunca se apila, solo quita el ancho mínimo.
-const COMPACT: StackClasses = { ...STACK.never, table: 'min-w-0', pad: 'px-3 py-2.5', select: 'w-12 px-4 py-2', chevron: '' };
+const COMPACT: StackClasses = { ...STACK.never, table: 'min-w-0', pad: 'py-2.5', padX: 'px-3', select: 'w-12 px-4 py-2', chevron: '' };
 
 export interface TableGroup<T> {
   key: string;
@@ -160,7 +165,7 @@ export class DataTable<T> {
   protected readonly openHintId = `data-table-open-${nextId++}`;
   protected readonly s = computed<StackClasses>(() => (this.compact() ? COMPACT : STACK[this.stackBelow()]));
   protected readonly stacked = computed(() => !this.compact() && this.stackBelow() !== 'never');
-  protected readonly cellPad = computed(() => this.s().pad);
+  protected readonly cellPad = computed(() => this.s().pad + ' ' + this.s().padX);
   protected readonly isFocusable = computed(() => this.clickable() && this.focusable());
   protected readonly hasChevron = computed(() => this.clickable() && this.chevron());
   protected readonly columnCount = computed(() => this.columns().length + (this.selectable() ? 1 : 0) + (this.hasChevron() ? 1 : 0));

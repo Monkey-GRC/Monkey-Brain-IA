@@ -6,8 +6,8 @@
     <label for="recovery-code" class="block text-sm font-medium text-ink-muted mb-2">{{ 'COMMON.SECOND_FACTOR.RECOVERY_LABEL' | translate }}</label>
     <input id="recovery-code" type="text" autocomplete="off" maxlength="24" [value]="recoveryCode()" [disabled]="disabled()" (input)="onRecoveryInput($event)"
       [placeholder]="'COMMON.SECOND_FACTOR.RECOVERY_PLACEHOLDER' | translate"
-      class="bg-canvas focus:bg-surface w-full px-3 h-12 text-base tracking-widest rounded-control border border-line focus:border-action/60 transition disabled:cursor-not-allowed disabled:bg-tint disabled:text-ink-faint"
-      [class.border-bad]="invalid()" />
+      [attr.aria-invalid]="invalid() ? 'true' : null"
+      class="mk-input !h-12 !text-base tracking-widest caret-ink aria-invalid:border-bad" />
   }
   @if (allowRecovery()) {
     <button type="button" (click)="toggle()" [disabled]="disabled()" class="mt-2 text-sm font-medium text-action enabled:hover:underline disabled:cursor-not-allowed disabled:text-ink-faint">

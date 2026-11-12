@@ -3,8 +3,18 @@
   <div class="flex flex-col items-center justify-between grow xl:flex-row xl:px-5">
     <div
       class="flex items-center justify-between w-full gap-2 px-3 py-3 border-b border-line sm:gap-4 xl:justify-normal xl:border-b-0 xl:px-0 xl:py-3">
+      @let pinned = (sidebarService.isExpanded$ | async) === true;
+      <!-- Wide screens: the pin fixes the menu open (pressed, filled, in the action colour) or lets it fold to icons (outline, muted). It is the same toggle as before. -->
+      <button type="button" data-sidebar-pin
+        class="hidden items-center justify-center w-11 h-11 rounded-control border border-line hover:bg-canvas xl:flex"
+        [attr.aria-pressed]="pinned" [attr.aria-label]="(pinned ? 'SHELL.NAV.UNPIN' : 'SHELL.NAV.PIN') | translate"
+        (click)="handleToggle()">
+        <span class="material-symbols-rounded text-[22px]" aria-hidden="true" [ngClass]="pinned ? 'text-action' : 'text-ink-muted'"
+          [style.font-variation-settings]="pinned ? '\'FILL\' 1' : '\'FILL\' 0'">push_pin</span>
+      </button>
+      <!-- Phones and tablets: the menu button opens and closes the drawer. -->
       <button
-        class="items-center justify-center w-10 h-10 text-ink-muted border-line rounded-control flex lg:h-11 lg:w-11 xl:border"
+        class="items-center justify-center w-10 h-10 text-ink-muted border-line rounded-control flex lg:h-11 lg:w-11 xl:hidden"
         [ngClass]="{
           'bg-canvas': isMobileOpen$ | async
         }"

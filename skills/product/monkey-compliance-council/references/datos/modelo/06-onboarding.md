@@ -264,6 +264,16 @@ erDiagram
         enum availability "available|coming_soon (el de los marcos, D50)"
         int sort_order
     }
+    integrations {
+        uuid id PK
+        string code "unico: aws, github, jira (D110)"
+        enum purpose "measurement|workflow"
+        uuid capability_platform_id FK "nulo si aun no tiene flujo de conexion; unico"
+        string name "solo sin plataforma; con plataforma, el de ella"
+        string logo_key "solo sin plataforma"
+        enum availability "solo sin plataforma: available|coming_soon"
+        int sort_order
+    }
     platform_connection_methods {
         uuid id PK
         uuid platform_id FK
@@ -299,6 +309,7 @@ erDiagram
     capability_platforms ||--o{ platform_connection_methods : "se conecta por"
     capability_platforms ||--o{ platform_regions : "declara"
     capability_platforms ||--o{ assets : "se conecta como"
+    capability_platforms |o--o| integrations : "se presenta como"
 ```
 
 **`assets` es lo que Monkey encuentra al conectar.** El cliente no declara cuántos activos tiene: los registra conectando

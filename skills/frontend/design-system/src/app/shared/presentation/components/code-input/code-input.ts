@@ -16,8 +16,8 @@ import { ChangeDetectionStrategy, Component, ElementRef, afterNextRender, input,
       [disabled]="disabled()"
       [value]="value()"
       (input)="onInput($event)"
-      class="w-full h-14 text-center text-2xl md:text-3xl font-semibold tracking-[0.5em] pl-[0.5em] rounded-control border bg-surface focus:border-action focus:outline-none focus:ring-2 focus:ring-action/20 transition disabled:cursor-not-allowed disabled:bg-tint disabled:text-ink-faint"
-      [class]="invalid() ? 'border-bad' : 'border-gray-300 dark:border-gray-700'"
+      [attr.aria-invalid]="invalid() ? 'true' : null"
+      class="mk-input !h-14 !pl-[0.5em] !text-2xl text-center font-semibold tracking-[0.5em] caret-ink md:!text-3xl aria-invalid:border-bad"
     />
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

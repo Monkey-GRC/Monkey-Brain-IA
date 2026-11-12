@@ -2,17 +2,10 @@
   <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-ink-muted">
     <span data-showing>{{ 'COMMON.TABLE.SHOWING' | translate: { from: range().from, to: range().to, total: page().total } }}</span>
     @if (pageSizes().length > 0) {
-      <label class="flex items-center gap-2">
+      <div class="flex items-center gap-2">
         <span>{{ 'COMMON.TABLE.ROWS_PER_PAGE' | translate }}</span>
-        <select
-          class="h-9 rounded-control border border-line bg-surface px-2 text-sm text-ink focus:border-action focus:outline-none focus:ring-2 focus:ring-action/20"
-          (change)="resize($event)"
-        >
-          @for (size of pageSizes(); track size) {
-            <option [value]="size" [selected]="size === page().pageSize">{{ size }}</option>
-          }
-        </select>
-      </label>
+        <app-select class="w-20" size="sm" data-page-size [options]="sizeOptions()" [value]="'' + page().pageSize" ariaLabelKey="COMMON.TABLE.ROWS_PER_PAGE" (valueChange)="resize($event)" />
+      </div>
     }
   </div>
 

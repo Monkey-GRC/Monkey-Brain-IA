@@ -76,12 +76,14 @@ describe('Pagination', () => {
 
   it('emits the new page size, and hides the selector when there are no sizes', () => {
     setup(1);
-    const select = el().querySelector('select') as HTMLSelectElement;
-    select.value = '25';
-    select.dispatchEvent(new Event('change'));
+    expect(el().querySelector<HTMLElement>('app-select [data-select-trigger]')!.textContent).toContain('10');
+    el().querySelector<HTMLElement>('app-select [data-select-trigger]')!.click();
+    fixture.detectChanges();
+    document.body.querySelector<HTMLElement>('[data-select-option][data-value="25"]')!.click();
+    fixture.detectChanges();
     expect(sizes).toEqual([25]);
     fixture.componentRef.setInput('pageSizes', []);
     fixture.detectChanges();
-    expect(el().querySelector('select')).toBeNull();
+    expect(el().querySelector('app-select')).toBeNull();
   });
 });

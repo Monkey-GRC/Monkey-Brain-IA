@@ -168,6 +168,7 @@ erDiagram
         enum dimension "una sola"
         string name "nombre del comite"
         string display_name "nombre neutro que ve el cliente; nunca nombra al proveedor (D70)"
+        string display_name_en "el mismo nombre en inglés; nulo si falta (MD-211, DT-100)"
         text display_description "descripcion corta que ve el cliente: el objetivo del comite, reescrito si nombra al proveedor (D82)"
         text objective
         string type "texto libre del comite"

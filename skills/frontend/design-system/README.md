@@ -35,6 +35,7 @@ Los textos siguen `monkey-ui-copy`; este documento solo cubre la capa visual.
 |---|---|
 | Píldoras o chips decorativos (servicio, norma, país, rol) | Texto plano; o `tag` neutro (gris, sin icono) solo si es un código que se filtra |
 | Estado como pastilla rellena | `status-indicator`: punto de color + texto |
+| `<select>` nativo, un `<input type="search">` con lupa a mano | `app-select` (disparador + panel propio, simple o `multiple`, formularios reactivos) y `app-search-field` (lupa **a la derecha**); `table-filter` y `table-toolbar` ya los usan; contrato en `components.md` |
 | Tabla con markup propio (`<table>`, una card con filas, `divide-y`), también la lista corta de un panel lateral | `data-table` y sus celdas (`person-cell`, `status-indicator`, `tag`) con `table-toolbar` y `table-filter`; contrato en `components.md`, «Tabla única» |
 | Borde lateral o superior de color en una tarjeta; barra de color junto a un título | Línea fina neutra; el estado va en `status-indicator`. (El indicador lateral del ítem activo del menú sí se permite.) |
 | Banner con degradado o círculos decorativos | `page-header` sin fondo. **Única excepción** (decisión de Rod): el banner `app-compliance-banner` del shell de Cumplimiento (ver abajo); ninguna otra vista lo usa |

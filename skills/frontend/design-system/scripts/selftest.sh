@@ -28,7 +28,7 @@ grep -q canon "$t/m/Frontend/src/x.txt" || fail "--force did not write"
 printf 'a\n%s\n%s\n%s\nz\n' "$S" "$E" "$E" > "$t/m/Frontend-Platform/src/styles.css"
 out=$(run --only platform) && fail "duplicate marker accepted"
 echo "$out" | grep -q 'expected exactly 1' || fail "no marker error"
-# (4) check rules: disabled opacity, opacity on a control, hand-made danger button, missing i18n key, es/en out of step
+# (4) check rules: disabled opacity, opacity on a control, hand-made danger button, native select, missing i18n key, es/en out of step
 c="$t/chk"; mkdir -p "$c/canon" "$c/m"
 cp "$here/../src/styles.css" "$c/canon/styles.css"
 for a in Frontend Frontend-Platform; do
@@ -39,6 +39,8 @@ cat > "$c/m/Frontend-Platform/src/app/a.html" <<'H'
 <button class="text-action disabled:opacity-50">x</button>
 <button class="opacity-60">y</button>
 <button class="mk-btn bg-bad! hover:bg-bad/90!">{{ 'NO.SUCH_KEY' | translate }}</button>
+<select class="mk-input"><option>a</option></select>
+<input type="text" class="border bg-surface px-3" />
 <button class="enabled:hover:underline disabled:text-ink-faint">{{ 'OK.KEY' | translate }}</button>
 H
 echo '{"OK":{"KEY":"a","ONLY_ES":"b"}}' > "$c/m/Frontend-Platform/public/i18n/es/a.json"
@@ -48,6 +50,8 @@ if out=$(chk --verbose); then fail "strict check accepted the new anti-patterns"
 echo "$out" | grep -Eq 'disabled:opacity-\*[[:space:]]+0[[:space:]]+1' || fail "disabled:opacity-* not counted"
 echo "$out" | grep -Eq 'opacity-NN on a control[[:space:]]+0[[:space:]]+2' || fail "opacity-NN not counted"
 echo "$out" | grep -Eq 'danger button by hand[[:space:]]+0[[:space:]]+1' || fail "danger by hand not counted"
+echo "$out" | grep -Eq 'native <select>[[:space:]]+0[[:space:]]+1' || fail "native select not counted"
+echo "$out" | grep -Eq 'input without text colour[[:space:]]+0[[:space:]]+1' || fail "input without text colour not counted"
 echo "$out" | grep -q 'MISSING NO.SUCH_KEY' || fail "missing i18n key not reported"
 echo "$out" | grep -q 'ONLY-ES OK.ONLY_ES' || fail "es/en pair out of step not reported"
 echo "$out" | grep -q 'MISSING OK.KEY' && fail "an existing key was reported"

@@ -1,4 +1,4 @@
-import { canReachPath, filterNavByRole, groupDomId, groupHasActiveRoute, isGroup, NavEntryLike, openActiveGroups, toggleGroup } from './sidebar-groups';
+import { canReachPath, filterNavByRole, groupDomId, groupHasActiveRoute, isGroup, isRenderable, navSections, NavEntryLike, openActiveGroups, toggleGroup } from './sidebar-groups';
 
 const ITEMS: NavEntryLike[] = [
   { name: 'home', path: '/', roles: ['admin_empresa', 'auditor'] },
@@ -120,5 +120,24 @@ describe('sidebar groups', () => {
       expect(canReachPath(ITEMS, 'delegado', '/equipo')).toBeFalse();
       expect(canReachPath(ITEMS, undefined, '/equipo')).toBeFalse();
     });
+  });
+});
+
+describe('navSections', () => {
+  const at = (name: string, section: string, extra: Partial<NavEntryLike> = {}) => ({ name, section, ...extra });
+
+  it('lists the sections in order of first appearance', () => {
+    const items = [at('a', 'Start', { path: '/' }), at('b', 'Work', { path: '/b' }), at('c', 'Start', { path: '/c' }), at('d', 'Connect', { path: '/d' })];
+    expect(navSections(items)).toEqual(['Start', 'Work', 'Connect']);
+  });
+
+  it('skips a section whose entries draw nothing (a parent with no children and no path), so no divider is left alone', () => {
+    const items = [at('a', 'Start', { path: '/' }), at('ghost', 'Work', { subItems: [] }), at('d', 'Connect', { path: '/d' })];
+    expect(isRenderable(items[1])).toBeFalse();
+    expect(navSections(items)).toEqual(['Start', 'Connect']);
+  });
+
+  it('counts a group with children as drawable', () => {
+    expect(navSections([at('g', 'Work', { subItems: [{ path: '/x' }] })])).toEqual(['Work']);
   });
 });

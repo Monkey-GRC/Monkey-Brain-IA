@@ -8,9 +8,19 @@ Parches vigentes de [Catálogo maestro](../arquitectura/catalogo-maestro/README.
 
 🟡 Mejora
 
-- **Qué está parchado:** Los 16 iconos de `Frontend-Platform/public/providers/` (cada uno con su variante `-dark.svg`) salen de colecciones de iconos de marca (Simple Icons, Devicon y Logos), no de los kits de cada proveedor. Varios son una **sustitución**: Microsoft 365 usa el logo de Microsoft, Google Workspace la «G» de Google, HP-UX el logo de HP, macOS el de Apple y Solaris un icono genérico de Unix. Oracle, AIX y SQL Server no se ven tan nítidos como los demás
+- **Qué está parchado:** Los 18 iconos de `Frontend-Platform/public/providers/` (cada uno con su variante `-dark.svg`) salen de colecciones de iconos de marca (Simple Icons, Devicon y Logos), no de los kits de cada proveedor. Varios son una **sustitución**: Microsoft 365 usa el logo de Microsoft, Google Workspace la «G» de Google, HP-UX el logo de HP, macOS el de Apple y Solaris un icono genérico de Unix. Oracle, AIX y SQL Server no se ven tan nítidos como los demás
 - **Por qué:** Cada kit es un portal distinto y los kits traen logos de distinta forma y peso; una fuente de iconos cuadrados permitió que todos se vean del mismo tamaño en los dos temas
 - **Qué lo cierra:** Resolver el uso de marcas (`P21`), reemplazar cada icono por el del kit oficial de su plataforma (con su versión para tema oscuro) y revisar que sigan viéndose del mismo tamaño
+
+## Idioma del catálogo
+
+### DT-100 · El catálogo del comité solo está en español
+
+🟠 Importante
+
+- **Qué está parchado:** Controles, requisitos, puntos de enfoque, riesgos, causas y evidencias requeridas tienen un solo texto, en español: con la aplicación en inglés, Cumplimiento los muestra en español. Solo las 11 pruebas de nube tienen nombre en inglés (`catalog.tests.display_name_en`, MD-211), escrito por desarrollo y sin revisar (como DT-21).
+- **Por qué:** El Excel del comité trae un solo idioma y el modelo guarda un texto por fila; traducir todo el catálogo excedía MD-211.
+- **Qué lo cierra:** MD-212: el contenido del catálogo en inglés con su procedencia (como D90 con los checks), servido según `Accept-Language`, y la revisión del inglés por el comité (DT-21).
 
 ### DT-69 · Las dimensiones de cada control no coinciden con las que define el comité
 

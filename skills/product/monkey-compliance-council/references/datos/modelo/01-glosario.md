@@ -60,6 +60,7 @@ que les corresponde.
 |---|---|---|
 | **Sonda / capacidad automática** | `automated_capabilities` | El mecanismo que evalúa sin intervención humana. Hay dos motores (D100): la sonda en servidores, BD y endpoints, y el motor de nube en AWS, Azure y GCP. **Nunca se nombra al proveedor frente al cliente** |
 | **Plataforma de conexión** | `capability_platforms` | Lo que el cliente elige al conectar (D67): un proveedor de nube (AWS, Azure…), un sistema operativo (Linux, Windows…) o un motor de base de datos (PostgreSQL…). Tiene disponibilidad y logo; no es el hosting |
+| **Integración** | `integrations` | Una plataforma de un tercero con la que Monkey trabaja, de medición (`measurement`) o de gestión (`workflow`). Si tiene plataforma de conexión, toma de ella nombre, logo y disponibilidad. Lo que el cliente conectó **se deriva** de sus conexiones, no se guarda (D110) |
 | **Ejecución** | `executions` | Una corrida de la sonda sobre un activo. **No es una Evaluación** |
 | **Política SCA** | `sca_policies` | El benchmark que corre la sonda (`cis_alma_linux_8`), con su archivo YAML y su número de checks |
 | **Aprovisionamiento** | `asset_provisionings` | El estado de la conexión de un activo: conectado, validado, activo, programado |

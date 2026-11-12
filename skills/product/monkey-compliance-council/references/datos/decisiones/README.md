@@ -52,8 +52,9 @@ equivocada, se corrige con el comité — pero no se re-abre el debate en cada s
 | [`onboarding/`](onboarding/README.md) | 15 | [Onboarding](../../arquitectura/onboarding/README.md): índice + 3 componentes |
 | [`control-tecnico.md`](control-tecnico.md) | 10 | [Control técnico](../../arquitectura/control-tecnico/README.md) |
 | [`cumplimiento/`](cumplimiento/README.md) | 15 | [Cumplimiento](../../arquitectura/cumplimiento/README.md): índice + 6 componentes |
+| [`integraciones.md`](integraciones.md) | 1 | [Integraciones](../../arquitectura/integraciones/README.md) |
 | [`trazabilidad.md`](trazabilidad.md) | 4 | [Trazabilidad](../../arquitectura/trazabilidad/README.md) |
-| [`plataforma.md`](plataforma.md) | 5 | [Plataforma](../../arquitectura/plataforma/README.md) |
+| [`plataforma.md`](plataforma.md) | 6 | [Plataforma](../../arquitectura/plataforma/README.md) |
 | [`entrega.md`](entrega.md) | 4 | **ninguno**: CI, despliegue, entornos y pool |
 | [`historico-a-d.md`](historico-a-d.md) | 23 | **ninguno**: los bloques A–D de septiembre de 2026 |
 
@@ -188,3 +189,5 @@ quedan aquí:
 | D107 | Navegación por grupos del menú lateral *(la aplicó desarrollo; Rod, no el comité)* | [plataforma](plataforma.md) |
 | D108 | El banner con degradado solo se permite en el encabezado del shell de Cumplimiento *(la aplicó desarrollo; Rod, no el comité)* | [plataforma](plataforma.md) |
 | D109 | Una sola tabla para todo el producto *(la aplicó desarrollo; Rod, no el comité)* | [plataforma](plataforma.md) |
+| D110 | Integraciones es un módulo propio, con su sección en el menú y una interfaz única de conector *(la aprobó Rod, no el comité)* | [integraciones](integraciones.md) |
+| D111 | Cada persona guarda su idioma y los correos salen en él; cambiar de idioma recarga la app *(la aprobó Rod, no el comité)* | [plataforma](plataforma.md) |
