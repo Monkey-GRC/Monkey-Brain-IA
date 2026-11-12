@@ -173,9 +173,11 @@ Con sesión abierta: el mismo objeto `user` + `company` del canje. Con el segund
 |---|---|
 | **Quién** | Cookie de refresh |
 | **Éxito** | `200` con `data: null` y cookies renovadas |
-| **Errores** | `401 SESSION_EXPIRED` (pasado el máximo de 8 h: obliga a iniciar sesión de nuevo) |
+| **Errores** | `401 SESSION_EXPIRED` (sesión vencida: 8 h, 30 min sin actividad o cerrada; o un token que no corresponde a ninguna sesión) |
 
 Sin cuerpo.
+
+**Cookies ante un 401.** Solo se limpian cuando la sesión presentada **existe y está muerta** (o la cuenta está inactiva). Si el token simplemente **no corresponde a ninguna sesión** (lo normal: otra pestaña del mismo navegador renovó un instante antes y el token ya rotó), se responde 401 **sin tocar las cookies**, para no borrar las recién renovadas. Por eso el frontend, tras intentar el refresh, **reintenta la petición original una vez** pase lo que pase y solo manda al inicio de sesión si el reintento vuelve a dar 401.
 
 ### POST /v1/auth/logout — Cerrar sesión
 
@@ -280,7 +282,7 @@ Una cuenta `pending` no tiene contraseña que recuperar: se activa con su códig
 | HTTP | `error.code` | Cuándo |
 |---|---|---|
 | 401 | `INVALID_CREDENTIALS` | Email o contraseña incorrectos. **Nunca distingue cuál de los dos**. También una cuenta `pending` que intenta iniciar sesión |
-| 401 | `SESSION_EXPIRED` | Refresh pasado el máximo de 8 h |
+| 401 | `SESSION_EXPIRED` | Refresh con la sesión vencida (8 h o 30 min sin actividad) o con un token que ya no corresponde a ninguna sesión (rotado) |
 | 403 | `ACCOUNT_LOCKED` | 5 intentos fallidos; incluye `retry_after_seconds` |
 | 403 | `ACCOUNT_INACTIVE` | El usuario está `inactive` o `suspended` |
 | 404 | `ACCESS_KEY_INVALID` | La clave no existe. **Misma respuesta que si expiró**, para no revelar si existe |
@@ -329,14 +331,14 @@ Implementado en `Backend/src/features/auth` (feature de referencia del backend),
 | `POST /v1/auth/redeem/lookup` | ✅ Paso 1 de la activación (D51): código → razón social y correo fijados por Monkey Admin. Sin gastar la clave; límite de 10 fallos / 15 min por dirección (DT-37) |
 | `POST /v1/auth/redeem` | ✅ Solo `code`, `email` y `password` (D51: sin nombre ni apellido). Forma de **código** (supuesto de P2a). Devuelve `user`, `company` y `onboarding` (`next_step: organizational_context`) y abre sesión |
 | `POST /v1/auth/login` | ✅ Por email; bloqueo a los 5 intentos por 15 min con `retry_after_seconds` |
-| `POST /v1/auth/refresh` | ✅ Rota el refresh token en cada uso (el anterior deja de servir) |
+| `POST /v1/auth/refresh` | ✅ Rota el refresh token en cada uso (el anterior deja de servir); un token desconocido responde 401 sin limpiar cookies (carrera entre pestañas) |
 | `POST /v1/auth/logout` | ✅ `204`, idempotente |
 | `POST /v1/auth/activate/lookup` · `POST /v1/auth/activate` | ✅ (D95, D96) Código de activación de un solo uso para las cuentas que crea el administrador de la empresa; mismo freno de intentos que las claves de acceso. **El alta y el envío del código por correo están construidos (MD-188, MD-190)**: ver `gestion-usuarios.md` |
 | `GET /v1/auth/me` | ✅ `user` + `company` + `onboarding` (solo para `admin_empresa`; `login` y `redeem` lo traen igual). Desde D89 Platform solo mira si `organizational_context` está completo: declarar servicios y conectar activos ya no son pasos del onboarding, aunque la API los siga listando. `next_step` es el primer paso sin hacer y `null` si ya terminó los tres; `completed_steps` lista los hechos. **Hoy solo se deriva el Componente 1** (existe su fila en `organizations`): al completarlo, `next_step` pasa a `service_context`. Los pasos `service_context` y `technical_control` se suman a `completed_steps` cuando esos componentes existan (MD-78, MD-85) |
 
 Decisiones de implementación, dentro de lo que el contrato ya decía:
 
-- **Sesión (§5.3):** access token JWT HS256 de 15 min en la cookie `mnk_access`; refresh token opaco en `mnk_refresh`, que solo viaja a los endpoints de auth. La sesión se cierra a los **30 min sin actividad** (`sessions.last_activity_at`, que el guard actualiza como máximo una vez por minuto) y a las **8 h** de creada (`sessions.expires_at`). Tiempos en el `.env`.
+- **Sesión (§5.3):** access token JWT HS256 de 15 min en la cookie `mnk_access`; refresh token opaco en `mnk_refresh`, que solo viaja a los endpoints de auth. **Un juego de cookies por aplicación:** cada frontend manda en toda petición el header `X-Monkey-Client` (`platform` o `admin`); con `admin` las cookies se llaman `mnka_access`, `mnka_refresh` y `mnka_mfa`, y sin header o con `platform`, `mnk_*`. Así Monkey Admin y Platform conviven con sesión en el mismo navegador contra el mismo host de API. El header solo elige qué cookie se lee y se escribe: no autentica nada, la sesión y el rol se validan igual. La sesión se cierra a los **30 min sin actividad** (`sessions.last_activity_at`, que el guard actualiza como máximo una vez por minuto) y a las **8 h** de creada (`sessions.expires_at`). Tiempos en el `.env`.
 - **Autorización en cada request:** un guard global verifica contra la base, en cada petición, que la sesión siga viva y el usuario siga `active`; el rol sale de la base, no del token. Sin la caché de 5 min de §5.3 por ahora: la base se consulta siempre.
 - **Refresh tokens y claves de acceso** se guardan como HMAC-SHA256 con `TOKEN_HASH_PEPPER`.
 - **Canje (D43):** solo con el `admin_email` de la empresa; la clave se acepta tal como el cliente la escriba (sin guiones, en minúsculas); marcarla como usada y crear el usuario es una sola transacción condicional. Vencida → `409 ACCESS_KEY_EXPIRED`; revocada, inexistente o de empresa suspendida → `404 ACCESS_KEY_INVALID`.

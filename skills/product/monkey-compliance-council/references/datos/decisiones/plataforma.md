@@ -29,7 +29,7 @@ Desarrollo las aplicó; **no son decisiones del comité de producto**.
 
 ## D107 · Navegación por grupos del menú lateral (2026-11-10)
 
-*Decisión:* Los grupos del menú (Mi empresa, Cumplimiento, Equipo) solo despliegan y no navegan. Cumplimiento es un grupo con seis secciones (Resumen, Riesgos, Causas, Controles, Evidencias, Exclusiones) en rutas `/cumplimiento/<sección>` sin id de servicio; el servicio activo se elige en el selector del encabezado y se recuerda entre secciones por usuario (las rutas viejas `/services/:id/cumplimiento/...` redirigen). Equipo tiene dos subítems, `/equipo/personas` y `/equipo/grupos`; «Cargos responsables» cuelga de Equipo para `admin_empresa`.
+*Decisión:* Los grupos del menú (Mi empresa, Cumplimiento, Equipo) solo despliegan y no navegan. Cumplimiento es un grupo con seis secciones (Resumen, Riesgos, Causas, Controles, Evidencias, Exclusiones) en rutas `/cumplimiento/<sección>` sin id de servicio; el servicio activo se elige en el selector del encabezado y se recuerda entre secciones por usuario (las rutas viejas `/services/:id/cumplimiento/...` redirigen). Equipo tiene tres subítems, `/equipo/personas`, `/equipo/grupos` y `/equipo/organigrama`: Grupos (la página del rediseño) gestiona los grupos como entidades y el Organigrama (MD-197, llegó por `develop`) muestra quién depende de quién y desde ahí se crea o renombra el equipo de un responsable y se mueven delegados; «Cargos responsables» cuelga de Equipo para `admin_empresa`.
 
 *Por qué:* Un menú que no cambie según el servicio y que agrupe por tarea, no por pantalla.
 
@@ -37,7 +37,7 @@ Desarrollo las aplicó; **no son decisiones del comité de producto**.
 
 Desarrollo las aplicó; **no son decisiones del comité de producto**.
 
-**Fuente:** Rod, sesión de rediseño de los frontends, 2026-11-10 (las fases 1 y 2 las aprobó el 2026-11-08).
+**Fuente:** Rod, sesión de rediseño de los frontends, 2026-11-10 (las fases 1 y 2 las aprobó el 2026-11-08); los tres subítems de Equipo, Rod, 2026-11-11, al integrar `develop` (que traía el organigrama) en el rediseño.
 
 ---
 

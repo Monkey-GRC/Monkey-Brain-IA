@@ -12,7 +12,7 @@ type: contract
 | **Estado** | **ACORDADO**, reescrito por D96 (2026-10-27) y ajustado por D102 (2026-11-03: quién sube, quién revisa y cómo se combinan las revisiones; **por construir en el sprint 3, MD-194**). Construido: listar, subir, versiones y descargar (MD-126), la revisión del `admin_empresa` (MD-127, 2026-10-28) y agregar una evidencia propia (D88) |
 | **App** | Monkey Platform |
 | **Entidades** | `evidence_requirements`, `evidence_submissions`, `evidence_reviews` (`modelo-datos.md` §7.3) |
-| **Tickets** | MD-126, MD-127 · sprint 3: MD-194 (revisión en dos niveles) |
+| **Tickets** | MD-126, MD-127 · sprint 3: MD-194 (revisión en dos niveles) · MD-208 (la evidencia de un servicio en una petición) |
 | **Contexto común** | [`README.md`](README.md) · [`conventions.md`](../conventions.md) (sección «Cumplimiento») · [`enums.md`](../enums.md) |
 
 **Qué es.** Cada control exige evidencias (`evidence_requirements`, que nacen de las plantillas del catálogo al clonar). Quien responde sube un archivo (`evidence_submissions`): lo hace el **ejecutor** del control (un `delegado`), su **dueño** (un `responsable`) o el `admin_empresa` (D102), y lo **revisan** el `responsable` dueño —si no fue quien subió— y el `admin_empresa`.
@@ -48,6 +48,7 @@ La revisión (los seis atributos y `review`) está en [`PUT …/review`](#put-v1
 | Método | Ruta | Para qué |
 |---|---|---|
 | `GET` | [`/v1/controls/{id}/evidence`](#get-v1controlsidevidence--la-evidencia-de-un-control) | Los requerimientos de un control con sus entregas |
+| `GET` | [`/v1/services/{service_id}/evidence`](#get-v1servicesservice_idevidence--la-evidencia-de-un-servicio) | Los requerimientos de **todos** los controles visibles del servicio, en una petición (MD-208) |
 | `POST` | [`/v1/evidence-requirements/{id}/submissions`](#post-v1evidence-requirementsidsubmissions--subir-un-archivo) | Subir un archivo a un requerimiento |
 | `GET` | `/v1/evidence-requirements/{id}/submissions` | Todas las versiones (paginada, la más reciente primero) |
 | `GET` | [`/v1/evidence-submissions/{id}/download`](#get-v1evidence-submissionsiddownload--ver-o-descargar-un-archivo) | Enlace temporal para ver o descargar |
@@ -132,6 +133,56 @@ Los requerimientos de un control, cada uno con sus entregas (la más reciente pr
 #### Reglas
 - **`evidence_state`** sale de **combinar las revisiones del `responsable` y del `admin_empresa`** (D102; la que consume el motor): algún rechazo → rechazada; sin rechazos y con al menos una aprobación → validada; para todos los roles es la misma. Sin ninguna revisión humana es `pending`, o `in_review` si la IA ya la sugirió.
 - **`?view=technical`** agrega a cada entrega `technical: { "review": "ai_prevalidated", "attributes": { "type_ok": true, "period_ok": true, "valid_ok": null, "approved_ok": true, "signed_ok": null, "content_ok": true }, "note": null, "reviewed_by": null, "reviewed_at": null }`. Trae la revisión de cada rol (`reviews[]`, con `reviewer_role`), y la ven `admin_empresa` y `auditor` (el `responsable` y el `delegado` ven el estado y la nota de rechazo, no los atributos). Ya no se esconde la revisión de un rol al otro: SEG-61 se retira (D96).
+
+---
+
+### GET /v1/services/{service_id}/evidence — La evidencia de un servicio
+
+| | |
+|---|---|
+| **Quién** | Mismas reglas de acceso que `GET /v1/services/{service_id}/controls`: `admin_empresa` y `auditor` ven todos los controles; `responsable` y `delegado`, solo los suyos (D102) |
+| **Éxito** | `200`, **sin paginar**: un servicio trae unas 80 acciones y cada una pocas evidencias requeridas. Responde con un número fijo de consultas, no una por control |
+| **Errores** | `403` (`view=technical` sin ser `admin_empresa` o `auditor`) · `404` (el servicio no existe para esta empresa) |
+
+**Para qué (MD-208).** La pestaña Evidencias reúne la evidencia de todo el servicio. Pedirla control a control hacía unas 80 peticiones y agotaba el límite de 100 por minuto por usuario (SEG-19). Este endpoint la devuelve en una. El panel de un control sigue usando `GET /v1/controls/{id}/evidence`.
+
+#### Parámetros (query)
+| Campo | Tipo | Obligatorio | Regla |
+|---|---|---|---|
+| `view` | string | no | Igual que en `GET /v1/controls/{id}/evidence` |
+
+#### Response `200`
+Cada ítem es **el mismo requerimiento** de `GET /v1/controls/{id}/evidence` (mismos campos, mismas entregas, el mismo bloque `technical` con `?view=technical`), con un campo más:
+
+| Campo | Tipo | Qué es |
+|---|---|---|
+| `control_id` | uuid | El control al que pertenece el requerimiento |
+
+**Siempre devuelve, para cada control, exactamente lo mismo que `GET /v1/controls/{id}/evidence`.** Hoy eso incluye el filtro por dimensión del `responsable` (D96, SEG-66). Cuando MD-193 lo cambie al alcance por control de D102, cambian los dos endpoints juntos. Solo entran los controles vigentes (los dados de baja se omiten, como en el listado de controles). Orden: por control, en el orden por defecto del listado de controles (`sort=code`), y dentro de cada control por `sequence`. Un control sin requerimientos no aparece.
+
+```json
+{
+  "statusCode": 200,
+  "message": "evidence.service_list",
+  "data": {
+    "items": [
+      {
+        "control_id": "3f1c…",
+        "id": "e07a…",
+        "code": "EV-IAC12-01",
+        "sequence": 1,
+        "description": "Política de control de accesos aprobada",
+        "dimension": "policy",
+        "test": null,
+        "validity_within_period": "Dentro del período de evaluación",
+        "origin": "catalog",
+        "responsible": null,
+        "submissions": []
+      }
+    ]
+  }
+}
+```
 
 ---
 
@@ -330,7 +381,7 @@ Los seis atributos de una evidencia y la revisión por una persona (RN-01 a RN-0
 | 422 | `VALIDATION_FAILED` | Campos: `enum.invalid`, `note.required`, `dimension.not_in_control`, `test.not_documentary`, `test.not_in_control`, `disposition.not_supported` (`inline` con un tipo que no se muestra en pantalla) |
 | 503 | `STORAGE_UNAVAILABLE` | El almacenamiento privado no está configurado |
 
-**Claves i18n:** `evidence.list`, `evidence.test_list`, `evidence.submission_list`, `evidence.submitted`, `evidence.download`, `evidence.version_conflict`, `evidence_requirement.updated`, `file.required`, `file.too_large`, `file.unsupported_type`, `file.storage_unavailable`.
+**Claves i18n:** `evidence.list`, `evidence.service_list`, `evidence.test_list`, `evidence.submission_list`, `evidence.submitted`, `evidence.download`, `evidence.version_conflict`, `evidence_requirement.updated`, `file.required`, `file.too_large`, `file.unsupported_type`, `file.storage_unavailable`.
 
 ### Ejemplos de error
 
@@ -374,6 +425,8 @@ Todos con el mismo sobre (`conventions.md`); `message` es la clave i18n del erro
 ---
 
 ## Estado de implementación
+
+**Construido: MD-208** (2026-11-11): `GET /v1/services/{service_id}/evidence`. Número fijo de consultas (medido: las mismas con 3 que con 86 controles). Reutiliza el filtro por dimensión del endpoint por control (`visibleRequirements`) y la regla de qué controles ve cada rol (`canSeeControl`, compartida con el listado de controles): MD-193 cambia las dos para todos. Pruebas: `test/cumplimiento/evidencia-servicio.e2e-spec.ts`.
 
 **Construido (2026-10-28, B66):**
 - **Revisión de la evidencia (hasta D96; D102 la amplía a dos revisores, por construir).** Solo `admin_empresa` (`PUT /v1/evidence-submissions/{id}/review`); `evidence_reviews.reviewer_role` tiene el valor `admin_empresa` (migraciones `20261028202705_evidence_reviewer_admin_empresa` y `20261030000100_remove_consultant`: el enum queda solo con `admin_empresa`); una sola revisión por entrega; rechazar sin `note` es `422 note.required`. Todos los roles ven la misma revisión (SEG-61 retirado); quien sube recibe `review_note` en cada entrega. **D102:** `reviewer_role` pasa a `responsable` o `admin_empresa` y la clave única a `(evidence_submission_id, reviewer_role)`.
