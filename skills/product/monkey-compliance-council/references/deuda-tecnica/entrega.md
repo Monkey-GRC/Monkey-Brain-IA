@@ -13,14 +13,6 @@ Parches de pruebas, CI, despliegue, respaldos y runtime. **No es un módulo de p
 
 ## Flujo de conexión de la nube (D58)
 
-### DT-58 · `Frontend-Platform` no tiene pruebas automáticas
-
-🟡 Mejora
-
-- **Qué está parchado:** (0 archivos de prueba) y la verificación de la pantalla de conexión fue una corrida manual con un navegador (2026-10-09)
-- **Por qué:** El repo nunca tuvo pruebas
-- **Qué lo cierra:** Pruebas de componente del panel de conexión y del formulario, y un recorrido de navegador en el CI (`DT-20`)
-
 ## Transversal
 
 ### DT-20 · Las pruebas automáticas están a medias en los repositorios

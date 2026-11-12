@@ -42,6 +42,8 @@ el equivalente exacto de `backend-senior` pero para el repo `frontend`.
 4. Si la vista consume el backend, `../contracts/` para la forma exacta del
    request y del response.
 5. Para entender cómo está compuesta una vista existente, lee esa feature, no todo el árbol.
+6. Si la vista muestra algo visual, reutiliza los componentes y tokens de `../skills/frontend/design-system/README.md` (`data-table`, `app-card`,
+   `donut`, `side-drawer`…); no inventes estilos por vista. Un cambio de aspecto que afecte a las dos apps no es tuyo: es de `frontend-design`.
 
 ## Reglas de ejecución
 

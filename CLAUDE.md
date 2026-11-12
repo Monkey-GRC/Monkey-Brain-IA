@@ -78,10 +78,12 @@ Fuera de `references/`:
   `contracts/<módulo>.md` o `contracts/<módulo>/<componente>.md`. Si no está ahí, el contrato se acuerda primero.
 - **Trabajo de un repo concreto** → `skills/backend/`, `skills/frontend/` (capas, i18n, standalone, path aliases) y `context/backend.md` o
   `context/frontend.md` (el código tal como está, no el diseño objetivo).
+- **Cambio visual** (aspecto, tokens, componentes base, menú lateral, tablas) → `skills/frontend/design-system/README.md`: es la fuente única de
+  los dos frontends, que deben verse idénticos. Lo ejecuta el subagente `frontend-design`, que sincroniza con `scripts/sync-design-system.sh`.
 - **Reglas de mantenimiento de este repo** → `STANDARD.md`. Estado del proyecto (reconstrucción) → `producto/mvp-roadmap.md`.
 
 ## Automatización (`.claude/`)
 
 Permisos y hooks están en `.claude/settings.json`; los scripts, en `.claude/hooks/` y en `skills/*/*/scripts/`. Subagentes:
-`backend-senior`, `frontend-senior`, `qa`, `architecture-reviewer`, `product-owner`, `wazuh-integration-expert`. Para comprobar qué
+`backend-senior`, `frontend-senior`, `frontend-design`, `qa`, `architecture-reviewer`, `product-owner`, `wazuh-integration-expert`. Para comprobar qué
 se cargó en una sesión, `/memory` y `/status`.

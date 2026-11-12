@@ -310,8 +310,8 @@ Un grupo tiene un nombre y un líder; cada persona (salvo `admin_empresa` y `aud
 | | |
 |---|---|
 | **Quién** | `admin_empresa` y `auditor` (todos) · `responsable` (los que tiene a su cargo) · `delegado` (los que ejecuta) |
-| **Éxito** | `200`, paginada |
-| **Errores** | `403` (`admin_monkey`) |
+| **Éxito** | `200`, paginada. Solo controles vigentes (los dados de baja se omiten). Orden: servicio por nombre y, dentro, el código del control (`IAC-2` antes que `IAC-10`, como el listado de controles) |
+| **Errores** | `403` (`admin_monkey`) · `422` (filtro con valor fuera de su enum o uuid mal formado) |
 
 #### Parámetros (query)
 | Campo | Tipo | Obligatorio | Regla |
@@ -319,20 +319,22 @@ Un grupo tiene un nombre y un líder; cada persona (salvo `admin_empresa` y `aud
 | `page`, `page_size` | integer | no | Ver `conventions.md` |
 | `service_id` | uuid | no | Filtro |
 | `framework_id` | uuid | no | Filtro |
-| `category` | string | no | Por ejemplo `CC`: agrupa todos los de esa categoría |
-| `requirement_code` | string | no | Filtro |
-| `status` | enum `control_state` | no | Estado del control |
+| `category` | string | no | **Prefijo del código de requisito** (MD-192, 2026-11-11): `CC`, `A`, `C`, `PI`, `P` en SOC 2. Entra el control que cubra **algún** requisito cuyo código empiece por ese prefijo seguido de un número (`CC` toma `CC6.1`, no `C1.1`). Un control propio no cubre requisitos (D65): no entra |
+| `requirement_code` | string | no | Código exacto del requisito (`CC6.1`): entra el control que lo cubre |
+| `status` | enum `control_state` | no | Estado del control. **Se deriva, no se guarda** (regla 4): se calcula por servicio como en `cumplimiento/controles.md`, y se filtra y pagina después de calcular |
 | `assignment` | enum `assignment` | no | `unassigned` o `assigned` |
 | `owner_id`, `executor_id` | uuid | no | Filtro |
-| `q` | string | no | Busca por código o título |
+| `q` | string | no | Busca, sin distinguir mayúsculas ni acentos, en el código del control, sus códigos de requisito y su nombre |
 
 #### Response `200`
 | Campo | Tipo | Qué es |
 |---|---|---|
 | `client_control_id` | uuid | |
-| `code`, `title` | string | |
+| `code` | string | **El código del control** (D80): el del catálogo (`IAC-12`) o el `own_code` en uno propio (`C01`) |
+| `requirement_codes` | string[] | Requisitos del marco que cubre (`CC6.1`); vacío en un control propio |
+| `name` | string | El nombre del control (el modelo lo llama `name`; antes aquí decía `title`) |
 | `service` | `{ id, name }` | |
-| `category` | string | |
+| `categories` | string[] | Prefijos de sus requisitos (`["CC"]`); vacío en un control propio. Un control puede cubrir requisitos de varias categorías |
 | `assignment` | enum `assignment` | `unassigned` lleva `owner: null` |
 | `owner` | `{ id, name, last_name, role }` \| null | |
 | `executor` | `{ id, name, last_name, role }` \| null | Nulo = ejecuta el dueño |
@@ -341,10 +343,11 @@ Un grupo tiene un nombre y un líder; cada persona (salvo `admin_empresa` y `aud
 ```json
 {
   "client_control_id": "e1…",
-  "code": "CC6.1",
-  "title": "Aprovisionamiento de accesos",
+  "code": "IAC-12",
+  "requirement_codes": ["CC6.1", "CC6.2"],
+  "name": "Aprovisionamiento de accesos",
   "service": { "id": "…", "name": "Servicio IA" },
-  "category": "CC",
+  "categories": ["CC"],
   "assignment": "assigned",
   "owner": { "id": "7d2e…", "name": "María", "last_name": "Gómez", "role": "responsable" },
   "executor": { "id": "c4a1…", "name": "Juan", "last_name": "Pérez", "role": "delegado" },
@@ -360,7 +363,7 @@ Un grupo tiene un nombre y un líder; cada persona (salvo `admin_empresa` y `aud
 |---|---|
 | **Quién** | `admin_empresa` |
 | **Éxito** | `200` |
-| **Errores** | `403` · `404` · `409 OWNER_NOT_ELIGIBLE` · `409 CONTROL_RETIRED` · `422` (`array.max`) |
+| **Errores** | `403` · `404` (un control o el dueño no existe o es de otra empresa) · `409 OWNER_NOT_ELIGIBLE` · `409 CONTROL_RETIRED` · `422` (`array.min`, `array.max`, `array.unique`) |
 
 #### Request
 | Campo | Tipo | Obligatorio | Regla |
@@ -378,6 +381,8 @@ Un grupo tiene un nombre y un líder; cada persona (salvo `admin_empresa` y `aud
 ```
 
 > **Al cambiar el dueño, el ejecutor se limpia.** Todo o nada: un control dado de baja (`CONTROL_RETIRED`) cancela toda la operación.
+>
+> `updated` cuenta solo los controles **que cambiaron**; uno que ya tenía ese dueño no cuenta ni deja rastro. Cada control que cambia deja un `control_assignment.set` en la misma transacción. Concurrencia: se bloquean las filas del actor y del dueño por id (orden global de `row-locks.ts`) y se **relee** que el dueño siga activo o pendiente; luego las asignaciones, en orden por id.
 
 ### PUT /v1/assignments/executor — Asignar el ejecutor
 
@@ -385,12 +390,12 @@ Un grupo tiene un nombre y un líder; cada persona (salvo `admin_empresa` y `aud
 |---|---|
 | **Quién** | `responsable`, solo sobre controles **suyos** |
 | **Éxito** | `200` |
-| **Errores** | `403` (control ajeno, administrador, otros roles) · `409 EXECUTOR_NOT_IN_TEAM` · `409 CONTROL_RETIRED` |
+| **Errores** | `403` (control ajeno, administrador, otros roles) · `404` (un control o el ejecutor no existe o es de otra empresa) · `409 EXECUTOR_NOT_IN_TEAM` · `409 CONTROL_RETIRED` · `422` (`array.min`, `array.max`, `array.unique`) |
 
 #### Request
 | Campo | Tipo | Obligatorio | Regla |
 |---|---|---|---|
-| `client_control_ids` | uuid[] | sí | Controles de los que es dueño |
+| `client_control_ids` | uuid[] | sí | Controles de los que es dueño. Hasta 200 |
 | `executor_id` | uuid \| null | sí | Un `delegado` activo o pendiente **de su equipo**. `null` quita el ejecutor (ejecuta él) |
 
 ```json
@@ -402,7 +407,9 @@ Un grupo tiene un nombre y un líder; cada persona (salvo `admin_empresa` y `aud
 { "updated": 1 }
 ```
 
-> Un `responsable` no asigna a otro `responsable`, y el `admin_empresa` no asigna directo a un `delegado`.
+> Un `responsable` no asigna a otro `responsable`, y el `admin_empresa` no asigna directo a un `delegado`. Un `responsable` sin equipo (D104) solo puede enviar `executor_id: null`.
+>
+> `updated` y la auditoría, como en el dueño. Concurrencia: se bloquea la fila del delegado y se **relee** su estado y su `group_id` (que siga en el equipo del actor), para no colarse con un movimiento (MD-189) o una baja (MD-191).
 
 ### GET /v1/team/workload — Carga de trabajo por persona
 
@@ -526,6 +533,7 @@ Cada `control_assignment.set` lleva `resource = 'control_assignment'` y, dentro 
 | Errores y campo retirados | `USER_LACKS_DIMENSION`, `DIMENSION_IN_USE` y `dimensions` del alta |
 | Revisión de evidencia | `evidence_reviewer_role` admite `responsable`; la lógica de dos niveles es MD-194 |
 | Baja con aviso (MD-191) | `PATCH /v1/users/{id}`: `RESPONSIBLE_HAS_DELEGATES` (la confirmación no lo salta), `USER_HAS_ASSIGNMENTS` con `confirm_unassign` también al desactivar (el delegado queda sin ejecutor; el responsable sin delegados y el administrador dejan sus controles «Sin asignar»), `TEAM_LEADER_INACTIVE` al reactivar a un delegado sin líder vigente, `is_internal`, y una entrada `control_assignment.set` por control al desactivar o mover (también en el movimiento de MD-189). Crear, mover y reactivar a un delegado bloquean la fila de su responsable (`FOR SHARE`), y la baja del responsable la suya (`FOR UPDATE`): nunca queda un delegado vigente bajo un responsable inactivo. SEG-74 cumplido |
+| Asignación de dueño y ejecutor (MD-192, 2026-11-12) | `GET /v1/assignments` (en `compliance`: reutiliza el cálculo de estado por servicio y `canSeeControl`; número fijo de consultas por servicio) y `PUT /v1/assignments/owner` y `/executor` (en `team`). «Sin asignar» es **no tener fila** en `client_control_assignments`: `owner_id: null` la borra. Las escrituras van en lote (como mucho 4 sentencias). Orden de errores: persona `404`, control `404`, (ejecutor) control ajeno `403`, `CONTROL_RETIRED`, `OWNER_NOT_ELIGIBLE` o `EXECUTOR_NOT_IN_TEAM`; un `admin_monkey` como dueño es `404` (RLS lo oculta). Bloqueos: actor y dueño o ejecutor en `KEY SHARE` por id (paso 1), relectura de estado, grupo y líder, luego las filas de los controles `FOR NO KEY UPDATE` por id (paso 4b: dos asignaciones al mismo control se turnan y la baja de un control no se cuela) y las asignaciones por id. El clonado no crea asignaciones. Pruebas: `test/equipo/asignacion.e2e-spec.ts` |
 | Grupos (MD-189) | `GET`/`POST`/`PATCH /v1/groups`: el responsable crea su equipo y el administrador el de un responsable o un grupo de responsables; `user_groups.kind` (`group_kind`) con un índice único parcial por líder (un equipo por responsable); «Responsables» reservado (`GROUP_RESERVED`, `GROUP_NAME_TAKEN`); mover un delegado con `PATCH /v1/users/{id}` (`group_id`, `confirm_unassign`, `USER_HAS_ASSIGNMENTS`) |
 | Invitación por correo (MD-190) | El alta y el reenvío envían el código por correo (después del commit); ninguna respuesta lo trae; el reenvío responde `200` con `invitation`; el correo no nombra al proveedor de la sonda ni de la nube. SEG-75 cumplido; ver `DT-90` |
 | Alta y lista del equipo (MD-188) | `POST`/`GET /v1/users` con `group_id`, `is_internal`, `group` y `responsible`; el responsable queda en «Responsables» y crea delegados de su equipo (`RESPONSIBLE_HAS_NO_TEAM` si no lo tiene); el alta no devuelve el código (`invitation`); migración que mete a los responsables existentes en «Responsables»; `group` y `responsible` en `/auth/me` |
@@ -533,7 +541,6 @@ Cada `control_assignment.set` lleva `resource = 'control_assignment'` y, dentro 
 
 | Sigue por construir | Ticket |
 |---|---|
-| Asignación de dueño y ejecutor | MD-192 (SEG-73) |
 | Visibilidad por dueño y ejecutor (hoy transitoria, `DT-87`) | MD-193 (SEG-76) |
 | Revisión en dos niveles | MD-194 |
 | Carga de trabajo y «Mi trabajo» | MD-195 |

@@ -14,14 +14,6 @@ Parches vigentes de [Plataforma](../arquitectura/plataforma/README.md). Tablero 
 
 ## Registro de empresa, contrato de marcos (D47) y activación de la cuenta (D51)
 
-### DT-42 · Los textos «auditoría» de Inicio y de «Mis servicios» no se cambiaron a «consultoría»
-
-🟡 Mejora
-
-- **Qué está parchado:** El comité pidió el cambio en la pantalla del marco y del servicio; `home` y `services-list` aún dicen «auditoría»
-- **Por qué:** Fuera de lo pedido
-- **Qué lo cierra:** Una pasada de textos con el comité
-
 ## Transversal
 
 ### DT-21 · Traducciones al inglés hechas por desarrollo
@@ -30,12 +22,18 @@ Parches vigentes de [Plataforma](../arquitectura/plataforma/README.md). Tablero 
 
 - **Qué está parchado:** y sin revisar. *Hecho (MD-114):* Monkey Platform ya tiene i18n (es/en) en toda la app; el inglés de `Frontend-Platform/public/i18n/en/` también lo escribió desarrollo y está sin revisar. Los términos de Cumplimiento (`compliance.json`) siguen el glosario **propuesto** en MD-109, aún no aprobado por producto. Los nombres de los tipos de conexión (`ac_01`…`ac_06`) salen de la base solo en español: Platform los traduce por código (`TECHNICAL_CONTROL.CATEGORY.*`). La pantalla legacy `assets/asset-detail` (sin ruta, MD-116) no se tradujo
 - **Por qué:** El Excel solo trae español
-- **Qué lo cierra:** Revisión del comité de los dos idiomas y aprobar el glosario de MD-109; traducir `automated_capabilities.category` en el backend (o llevarlo a `catalogs.json`) para no depender del mapa del frontend; instalar i18n en Platform
+- **Qué lo cierra:** Revisión del comité de los dos idiomas y aprobar el glosario de MD-109; traducir `automated_capabilities.category` en el backend (o llevarlo a `catalogs.json`) para no depender del mapa del frontend
 
-### DT-24 · Tailwind avisa de clases canónicas (`dark:bg-white/[0.03]` → `dark:bg-white/3`) en Platfor
+## Frontends (Monkey Admin y Monkey Platform)
+
+Parches que dejó el rediseño visual y las capas de `Frontend` y `Frontend-Platform`. El sistema de diseño vive en
+[`skills/frontend/design-system/`](../../../../frontend/design-system/README.md); el código tal como está, en `context/frontend.md`.
+
+### DT-99 · Lint de los frontends: reglas apagadas y dependencias de desarrollo con avisos
 
 🟡 Mejora
 
-- **Qué está parchado:** Tailwind avisa de clases canónicas (`dark:bg-white/[0.03]` → `dark:bg-white/3`) en Platform
-- **Por qué:** Solo estético
-- **Qué lo cierra:** Una pasada de limpieza
+- **Qué está parchado:** (1) ESLint 9.39 sigue instalado porque `angular-eslint` 20 solo acepta `eslint` 8 o 9, y npm lo marca «sin soporte»; (2) la regla `no-non-null-assertion` está apagada en los `*.spec.ts` (unos 440 casos en Platform, sobre `querySelector` y resultados de prueba); (3) en Admin, `prefer-inject` está apagada en `core/services/auth.service.ts` (constructor con parámetros); (4) `npm audit` deja 22 avisos moderados, solo en herramientas de desarrollo (nada en `--omit=dev`): `minimatch` vía `typescript-eslint` (`@typescript-eslint/typescript-estree` 8.72.x) y `glob` vía `@angular/cli` 20
+- **Por qué:** subir `eslint` a 10 exige `angular-eslint` 21 o 22, y estos exigen `@angular/cli` 21 o 22; no se subió ninguna dependencia a una versión mayor en este cambio
+- **Qué lo cierra:** subir los dos frontends a Angular 21 o superior (con `angular-eslint`, `eslint` 10 y `@angular/cli` actualizados), con lo que se cierran (1) y (4); para (2), escribir los `!` de los specs con un ayudante tipado que lance si el elemento falta y quitar la excepción; para (3), migrar el constructor a `inject()`
+

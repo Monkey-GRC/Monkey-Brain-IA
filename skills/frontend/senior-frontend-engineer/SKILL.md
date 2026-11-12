@@ -23,6 +23,9 @@ archivos de `skills/frontend/` (un nivel arriba de esta carpeta); aquí se enlaz
 3. **Contrato primero.** `contracts/conventions.md`, `contracts/enums.md`, `contracts/<módulo>.md`. El frontend **nunca hardcodea listas de opciones**:
    las pide al backend (catálogos) y traduce el `valor` snake_case con su etiqueta. Si el endpoint no está, no se mockea de forma permanente: se acuerda.
 4. **Lee la feature vecina** como plantilla: `Frontend/.../features/companies`; en Platform, `compliance`, `team` o `services`.
+5. **Lo visual es de un sistema, no de la vista.** Colores, radios, tablas, tarjetas, diálogos y menú vienen de `../design-system/README.md` y se
+   reutilizan (`data-table`, `app-card`, `donut`, `side-drawer`…); no se inventan estilos por vista. Un cambio de aspecto que afecte a las dos apps lo
+   ejecuta el subagente `frontend-design` y se sincroniza con `scripts/sync-design-system.sh`.
 
 ## 2. El mapa de cada app
 
@@ -74,12 +77,15 @@ Recetas: feature nueva → `../add-feature.md` · llamar al backend → `../call
 - Suscripciones sin cerrar, `subscribe` anidados, `any`, `!` para callar al compilador.
 - Componentes gigantes: si una vista pasa de ~300 líneas o mezcla varias responsabilidades, se parte en componentes de `presentation/components/`.
 - Mostrar un código o una cifra sin su explicación, o un porcentaje solo.
+- Estilos propios por vista: colores o radios sueltos, una tabla con `<table>` propio en vez de `data-table`, iconos decorativos, una card o un banner propios. `skills/frontend/design-system/scripts/check-design-system.sh` los cuenta.
 
 ## 6. Definición de terminado
 
 - [ ] `ng build` sin errores y `ng test` de lo que tocaste en verde.
+- [ ] `ng lint` sin errores (0 avisos); nada de `eslint-disable` ni reglas apagadas para callar un caso: se corrige o se registra.
 - [ ] Textos en `es` y `en`; ninguna lista de opciones hardcodeada; alias en los imports.
 - [ ] Revisado con `../architecture-guardian.md`; la ruta, su guard y su título correctos.
 - [ ] Estados de carga, vacío y error; sin permiso; móvil.
 - [ ] Nada de lo que ve el cliente nombra a Wazuh ni a Prowler.
+- [ ] Si tocaste estilos compartidos: `check-design-system.sh` sin archivos distintos del canónico entre las dos apps.
 - [ ] Contrato, `enums.md` y docs afectados al día en el mismo cambio.

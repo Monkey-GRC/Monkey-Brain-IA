@@ -31,7 +31,7 @@ empresa. `admin_monkey` fija el cupo de usuarios (`companies.max_users`, D103) y
 | Valores de los enums | [`contracts/enums/gestion-usuarios.md`](../../../../../../contracts/enums/gestion-usuarios.md) |
 | Roles, grupos y asignación | `datos/modelo/05-usuarios.md` §5.1 y §5.2 |
 | Decisiones (`D-n`) | [`datos/decisiones/gestion-usuarios.md`](../../datos/decisiones/gestion-usuarios.md): `D98` (parcial), `D102`, `D103`, `D104` |
-| Pendientes del comité (`P-n`) | ninguno abierto en este módulo (`P38` y `P40` cerrados); las notificaciones son `P39` |
+| Pendientes del comité (`P-n`) | [`datos/pendientes/gestion-usuarios.md`](../../datos/pendientes/gestion-usuarios.md): `P41` · `P42` (`P38` y `P40` cerrados); las notificaciones son `P39` — **si sigue abierto, se pregunta** |
 | Requisitos de seguridad | [`seguridad/gestion-usuarios.md`](../../seguridad/gestion-usuarios.md): `SEG-23`, `SEG-72` a `SEG-77` |
 | Plan del sprint 3 | [`producto/sprint-usuarios.md`](../../producto/sprint-usuarios.md) |
 | Código | `Backend/src/features/team` |

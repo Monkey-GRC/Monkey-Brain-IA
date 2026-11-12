@@ -47,13 +47,13 @@ equivocada, se corrige con el comité — pero no se re-abre el debate en cada s
 | [`empresas.md`](empresas.md) | 5 | [Empresas](../../arquitectura/empresas/README.md) |
 | [`autenticacion.md`](autenticacion.md) | 4 | [Autenticación](../../arquitectura/autenticacion/README.md) |
 | [`roles-permisos.md`](roles-permisos.md) | 6 | [Roles y permisos](../../arquitectura/roles-permisos/README.md) |
-| [`gestion-usuarios.md`](gestion-usuarios.md) | 1 | [Gestión de usuarios](../../arquitectura/gestion-usuarios/README.md) |
+| [`gestion-usuarios.md`](gestion-usuarios.md) | 4 | [Gestión de usuarios](../../arquitectura/gestion-usuarios/README.md) |
 | [`catalogo-maestro.md`](catalogo-maestro.md) | 12 | [Catálogo maestro](../../arquitectura/catalogo-maestro/README.md) |
 | [`onboarding/`](onboarding/README.md) | 15 | [Onboarding](../../arquitectura/onboarding/README.md): índice + 3 componentes |
 | [`control-tecnico.md`](control-tecnico.md) | 10 | [Control técnico](../../arquitectura/control-tecnico/README.md) |
-| [`cumplimiento/`](cumplimiento/README.md) | 14 | [Cumplimiento](../../arquitectura/cumplimiento/README.md): índice + 6 componentes |
+| [`cumplimiento/`](cumplimiento/README.md) | 15 | [Cumplimiento](../../arquitectura/cumplimiento/README.md): índice + 6 componentes |
 | [`trazabilidad.md`](trazabilidad.md) | 4 | [Trazabilidad](../../arquitectura/trazabilidad/README.md) |
-| [`plataforma.md`](plataforma.md) | 1 | [Plataforma](../../arquitectura/plataforma/README.md) |
+| [`plataforma.md`](plataforma.md) | 5 | [Plataforma](../../arquitectura/plataforma/README.md) |
 | [`entrega.md`](entrega.md) | 4 | **ninguno**: CI, despliegue, entornos y pool |
 | [`historico-a-d.md`](historico-a-d.md) | 23 | **ninguno**: los bloques A–D de septiembre de 2026 |
 
@@ -184,3 +184,7 @@ quedan aquí:
 | D103 | Monkey solo tiene `admin_monkey` y fija el cupo de usuarios (`companies.max_users`) de cada empresa *(cierra P40)* | [gestion-usuarios](gestion-usuarios.md) |
 | D104 | El responsable vive en «Responsables» y su equipo de delegados lo crea él (o el administrador por él); no nace con su cuenta *(ajusta D102)* | [gestion-usuarios](gestion-usuarios.md) |
 | D105 | La fecha de corte deja de ser una opción: siempre es «hoy» y se muestra la última revisión automática; las fechas del período se eligen en un calendario *(ajusta D87)* | [cumplimiento/resumen](cumplimiento/resumen.md) |
+| D106 | Un solo sistema de diseño para Frontend y Frontend-Platform *(la aplicó desarrollo; Rod, no el comité)* | [plataforma](plataforma.md) |
+| D107 | Navegación por grupos del menú lateral *(la aplicó desarrollo; Rod, no el comité)* | [plataforma](plataforma.md) |
+| D108 | El banner con degradado solo se permite en el encabezado del shell de Cumplimiento *(la aplicó desarrollo; Rod, no el comité)* | [plataforma](plataforma.md) |
+| D109 | Una sola tabla para todo el producto *(la aplicó desarrollo; Rod, no el comité)* | [plataforma](plataforma.md) |

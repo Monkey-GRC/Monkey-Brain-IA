@@ -1,0 +1,28 @@
+<app-modal [open]="open()" labelledBy="factor-title" describedBy="factor-description" testId="factor" [dismissible]="!loading()" (dismissed)="cancel()">
+  <!-- El contenido solo existe mientras el modal está abierto: así sus campos no se crean (ni roban el foco) con la página cargada. -->
+  @if (open()) {
+    <div>
+      <div class="min-w-0">
+        <h2 id="factor-title" class="text-lg font-semibold text-ink">{{ title() }}</h2>
+        <p id="factor-description" class="mt-1 text-sm text-ink-muted">{{ description() ?? ('COMMON.SECOND_FACTOR_DIALOG.DESCRIPTION' | translate) }}</p>
+      </div>
+    </div>
+
+    <div class="mt-5">
+      <app-second-factor-field [(code)]="code" [(recoveryCode)]="recoveryCode" [(useRecovery)]="useRecovery" [allowRecovery]="allowRecovery()" [disabled]="loading()" [invalid]="!!errorMessage()" />
+    </div>
+
+    @if (errorMessage(); as message) {
+      <p class="mt-3 text-sm text-bad-ink" role="alert" data-testid="factor-error">{{ message }}</p>
+    }
+
+    <div class="mt-6 flex justify-end gap-3">
+      <button type="button" (click)="cancel()" [disabled]="loading()" data-testid="factor-cancel"
+        class="mk-btn-secondary">{{ 'COMMON.CANCEL' | translate }}</button>
+      <button type="button" (click)="confirm()" [disabled]="loading() || !canConfirm" data-testid="factor-confirm"
+        [class]="danger() ? 'mk-btn-danger' : 'mk-btn'">
+        {{ loading() ? ('COMMON.SECOND_FACTOR_DIALOG.CONFIRMING' | translate) : confirmLabel() }}
+      </button>
+    </div>
+  }
+</app-modal>
