@@ -1,4 +1,4 @@
-﻿# Deuda técnica — lo que está parchado y hay que revisar
+# Deuda técnica — lo que está parchado y hay que revisar
 
 Aquí vive lo que **se construyó a medias, con un supuesto o con un atajo** para no detener el
 sprint, y que debe volver a revisarse. No es una lista de errores: cada deuda es una decisión
@@ -147,4 +147,5 @@ Pendientes sin urgencia.
 | [DT-74](cumplimiento.md#dt-74--la-exclusión-de-un-check-no-tiene-endpoint) | La exclusión de un check no tiene endpoint | [Cumplimiento](cumplimiento.md) |
 | [DT-80](cumplimiento.md#dt-80--el-veredicto-manual-usa-el-tipo-de-la-dimensión-del-control) | El veredicto manual usa el tipo de la dimensión del control | [Cumplimiento](cumplimiento.md) |
 | [DT-90](gestion-usuarios.md#dt-90--el-envío-de-la-invitación-es-directo-sin-cola-ni-reintentos-y-su-resultado-no-se-guarda) | El envío de la invitación es directo, sin cola ni reintentos, y su resultado no se guarda | [Gestión de usuarios](gestion-usuarios.md) |
+| [DT-106](control-tecnico.md#DT-106--el-retiro-del-agente-de-un-servidor-dado-de-baja-caduca-a-los-2-minutos-si-no-hay-trabajador) | El retiro del agente de un servidor dado de baja caduca a los 2 minutos si no hay trabajador | [Control técnico](control-tecnico.md) |
 | [DT-99](plataforma.md#dt-99--lint-de-los-frontends-reglas-apagadas-y-dependencias-de-desarrollo-con-avisos) | Lint de los frontends: reglas apagadas y dependencias de desarrollo con avisos | [Plataforma](plataforma.md) |

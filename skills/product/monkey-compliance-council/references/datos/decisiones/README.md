@@ -191,3 +191,4 @@ quedan aquí:
 | D109 | Una sola tabla para todo el producto *(la aplicó desarrollo; Rod, no el comité)* | [plataforma](plataforma.md) |
 | D110 | Integraciones es un módulo propio, con su sección en el menú y una interfaz única de conector *(la aprobó Rod, no el comité)* | [integraciones](integraciones.md) |
 | D111 | Cada persona guarda su idioma y los correos salen en él; cambiar de idioma recarga la app *(la aprobó Rod, no el comité)* | [plataforma](plataforma.md) |
+| D113 | **Borrador.** La sonda de servidores en el Backend: la lee el trabajador aislado, cada servidor es un agente de su empresa (grupo = `tenant_id`, nombre = ID del activo) y `check_results` conserva una fila por check y corrida *(ajusta D54 y D71)* | [control-tecnico](control-tecnico.md) |

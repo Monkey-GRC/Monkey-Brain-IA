@@ -139,3 +139,18 @@ real) · análisis (hallazgos en lenguaje de negocio / reglas y SCA) · evidenci
 cumplimiento por marco.
 
 **Dos motores con roles distintos (D100, cierra P14 A1; acota el «validador único» del comité):** Prowler maneja todo lo de la nube (AWS, Azure, GCP y demás; D53–D58, `arquitectura/control-tecnico/motores/prowler.md`) y Wazuh sigue con servidores, BD y endpoints: configuración (SCA), monitoreo de amenazas en tiempo real y respuesta ante incidentes (`arquitectura/control-tecnico/motores/wazuh.md`). La verificación de D48 (la sonda solo ingiere registros de la nube) ya lo anticipaba. `automated_capabilities.provider` los distingue.
+
+**Vínculo activo ↔ agente (D113, borrador; cierra `DT-32` al construirse).** Hoy `assets` no sabe qué agente de la sonda es. La tabla `asset_agents` (`tenant`, con RLS) lo enlaza:
+
+| Campo | Qué guarda |
+|---|---|
+| `tenant_id`, `asset_id` | La empresa y el activo. **Un activo, un agente** (`asset_id` único) |
+| `sca_policy_id` | **La versión que el cliente declaró** («Ubuntu 22.04 LTS»): una política del catálogo (`catalog.sca_policies`). De ella sale el sistema (`linux`, `windows`, `macos`), y con él el comando de instalación. Ya **no** hay una «familia» aparte: un solo script de Linux detecta si usar `apt`, `dnf` o `zypper` |
+| `agent_id` | El identificador del agente en la sonda. **Nulo hasta que Monkey crea el agente** (el servidor se declara antes). **Único en toda la base**: un agente no puede pertenecer a dos activos. Con la forma que da la sonda (3 a 8 dígitos) |
+| *(derivados)* | El **nombre** del agente en la sonda es siempre el `asset_id` (la sonda exige nombres únicos en todo el manager) y su **grupo** es siempre el `tenant_id` (UUID, nunca el nombre de la empresa). No se guardan: se calculan |
+| `status` | `pending` (pre-registrado, sin conectar) · `connected` · `disconnected` · `removed` |
+| `registered_at`, `first_seen_at`, `last_seen_at`, `last_sync_at` | Cuándo se pre-registró, se vio por primera vez, se vio por última vez y se sincronizó |
+
+**El catálogo de versiones (D113).** La tabla `catalog.sca_policies`, que existía vacía, pasa a ser la fuente única de tres cosas: la **traducción nombre ↔ id** de cada política (el comité nombra la política por su *nombre*, la sonda por su *id*), **qué versiones se ofrecen al cliente** y cuántos checks tiene cada una. Gana `os_code` (`linux`, `windows`, `macos`, `solaris`, `hp_ux`; nulo si es un motor de base de datos o un servidor de aplicaciones), `distribution` y `distribution_name` (`ubuntu` / «Ubuntu»), `version_label` («22.04 LTS»), **`version_code`** (`ubuntu_22_04_lts`, único; lo define Monkey, no la sonda, así un cambio de id en la sonda no llega a la API ni a la pantalla), `sort_order` e **`is_offerable`**: solo se ofrece lo que la sonda realmente trae. Una política del catálogo que la sonda no entrega queda cargada pero **no ofrecida**: no se promete una evaluación que no existe. La pantalla las lee de `GET /v1/catalogs/<sistema>_version` (`linux_version`, `windows_version`…), igual que las regiones de `aws_region`.
+
+**La clave del agente no se guarda:** sale una sola vez, dentro del comando de instalación. Sin este vínculo, un resultado de la sonda no se acepta (`AGENT_NOT_LINKED`); y si el grupo real del agente no es el `tenant_id` del activo, tampoco (`AGENT_GROUP_MISMATCH`, `SEG-45`).

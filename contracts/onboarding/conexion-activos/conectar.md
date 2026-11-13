@@ -22,7 +22,7 @@ type: contract
 | `POST` | [`/v1/assets`](#post-v1assets--declarar-un-activo) | Declarar un activo: nube con rol, nube con llaves, o agente |
 | `PATCH` | [`/v1/assets/{id}/connection`](#patch-v1assetsidconnection--entregar-el-rol-creado) | El cliente entrega el rol creado |
 | `GET` | `/v1/connection-templates/aws-readonly-role` | La plantilla del rol de solo lectura |
-| `GET` | `/v1/catalogs/connection_method` · `/v1/catalogs/aws_region` | Los canales y las regiones |
+| `GET` | `/v1/catalogs/connection_method` · `/v1/catalogs/aws_region` · `/v1/catalogs/<sistema>_version` | Los canales, las regiones y las versiones de un sistema operativo que se pueden declarar para un servidor (`linux_version`, `windows_version`…; D113). Cada opción trae `value` (código de Monkey, p. ej. `ubuntu_22_04_lts`), `label` («Ubuntu 22.04 LTS»), `group` (la distribución) y `group_label`. Solo salen las versiones que la sonda entrega; un sistema sin ninguna responde `404` |
 
 ## Paso 1 — Las conexiones que se ofrecen (D92)
 
@@ -185,7 +185,7 @@ Igual que arriba, con `"connection_method": "access_keys"` y:
 `credentials` **nunca se devuelve**: se cifra (`SEG-24`). La respuesta lleva `connection_setup.method = "access_keys"` con un `warning` (menos seguro: llaves de larga vida) y los pasos para crear un usuario de solo lectura. La pantalla debe decirlo y ofrecer el rol primero.
 
 #### C. Servidor, base de datos o equipo con agente *(solo diseño)*
-Mismo cuerpo sin `external_account_id` ni `regions`, con `"connection_method": "agent"`. El comando de instalación lo generará Monkey (pre-registra al agente en el grupo de la empresa, D54) y su `<token>` es de un solo uso. **No está construido:** `validate` responde `503` (`DT-57`; instalador y hospedaje, D71).
+Mismo cuerpo sin `external_account_id` ni `regions`, con `"connection_method": "agent"` y **`"os_version"`: la versión que el cliente declara** («Ubuntu 22.04 LTS»), un `value` de `GET /v1/catalogs/<sistema>_version` (D113). Es obligatoria: de ella salen el sistema (y con él el comando correcto) y qué evaluación se espera. Un valor que no es de ese catálogo, o de otro sistema que el de la plataforma elegida (p. ej. una versión de Windows para Linux), responde `422 VALIDATION_FAILED` en `os_version`. La respuesta (`201`) trae `agent: { status, os, os_version: { value, label } }` (el mismo texto que el catálogo) y `connection_setup` con **cuatro pasos** de instrucciones ya traducidos (entrar como administrador, copiar y ejecutar el comando, permitir la conexión de salida, esperar el estado «Conectado»); en las demás conexiones `agent` es `null`. Un alta rechazada no deja nada a medias: ni activo ni fila de agente. El activo se crea y su fila de agente nace `pending`, **sin agente todavía**: el comando de instalación lo entrega `GET /v1/assets/{id}/agent-install` ([`control-tecnico.md`](../../control-tecnico.md)), que es quien crea el agente en la sonda en el grupo de la empresa (D54). **No está construido:** `validate` responde `503` (`DT-57`; instalador y hospedaje, D71).
 
 ### PATCH /v1/assets/{id}/connection — Entregar el rol creado
 

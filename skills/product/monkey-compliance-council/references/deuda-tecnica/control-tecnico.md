@@ -146,6 +146,14 @@ Parches vigentes de [Control técnico](../arquitectura/control-tecnico/README.md
 - **Por qué:** Se priorizó la conexión
 - **Qué lo cierra:** Pantalla de preparación por servicio; leer etiquetas de S3/Lambda; dar de baja los activos de regiones retiradas
 
+### DT-106 · El retiro del agente de un servidor dado de baja caduca a los 2 minutos si no hay trabajador
+
+🟡 Mejora
+
+- **Qué está parchado:** Al dar de baja un servidor, Monkey suelta su vínculo al instante y deja en cola retirar su agente de la sonda (D113 punto 8). Esa ejecución comparte el carril corto de `enrollment`: si el trabajador no la reclama en 2 minutos (caído, o sin `SONDA_ENROLL_USER`), se cancela y **el agente queda en la sonda** sin dueño. No hay reintento ni barrido de agentes huérfanos
+- **Por qué:** Se reutilizó el carril y el tipo de ejecución existentes en vez de crear un tipo nuevo con su propio plazo
+- **Qué lo cierra:** Un barrido periódico del trabajador que compare los agentes de la sonda (nombre = id de activo) con los activos activos de Monkey y retire los que no tengan dueño; o un tipo de ejecución `removal` sin caducidad de cola
+
 ### DT-66 · El estado de preparación de un activo se calcula por severidad
 
 🟠 Importante

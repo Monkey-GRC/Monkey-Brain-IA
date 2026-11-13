@@ -34,6 +34,13 @@ type: contract
 | `POST` | `/internal/runner/executions/{id}/validated` | Trabajador | Cerrar una validación |
 | `POST` | `/internal/runner/executions/{id}/results` | Trabajador | Entregar el resultado del motor |
 | `POST` | `/internal/runner/executions/{id}/fail` | Trabajador | Informar que la corrida no pudo conectar |
+| `GET` | [`/v1/assets/{id}/agent-install`](#instalar-la-sonda-en-un-servidor--estado-empezar-mostrar-generar-de-nuevo) | `admin_empresa` | El estado de la instalación de la sonda en un servidor (sin secretos) *(D113)* |
+| `POST` | `/v1/assets/{id}/agent-install` | `admin_empresa` | Empezar: deja en cola la creación del agente (`202`) *(D113)* |
+| `POST` | `/v1/assets/{id}/agent-install/reveal` | `admin_empresa` | Mostrar el comando, con la clave adentro, **una sola vez** *(D113)* |
+| `POST` | `/v1/assets/{id}/agent-install/regenerate` | `admin_empresa` | Generar el comando de nuevo: retira el agente anterior y crea otro *(D113)* |
+| `GET` | `/v1/install/agent.sh` · `/v1/install/agent.ps1` | Público | Los instaladores que ejecuta el comando; sin secretos *(D113)* |
+| `POST` | `/internal/runner/executions/{id}/enrolled` | Trabajador | Entregar el id y la clave del agente creado *(D113)* |
+| `POST` | `/internal/runner/executions/{id}/removed` | Trabajador | Avisar que se retiró de la sonda el agente de un servidor dado de baja *(D113 punto 8)* |
 
 ---
 
@@ -218,7 +225,7 @@ Cada ítem sigue la **plantilla de 7 campos** (`philosophy.md`).
 }
 ```
 
-> **Qué falló y cómo corregirlo** de una prueba de nube de un control está en `GET /v1/controls/{control_id}/tests/{test_id}/findings` (D90, `cumplimiento/veredictos.md`); no es la plantilla de siete campos.
+> **Qué falló y cómo corregirlo** de una prueba automática de un control (de nube o de servidores, D113) está en `GET /v1/controls/{control_id}/tests/{test_id}/findings` (D90, `cumplimiento/veredictos.md`); no es la plantilla de siete campos.
 
 ---
 
@@ -340,6 +347,172 @@ La usa **solo** el trabajador que ejecuta el motor (D57). **No está publicada**
 
 ---
 
+## Sonda de servidores: sincronización por agente (D113, borrador)
+
+**Estado: D113 sigue en borrador (lo aprueba Carlos y luego el comité); lo construido en el Backend está marcado en «Estado de implementación», sin commitear.** Aplica a los activos con `connection_method = agent` (servidores, bases de datos y equipos). Lo que hoy dice [`conectar.md`](onboarding/conexion-activos/conectar.md) (variante C, `validate` responde `503`) sigue vigente: instalar el programa y conectarlo no pasa por `validate`.
+
+**Cómo se enlaza.** Cada servidor del cliente es un agente de la sonda: su **grupo** es el `tenant_id` de la empresa y su **nombre** es el `asset_id` (no el del servidor, que la sonda exige único en todo el manager). El vínculo vive en `asset_agents` (`datos/modelo/08-control-tecnico.md`). El cliente **nunca** ve el nombre del proveedor de la sonda en pantalla, correo ni informe (D70).
+
+### Instalar la sonda en un servidor — estado, empezar, mostrar, generar de nuevo
+
+**Estado: construido en el Backend (2026-11-12), sin commitear.** Cuatro operaciones del `admin_empresa` sobre un activo con agente. El **sistema** (y con él el comando) sale de la **versión que el cliente declaró** al crear el activo (`os_version`, un valor de `GET /v1/catalogs/<sistema>_version`): no se pregunta de nuevo.
+
+| Método y ruta | Qué hace |
+|---|---|
+| `GET /v1/assets/{id}/agent-install` | El **estado** de la instalación. **No lleva ningún secreto**: se consulta las veces que haga falta (la pantalla pregunta cada pocos segundos mientras se prepara) |
+| `POST /v1/assets/{id}/agent-install` | **Empezar**: deja en cola la creación del agente y responde ya (`202`). Repetirlo es inofensivo: si ya está en curso, lista o entregada, no hace nada |
+| `POST /v1/assets/{id}/agent-install/reveal` | **Mostrar el comando**, con la clave del servidor adentro, **una sola vez**. Es un `POST` y no un `GET` a propósito: leerlo lo gasta, y un reintento del navegador o de un proxy no debe poder llevarse la clave |
+| `POST /v1/assets/{id}/agent-install/regenerate` | **Generar de nuevo** (`202`): si el comando no se alcanzó a copiar o se perdió. Retira el agente anterior y crea otro; el comando viejo deja de servir |
+
+**Errores:** `404` (el activo no existe o es de otra empresa) · `409 ASSET_NOT_AGENT` (el activo no usa agente) · `409 AGENT_INSTALL_NOT_READY` (`reveal` sin comando listo, ya mostrado o caducado) · `409 EXECUTION_IN_PROGRESS` (ya se está creando el agente) · `503 AGENT_INSTALL_UNAVAILABLE` (esta instalación de Monkey no está configurada para instalar la sonda: falta la dirección, la versión o los instaladores). Un `503` no deja nada en cola.
+
+#### El estado (`GET` y las respuestas de `POST` empezar y generar de nuevo)
+| Campo | Tipo | Qué es |
+|---|---|---|
+| `status` | string | `not_started` · `preparing` (el trabajador está creando el agente, unos segundos) · `ready` (el comando se puede pedir, una vez, hasta `expires_at`) · `delivered` (ya se mostró o caducó: no se vuelve a mostrar) · `failed` (ver `failure_message`) |
+| `failure_message` | string \| null | Solo en `failed`: el motivo, **ya traducido** (nunca el mensaje de la sonda) |
+| `os` | string | `linux`, `windows`… de la versión declarada |
+| `os_version` | objeto | `{ value, label }` de la versión declarada («Ubuntu 22.04 LTS»), el mismo texto que el catálogo |
+| `expires_at` | datetime \| null | Solo en `ready`: hasta cuándo se puede pedir el comando |
+| `requires_outbound` | objeto | `{ host, port }`: lo que el firewall del cliente debe permitir **de SALIDA** (no hace falta abrir puertos de entrada), para que lo vea antes de instalar. El cliente **ve** este host en pantalla y en su comando: debe ser un dominio neutro de Monkey, nunca uno que nombre al proveedor de la sonda (regla 1) |
+| `connection` | objeto | Cómo va el servidor con Monkey una vez instalado (ver «Lectura automática»): `{ status, watching, last_sync_at }`. `status`: `pending` · `connected` · `disconnected` · `removed`. `watching`: `true` mientras Monkey lo busca solo; con `status: pending` y `watching: false`, Monkey **dejó de buscarlo** y la pantalla ofrece «Comprobar ahora» o un comando nuevo. `last_sync_at`: la última lectura guardada, o `null` |
+
+`GET /v1/assets/{id}` trae además `agent.last_sync_at` (la «última revisión»).
+
+**Cómo se pasa de uno a otro:** `not_started` →(empezar)→ `preparing` →(el trabajador crea el agente)→ `ready` →(mostrar)→ `delivered`. Un `failed` se reintenta con empezar. Una clave **sin leer** que caduca pasa a `delivered`: se genera una nueva. Generar de nuevo desde cualquier estado vuelve a `preparing`.
+
+#### Mostrar el comando (`POST …/reveal`) → `200`
+| Campo | Tipo | Qué es |
+|---|---|---|
+| `os`, `os_version`, `requires_outbound` | | Igual que en el estado |
+| `options[]` | array | `kind` (`command` o `file`), `label`, y según el tipo `shell` + `value` (el comando, **sensible**) o `filename` + `content` (el archivo, **sensible**) |
+
+| `os` | Opciones |
+|---|---|
+| `linux` | Un `command` (`shell: bash`): `curl -fsSL '<instaladores>/agent.sh' \| sudo bash -s -- --manager '…' --port 1514 --name '<id del activo>' --version '4.14.6' --key '<clave>'`. Un solo comando para todas las distribuciones: el instalador detecta `apt`, `dnf`, `yum` o `zypper` |
+| `windows` | Un `command` (`shell: powershell`, se pega tal cual en una consola de administrador) y un `file` (`instalar-monkey.ps1`, ya con los datos del servidor escritos adentro; el navegador lo descarga) |
+| `macos`, `solaris`, `hp_ux` | Todavía sin instalador: `409` |
+
+```json
+{
+  "statusCode": 200,
+  "message": "agent_install.revealed",
+  "data": {
+    "os": "windows",
+    "os_version": { "value": "windows_server_2022", "label": "Windows Server 2022" },
+    "options": [
+      { "kind": "command", "label": "PowerShell", "shell": "powershell", "value": "<comando con la clave>" },
+      { "kind": "file", "label": "PowerShell", "filename": "instalar-monkey.ps1", "content": "<script con la clave>" }
+    ],
+    "requires_outbound": { "host": "<destino>", "port": 1514 }
+  }
+}
+```
+
+**Garantías de seguridad (todas con prueba):**
+- **La clave sale una sola vez.** Se guarda **cifrada** (`asset_agents.install_key_cipher`) y **solo unos minutos**; `reveal` la lee y la borra en **una sola operación atómica**: tres peticiones a la vez, una se la lleva (`200`) y las otras dos reciben `409`. Caducada, no se puede pedir.
+- **Nunca se registra:** ni el comando ni la clave llegan a la bitácora ni a la auditoría (que sí guarda quién, cuándo y sobre qué servidor: `agent.install.prepare`, `agent.enroll`, `agent.install.reveal`, `agent.install.regenerate`).
+- **Cada valor que entra a un comando tiene una forma estricta** (dirección, identificador, versión, clave en base64, dirección de instaladores): una comilla, un espacio o un punto y coma lo rechazan. El error nombra el campo, nunca el valor.
+- **El instalador comprueba la clave contra el nombre de ESTE servidor antes de instalar nada**, y exige administrador. El de Windows verifica la **firma** del instalador del programa antes de ejecutarlo.
+
+#### Los instaladores (públicos, sin secretos)
+`GET /v1/install/agent.sh` y `GET /v1/install/agent.ps1`. Son **públicos a propósito** (el `curl` del servidor del cliente no lleva sesión) y **no contienen ningún dato de un servidor ni clave**: esos llegan como argumentos del comando. Se sirven con `Cache-Control: no-store`.
+
+#### Configuración de esta instalación (variables de entorno del backend)
+`SONDA_MANAGER_HOST` (a dónde se conecta cada servidor) · `SONDA_MANAGER_PORT` (por defecto 1514) · `SONDA_AGENT_VERSION` (la versión **fija**, la misma del manager; nunca «la última») · `AGENT_INSTALLER_BASE_URL` (dónde se sirven los instaladores, p. ej. `https://api.ejemplo.com/v1/install`) · `AGENT_INSTALL_KEY_TTL_MINUTES` (1 a 60, por defecto 15). Si alguna falta o no es válida, las cuatro operaciones responden `503` en vez de armar un comando roto o inseguro.
+
+**Verificado:** el instalador de **Linux** se ejecutó, tal cual lo genera el backend, en un Ubuntu 22.04 limpio contra la sonda 4.14.6: el agente quedó **activo**, con el nombre del activo y **solo** el grupo de la empresa; una clave de otro servidor, un argumento con inyección y la falta de `sudo` se rechazan sin tocar nada; «generar de nuevo» retiró el agente anterior por su nombre y el instalador se repitió sin problema. El de **Windows** tiene la sintaxis validada con el analizador de PowerShell, pero **no se ha probado en un Windows real**.
+
+> Pasar más adelante a un código de un solo uso que pide la clave al instalarse cambia solo el Backend: este contrato y la pantalla no cambian. Los servidores sin salida a internet usan un paquete autónomo: **pregunta abierta** (abajo).
+### Cambios en la API interna del trabajador
+
+Dos tipos de corrida nuevos del mismo trabajador (D113): **crear el agente** de un servidor (`enrollment`, construido) y **leer la sonda** (`assessment` con conexión `agent`, sin construir). Cada uno tiene su propio carril, y la credencial de la sonda de cada uno es **distinta** (`monkey_enroll`, que solo crea y retira agentes y grupos; `monkey_sync`, de solo lectura) y vive solo en el trabajador. Ninguna viaja por esta API.
+
+**Crear el agente (`enrollment`).** Lo espera un cliente en pantalla, así que corre en un carril corto, como la validación (D58): una ejecución en curso más de 2 minutos se cierra como fallida y una en cola más de 2 minutos se cancela (`execution.timed_out`). Va antes que una evaluación y **no sale en el historial del cliente**.
+| Operación | Qué hace |
+|---|---|
+| `POST /internal/runner/claim` con `kind: "enrollment"` | Trae `kind: "enrollment"`, `connection: { method: "agent" }` y `agent: { name, group }`: cómo se llama el agente en la sonda (= el `asset_id`) y a qué grupo va (= el `tenant_id`). Los dos los fija el backend; el trabajador no los inventa. **Ninguna credencial** |
+| `POST /internal/runner/executions/{id}/enrolled` | El trabajador entrega `{ tenant_id, agent_id, key }`. El backend valida **otra vez** la forma de ambos (`422 ENGINE_OUTPUT_INVALID`), cifra la clave y la guarda con su caducidad, enlaza el agente al activo y cierra la ejecución en una sola transacción. `409 EXECUTION_NOT_RUNNING` si no está en curso o no es de esa empresa (no se distingue); La sonda **recicla ids** de agente: si ese id figuraba en otro activo (de cualquier empresa), ese agente ya no existe en la sonda y su vínculo era una referencia colgada; el backend lo **suelta** (`agent_id` nulo, estado `removed`, clave borrada) antes de enlazar y lo deja en la auditoría (`released_links`). `AGENT_ALREADY_LINKED` solo queda para una carrera entre dos altas simultáneas |
+| `POST /internal/runner/executions/{id}/removed` | El trabajador retiró de la sonda el agente de un servidor **dado de baja** y entrega `{ tenant_id }`. Cierra la ejecución (`409 EXECUTION_NOT_RUNNING` si no estaba en curso). La baja (`DELETE /assets/{id}`) ya soltó el vínculo y la clave **al instante**, y dejó en cola una ejecución `enrollment` cuyo `claim` trae `agent: { name, group, remove: true }`: el trabajador solo retira el agente por su nombre (si ya no estaba, también termina bien). Caduca a los 2 minutos como todo `enrollment` (`DT-106`) |
+
+Lo que hace el trabajador, en orden: comprueba la versión de la sonda (**se niega** con una que no conoce, `execution.probe_version_unsupported`) → asegura el grupo de la empresa → **retira un agente anterior con ese nombre** (un reintento o «generar de nuevo»; la sonda exige nombres únicos) → crea el agente y le asigna su grupo → lo entrega. **Si el agente se creó y no llegó a guardarse, no se deja suelto en la sonda:** lo retira antes de fallar. Razón de fallo propia: `connection.agent_enroll_failed`.
+
+**`POST /internal/runner/claim`.** Para una conexión `agent` la respuesta no trae credenciales; trae a qué agente leer:
+| Campo | Tipo | Qué es |
+|---|---|---|
+| `connection.method` | string | `agent` |
+| `agent.agent_id` | string | El agente de la sonda enlazado al activo (`asset_agents`) |
+| `agent.group` | string | El grupo esperado: el `tenant_id`. El trabajador lo lee de la sonda y el Backend lo vuelve a comprobar |
+
+La credencial de la sonda **no viaja por esta API**: vive solo en el trabajador.
+
+**`POST /internal/runner/executions/{id}/results`.** Para una corrida de la sonda, en vez de `findings[]` del motor de nube lleva `source: "sca"`:
+| Campo | Tipo | Obligatorio | Regla |
+|---|---|---|---|
+| `tenant_id` | uuid | sí | El recibido al reclamar |
+| `source` | string | sí | `sca` |
+| `agent` | objeto | sí | `{ agent_id, name, groups[] }` tal como los devuelve la sonda |
+| `sonda_version` | string | sí | La versión de la sonda con la que se leyó (se guarda en `executions.engine_version`) |
+| `policies[]` | array | sí | `{ policy_id, name, scan_ended_at, checks[] }` (máx. 50 políticas; `name` es el nombre que la sonda da a la política, sirve para reconocerla si el id no está en el catálogo) |
+| `policies[].checks[]` | array | sí | `{ id, result, reason, compliance[] }`; `result` es el de la sonda (`passed`, `failed`, `not applicable`, vacío…); `compliance[]` son pares `{ key, value }` con las etiquetas nativas |
+
+El Backend: (1) comprueba que `agent.agent_id` está enlazado a **ese** activo de **esa** empresa, que `agent.name` es el `asset_id` y que `agent.groups` contiene el `tenant_id` **sin** contener además el grupo (otro UUID) de otra empresa; un grupo que no es un UUID (p. ej. de configuración por sistema operativo) no estorba; (2) resuelve cada check por su clave de tres partes (`platform` + `policy_id` + `check_id`), con la plataforma tomada de la **política**, no del sistema operativo del agente. El catálogo del comité nombra la política por su **nombre** y la sonda por su **id**: hace falta una tabla que traduzca ambos; (3) guarda `check_results` en la misma transacción, con la fecha de la **medición** (`scan_ended_at` de la política; si falta, es ilegible o es del futuro, la de la lectura); (4) no inventa lo que el catálogo no conoce; (5) en esa misma transacción marca el agente como `connected` (`first_seen_at`, `last_seen_at`, `last_sync_at`), pasa la conexión del servidor a `active` y mueve las `evaluations` de los controles (D68) con lo que midió la sonda: los tests de dimensión `server`, `database` y `app` cuyos checks la política entregó, identificados por el **id del check en el catálogo** (el mismo número de check se repite entre políticas). Un test sin ningún check devuelto queda `not_applicable`, igual que en la nube.
+
+El conjunto «ejecutado» (`executions.checks_executed`) son los checks que el catálogo tiene de las políticas entregadas que reconoce; lo que no devolvió filas o es `not applicable` no se guarda (D56). **Lo que el catálogo no conoce** (una política o un check) no se guarda: queda en `execution_logs` como aviso, con la política y cuántos checks fueron.
+
+El resultado de cada check se normaliza al leerlo: `passed`, `failed`, `invalid`, `not applicable` (llega como esas palabras en la versión 4.14.6, o como vacío según el cerebro: se aceptan las dos) y `not run`. **Un resultado desconocido nunca se toma por `passed`: queda `invalid`.**
+
+```json
+{ "statusCode": 200, "message": "La evaluación se completó.",
+  "data": { "execution_id": "7f3c…", "status": "completed", "results": 148 } }
+```
+
+`results` son las filas guardadas (sin los `not applicable`).
+
+| HTTP | `error.code` | Cuándo |
+|---|---|---|
+| 422 | `AGENT_NOT_LINKED` | El agente no está enlazado a este activo, el activo aún no tiene agente, o la empresa que dice el trabajador no es la de la ejecución |
+| 422 | `AGENT_GROUP_MISMATCH` | `agent.name` no es el `asset_id`, o `agent.groups` no es el de la empresa (o incluye el de otra) |
+
+En los dos casos **no se guarda nada** y la ejecución sigue en curso; el trabajador la cierra como `failed` con su razón (`connection.agent_group_mismatch` o `execution.output_invalid`) por `…/fail`, que queda en la auditoría (`SEG-45`). Una segunda entrega de la misma ejecución es `409 EXECUTION_NOT_RUNNING`.
+
+**`POST /v1/assets/{id}/executions` en un servidor con agente.** No hay «validación» previa: la propia lectura es la prueba. Se acepta en cuanto el agente existe en la sonda (`asset_agents.agent_id` no es nulo); antes, `409 ASSET_NOT_VALIDATED`. Si el agente desapareció entre tanto, el `claim` cierra la ejecución como `failed` con `connection.agent_not_found`.
+
+**Razones de fallo nuevas** (`reason`, claves i18n en `es` y `en`, en los espacios que ya existen): `connection.agent_not_found`, `connection.agent_no_scan_yet`, `connection.agent_disconnected`, `connection.agent_group_mismatch`, `connection.probe_unreachable`, `connection.probe_unauthorized` y `execution.probe_version_unsupported` (la versión de la sonda no es de las que sabemos leer: el trabajador **se niega a leer** en vez de adivinar). Un agente desconectado conserva su último estado en la sonda, pero eso no es una medición de hoy y no se presenta como una. El cliente nunca ve el mensaje de la sonda.
+
+### Lectura automática (D113, aprobada por Carlos 2026-11-12)
+
+La sonda **no avisa** cuando un servidor se conecta: Monkey tiene que ir a leerla. Para que el cliente instale y la pantalla pase sola de «Esperando» a «Conectado», y para que el cumplimiento no envejezca, el Backend tiene una **tarea programada** (`AgentReadingScheduler`) que cada minuto deja en cola las lecturas que tocan. El trabajador las reclama como cualquier otra (`assessment` con conexión `agent`, origen `scheduled`); la tarea **solo encola**, nunca lee la sonda ni espera al trabajador.
+
+| Servidor | Cuándo toca leerlo | Valor por omisión |
+|---|---|---|
+| Aún no se conecta (`pending`) | Cada `AGENT_WATCH_INTERVAL_MINUTES`, **hasta** `AGENT_WATCH_WINDOW_HOURS` desde que Monkey terminó de crear su agente | 3 min · 24 h |
+| Conectado (`connected`) | Cuando su última lectura guardada tiene más de `AGENT_REFRESH_INTERVAL_HOURS` | 24 h |
+| Desconectado (`disconnected`) | Cada `AGENT_RECHECK_INTERVAL_MINUTES`, **sin plazo** (si el servidor vuelve, se entera solo) | 60 min |
+| Cualquiera, tras una lectura que **falló de verdad** | Espera `AGENT_RECHECK_INTERVAL_MINUTES` antes de reintentar (no insiste cada 3 minutos con un error) | 60 min |
+
+`AGENT_WATCH_INTERVAL_MINUTES=0` apaga la tarea (pruebas y scripts). La decisión de a quién le toca es una función pura (`reading-plan.ts`); una función SQL `SECURITY DEFINER` angosta (`tenant.list_agent_reading_candidates`) es lo único que ve servidores de todas las empresas: solo lee, devuelve identificadores, estado y fechas, y ya descarta lo que no puede tocar (lectura abierta, empresa archivada, conectado hace poco). Dos instancias del Backend a la vez son seguras: un servidor no puede tener dos lecturas abiertas (índice único). Tope de 200 lecturas por pasada.
+
+**Una lectura automática que «todavía no estaba lista» no es un error del cliente.** Si el trabajador la cierra con `connection.agent_no_scan_yet` (el servidor aún no terminó su primera revisión) o `connection.agent_disconnected` (no está conectado), el Backend la deja **`cancelled`**, sin auditoría y **fuera del historial** del cliente (`GET …/executions` no la lista); cada 3 minutos serían cientos de filas. Al guardarse la primera lectura buena se **borran** las esperas acumuladas de ese servidor. Si el servidor estaba `connected` y la razón es `agent_disconnected`, pasa a `disconnected` y **eso sí se audita** (`agent.disconnected`, sin persona). Cualquier otra razón (`connection.agent_not_found`, `agent_group_mismatch`…), o una lectura que pidió una persona con `POST …/executions` («Comprobar ahora»), se cierra como `failed` con su motivo a la vista.
+
+**«Comprobar ahora»** es el atajo de lo que Monkey hace solo, nunca un paso obligatorio: la pantalla llama a `POST /v1/assets/{id}/executions` y mira `GET …/executions` hasta que cierra. Pasado el plazo de 24 h sin verlo conectarse (`connection.watching: false`), la pantalla le dice al cliente qué revisar (que el comando se ejecutó sin errores y que el servidor puede salir a `requires_outbound`) y le ofrece «Comprobar ahora» o un comando nuevo.
+
+### Preguntas abiertas de esta sección
+
+| Qué | Estado |
+|---|---|
+| **Quién crea el agente** (necesita una credencial de escritura distinta de la de lectura) | ✅ El **trabajador**, en un carril corto como la validación (D58), con la credencial `monkey_enroll`; así ninguna credencial de escritura de la sonda está en el proceso que atiende a los usuarios (Carlos, 2026-11-12) |
+| **El nombre del servicio instalado.** El cliente lo verá en su propio servidor con el nombre que le da el proveedor; choca con la regla de no nombrarlo | ❓ Sin decidir (comité) |
+| **Servidores sin salida a internet:** paquete autónomo con la clave dentro, y los destinos que el firewall debe permitir | ❓ Sin diseñar |
+| **Tope de frecuencia y retención del detalle** de `check_results` (D113 punto 5) | ❓ Valores por definir |
+| **Un usuario de solo lectura por grupo** (D71) en vez de uno solo para el trabajador | ◐ La sonda admite acotar un rol por recurso (`agent:group:<grupo>`), pero no se probó; se arranca con un único usuario y la clave solo en el trabajador. **`agent:read` permite leer la clave de un agente** (verificado): el puerto de la API debe aceptar solo la IP del trabajador |
+| **Con qué procedencia entra la asignación check → prueba del Excel del comité** | ✅ `monkey_proposed` (D113 punto 12): la hoja no es la versión final; el comité la ratifica por prueba cuando llegue su documento |
+| **Tabla de traducción nombre ↔ id de la política**: el Excel nombra la política, la sonda la identifica por id | ✅ `catalog.sca_policies` (`sca_id` ↔ `benchmark`); el Backend reconoce por id y, si no está, por nombre |
+| **Quién pide la lectura sola**: que «Conectado» se encienda sin que el cliente haga nada, y que el servidor se relea cada cierto tiempo | ✅ El Backend, con una tarea programada (ver «Lectura automática»); valores aprobados por Carlos el 2026-11-12: 3 min · 24 h · 24 h · 60 min, configurables por entorno |
+| **Tope de frecuencia y retención del detalle de `check_results`** (la relectura diaria los toca) | ◐ Arranca con una lectura diaria por servidor y el detalle completo; el comité aún debe fijar el tope y cuánto se conserva |
+
+---
+
 ## Errores del módulo
 
 | HTTP | `error.code` | Cuándo |
@@ -371,6 +544,9 @@ La usa **solo** el trabajador que ejecuta el motor (D57). **No está publicada**
 |---|---|
 | `POST /v1/assets/{id}/executions` (202), `GET …/executions` (paginado, con `failure_message`), `GET …/readiness` | ✅ |
 | API interna del trabajador: `claim` (con `kind`), `results`, `validated`, `fail` | ✅ Probada contra el backend real, Docker real y AWS real (D57, D58) |
+| Declarar un servidor con su versión (`os_version`), `asset_agents`, catálogo `<sistema>_version` | ✅ Backend (D113) |
+| Instalar la sonda: estado, empezar, mostrar el comando una vez, generar de nuevo, instaladores públicos, `claim` y `enrolled` de `enrollment` | ✅ Backend y trabajador (D113). Linux probado de punta a punta contra la sonda 4.14.6; Windows con la sintaxis validada, **sin probar en un Windows real** |
+| Leer la sonda: `claim` y `results` de `assessment` con conexión `agent` | ✅ Backend y trabajador (2026-11-12). Probado contra Postgres real con una lectura grabada de un agente real: guarda, marca `connected`, mueve las evaluaciones y rechaza los cruces entre empresas. La lectura la pide sola una tarea programada (2026-11-12): espera, conecta, detecta la desconexión y respeta el plazo, probado con el planificador real contra Postgres real |
 | `GET …/findings`, `GET …/results?view=technical` | ❌ Sin construir (necesitan la redacción de los siete campos, `P14` E2) |
 | `GET /v1/controls/{control_id}/tests/{test_id}/findings` | ✅ **Qué falló y cómo corregirlo** de una prueba de nube de un control (D90, `cumplimiento/veredictos.md`): título, recursos y guía de corrección traducida con IA. No es la plantilla de siete campos: esa sigue pendiente (`P14` E2) |
 

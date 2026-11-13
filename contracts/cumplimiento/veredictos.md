@@ -81,9 +81,13 @@ La vista técnica de un control: los tests que lo verifican, **todos con su esta
 |---|---|
 | **Quién** | `admin_empresa` · `auditor` · **el dueño y el ejecutor del control** (D102: son quienes la reparan; ven qué falló y cómo corregirlo, no la vista técnica completa) |
 | **Éxito** | `200`, paginada (`page`, `page_size`), de la más grave a la menos |
-| **Errores** | `403` (otro `responsable` o `delegado`, `admin_monkey`) · `404` (el control no lleva la prueba, o la prueba no es de nube) |
+| **Errores** | `403` (otro `responsable` o `delegado`, `admin_monkey`) · `404` (el control no lleva la prueba, o la prueba no es automática: una documental no tiene nada técnico que explicar) |
 
-De una **prueba automática de nube** de un control: las comprobaciones que fallaron, en qué recursos y cómo corregirlas (D90). Lo que lee: la **última corrida completada** de cada conexión de nube del servicio, solo los resultados `failed`, de los checks que alimentan esa prueba **con la misma regla que las evaluaciones** (los ratificados por el comité; con `READINESS_INCLUDE_PROPOSED=true`, también los propuestos). Un recurso descubierto que no es del servicio no se cuenta.
+De una **prueba automática** de un control (de **nube** o de **servidores**, D113; dimensión `cloud`, `server`, `database` o `app`): las comprobaciones que fallaron, en qué recursos y cómo corregirlas (D90). Lo que lee: la **última corrida completada** de cada conexión del servicio (una cuenta de nube o un servidor con agente), solo los resultados `failed`, de los checks que alimentan esa prueba **con la misma regla que las evaluaciones** (los ratificados por el comité; con `READINESS_INCLUDE_PROPOSED=true`, también los propuestos). Un recurso descubierto que no es del servicio no se cuenta.
+
+**Servidores (D113).** El recurso afectado es **el propio servidor**, con el nombre que el cliente le dio (`resources: [{ name, uid: null, region: null }]`); si varios servidores fallan la misma comprobación, salen todos en ese hallazgo. **La sonda no califica sus checks**, así que `severity` es **`null`**: no se inventa un nivel; el hallazgo se ordena después de los calificados y la pantalla no pinta nivel. El título sale en español del catálogo del comité. La guía sale en español (`language: "es"`, `is_ai_generated: true` hasta que una persona la revise) donde Monkey la tradujo —hoy ≈4.000 guías: Ubuntu 22.04 completo, Windows casi completo y Linux donde el texto es idéntico a uno ya traducido— y, donde no, el original en inglés dicho como inglés (`language: "en"`).
+
+**Formato de `remediation.text`:** párrafos separados por salto de línea, viñetas con `- `, y los **comandos en un bloque entre tres comillas invertidas** (```), que la pantalla muestra aparte para leerlo y copiarlo; se conserva tal cual, sin interpretarlo (D113). El proceso que la produce valida que todo comando o ruta del bloque aparezca igual en el original.
 
 #### Response `200`
 | Campo | Tipo | Qué es |
@@ -92,7 +96,7 @@ De una **prueba automática de nube** de un control: las comprobaciones que fall
 | `measured_at` | datetime \| null | Nulo si no hay corrida (y entonces `items: []`) |
 | `items[].id` | uuid | |
 | `items[].title` | string | La comprobación en positivo («lo que debería cumplirse») |
-| `items[].severity` | enum `severity` | |
+| `items[].severity` | enum `severity` \| null | Nulo cuando quien midió no califica sus checks (servidores, D113) |
 | `items[].resources[]` | `{ name, uid, region }` | Hasta 50 recursos por comprobación |
 | `items[].resources_total` | integer | Cuántos recursos son en total |
 | `items[].remediation` | `{ text, language, is_ai_generated }` \| null | La guía de corrección de esa comprobación, igual para todos los recursos; `null` si no hay una que se pueda mostrar |
