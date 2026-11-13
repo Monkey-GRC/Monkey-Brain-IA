@@ -24,7 +24,7 @@ cálculo de cobertura en nube; no bloquean el módulo de Cumplimiento.
 2. Permisos mínimos que se piden al cliente y quién los crea.
 3. ¿Dónde corre el motor? Hoy en el mismo servidor que la sonda y con llaves del cliente guardadas allí.
 4. Frecuencia, duración y coste en llamadas a la API (`ac_01` fija 6-24 h).
-5. ¿Azure y GCP producen el mismo formato de salida y alguien los probó?
+5. ¿Azure y GCP producen el mismo formato de salida y alguien los probó? *(Medido para GCP el 2026-11-12: mismo formato, ver `cruce-nube-gcp.md`. Azure sigue sin probar.)*
 
 **D. Catálogo y mapeo**
 1. ¿Se cargan al catálogo los 70 checks, o solo los que el comité elija, y con qué `origin`?
@@ -50,5 +50,6 @@ Del catálogo de 662 checks de AWS, lo que no llega a un control:
 2. **Las pruebas `T-CLD-004` a `007` no tienen ningún check.** ¿Se cubren con checks que aún no se han buscado o quedan manuales por activo?
 3. **Seis requisitos que el motor cita** no los alcanza ninguna prueba de nube: CC1.3, CC3.1, CC3.2, CC5.2, CC7.3 y CC7.5. ¿Se añade el vínculo o quedan como cobertura no alcanzada?
 4. **Ratificar las 569 asignaciones propuestas** (`monkey_proposed`): se pide por prueba (11 `T-CLD`), no check por check.
+5. **GCP** (2026-11-12, `cruce-nube-gcp.md`): ratificar las asignaciones propuestas para 98 de sus 110 checks (incluidas siete reglas propias de GCP) y decidir los **12 checks sin prueba** (parámetros de SQL Server y MySQL, comportamiento de VMs, ciclo de vida de buckets, contactos esenciales).
 
 **Qué depende:** que esos checks cuenten para el cumplimiento (§9) y la cobertura técnica real de la nube.

@@ -15,7 +15,7 @@ entrega resultados crudos que Monkey traduce a su modelo. Wazuh (`wazuh.md`) es 
 | Imagen `toniblyx/prowler` fijada por versión (hoy `5.44.0`); el trabajador se niega a arrancar con `latest`. Un escaneo completo de AWS (655 checks, 2 regiones) tarda unos 2 minutos. | D55, D57 |
 | El motor omite los checks sin recursos: de 655 ejecutados, 139 devolvieron filas. **Lo que no devuelve es `not_applicable`**, no «no ejecutado». | D56, `cruce-nube-aws.md` |
 | Catálogo cargado: 662 checks, 3.413 mapeos del motor a los 6 marcos ofrecidos, 569 asignaciones propuestas a las 11 pruebas `T-CLD`. 104 checks no encajan en ninguna prueba (`P15`). | D56 |
-| Azure y GCP: la prueba con una cuenta real está **planificada para más adelante** (`P14` C5). | `cruce-nube-aws.md` |
+| GCP: escaneado a mano con la misma versión (110 checks, 21 hallazgos en un proyecto de pruebas sin recursos); la salida tiene el mismo formato y el parser la acepta. Catálogo con 98 de 110 checks asignados a pruebas `T-CLD` (`monkey_proposed`). Azure: sin probar (`P14` C5). | `cruce-nube-gcp.md` |
 
 ## Reglas que no se rompen
 
