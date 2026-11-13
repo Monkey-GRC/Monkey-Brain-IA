@@ -235,7 +235,7 @@ La usa **solo** el trabajador que ejecuta el motor (D57). **No está publicada**
 
 | Método y ruta | Qué hace |
 |---|---|
-| `POST /internal/runner/claim` | Reclama la próxima ejecución `queued` de **cualquier** empresa y la pasa a `running`. `204` si no hay |
+| `POST /internal/runner/claim` | Reclama la próxima ejecución `queued` de **cualquier** empresa **del grupo de trabajadores de ese backend** (`RUNNER_POOL`) y la pasa a `running`. `204` si no hay |
 | `POST /internal/runner/executions/{id}/validated` | Cierra una **validación**: el rol se asumió y la cuenta es la declarada |
 | `POST /internal/runner/executions/{id}/results` | Entrega el resultado crudo del motor; el backend lo interpreta y lo guarda; la ejecución pasa a `completed` |
 | `POST /internal/runner/executions/{id}/fail` | Informa que la corrida no pudo conectar; pasa a `failed` con su razón |
@@ -257,7 +257,7 @@ La usa **solo** el trabajador que ejecuta el motor (D57). **No está publicada**
 |---|---|---|
 | `execution_id`, `kind`, `tenant_id`, `asset_id`, `origin` | | |
 | `platform`, `external_account_id`, `regions[]` | | |
-| `connection` | objeto | `method`, y según el método `role_arn` + `external_id` (rol) o las llaves descifradas (`access_keys`, **solo en esta respuesta**: red interna, nunca se registran). En `agent` no hay corrida del trabajador: lee la sonda (otro adaptador) |
+| `connection` | objeto | `method`, y según el método `role_arn` + `external_id` (rol), las llaves descifradas (`access_keys`, **solo en esta respuesta**: red interna, nunca se registran) o `external_id` + `project_number` (`identity_federation`, GCP, D112; `regions` llega vacío). En `agent` no hay corrida del trabajador: lee la sonda (otro adaptador) |
 
 ```json
 {
@@ -277,7 +277,12 @@ La usa **solo** el trabajador que ejecuta el motor (D57). **No está publicada**
 }
 ```
 
-> Una conexión que no sirve al reclamar (sin regiones, sin rol, proveedor no soportado) **no se entrega**: se cierra sola como `failed` con su razón y el reclamo sigue con la siguiente.
+```json
+"platform": "gcp", "external_account_id": "acme-prod-421905", "regions": [],
+"connection": { "method": "identity_federation", "external_id": "mk-3f9a1c7e2b", "project_number": "983014806332" }
+```
+
+> Una conexión que no sirve al reclamar (sin regiones donde aplican, sin rol, sin número de proyecto, proveedor no soportado) **no se entrega**: se cierra sola como `failed` con su razón y el reclamo sigue con la siguiente.
 
 ### POST /internal/runner/executions/{id}/results
 
@@ -292,6 +297,7 @@ La usa **solo** el trabajador que ejecuta el motor (D57). **No está publicada**
 |---|---|---|---|
 | `tenant_id` | uuid | sí | El que el trabajador recibió al reclamar; con él el backend abre la transacción de esa empresa |
 | `engine_version` | string | sí | |
+| `regions` | string[] | sí | Las evaluadas: las del claim en AWS; vacío en GCP (`global`, D112) |
 | `started_at`, `finished_at` | datetime | sí | |
 | `findings[]` | array | sí | Salida del motor, sin tocar |
 
@@ -342,7 +348,7 @@ La usa **solo** el trabajador que ejecuta el motor (D57). **No está publicada**
 
 ### Reglas del trabajador
 - **`tenant_id`:** es el que el trabajador recibió al reclamar. **Si lo falsea, RLS no encuentra la ejecución y responde `409 EXECUTION_NOT_RUNNING`:** no puede escribir en otra empresa.
-- **Razones de fallo** (`reason` en `fail` y `failure_reason` en el historial): `connection.role_not_found`, `connection.account_mismatch`, `connection.credentials_invalid`, `connection.regions_missing`, `connection.not_configured`, `connection.provider_not_supported`, `connection.method_not_supported_by_runner`, `execution.engine_failed`, `execution.engine_timeout`, `execution.output_invalid`, `execution.timed_out`. Son claves i18n con texto en `es` y `en`; el cliente nunca ve el mensaje del motor.
+- **Razones de fallo** (`reason` en `fail` y `failure_reason` en el historial): `connection.role_not_found`, `connection.account_mismatch`, `connection.credentials_invalid`, `connection.regions_missing`, `connection.not_configured`, `connection.provider_not_supported`, `connection.method_not_supported_by_runner`, `connection.federation_rejected`, `execution.engine_failed`, `execution.engine_timeout`, `execution.output_invalid`, `execution.timed_out`. Son claves i18n con texto en `es` y `en`; el cliente nunca ve el mensaje del motor.
 - **Una ejecución que se queda en `running` más de 30 minutos** (el trabajador murió) pasa a `failed` con `execution.timed_out`; lo hace el propio `claim` al barrer. Tampoco mueve la preparación.
 
 ---
@@ -552,5 +558,7 @@ La sonda **no avisa** cuando un servidor se conecta: Monkey tiene que ir a leerl
 
 - Un claim del trabajador acepta `{ "kind": "validation" | "assessment" }` y devuelve `kind`; `POST /internal/runner/executions/{id}/validated` cierra una validación.
 - **Al cerrar una corrida de nube** (`results` del trabajador o importación) se escriben también las `evaluations` de cada servicio que tiene el activo: una por control, test de nube y activo (`DT-50`). Es lo que alimenta los controles, el resumen y el marco. Necesita el catálogo de checks cargado (`npm run cloud:load -- --apply`): sin él, el motor descarta todos los resultados («Comprobaciones fuera del catálogo») y el cumplimiento sale «Sin medir».
+
+**Configuración:** `RUNNER_POOL` (opcional, por defecto `default`; formato `^[a-z0-9][a-z0-9-]{0,39}$`, inválido = el backend no arranca): el grupo de trabajadores de ese backend. Toda ejecución que crea lleva su grupo y su `claim` solo entrega las de ese grupo; en local se usa uno propio (p. ej. `local-rod`) para no competir con el trabajador del servidor sobre la base de desarrollo.
 
 **Configuración:** `RUNNER_TOKEN` (sin él, `/internal/runner` no existe) y `READINESS_INCLUDE_PROPOSED` (solo desarrollo y demostración: cuenta los vínculos check→prueba que el comité aún no ratificó, tanto en la preparación del activo como en las `evaluations`; **sin ella y sin vínculos ratificados no se escribe ninguna**).

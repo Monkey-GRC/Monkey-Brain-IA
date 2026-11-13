@@ -24,7 +24,7 @@ Los textos siguen `monkey-ui-copy`; este documento solo cubre la capa visual.
 
 1. **El dato es lo primero que se ve**, no la decoración. Ante la duda de añadir un elemento decorativo, no se añade.
 2. **Jerarquía por tipografía y espacio**, no por cajas. Máximo **un** nivel de contenedor.
-3. **El color significa algo**: estado (cumple / no cumple / pendiente / sin medir) y acción primaria. Nada más.
+3. **El color significa algo**: estado (cumple / no cumple / pendiente / sin medir), acción primaria y, en el `app-badge` (D115), el tipo de dato (código, atributo). Nada decorativo.
 4. **Densidad respirable**: tablas y listas para datos repetitivos; filas limpias, columnas alineadas, acciones al extremo.
 5. **El detalle va en un panel lateral**, no en una página nueva ni saturando la actual. Los formularios de crear o editar, y el detalle de una persona o un grupo, van en un **modal** centrado (`form-modal`), sin X: Cancelar en el pie.
 6. Las dos apps se ven igual: lo que cambia entre ellas son rutas y alias, nunca estilos.
@@ -33,11 +33,11 @@ Los textos siguen `monkey-ui-copy`; este documento solo cubre la capa visual.
 
 | Prohibido | En su lugar |
 |---|---|
-| Píldoras o chips decorativos (servicio, norma, país, rol) | Texto plano; o `tag` neutro (gris, sin icono) solo si es un código que se filtra |
-| Estado como pastilla rellena | `status-indicator`: punto de color + texto |
+| Píldoras (`rounded-full`) o chips decorativos hechos a mano para un código, un atributo o un estado | `app-badge` (D115): **el único** elemento permitido para código, atributo y estado; rectángulo redondeado (`rounded-badge`, 4 px), tinte suave, borde de 1 px y texto fuerte. `app-tag` (código) y `app-status-indicator` (estado) son este mismo componente |
+| Un chip de color arbitrario (servicio, norma, país, rol sin significado de dato) | Texto plano, o `app-badge kind="attribute"` si es un atributo con valor fijo (el color sale del valor, no se elige a mano) |
 | `<select>` nativo, un `<input type="search">` con lupa a mano | `app-select` (disparador + panel propio, simple o `multiple`, formularios reactivos) y `app-search-field` (lupa **a la derecha**); `table-filter` y `table-toolbar` ya los usan; contrato en `components.md` |
-| Tabla con markup propio (`<table>`, una card con filas, `divide-y`), también la lista corta de un panel lateral | `data-table` y sus celdas (`person-cell`, `status-indicator`, `tag`) con `table-toolbar` y `table-filter`; contrato en `components.md`, «Tabla única» |
-| Borde lateral o superior de color en una tarjeta; barra de color junto a un título | Línea fina neutra; el estado va en `status-indicator`. (El indicador lateral del ítem activo del menú sí se permite.) |
+| Tabla con markup propio (`<table>`, una card con filas, `divide-y`), también la lista corta de un panel lateral | `data-table` y sus celdas (`person-cell`, `status-indicator`, `tag`, `badge`) con `table-toolbar` y `table-filter`; contrato en `components.md`, «Tabla única» |
+| Borde lateral o superior de color en una tarjeta; barra de color junto a un título | Línea fina neutra; el estado va en `status-indicator` (badge de estado). (El indicador lateral del ítem activo del menú sí se permite.) |
 | Banner con degradado o círculos decorativos | `page-header` sin fondo. **Única excepción** (decisión de Rod): el banner `app-compliance-banner` del shell de Cumplimiento (ver abajo); ninguna otra vista lo usa |
 | Cabecera de tarjeta con fondo pastel | Título de `section` con línea inferior de 1 px |
 | Tarjeta dentro de tarjeta | Una sola capa; lo interno se separa con líneas y espacio |
@@ -45,6 +45,8 @@ Los textos siguen `monkey-ui-copy`; este documento solo cubre la capa visual.
 | Sombras en contenedores (`shadow-xl`…) | Borde de 1 px, más `shadow-soft` (mínima) en cards. Sombra real solo en capas flotantes (menú, modal, drawer) |
 | Azul como decoración | Azul `primary` solo en la acción primaria y los links |
 | Más de una acción primaria por vista | Una primaria; el resto, secundarias o texto |
+
+**Carga (D116).** Esqueleton (`app-skeleton`, o `loading` en `data-table`) para los datos que cargan, por región; `app-loading-spinner` solo para procesos largos; `appBusy` en el botón que lanza una acción (spinner dentro, bloquea y marca `aria-disabled`; no toca `disabled`; anchura estable) y `appBusyFields`/`busy` de `form-modal` para los campos en solo lectura. El estado ocupado dura hasta la respuesta. Detalle en `components.md`.
 
 Se mantiene: avatar con iniciales del perfil, barras de progreso finas, donas de avance (`donut`), iconos lineales, el semáforo de estado.
 
@@ -69,6 +71,7 @@ Se definen una vez en `@theme` de `styles.css` (Tailwind v4, sin `tailwind.confi
 | `--color-scrim` | fondo oscurecido tras un modal, un drawer o el menú móvil (`bg-scrim`); ninguna capa escribe `bg-black/50` | negro al 50 % |
 | `--color-ok` · `--color-bad` · `--color-warn` · `--color-neutral` | únicamente estado | `success-600`, `error-600`, `warning-500`, `gray-400` |
 | `--color-ok-ink` · `--color-warn-ink` · `--color-bad-ink` | una frase o una cifra en color de estado (error de un campo, aviso): `ok`/`warn`/`bad` son rellenos y puntos (hasta 3,7:1 sobre blanco) y no valen como texto | `success-700`, `warning-700`, `error-700` (en oscuro `success-300`, `warning-300`, `error-300`) |
+| `--color-badge-<X>-bg\|-line\|-ink` | el **badge** (D115): tinte al 8 % sobre `surface`, borde de 1 px (28 %) y texto fuerte; `X` = `ok`, `warn`, `bad`, `neutral` (estado), `brand` (código e `info`), `data-1`…`data-5` (atributo) y `risk-low\|moderate\|high\|critical` (nivel de riesgo, reutiliza sus tokens). Reutilizan `ok`/`-ink`, `tint-ink`, `data-N` y `risk-X`: no duplican valores. Contraste ≥ 4,5:1 en claro y oscuro, calculado por `check-design-system.sh` | mezclas `color-mix` con `surface`; las tintas (`-ink`) se mezclan con `ink` (68-75 %) para quitarles saturación: sobrias, no neón, en claro y en oscuro |
 | `--color-risk-low\|moderate\|high\|critical` y sus `-on`, `-bg`, `-ink` | la **escala de nivel de riesgo** (ver abajo); no es estado | valores propios, claro y oscuro |
 
 Los colores de estado se piden por token; **ningún `.ts` ni template escribe `green-600` o `amber-500`**.
@@ -85,11 +88,13 @@ El modo oscuro redefine los mismos tokens bajo `.dark`; ninguna pantalla se escr
 
 (`X` = `low`, `moderate`, `high`, `critical`, en ese orden.) Contraste WCAG calculado por `check-design-system.sh` (22 pares, todos ≥ 4,5:1; el mínimo es 5,0:1 y `ink` sobre `bg` pasa de 7,5:1). El nivel **siempre** lleva su palabra (la etiqueta, la leyenda, el número de la casilla) y la etiqueta **no lleva icono**; un riesgo sin evaluar no es «bajo»: se pinta neutro con borde punteado. En `.ts` las clases se escriben completas (`bg-risk-high-bg`), nunca armadas con una variable. Uso: `app-risk-level-badge`, el mapa de calor y la matriz inherente, y la severidad de `app-test-findings`.
 
+**Badge** (D115, `app-badge`): un solo componente para código, atributo y estado, idéntico en las dos apps. Forma: rectángulo redondeado con `rounded-badge` (4 px, `--radius-badge`; nunca píldora), relleno compacto, texto pequeño de peso medio, sin partirse (`whitespace-nowrap`; un texto largo se corta con puntos suspensivos y muestra su texto completo como tooltip). Estilo: tinte suave del color, borde de 1 px del mismo tono y texto en el tono fuerte, todo por token `badge-*`. Tipos: **código** (`T-CLD-001`, `AST-1`, `CC6.1`): tinte de marca y cifras tabulares; **atributo** (tipo de recurso, capacidad, «funciona con», categoría): color **fijo por valor** de la paleta de datos (`data-1`…`data-5`, un hash estable del texto: el mismo texto es siempre del mismo color en toda la app); **estado** (disponible, preparado, requiere trabajo, sin medir): tono `ok`/`warn`/`bad`/`neutral`/`info` y un punto de color a la izquierda, porque el color no es la única señal; el nivel de riesgo (`risk-*`) conserva sus tokens. El color del estado sigue significando solo estado. **Única excepción:** el marco del banner de Cumplimiento (`app-compliance-banner`) es un texto con borde fino sobre el fondo de marca, porque un badge con tinte no se lee ahí; la regla `hand-made chip` de `check-design-system.sh` lo deja pasar a propósito (`border-white`). Contrato en `components.md`.
+
 **Espaciado**: escala de 4 px (`1 = 4px`, `2 = 8`, `3 = 12`, `4 = 16`, `6 = 24`, `8 = 32`, `12 = 48`). Padding de página y ancho máximo **idénticos** en las dos apps.
 
 **Radio** (moderados, menores que Donezo; siempre por token): `--radius-control = 8px` (inputs, botones, ítems de menú), `--radius-card = 10px`
 (cards, `section`, tablas; `--radius-surface` es su alias), `--radius-panel = 12px` (sidebar, header, área de contenido).
-`--radius-pill = 9999px` solo para el buscador del header (`rounded-pill`). Nada más; `rounded-full` solo para avatares, el punto de estado y el indicador del menú.
+`--radius-pill = 9999px` solo para el buscador del header (`rounded-pill`). Nada más; `rounded-full` solo para avatares, el punto del badge de estado y el indicador del menú. El badge usa `rounded-badge` (`--radius-badge` = 4 px), más cerrado que un control (8 px).
 
 **Borde**: `1px solid var(--color-line)`.
 
@@ -100,7 +105,7 @@ El modo oscuro redefine los mismos tokens bajo `.dark`; ninguna pantalla se escr
 **Superficies** (utilidades): `mk-panel` (panel del shell), `mk-panel-content` (área de contenido, blanca como `mk-panel`), `mk-surface` (card), `mk-surface-tinted` (card de apoyo con tinte de marca) y `mk-surface-featured`
 (card destacada: azul de marca `brand-500 → brand-600`, degradado sutil, texto blanco; como mucho una por vista, para la cifra principal). y `mk-surface-state-ok|warn|bad|neutral` (card de estado, paso 5: tinte tenue del token de estado sobre `surface` y borde completo de 1 px del mismo tono, texto `ink`; solo para un veredicto o aviso que **es** un estado, nunca decoración; contraste de `ink` sobre el tinte ≥ 13:1 en claro y oscuro).
 
-**Conteos de una card** (Resumen de Cumplimiento): cabecera con la cifra principal («31/118») y su etiqueta en `mk-stat`, una barra de 4 px con la proporción en `action` (no es estado), y debajo una rejilla de 3 columnas con la cifra grande (`text-3xl`, `tabular-nums`, `action`) sobre su `status-indicator` (punto + palabra). La card toma la altura de sus vecinas.
+**Conteos de una card** (Resumen de Cumplimiento): cabecera con la cifra principal («31/118») y su etiqueta en `mk-stat`, una barra de 4 px con la proporción en `action` (no es estado), y debajo una rejilla de 3 columnas con la cifra grande (`text-3xl`, `tabular-nums`, `action`) sobre su `status-indicator` (badge de estado). La card toma la altura de sus vecinas.
 
 **Shell de autenticación** (sin utilidades propias, solo clases de tokens): panel de marca `bg-primary-500` (azul marino `#013362`) en claro y `dark:bg-white/5` en oscuro (casi negro sobre `surface`), con las formas `grid-01.svg`, logo blanco y frase en `text-white/90` (claro) o `dark:text-white/75` (oscuro). Abajo a la derecha, en una columna, el botón de idioma (código `ES`/`EN`) sobre el de tema: círculos de `size-14`, `bg-brand-500` (hover `brand-600`) con texto o icono blanco; sobre el marino se ven claros. Los formularios de auth usan `mk-input` sin icono ni fondo de color (solo el ojo de contraseña) y no llevan iconos decorativos. Detalle en `components.md`.
 

@@ -208,8 +208,55 @@
   --color-data-4: #a1337f;
   --color-data-5: #8a5a0b;
 
+  /* Badge (design-system README section 2, D115): `app-badge` paints a soft tint of its colour (8 % over `surface`), a 1 px line of the same hue and the text in a strong tone (>= 4.5:1 on the tint, light and dark;
+     `check-design-system.sh` computes it). Three triplets per variant: `badge-X-bg`, `badge-X-line`, `badge-X-ink`. X = ok | warn | bad | neutral (status), brand (code and `info`), data-1..5 (attribute,
+     the data palette) and risk-low | moderate | high | critical (the risk level, reusing the risk tokens). Mixed with `surface`, so `.dark` redefines the tints. */
+  --color-badge-ok-bg: color-mix(in srgb, var(--color-ok) 8%, var(--color-surface));
+  --color-badge-ok-line: color-mix(in srgb, var(--color-ok) 28%, var(--color-surface));
+  --color-badge-ok-ink: color-mix(in srgb, var(--color-ok-ink) 72%, var(--color-ink));
+  --color-badge-warn-bg: color-mix(in srgb, var(--color-warn) 8%, var(--color-surface));
+  --color-badge-warn-line: color-mix(in srgb, var(--color-warn) 28%, var(--color-surface));
+  --color-badge-warn-ink: color-mix(in srgb, var(--color-warn-ink) 72%, var(--color-ink));
+  --color-badge-bad-bg: color-mix(in srgb, var(--color-bad) 8%, var(--color-surface));
+  --color-badge-bad-line: color-mix(in srgb, var(--color-bad) 28%, var(--color-surface));
+  --color-badge-bad-ink: color-mix(in srgb, var(--color-bad-ink) 72%, var(--color-ink));
+  --color-badge-neutral-bg: color-mix(in srgb, var(--color-neutral) 8%, var(--color-surface));
+  --color-badge-neutral-line: color-mix(in srgb, var(--color-neutral) 28%, var(--color-surface));
+  --color-badge-neutral-ink: var(--color-ink-muted);
+  --color-badge-brand-bg: color-mix(in srgb, var(--color-action) 8%, var(--color-surface));
+  --color-badge-brand-line: color-mix(in srgb, var(--color-action) 28%, var(--color-surface));
+  --color-badge-brand-ink: color-mix(in srgb, var(--color-tint-ink) 75%, var(--color-ink));
+  --color-badge-data-1-bg: color-mix(in srgb, var(--color-data-1) 8%, var(--color-surface));
+  --color-badge-data-1-line: color-mix(in srgb, var(--color-data-1) 28%, var(--color-surface));
+  --color-badge-data-1-ink: color-mix(in srgb, var(--color-data-1) 68%, var(--color-ink));
+  --color-badge-data-2-bg: color-mix(in srgb, var(--color-data-2) 8%, var(--color-surface));
+  --color-badge-data-2-line: color-mix(in srgb, var(--color-data-2) 28%, var(--color-surface));
+  --color-badge-data-2-ink: color-mix(in srgb, var(--color-data-2) 68%, var(--color-ink));
+  --color-badge-data-3-bg: color-mix(in srgb, var(--color-data-3) 8%, var(--color-surface));
+  --color-badge-data-3-line: color-mix(in srgb, var(--color-data-3) 28%, var(--color-surface));
+  --color-badge-data-3-ink: color-mix(in srgb, var(--color-data-3) 68%, var(--color-ink));
+  --color-badge-data-4-bg: color-mix(in srgb, var(--color-data-4) 8%, var(--color-surface));
+  --color-badge-data-4-line: color-mix(in srgb, var(--color-data-4) 28%, var(--color-surface));
+  --color-badge-data-4-ink: color-mix(in srgb, var(--color-data-4) 68%, var(--color-ink));
+  --color-badge-data-5-bg: color-mix(in srgb, var(--color-data-5) 8%, var(--color-surface));
+  --color-badge-data-5-line: color-mix(in srgb, var(--color-data-5) 28%, var(--color-surface));
+  --color-badge-data-5-ink: color-mix(in srgb, var(--color-data-5) 68%, var(--color-ink));
+  --color-badge-risk-low-bg: var(--color-risk-low-bg);
+  --color-badge-risk-low-line: color-mix(in srgb, var(--color-risk-low) 45%, var(--color-risk-low-bg));
+  --color-badge-risk-low-ink: var(--color-risk-low-ink);
+  --color-badge-risk-moderate-bg: var(--color-risk-moderate-bg);
+  --color-badge-risk-moderate-line: color-mix(in srgb, var(--color-risk-moderate) 45%, var(--color-risk-moderate-bg));
+  --color-badge-risk-moderate-ink: var(--color-risk-moderate-ink);
+  --color-badge-risk-high-bg: var(--color-risk-high-bg);
+  --color-badge-risk-high-line: color-mix(in srgb, var(--color-risk-high) 45%, var(--color-risk-high-bg));
+  --color-badge-risk-high-ink: var(--color-risk-high-ink);
+  --color-badge-risk-critical-bg: var(--color-risk-critical-bg);
+  --color-badge-risk-critical-line: color-mix(in srgb, var(--color-risk-critical) 45%, var(--color-risk-critical-bg));
+  --color-badge-risk-critical-ink: var(--color-risk-critical-ink);
+
   /* Moderate radii (Vanta sober + Donezo shell). Always by token, never a loose value. */
   --radius-control: 8px;   /* inputs, buttons, menu items */
+  --radius-badge: 4px;     /* badges (app-badge): a tighter corner than a control, still a recognisable rounded rectangle */
   --radius-card: 10px;     /* cards, sections, tables */
   --radius-panel: 12px;    /* shell panels: sidebar, header, content area */
   --radius-surface: var(--radius-card);
@@ -275,6 +322,58 @@
   @apply h-10 w-full rounded-control border border-gray-300 bg-surface px-3 text-sm text-ink placeholder:text-ink-faint focus:border-action focus:outline-none focus:ring-2 focus:ring-action/20 disabled:cursor-not-allowed disabled:bg-tint disabled:text-ink-faint dark:border-gray-700;
 }
 
+/* Loading (D116). `mk-skeleton` is the block of `app-skeleton`: the `line` token as fill and a soft sweep of `surface` over it (readable on light and dark, no fixed colour).
+   With `prefers-reduced-motion: reduce` it stays still. */
+@keyframes mk-shimmer {
+  from {
+    background-position: 150% 0;
+  }
+  to {
+    background-position: -50% 0;
+  }
+}
+@utility mk-skeleton {
+  background-color: var(--color-line);
+  background-image: linear-gradient(90deg, transparent 0%, color-mix(in srgb, var(--color-surface) 65%, transparent) 50%, transparent 100%);
+  background-size: 200% 100%;
+  background-repeat: no-repeat;
+  animation: mk-shimmer 1.6s ease-in-out infinite;
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+/* A button marked `appBusy` is not `disabled` (the screen's `[disabled]` rules and it keeps the focus): the directive blocks click, Enter and Space and says `aria-busy`/`aria-disabled`.
+   It keeps its own colours while it runs, also under hover or while the screen has it `disabled`, and the cursor says «working». Fields held read-only by `appBusyFields` show «working» too. */
+button[aria-busy='true'],
+button[aria-busy='true']:hover {
+  cursor: progress;
+}
+.mk-btn[aria-busy='true'],
+.mk-btn[aria-busy='true']:hover {
+  background-color: var(--color-action);
+  color: var(--color-white);
+}
+.mk-btn-danger[aria-busy='true'],
+.mk-btn-danger[aria-busy='true']:hover {
+  background-color: var(--color-bad);
+  color: var(--color-white);
+}
+.mk-btn-secondary[aria-busy='true'],
+.mk-btn-secondary[aria-busy='true']:hover {
+  border-color: var(--color-gray-300);
+  background-color: var(--color-surface);
+  color: var(--color-ink);
+}
+.dark .mk-btn-secondary[aria-busy='true'],
+.dark .mk-btn-secondary[aria-busy='true']:hover {
+  border-color: var(--color-gray-700);
+}
+[data-busy-fields] :is(input, textarea, select, button):disabled,
+[data-busy-fields] input:read-only {
+  cursor: progress;
+}
+
 /* Dark mode: near-neutral graphite surfaces. Without a layer, so it wins over the theme tokens. The semantic tokens are redefined here and nowhere else. */
 .dark {
   --color-gray-950: #0b0d11;
@@ -319,6 +418,48 @@
   --color-risk-critical-on: #450a0a;
   --color-risk-critical-bg: #4a1d1d;
   --color-risk-critical-ink: #fca5a5;
+  --color-badge-ok-bg: color-mix(in srgb, var(--color-ok) 8%, var(--color-surface));
+  --color-badge-ok-line: color-mix(in srgb, var(--color-ok) 28%, var(--color-surface));
+  --color-badge-warn-bg: color-mix(in srgb, var(--color-warn) 8%, var(--color-surface));
+  --color-badge-warn-line: color-mix(in srgb, var(--color-warn) 28%, var(--color-surface));
+  --color-badge-bad-bg: color-mix(in srgb, var(--color-bad) 8%, var(--color-surface));
+  --color-badge-bad-line: color-mix(in srgb, var(--color-bad) 28%, var(--color-surface));
+  --color-badge-neutral-bg: color-mix(in srgb, var(--color-neutral) 8%, var(--color-surface));
+  --color-badge-neutral-line: color-mix(in srgb, var(--color-neutral) 28%, var(--color-surface));
+  --color-badge-ok-ink: color-mix(in srgb, var(--color-ok-ink) 72%, var(--color-ink));
+  --color-badge-warn-ink: color-mix(in srgb, var(--color-warn-ink) 72%, var(--color-ink));
+  --color-badge-bad-ink: color-mix(in srgb, var(--color-bad-ink) 72%, var(--color-ink));
+  --color-badge-neutral-ink: var(--color-ink-muted);
+  --color-badge-brand-ink: color-mix(in srgb, var(--color-tint-ink) 75%, var(--color-ink));
+  --color-badge-brand-bg: color-mix(in srgb, var(--color-action) 8%, var(--color-surface));
+  --color-badge-brand-line: color-mix(in srgb, var(--color-action) 28%, var(--color-surface));
+  --color-badge-data-1-bg: color-mix(in srgb, var(--color-data-1) 8%, var(--color-surface));
+  --color-badge-data-1-line: color-mix(in srgb, var(--color-data-1) 28%, var(--color-surface));
+  --color-badge-data-1-ink: color-mix(in srgb, var(--color-data-1) 68%, var(--color-ink));
+  --color-badge-data-2-bg: color-mix(in srgb, var(--color-data-2) 8%, var(--color-surface));
+  --color-badge-data-2-line: color-mix(in srgb, var(--color-data-2) 28%, var(--color-surface));
+  --color-badge-data-2-ink: color-mix(in srgb, var(--color-data-2) 68%, var(--color-ink));
+  --color-badge-data-3-bg: color-mix(in srgb, var(--color-data-3) 8%, var(--color-surface));
+  --color-badge-data-3-line: color-mix(in srgb, var(--color-data-3) 28%, var(--color-surface));
+  --color-badge-data-3-ink: color-mix(in srgb, var(--color-data-3) 68%, var(--color-ink));
+  --color-badge-data-4-bg: color-mix(in srgb, var(--color-data-4) 8%, var(--color-surface));
+  --color-badge-data-4-line: color-mix(in srgb, var(--color-data-4) 28%, var(--color-surface));
+  --color-badge-data-4-ink: color-mix(in srgb, var(--color-data-4) 68%, var(--color-ink));
+  --color-badge-data-5-bg: color-mix(in srgb, var(--color-data-5) 8%, var(--color-surface));
+  --color-badge-data-5-line: color-mix(in srgb, var(--color-data-5) 28%, var(--color-surface));
+  --color-badge-data-5-ink: color-mix(in srgb, var(--color-data-5) 68%, var(--color-ink));
+  --color-badge-risk-low-bg: var(--color-risk-low-bg);
+  --color-badge-risk-low-line: color-mix(in srgb, var(--color-risk-low) 45%, var(--color-risk-low-bg));
+  --color-badge-risk-low-ink: var(--color-risk-low-ink);
+  --color-badge-risk-moderate-bg: var(--color-risk-moderate-bg);
+  --color-badge-risk-moderate-line: color-mix(in srgb, var(--color-risk-moderate) 45%, var(--color-risk-moderate-bg));
+  --color-badge-risk-moderate-ink: var(--color-risk-moderate-ink);
+  --color-badge-risk-high-bg: var(--color-risk-high-bg);
+  --color-badge-risk-high-line: color-mix(in srgb, var(--color-risk-high) 45%, var(--color-risk-high-bg));
+  --color-badge-risk-high-ink: var(--color-risk-high-ink);
+  --color-badge-risk-critical-bg: var(--color-risk-critical-bg);
+  --color-badge-risk-critical-line: color-mix(in srgb, var(--color-risk-critical) 45%, var(--color-risk-critical-bg));
+  --color-badge-risk-critical-ink: var(--color-risk-critical-ink);
 }
 .dark body {
   background-color: var(--color-canvas);

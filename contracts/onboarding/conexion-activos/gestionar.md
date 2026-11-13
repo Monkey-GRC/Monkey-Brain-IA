@@ -39,14 +39,14 @@ Todo opcional.
 | Campo | Tipo | Obligatorio | Regla |
 |---|---|---|---|
 | `name`, `criticality`, `tags` | | no | **No tocan la conexión** |
-| `external_account_id`, `regions` | | no | **Solo en una cuenta de nube** |
+| `external_account_id`, `regions` | | no | **Solo en una cuenta de nube**. En GCP (`identity_federation`) solo `external_account_id` (el ID del proyecto); `regions` da `422 field.not_allowed` |
 | `role_arn` | string | no | Canal de rol. De otra cuenta que la declarada: `422 connection.account_mismatch` |
 | `credentials` | objeto | no | Canal de llaves: reemplaza las guardadas y **nunca se devuelve** |
 
 #### Reglas
 - Cambiar cuenta, regiones, rol o llaves **invalida lo comprobado:** `connection_status` vuelve a `pending`, se pierde la activación y la programación, y el activo pasa a `not_monitored`. El historial de evaluaciones **se conserva**.
-- Cambiar de cuenta además **renueva el `external_id`** (el anterior se entregó para otra cuenta) y descarta el `role_arn`, salvo que llegue uno nuevo.
-- Cambios de conexión en un activo que no es de nube con rol o llaves: `422 field.not_allowed`.
+- Cambiar de cuenta además **renueva el `external_id`** (el anterior se entregó para otra cuenta) y descarta el `role_arn`, salvo que llegue uno nuevo. En GCP, cambiar de proyecto renueva el `external_id` y borra el `project_number`: el cliente vuelve a correr el script con el comando nuevo (D112, SEG-78).
+- Cambios de conexión en un activo que no es de nube con rol, llaves o federación: `422 field.not_allowed`. `role_arn` y `credentials` en GCP también.
 - `409 EXECUTION_IN_PROGRESS` si hay una comprobación o evaluación en curso.
 - **Auditoría:** `asset.update`.
 

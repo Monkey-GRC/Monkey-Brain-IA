@@ -162,6 +162,23 @@ Parches vigentes de [Control técnico](../arquitectura/control-tecnico/README.md
 - **Por qué:** Se construyó antes de D62
 - **Qué lo cierra:** Cablear `GET /v1/assets/{id}/readiness` a `evaluateAssetReadiness` (`features/compliance`, MD-139), que ya calcula el porcentaje con los cortes de D62, y retirar `readiness.ts`
 
+### DT-102 · La conexión de GCP no descubre los recursos del proyecto al validar
+
+🟡 Mejora
+
+- **Qué está parchado:** Al validar un proyecto de GCP no se corre el inventario (D59); el cliente no ve qué recursos tiene hasta la primera evaluación
+- **Por qué:** Alcance de MD-214: primero la conexión y la evaluación
+- **Qué lo cierra:** Un `InventoryScanner` de GCP (Cloud Asset Inventory o las APIs de cada servicio) en el adaptador de GCP
+
+### DT-103 · No se ha probado que la identidad de AWS de Monkey asuma el rol de una cuenta de AWS de otro dueño
+
+🟡 Mejora
+
+- **Qué está parchado:** Desde el 2026-11-13 `monkey-audit` tiene la política `monkey-assume-customer-roles` (`sts:AssumeRole` sobre `arn:aws:iam::*:role/MonkeyReadOnly`); antes no podía asumir el rol de una cuenta ajena y un cliente real de AWS habría fallado. Todas las pruebas de AWS se hicieron dentro de la cuenta de Monkey
+- **Por qué:** No hay una segunda cuenta de AWS de pruebas
+- **Qué lo cierra:** Conectar una cuenta de AWS distinta con la plantilla `MonkeyReadOnly` y validar y evaluar de punta a punta
+
+
 ## Transversal
 
 ### DT-48 · `check_results` no tiene política de retención ni de partición

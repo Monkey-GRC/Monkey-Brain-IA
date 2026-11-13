@@ -30,6 +30,8 @@ ANTI = [
     ('border-l/t colour', r'\bborder-[lt]-[a-z]', ('.ts', '.html', '.css'), 'neutral thin line; status goes in status-indicator'),
     ('tag-badge', r'\btag-badge\b', ('.ts', '.html', '.css'), 'tag (neutral gray)'),
     ('rounded-full px-', r'\brounded-full px-', ('.ts', '.html'), 'plain text or status-indicator'),
+    # A chip written by hand (a span/li with `rounded-control`, a 1 px border, horizontal and vertical padding): code, attribute and status are `app-badge`.
+    ('hand-made chip', r'<(?:span|li)\b(?=[^>]*\brounded-control\b)(?=[^>]*\bborder\b)(?=[^>]*\bpx-[\d.]+)(?=[^>]*\bpy-(?:0\.5|1)\b)(?![^>]*\bborder-white)[^>]*>', ('.ts', '.html'), 'app-badge (kind code, attribute or status)'),
     ('bg-linear-to-', r'\bbg-linear-to-', ('.ts', '.html'), 'no gradients in banners'),
     ('shadow-card', r'\bshadow-card', ('.ts', '.html', '.css'), '1 px border'),
     ('shadow-xl', r'\bshadow-xl\b', ('.ts', '.html'), '1 px border; shadow only in floating layers'),
@@ -43,6 +45,13 @@ ANTI = [
     ('opacity-NN on a control', r'(?<![\w-])(?:[a-z-]+:)?opacity-(?:[1-9]\d?|100)\b', ('.ts', '.html'), 'tokens: ink-faint / tint; no opacity on buttons and inputs'),
     ('native <select>', r'<select\b', ('.ts', '.html'), 'app-select (or app-table-filter in a toolbar): the system select, with its own panel'),
     ('danger button by hand', r'\bbg-bad!|\bhover:bg-bad\b', ('.ts', '.html'), 'mk-btn-danger (enabled-only hover, tokenised disabled)'),
+]
+# Informative only (D116), never a failure, not even with --strict: loading is a skeleton, a button that runs a process is `appBusy`, the spinner is for long processes.
+# Not counted inside shared/presentation/ (the canonical components and directives write them on purpose), nor on a line that carries the attribute `data-long-process` (the
+# allowlist: a spinner of a long process such as connecting a provider or running an evaluation, marked on the same line as the spinner). name -> (regex, extensions, what to do instead)
+INFO = [
+    ('app-loading-spinner', r'<app-loading-spinner\b', ('.ts', '.html'), 'app-skeleton (data) or loading in app-data-table; the spinner only for long processes'),
+    ('animate-spin by hand', r'\banimate-spin\b', ('.ts', '.html'), 'appBusy on the button (or app-skeleton); not a hand-made spinner'),
 ]
 # A text field written by hand (not `mk-input`) must set its own text colour, or the browser's black shows on the dark surface.
 INPUT_TAG = re.compile(r'<(?:input|textarea)\b[^>]*>', re.S)
@@ -216,13 +225,30 @@ def scan(root):
                     hits[INPUT_RULE].append(('src/app/' + rel, text.count('\n', 0, m.start()) + 1, ' '.join(m.group(0).split())[:140]))
         for n, line in enumerate(text.splitlines(), 1):
             for name, rx, exts, _ in ANTI:
-                if ext in exts and re.search(rx, line):
+                if ext in exts and re.search(rx, line) and 'data-long-process' not in line:
                     hits[name].append(('src/app/' + rel, n, line.strip()))
     css = os.path.join(src, CSS)
     if os.path.exists(css):
         for n, line in enumerate(read(css).splitlines(), 1):
             if TEAL.search(line):
                 hits['teal glow (off palette)'].append(('src/styles.css', n, line.strip()))
+    return hits
+
+
+def scan_info(root):
+    """-> {name: [(file, line_no, line)]} for INFO, in src/app outside shared/presentation/ and *.spec.ts."""
+    hits = {name: [] for name, *_ in INFO}
+    app = os.path.join(root, 'src', 'app')
+    for rel in walk(app):
+        if rel.endswith('.spec.ts') or rel.startswith('shared/presentation/'):
+            continue
+        ext = os.path.splitext(rel)[1]
+        if ext not in ('.ts', '.html'):
+            continue
+        for n, line in enumerate(read(os.path.join(app, rel)).splitlines(), 1):
+            for name, rx, exts, _ in INFO:
+                if ext in exts and re.search(rx, line) and 'data-long-process' not in line:
+                    hits[name].append(('src/app/' + rel, n, line.strip()))
     return hits
 
 
@@ -244,6 +270,44 @@ def _lum(hexcolor):
 def contrast(a, b):
     x, y = sorted((_lum(a), _lum(b)), reverse=True)
     return (x + 0.05) / (y + 0.05)
+
+
+def _mix(a, b, pct):
+    ca, cb = [int(a[i:i + 2], 16) for i in (1, 3, 5)], [int(b[i:i + 2], 16) for i in (1, 3, 5)]
+    return '#%02x%02x%02x' % tuple(round(x * pct / 100 + y * (100 - pct) / 100) for x, y in zip(ca, cb))
+
+
+def _badge_pairs(css, mode):
+    """Evaluates the `--color-*` tokens of the canonical styles.css (hex, var() and color-mix(in srgb, A p%, B)) for the badge tokens: -> [(label, ratio)]."""
+    i = css.find('\n.dark {')
+    light_text, dark_text = css[:i], css[i:css.find('\n}', i)]
+    decl = {}
+    for text in ((light_text,) if mode == 'light' else (light_text, dark_text)):
+        for m in re.finditer(r'--color-([a-z0-9-]+):\s*([^;]+);', text):
+            decl[m.group(1)] = m.group(2).strip()
+
+    def ev(v, depth=0):
+        v = v.strip()
+        if re.fullmatch(r'#[0-9a-fA-F]{6}', v):
+            return v
+        m = re.fullmatch(r'var\(--color-([a-z0-9-]+)\)', v)
+        if m:
+            return ev(decl[m.group(1)], depth + 1) if m.group(1) in decl and depth < 12 else None
+        m = re.fullmatch(r'color-mix\(in srgb,\s*(.+?)\s+(\d+)%,\s*(.+)\)', v)
+        if m:
+            a, b = ev(m.group(1), depth + 1), ev(m.group(3), depth + 1)
+            return _mix(a, b, int(m.group(2))) if a and b else None
+        return None
+
+    out = []
+    for name in sorted(decl):
+        m = re.fullmatch(r'badge-(.+)-bg', name)
+        if m:
+            x = m.group(1)
+            bg, ink = ev(decl[name]), ev(decl.get('badge-%s-ink' % x, ''))
+            if bg and ink:
+                out.append(('badge-%s ink on its tint (%s)' % (x, mode), contrast(ink, bg)))
+    return out
 
 
 def contrast_report():
@@ -274,6 +338,8 @@ def contrast_report():
             ink = get(st + '-ink')
             if ink and surface:
                 out.append(('%s-ink on surface (%s)' % (st, mode), contrast(ink, surface)))
+    for mode in ('light', 'dark'):
+        out.extend(_badge_pairs(css, mode))
     return out
 
 
@@ -354,6 +420,15 @@ def cmd_check(args):
         for f in folders:
             for name in names:
                 for file, n, line in results[f][name][:args.limit]:
+                    print('    [%s] %s: %s:%d  %s' % (APPS[f], name, file, n, line[:110]))
+    infos = {f: scan_info(os.path.join(MONKEY, f)) for f in folders}
+    print('\nInformative (D116, never fails): loading outside the shared components:')
+    print('  %-26s' % 'pattern' + ''.join('%12s' % APPS[f] for f in folders))
+    for name, _rx, _exts, hint in INFO:
+        print('  %-26s' % name + ''.join('%12d' % len(infos[f][name]) for f in folders) + '   -> ' + hint)
+        if args.verbose:
+            for f in folders:
+                for file, n, line in infos[f][name][:args.limit]:
                     print('    [%s] %s: %s:%d  %s' % (APPS[f], name, file, n, line[:110]))
     ratios = contrast_report()
     low = [(label, r) for label, r in ratios if r < 4.5]

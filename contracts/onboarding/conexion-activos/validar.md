@@ -70,6 +70,8 @@ Sin cuerpo.
 | `role_arn` | `connection.account_mismatch` | El rol es de otra cuenta que la declarada |
 | `credentials` | `connection.credentials_invalid` | Las llaves no son válidas o están desactivadas |
 | `regions` | `connection.regions_missing` | No hay regiones declaradas |
+| `project_number` | `connection.federation_rejected` | GCP no aceptó a Monkey: el script de alta no se corrió en ese proyecto, el número de proyecto no es el suyo o se borró el acceso (D112) |
+| `external_account_id` | `connection.account_mismatch` | En GCP: el acceso funciona pero el proyecto no es el declarado |
 | `platform` | `connection.provider_not_supported` | Plataforma bloqueada (`coming_soon`): también al crear, no solo al validar |
 
 > Las razones que no son del cliente (trabajador caído, llaves base vencidas) dan `503 CONNECTION_UNAVAILABLE`.

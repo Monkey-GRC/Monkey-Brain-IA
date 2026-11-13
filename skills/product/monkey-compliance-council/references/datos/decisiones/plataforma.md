@@ -83,3 +83,23 @@ Desarrollo las aplicó; **no son decisiones del comité de producto**.
 La propuso desarrollo y la aprobó el responsable de producto; **no es una decisión del comité**.
 
 **Fuente:** Rod, sesión de MD-211, 2026-11-12.
+
+## D115 · Un solo badge de rectángulo redondeado para códigos, atributos y estados, en las dos apps (2026-11-13)
+
+**Decisión.** El design system tiene **un** componente de badge (`app-badge`): rectángulo redondeado con el radio de control de Monkey (no píldora), tinte suave del color al 12-15 % con borde de 1 px del mismo tono y texto en el tono fuerte (contraste ≥ 4,5:1 en claro y oscuro). Tiene tres tipos, cada uno con su color: **código** (`T-CLD-001`, `AST-1`, códigos de requisito): tinte de marca; **atributo** (tipo de recurso, capacidad, «funciona con», categoría): color **fijo por valor** de la paleta de datos (`data-1`…`data-5`), de modo que el mismo valor es del mismo color en toda la app; **estado** (disponible, preparado, requiere trabajo, sin medir): colores semánticos de estado (`ok`, `warn`, `bad`, `neutral`) con un punto de color dentro, de modo que el color no es la única señal. Es el mismo componente en Frontend y Frontend-Platform.
+
+**Por qué.** Varias pantallas se veían planas y monocromas: los códigos, los atributos y los estados se leían igual que el texto que los rodea. Un badge con color propio por tipo hace visible de un vistazo qué es cada dato.
+
+**Qué cambia.** Reemplaza dos reglas del README del design system: «sin píldoras ni chips decorativos» (ahora el badge es el elemento permitido para código, atributo y estado) y «estado = punto de color + texto sin pastilla» (el estado lleva badge). `tag` y `status-indicator` pasan a ser este mismo componente. Se mantiene: el color del estado sigue significando solo estado, y la escala de riesgo conserva sus tokens propios.
+
+**Fuente:** Rod, 2026-11-13 (tres capturas de referencia, con los códigos, los atributos y los estados marcados; estilo de tinte suave con borde fino, color fijo por valor y punto en el estado).
+
+## D116 · Esqueleton para el contenido que carga; spinner solo para procesos y botones ocupados (2026-11-13)
+
+**Decisión.** En las dos apps, todo contenido que carga datos (tablas, campos, tarjetas, métricas, paneles de detalle) muestra un **esqueleton** con la forma del contenido real (`app-skeleton`; en tablas, filas esqueleton con las mismas columnas), por región y no como un bloque único. El **spinner** (`app-loading-spinner`) queda solo para **procesos largos** (conectar un proveedor, ejecutar una evaluación). Los botones que lanzan un proceso se marcan con la directiva `appBusy`: spinner dentro del botón, botón deshabilitado y con `aria-busy`, anchura estable, y los campos del formulario en solo lectura mientras dura. **El estado ocupado se mantiene hasta que llega la respuesta** (y, si la acción navega, hasta que la ruta cambia); si falla, se quita y se muestra el error. Sin retardos artificiales.
+
+**Por qué.** Casi todas las pantallas cargaban con un spinner en bloque, que oculta la estructura y hace saltar el diseño; los botones escribían su spinner a mano de formas distintas, y el spinner a veces desaparecía antes de que terminara la acción. El esqueleton es más legible y estable, y `aria-busy`/`role=status` mejora la accesibilidad. Con `prefers-reduced-motion` no hay animación.
+
+**Qué cambia.** El design system suma `app-skeleton` y `appBusy` y la tabla acepta `loading`; las pantallas que usan `app-loading-spinner` para cargar datos pasan a esqueleton; los botones con spinner propio pasan a `appBusy`. Es elemento compartido, idéntico en Frontend y Frontend-Platform.
+
+**Fuente:** Rod, 2026-11-13 (esqueleton para campos, tablas y casillas; spinner solo en procesos y botones; el spinner permanece hasta recibir la respuesta; botón y campos bloqueados; esqueleton por región).

@@ -31,7 +31,7 @@ la cierra). Los ID (`DT-n`) no se reutilizan. Si una deuda depende del comité, 
 |---|---|---|
 | [`autenticacion.md`](autenticacion.md) | 1 | [Autenticación](../arquitectura/autenticacion/README.md) |
 | [`catalogo-maestro.md`](catalogo-maestro.md) | 6 | [Catálogo maestro](../arquitectura/catalogo-maestro/README.md) |
-| [`control-tecnico.md`](control-tecnico.md) | 22 | [Control técnico](../arquitectura/control-tecnico/README.md) |
+| [`control-tecnico.md`](control-tecnico.md) | 25 | [Control técnico](../arquitectura/control-tecnico/README.md) |
 | [`cumplimiento.md`](cumplimiento.md) | 6 | [Cumplimiento](../arquitectura/cumplimiento/README.md) |
 | [`empresas.md`](empresas.md) | 5 | [Empresas](../arquitectura/empresas/README.md) |
 | [`gestion-usuarios.md`](gestion-usuarios.md) | 2 | [Gestión de usuarios](../arquitectura/gestion-usuarios/README.md) |
@@ -122,6 +122,8 @@ Pendientes sin urgencia.
 
 | ID | Qué | Módulo |
 |---|---|---|
+| [DT-103](control-tecnico.md#dt-103--no-se-ha-probado-que-la-identidad-de-aws-de-monkey-asuma-el-rol-de-una-cuenta-de-aws-de-otro-dueño) | No se ha probado que la identidad de AWS de Monkey asuma el rol de una cuenta de AWS de otro dueño | [Control técnico](control-tecnico.md) |
+| [DT-102](control-tecnico.md#dt-102--la-conexión-de-gcp-no-descubre-los-recursos-del-proyecto-al-validar) | La conexión de GCP no descubre los recursos del proyecto al validar | [Control técnico](control-tecnico.md) |
 | [DT-7](onboarding.md#dt-7--híbrido-ofrece-las-6-conexiones) | «Híbrido» ofrece las 6 conexiones | [Onboarding](onboarding.md) |
 | [DT-8](onboarding.md#dt-8--el-tipo-del-activo-se-deduce-de-la-conexión) | El tipo del activo se deduce de la conexión | [Onboarding](onboarding.md) |
 | [DT-11](onboarding.md#dt-11--un-activo-dado-de-baja-no-se-puede-ver-ni-restaurar) | Un activo dado de baja no se puede ver ni restaurar | [Onboarding](onboarding.md) |
@@ -147,5 +149,5 @@ Pendientes sin urgencia.
 | [DT-74](cumplimiento.md#dt-74--la-exclusión-de-un-check-no-tiene-endpoint) | La exclusión de un check no tiene endpoint | [Cumplimiento](cumplimiento.md) |
 | [DT-80](cumplimiento.md#dt-80--el-veredicto-manual-usa-el-tipo-de-la-dimensión-del-control) | El veredicto manual usa el tipo de la dimensión del control | [Cumplimiento](cumplimiento.md) |
 | [DT-90](gestion-usuarios.md#dt-90--el-envío-de-la-invitación-es-directo-sin-cola-ni-reintentos-y-su-resultado-no-se-guarda) | El envío de la invitación es directo, sin cola ni reintentos, y su resultado no se guarda | [Gestión de usuarios](gestion-usuarios.md) |
-| [DT-106](control-tecnico.md#DT-106--el-retiro-del-agente-de-un-servidor-dado-de-baja-caduca-a-los-2-minutos-si-no-hay-trabajador) | El retiro del agente de un servidor dado de baja caduca a los 2 minutos si no hay trabajador | [Control técnico](control-tecnico.md) |
+| [DT-106](control-tecnico.md#dt-106--el-retiro-del-agente-de-un-servidor-dado-de-baja-caduca-a-los-2-minutos-si-no-hay-trabajador) | El retiro del agente de un servidor dado de baja caduca a los 2 minutos si no hay trabajador | [Control técnico](control-tecnico.md) |
 | [DT-99](plataforma.md#dt-99--lint-de-los-frontends-reglas-apagadas-y-dependencias-de-desarrollo-con-avisos) | Lint de los frontends: reglas apagadas y dependencias de desarrollo con avisos | [Plataforma](plataforma.md) |

@@ -51,7 +51,7 @@ Las de HTTP de aislamiento ya están en `develop` (PR #18 y #19). **Las de `test
 | [`gestion-usuarios.md`](gestion-usuarios.md) | 7 | [Gestión de usuarios](../arquitectura/gestion-usuarios/README.md) |
 | [`empresas.md`](empresas.md) | 3 | [Empresas](../arquitectura/empresas/README.md) |
 | [`onboarding.md`](onboarding.md) | 2 | [Onboarding](../arquitectura/onboarding/README.md) |
-| [`control-tecnico.md`](control-tecnico.md) | 10 | [Control técnico](../arquitectura/control-tecnico/README.md) |
+| [`control-tecnico.md`](control-tecnico.md) | 11 | [Control técnico](../arquitectura/control-tecnico/README.md) |
 | [`trazabilidad.md`](trazabilidad.md) | 8 | [Trazabilidad](../arquitectura/trazabilidad/README.md) |
 | [`plataforma.md`](plataforma.md) | 9 | [Plataforma](../arquitectura/plataforma/README.md) |
 | [`entrega.md`](entrega.md) | 7 | **ninguno**: CI, despliegue, respaldos y red |
@@ -72,11 +72,11 @@ Las de HTTP de aislamiento ya están en `develop` (PR #18 y #19). **Las de `test
 | [Gestión de usuarios](gestion-usuarios.md) | 2 | 0 | 1 | 4 | 0 | **7** |
 | [Empresas](empresas.md) | 1 | 1 | 0 | 0 | 1 | **3** |
 | [Onboarding](onboarding.md) | 2 | 0 | 0 | 0 | 0 | **2** |
-| [Control técnico](control-tecnico.md) | 3 | 2 | 3 | 2 | 0 | **10** |
+| [Control técnico](control-tecnico.md) | 3 | 2 | 4 | 2 | 0 | **11** |
 | [Trazabilidad](trazabilidad.md) | 6 | 0 | 2 | 0 | 0 | **8** |
 | [Plataforma](plataforma.md) | 4 | 2 | 0 | 1 | 2 | **9** |
 | [Entrega](entrega.md) | 1 | 2 | 0 | 3 | 1 | **7** |
-| **Total** | **36** | **8** | **11** | **13** | **8** | **76** |
+| **Total** | **36** | **8** | **12** | **13** | **8** | **77** |
 
 ---
 
@@ -93,12 +93,12 @@ El tablero: todo lo que **no** está ✅, por estado y por módulo. Cada ID se b
 - [Plataforma](plataforma.md): `SEG-25`
 - [Entrega](entrega.md): `SEG-28` · `SEG-31` · `SEG-41`
 
-**🟠 Parcial** (11)
+**🟠 Parcial** (12)
 
 - [Aislamiento multi-tenant](aislamiento-tenant.md): `SEG-07`
 - [Roles y permisos](roles-permisos.md): `SEG-21` · `SEG-54` · `SEG-67` · `SEG-70`
 - [Gestión de usuarios](gestion-usuarios.md): `SEG-23`
-- [Control técnico](control-tecnico.md): `SEG-39` · `SEG-46` · `SEG-47`
+- [Control técnico](control-tecnico.md): `SEG-39` · `SEG-46` · `SEG-47` · `SEG-78`
 - [Trazabilidad](trazabilidad.md): `SEG-35` · `SEG-37`
 
 **🟡 Sin prueba automática** (8)

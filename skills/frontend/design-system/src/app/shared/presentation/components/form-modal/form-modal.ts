@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
 import { Modal } from '@shared/presentation/components/modal/modal';
+import { BusyFields } from '@shared/presentation/directives/busy-fields';
 
 let nextId = 0;
 
@@ -16,11 +17,12 @@ let nextId = 0;
  *
  * `dismissible` false (a call in progress) blocks Esc, the backdrop and Cancel. `guarded` true (a form with unsent data) blocks only Esc and the backdrop; Cancel still closes.
  * For a read-only detail use `cancelLabelKey="COMMON.CLOSE"`. The primary action is a `mk-btn` (one per modal); a destructive one is `mk-btn-danger`; the rest, `mk-btn-secondary`.
- * The description is linked with `aria-describedby`; the body is a normal block (use `app-field` and `mk-input` inside).
+ * `busy` true (a process launched from the footer, D116) holds the fields of the body as read-only (`appBusyFields`: `readonly`/`disabled`, values untouched) and blocks Esc, the
+ * backdrop and Cancel; mark the action button with `[appBusy]` and keep both on until the API answers. The description is linked with `aria-describedby`; the body is a normal block (use `app-field` and `mk-input` inside).
  */
 @Component({
   selector: 'app-form-modal',
-  imports: [Modal, TranslatePipe],
+  imports: [Modal, TranslatePipe, BusyFields],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-modal
@@ -29,7 +31,7 @@ let nextId = 0;
       [padded]="false"
       [labelledBy]="titleId"
       [describedBy]="descriptionKey() ? descriptionId : null"
-      [dismissible]="dismissible() && !guarded()"
+      [dismissible]="dismissible() && !guarded() && !busy()"
       [testId]="testId()"
       (dismissed)="closed.emit()"
     >
@@ -39,9 +41,9 @@ let nextId = 0;
           <p [id]="descriptionId" class="mt-1 text-sm text-ink-muted">{{ description | translate: descriptionParams() }}</p>
         }
       </header>
-      <div class="min-h-0 flex-1 overflow-y-auto px-6 py-5 text-sm text-ink" data-form-modal-body><ng-content /></div>
+      <div class="min-h-0 flex-1 overflow-y-auto px-6 py-5 text-sm text-ink" data-form-modal-body [appBusyFields]="busy()"><ng-content /></div>
       <footer class="flex shrink-0 flex-wrap items-center justify-end gap-3 border-t border-line px-6 py-4 max-sm:flex-col-reverse max-sm:items-stretch">
-        <button type="button" class="mk-btn-secondary" [disabled]="!dismissible()" (click)="cancel()" data-cancel>{{ cancelLabelKey() | translate }}</button>
+        <button type="button" class="mk-btn-secondary" [disabled]="!dismissible() || busy()" (click)="cancel()" data-cancel>{{ cancelLabelKey() | translate }}</button>
         <ng-content select="[actions]" />
       </footer>
     </app-modal>
@@ -56,6 +58,8 @@ export class FormModal {
   readonly size = input<'md' | 'lg' | 'wide' | 'xl'>('lg');
   readonly dismissible = input(true);
   readonly guarded = input(false);
+  // A process is running: fields read-only and the way out blocked until it ends.
+  readonly busy = input(false);
   readonly cancelLabelKey = input('COMMON.CANCEL');
   // Prefijo de los `data-testid` del fondo y del panel (los de `app-modal`).
   readonly testId = input('form-modal');
@@ -66,6 +70,6 @@ export class FormModal {
   protected readonly descriptionId = `form-modal-description-${nextId++}`;
 
   protected cancel(): void {
-    if (this.dismissible()) this.closed.emit();
+    if (this.dismissible() && !this.busy()) this.closed.emit();
   }
 }

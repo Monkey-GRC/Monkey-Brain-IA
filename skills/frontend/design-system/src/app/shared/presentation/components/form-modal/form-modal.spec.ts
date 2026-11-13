@@ -1,14 +1,16 @@
 import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideTranslateService } from '@ngx-translate/core';
+import { Busy } from '@shared/presentation/directives/busy';
 import { FormModal } from './form-modal';
 
 @Component({
-  imports: [FormModal],
+  imports: [FormModal, Busy],
   template: `
-    <app-form-modal titleKey="T.TITLE" [descriptionKey]="description()" [dismissible]="dismissible()" [guarded]="guarded()" (closed)="closes = closes + 1">
+    <app-form-modal titleKey="T.TITLE" [descriptionKey]="description()" [dismissible]="dismissible()" [guarded]="guarded()" [busy]="busy()" (closed)="closes = closes + 1">
       <input id="field" />
-      <button actions type="button" class="mk-btn" id="save">Save</button>
+      <input id="check" type="checkbox" />
+      <button actions type="button" class="mk-btn" id="save" [appBusy]="busy()">Save</button>
     </app-form-modal>
   `,
 })
@@ -16,6 +18,7 @@ class Host {
   readonly description = signal<string | null>('T.DESC');
   readonly dismissible = signal(true);
   readonly guarded = signal(false);
+  readonly busy = signal(false);
   closes = 0;
 }
 
@@ -69,5 +72,23 @@ describe('FormModal', () => {
     expect(s.host.closes).toBe(0);
     s.el.querySelector<HTMLButtonElement>('[data-cancel]')!.click();
     expect(s.host.closes).toBe(1);
+  });
+
+  it('while busy holds the fields as read-only, blocks the way out and busies the action, then gives everything back', () => {
+    const { fixture, host, el } = setup();
+    host.busy.set(true);
+    fixture.detectChanges();
+    expect(el.querySelector<HTMLInputElement>('#field')!.readOnly).toBeTrue();
+    expect(el.querySelector<HTMLInputElement>('#check')!.disabled).toBeTrue();
+    expect(el.querySelector<HTMLButtonElement>('[data-cancel]')!.disabled).toBeTrue();
+    expect(el.querySelector<HTMLButtonElement>('#save')!.getAttribute('aria-busy')).toBe('true');
+    el.querySelector<HTMLButtonElement>('[data-cancel]')!.click();
+    expect(host.closes).toBe(0);
+    host.busy.set(false);
+    fixture.detectChanges();
+    expect(el.querySelector<HTMLInputElement>('#field')!.readOnly).toBeFalse();
+    expect(el.querySelector<HTMLInputElement>('#check')!.disabled).toBeFalse();
+    expect(el.querySelector<HTMLButtonElement>('[data-cancel]')!.disabled).toBeFalse();
+    expect(el.querySelector<HTMLButtonElement>('#save')!.hasAttribute('aria-busy')).toBeFalse();
   });
 });

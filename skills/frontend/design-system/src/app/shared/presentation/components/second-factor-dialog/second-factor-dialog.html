@@ -8,7 +8,7 @@
       </div>
     </div>
 
-    <div class="mt-5">
+    <div class="mt-5" [appBusyFields]="loading()">
       <app-second-factor-field [(code)]="code" [(recoveryCode)]="recoveryCode" [(useRecovery)]="useRecovery" [allowRecovery]="allowRecovery()" [disabled]="loading()" [invalid]="!!errorMessage()" />
     </div>
 
@@ -19,10 +19,8 @@
     <div class="mt-6 flex justify-end gap-3">
       <button type="button" (click)="cancel()" [disabled]="loading()" data-testid="factor-cancel"
         class="mk-btn-secondary">{{ 'COMMON.CANCEL' | translate }}</button>
-      <button type="button" (click)="confirm()" [disabled]="loading() || !canConfirm" data-testid="factor-confirm"
-        [class]="danger() ? 'mk-btn-danger' : 'mk-btn'">
-        {{ loading() ? ('COMMON.SECOND_FACTOR_DIALOG.CONFIRMING' | translate) : confirmLabel() }}
-      </button>
+      <button type="button" (click)="confirm()" [disabled]="!canConfirm" [appBusy]="loading()" [busyLabel]="'COMMON.SECOND_FACTOR_DIALOG.CONFIRMING' | translate" data-testid="factor-confirm"
+        [class]="danger() ? 'mk-btn-danger' : 'mk-btn'">{{ confirmLabel() }}</button>
     </div>
   }
 </app-modal>

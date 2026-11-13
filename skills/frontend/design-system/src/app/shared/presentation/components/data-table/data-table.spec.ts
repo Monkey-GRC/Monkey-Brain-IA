@@ -18,6 +18,7 @@ interface Row { id: number; name: string; status: string }
       [rowKey]="byId"
       [page]="page()"
       [loading]="loading()"
+      [loadingRows]="loadingRows()"
       [clickable]="true"
       [focusable]="focusable()"
       [chevron]="chevron()"
@@ -42,8 +43,8 @@ interface Row { id: number; name: string; status: string }
 class Host {
   columns: TableColumn<Row>[] = [
     { key: 'name', headerKey: 'TEST.NAME', value: (r) => r.name },
-    { key: 'status', headerKey: 'TEST.STATUS', align: 'center' },
-    { key: 'open', headerKey: 'TEST.OPEN', align: 'right' },
+    { key: 'status', headerKey: 'TEST.STATUS', align: 'center', skeleton: 'badge', class: 'w-40' },
+    { key: 'open', headerKey: 'TEST.OPEN', align: 'right', skeleton: 'actions' },
   ];
   rows = signal<Row[]>([
     { id: 1, name: 'Acceso con MFA', status: 'ready' },
@@ -51,6 +52,7 @@ class Host {
   ]);
   page = signal<PageInfo | null>({ page: 2, pageSize: 25, total: 60, totalPages: 3 });
   loading = signal(false);
+  loadingRows = signal(5);
   pages: number[] = [];
   sizes: number[] = [];
   clicked: number[] = [];
@@ -164,12 +166,67 @@ describe('DataTable', () => {
     expect(el().textContent).toContain('COMMON.TABLE.EMPTY_TITLE');
   });
 
-  it('shows a loading row instead of the rows, and marks the table busy', () => {
+  it('shows skeleton rows instead of the rows, and marks the table busy', () => {
     host.loading.set(true);
     fixture.detectChanges();
     expect(el().querySelector('table')!.getAttribute('aria-busy')).toBe('true');
-    expect(el().querySelectorAll('tbody tr').length).toBe(1);
+    expect(el().querySelectorAll('tbody [data-skeleton-row]').length).toBe(5);
+    expect(el().querySelectorAll('tbody [data-skeleton-row][aria-hidden="true"]').length).toBe(5);
+    expect(el().querySelector('tbody [role="status"]')!.textContent).toContain('COMMON.LOADING');
+    expect(el().textContent).not.toContain('Acceso con MFA');
     expect(el().querySelector('app-empty-state')).toBeNull();
+  });
+
+  it('draws as many skeleton rows as loadingRows says', () => {
+    host.loading.set(true);
+    host.loadingRows.set(3);
+    fixture.detectChanges();
+    expect(el().querySelectorAll('[data-skeleton-row]').length).toBe(3);
+  });
+
+  it('keeps the real header and gives each skeleton cell the width class and alignment of its column', () => {
+    const real = Array.from(el().querySelectorAll('thead th')).map((h) => h.textContent!.trim());
+    host.loading.set(true);
+    fixture.detectChanges();
+    expect(Array.from(el().querySelectorAll('thead th')).map((h) => h.textContent!.trim())).toEqual(real);
+    const cells = el().querySelectorAll<HTMLElement>('[data-skeleton-row]')[0].querySelectorAll<HTMLElement>('td');
+    // 3 columns + the chevron of a clickable table, the same as a real row.
+    expect(cells.length).toBe(4);
+    expect(cells[1].classList).toContain('w-40');
+    expect(cells[1].className).toContain('text-center');
+    expect(cells[2].className).toContain('text-right');
+  });
+
+  it('draws each cell according to the column kind: text, badge, actions', () => {
+    host.loading.set(true);
+    fixture.detectChanges();
+    const cells = el().querySelectorAll<HTMLElement>('[data-skeleton-row]')[0].querySelectorAll<HTMLElement>('td');
+    expect(cells[0].querySelector('[data-shape="line"]')).not.toBeNull();
+    expect(cells[1].querySelector('[data-shape="badge"]')).not.toBeNull();
+    expect(cells[2].querySelector('[data-shape="block"]')).not.toBeNull();
+  });
+
+  it('draws a person cell with an avatar circle', () => {
+    const fixture2 = TestBed.createComponent(DataTable<Row>);
+    fixture2.componentRef.setInput('captionKey', 'TEST.CAPTION');
+    fixture2.componentRef.setInput('columns', [{ key: 'who', headerKey: 'TEST.NAME', skeleton: 'person' }] as TableColumn<Row>[]);
+    fixture2.componentRef.setInput('rows', []);
+    fixture2.componentRef.setInput('rowKey', (r: Row) => r.id);
+    fixture2.componentRef.setInput('loading', true);
+    fixture2.detectChanges();
+    const cell = (fixture2.nativeElement as HTMLElement).querySelector('[data-skeleton-row] td')!;
+    expect(cell.querySelector('[data-shape="circle"]')).not.toBeNull();
+    expect(cell.querySelectorAll('[data-shape="line"] [data-skeleton-block]').length).toBe(2);
+  });
+
+  it('leaves no skeleton once the data arrives', () => {
+    host.loading.set(true);
+    fixture.detectChanges();
+    host.loading.set(false);
+    fixture.detectChanges();
+    expect(el().querySelector('[data-skeleton-row]')).toBeNull();
+    expect(el().querySelector('table')!.getAttribute('aria-busy')).toBe('false');
+    expect(el().querySelectorAll('tbody tr').length).toBe(2);
   });
 
   it('has no pagination bar without page info', () => {

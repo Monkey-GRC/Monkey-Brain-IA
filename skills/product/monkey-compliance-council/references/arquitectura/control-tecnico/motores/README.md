@@ -20,7 +20,7 @@ en `datos/` (el modelo y las decisiones) ni en `deuda-tecnica/` (lo parchado).
 |---|---|---|
 | Qué evalúa | La configuración (SCA), las amenazas en tiempo real y los incidentes de cada equipo, con un agente | Configuración de una cuenta, suscripción o proyecto |
 | Activo | El servidor, la BD, el equipo | La **cuenta**; sus recursos cuelgan de ella (`asset_resources`, D56) |
-| Conexión | Agente pre-registrado por Monkey en el grupo del cliente (D54) | Rol de solo lectura entre cuentas (D53, P14 C) |
+| Conexión | Agente pre-registrado por Monkey en el grupo del cliente (D54) | AWS: rol de solo lectura entre cuentas (D53, P14 C). GCP: federación de identidad desde el rol de AWS de Monkey (D112) |
 | Resultado | `check_results` (5 estados) | `check_results` (mismo formato, con recurso y región) |
 | Estado | Verificado contra la API; sin agentes reales | Escaneo completo de AWS; GCP escaneado a mano en un proyecto de pruebas (`cruce-nube-gcp.md`); Azure, por probar |
 

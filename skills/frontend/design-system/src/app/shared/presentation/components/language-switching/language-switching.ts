@@ -13,7 +13,7 @@ import { LoadingSpinner } from '@shared/presentation/components/loading-spinner/
       aria-live="polite"
       aria-busy="true"
     >
-      <div aria-hidden="true"><app-loading-spinner [size]="48" /></div>
+      <div aria-hidden="true"><app-loading-spinner [size]="48" data-long-process /></div>
       <p class="text-sm font-medium text-ink-muted">{{ message() }}</p>
     </div>
   `,
