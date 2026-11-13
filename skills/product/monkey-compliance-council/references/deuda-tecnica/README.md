@@ -31,7 +31,7 @@ la cierra). Los ID (`DT-n`) no se reutilizan. Si una deuda depende del comité, 
 |---|---|---|
 | [`autenticacion.md`](autenticacion.md) | 1 | [Autenticación](../arquitectura/autenticacion/README.md) |
 | [`catalogo-maestro.md`](catalogo-maestro.md) | 6 | [Catálogo maestro](../arquitectura/catalogo-maestro/README.md) |
-| [`control-tecnico.md`](control-tecnico.md) | 22 | [Control técnico](../arquitectura/control-tecnico/README.md) |
+| [`control-tecnico.md`](control-tecnico.md) | 25 | [Control técnico](../arquitectura/control-tecnico/README.md) |
 | [`cumplimiento.md`](cumplimiento.md) | 6 | [Cumplimiento](../arquitectura/cumplimiento/README.md) |
 | [`empresas.md`](empresas.md) | 5 | [Empresas](../arquitectura/empresas/README.md) |
 | [`gestion-usuarios.md`](gestion-usuarios.md) | 2 | [Gestión de usuarios](../arquitectura/gestion-usuarios/README.md) |
@@ -122,6 +122,9 @@ Pendientes sin urgencia.
 
 | ID | Qué | Módulo |
 |---|---|---|
+| [DT-103](control-tecnico.md#dt-103--no-se-ha-probado-que-la-identidad-de-aws-de-monkey-asuma-el-rol-de-una-cuenta-de-aws-de-otro-dueño) | No se ha probado que la identidad de AWS de Monkey asuma el rol de una cuenta de AWS de otro dueño | [Control técnico](control-tecnico.md) |
+| [DT-102](control-tecnico.md#dt-102--la-conexión-de-gcp-no-descubre-los-recursos-del-proyecto-al-validar) | La conexión de GCP no descubre los recursos del proyecto al validar | [Control técnico](control-tecnico.md) |
+| [DT-104](control-tecnico.md#dt-104--gcp-se-puede-declarar-por-la-api-en-desarrollo-aunque-el-catálogo-lo-muestre-como-próximamente) | GCP se puede declarar por la API en desarrollo aunque el catálogo lo muestre como «Próximamente» | [Control técnico](control-tecnico.md) |
 | [DT-7](onboarding.md#dt-7--híbrido-ofrece-las-6-conexiones) | «Híbrido» ofrece las 6 conexiones | [Onboarding](onboarding.md) |
 | [DT-8](onboarding.md#dt-8--el-tipo-del-activo-se-deduce-de-la-conexión) | El tipo del activo se deduce de la conexión | [Onboarding](onboarding.md) |
 | [DT-11](onboarding.md#dt-11--un-activo-dado-de-baja-no-se-puede-ver-ni-restaurar) | Un activo dado de baja no se puede ver ni restaurar | [Onboarding](onboarding.md) |

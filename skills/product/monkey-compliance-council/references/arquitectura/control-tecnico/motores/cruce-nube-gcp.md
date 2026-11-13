@@ -30,9 +30,18 @@ ninguna clave. Es el equivalente en GCP de asumir el rol de solo lectura de AWS.
 hallazgos tal cual. Cambia el contenido: el activo es el proyecto (`cloud.account.uid` = ID del proyecto), la región es `global`
 y el `uid` del recurso es el ID del proyecto o el nombre del servicio (`containeranalysis.googleapis.com`), no un ARN.
 
-**Conexión de producción (dirección, no decidida):** federación de identidad desde la identidad de AWS de Monkey hacia una
-cuenta de servicio que el script de alta crea **en la nube del cliente**. El cliente solo pega un comando en Cloud Shell y copia
-el número de proyecto. Se registrará como decisión con el contrato de conexión de GCP.
+**Conexión de producción (D112, MD-214):** federación de identidad desde el rol de AWS de Monkey (`monkey-gcp-federation`, con el
+`external_id` del activo como sesión) hacia la cuenta de servicio `monkey-reader` que el script de alta crea **en el proyecto del cliente**.
+El cliente pega un comando en Cloud Shell y entrega el número de proyecto; el motor solo recibe un token de 1 h.
+
+## Prueba de punta a punta de la conexión (MD-214, 2026-11-13)
+
+En desarrollo, con el backend y el trabajador locales y el mismo proyecto de pruebas: el script de alta corrió en Cloud Shell sin
+errores; la **validación** (asumir `monkey-gcp-federation` con la sesión del activo → STS de Google → token de `monkey-reader` →
+comprobar proyecto y número) tardó **3 s**; la **evaluación** ejecutó los 110 checks en **44 s** y entregó **25 resultados** (7 pasan,
+18 fallan; `T-CLD-001` 7/2, `T-CLD-002` 0/1, `T-CLD-003` 0/13, `T-CLD-010` 0/2). Son 4 más que en el escaneo manual porque el script
+activa las APIs de IAM en el proyecto. Herramienta: `Backend/scripts/dev/smoke-gcp.sh` (`declare` y `finish`). Hubo que detener el
+trabajador del servidor durante la prueba; desde entonces cada backend tiene su grupo de trabajadores (`RUNNER_POOL`) y ya no hace falta.
 
 ## Mapeo propuesto a las pruebas del comité
 
@@ -77,5 +86,5 @@ esenciales de la organización.
 
 - **Ratificar** las asignaciones de GCP y decidir los 12 sin prueba (`P15`).
 - **Escanear con recursos reales** (VMs, SQL, buckets): requiere facturación en el proyecto de pruebas.
-- **Conexión de producción:** contrato, decisión y script de alta.
+- **Pantallas** del flujo de conexión (GCP sigue `coming_soon`, `DT-104`).
 - **Azure:** sin probar (`P14` C5).

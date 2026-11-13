@@ -18,14 +18,15 @@ Esto **no** es una feature con endpoints de cara al cliente. La nube vive en tre
 | Pieza | Dónde | Regla |
 |---|---|---|
 | **Validación de la conexión** | `src/features/technical-control/infrastructure/probes/runner-connection.probe.ts` (`PROBE_MODE=runner`, D58) | El backend **no toca** la cuenta del cliente ni guarda llaves: encola una validación y espera la respuesta del trabajador. Lo que es culpa nuestra (trabajador caído) es «no disponible» (503), nunca un error del cliente. |
-| **El trabajador** | `src/runner/` (entrypoint aparte, misma imagen) | Dominio (`RunnerApi`, `CredentialBroker`, `ScanEngine`) → caso de uso `run-next-execution` → adaptadores (HTTP a `/internal/runner`, STS, Docker). **No importa nada de `src/features` y no tiene acceso a la base.** |
+| **El trabajador** | `src/runner/` (entrypoint aparte, misma imagen) | Dominio (`RunnerApi`, `CredentialBroker`, `ScanEngine`) → caso de uso `run-next-execution` (no sabe de nubes) → adaptadores (HTTP a `/internal/runner`, Docker y uno por nube en `infrastructure/providers/`). **No importa nada de `src/features` y no tiene acceso a la base.** |
 | **La lectura del resultado** | `src/features/technical-control/infrastructure/engine/ocsf-parser.ts` (`EngineOutputParser`) | Normaliza la salida del motor a `check_results`. **Falla en voz alta** (DT-50): una fila mal formada o un estado desconocido se informa con su posición, nunca se descarta. |
 
 ## Qué se extiende y cómo
 
-- **Otro proveedor (Azure, GCP):** un `CredentialBroker` nuevo (la federación de cada proveedor) y comprobar que el parser acepta su salida.
-  GCP ya se escaneó a mano y el parser acepta su salida; su catálogo se carga con `npm run cloud:extract -- <carpeta> 5.44.0 --platform gcp`
-  (`cruce-nube-gcp.md`). Falta su `CredentialBroker`. Azure sigue sin probar (`P14` C5): no se promete su cobertura.
+- **Otro proveedor (Azure…):** una carpeta `src/runner/infrastructure/providers/<nube>/` con su broker de credenciales, su perfil del motor
+  (argumentos y entorno; lo común está en `engine-common.ts`) y, si aplica, su inventario; se registra en `cloud-adapters.ts`. En el backend: su
+  canal en `connection_method`, sus reglas al declarar el activo y su catálogo de checks (`npm run cloud:extract -- <carpeta> <versión> --platform <nube>`).
+  GCP es el ejemplo completo (D112, `cruce-nube-gcp.md`). Azure sigue sin probar (`P14` C5): no se promete su cobertura.
 - **Otro ejecutor** (una tarea en la nube en lugar de Docker): un `ScanEngine` nuevo. El bucle del trabajador no cambia.
 - **Más checks o pruebas:** el seed (`npm run cloud:extract | cloud:load | cloud:verify`, D56). El mapeo lo pone Monkey y **gana el comité**
   (`mapping_provenance`); el seed nunca pisa una asignación `committee_ratified`.

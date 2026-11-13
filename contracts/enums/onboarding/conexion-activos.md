@@ -102,6 +102,7 @@ Nulo hasta que se elige. Qué canales existen por categoría: `contracts/onboard
 | `readonly_role` | Rol de solo lectura (recomendado en nube) |
 | `access_keys` | Usuario con llaves (menos seguro) |
 | `agent` | Agente instalado |
+| `identity_federation` | Federación de identidad, sin claves (GCP, D112) |
 
 ## `resource_kind`
 **Columna:** `asset_resources.kind` (D59)
@@ -131,7 +132,7 @@ Los nombres son marcas y **no se traducen**. `logo_key` es el nombre del SVG ofi
 - **`availability`** (el enum de los marcos, D50): `available` | `coming_soon`. **Solo `aws` (D58) y `linux` y `windows` en `ac_04`, servidores on-premise (D113), están `available`** (son los flujos construidos); todas las demás se muestran **bloqueadas**.
   Pasar una a `available` exige que su flujo exista; es un cambio de dato, no de contrato.
 - **Canales** (`platform_connection_methods`, el primero es el recomendado): `aws` → `readonly_role`, `access_keys`; los sistemas operativos y los motores de bases de datos → `agent`
-  (diseño, DT-57); Azure, GCP, Microsoft 365 y Google Workspace → ninguno hasta que se defina su canal.
+  (diseño, DT-57); `gcp` → `identity_federation` (D112; sigue `coming_soon` hasta que existan sus pantallas, `DT-104`); Azure, Microsoft 365 y Google Workspace → ninguno hasta que se defina su canal.
 - **Frecuencias** (`capability_frequencies`): `ac_01` → `every_6h`, `every_24h`; `ac_02` a `ac_06` → `continuous`.
 - **Tipo de activo** (`automated_capabilities.asset_type`): `ac_01` → `cloud_service` · `ac_02`, `ac_04` → `server` · `ac_03`, `ac_05` → `database` · `ac_06` → `endpoint`.
-- **Regiones** (`platform_regions`): las de AWS se cargan de la lista actual del Backend (`GET /v1/catalogs/aws_region`); las demás plataformas no tienen regiones hasta que tengan flujo.
+- **Regiones** (`platform_regions`): las de AWS se cargan de la lista actual del Backend (`GET /v1/catalogs/aws_region`); GCP **no lleva regiones** (se evalúa el proyecto completo, D112); las demás plataformas no tienen regiones hasta que tengan flujo.

@@ -22,6 +22,7 @@ type: contract
 | `POST` | [`/v1/assets`](#post-v1assets--declarar-un-activo) | Declarar un activo: nube con rol, nube con llaves, o agente |
 | `PATCH` | [`/v1/assets/{id}/connection`](#patch-v1assetsidconnection--entregar-el-rol-creado) | El cliente entrega el rol creado |
 | `GET` | `/v1/connection-templates/aws-readonly-role` | La plantilla del rol de solo lectura |
+| `GET` | `/v1/connection-templates/gcp-identity-federation` | El script de alta de GCP (D112) |
 | `GET` | `/v1/catalogs/connection_method` · `/v1/catalogs/aws_region` · `/v1/catalogs/<sistema>_version` | Los canales, las regiones y las versiones de un sistema operativo que se pueden declarar para un servidor (`linux_version`, `windows_version`…; D113). Cada opción trae `value` (código de Monkey, p. ej. `ubuntu_22_04_lts`), `label` («Ubuntu 22.04 LTS»), `group` (la distribución) y `group_label`. Solo salen las versiones que la sonda entrega; un sistema sin ninguna responde `404` |
 
 ## Paso 1 — Las conexiones que se ofrecen (D92)
@@ -102,7 +103,7 @@ El cliente **elige** el canal entre los de **su plataforma**. `GET /v1/catalogs/
 | **Éxito** | `201`: el activo nace `pending` y **Monkey le entrega lo que el cliente debe hacer** (`connection_setup`) |
 | **Errores** | `403` · `409 CONNECTION_METHOD_NOT_APPLICABLE` · `422 VALIDATION_FAILED` (`platform`, `connection.provider_not_supported`, `platform.not_in_category`) |
 
-Hay tres variantes según el canal: **A.** nube con rol de solo lectura (recomendado), **B.** nube con llaves (alternativo), **C.** servidor, base de datos o equipo con agente (solo diseño).
+Hay cuatro variantes según el canal: **A.** nube con rol de solo lectura (recomendado), **B.** nube con llaves (alternativo), **C.** servidor, base de datos o equipo con agente (solo diseño), **D.** proyecto de GCP con federación de identidad (D112).
 
 #### Request
 | Campo | Tipo | Obligatorio | Regla |
@@ -111,8 +112,8 @@ Hay tres variantes según el canal: **A.** nube con rol de solo lectura (recomen
 | `connection_category` | enum `connection_category` | sí | `ac_01` a `ac_06` |
 | `connection_method` | enum `connection_method` | sí | Debe ser uno de los canales **de esa plataforma** (`409 CONNECTION_METHOD_NOT_APPLICABLE`) |
 | `platform` | string | **sí, siempre (D67)** | El `code` del catálogo. `422 connection.provider_not_supported` si la plataforma está `coming_soon`; `422 platform.not_in_category` si no pertenece a la `connection_category` |
-| `external_account_id` | string | sí en `readonly_role` y `access_keys` | No va en `agent` |
-| `regions` | string[] | sí en nube (≥ 1) | Deben ser de `platform_regions` de la plataforma. Son **las únicas que se evalúan**. No va en `agent` |
+| `external_account_id` | string | sí en `readonly_role`, `access_keys` e `identity_federation` | En GCP es el **ID del proyecto** (`^[a-z][a-z0-9-]{4,28}[a-z0-9]$`). No va en `agent` |
+| `regions` | string[] | sí en nube con región (≥ 1) | Deben ser de `platform_regions` de la plataforma. Son **las únicas que se evalúan**. No va en `agent` ni en `identity_federation` (GCP se evalúa completo) |
 | `criticality` | enum `asset_criticality` | no | |
 | `tags` | string[] | no | |
 | `service_ids` | uuid[] | sí | |
@@ -187,19 +188,67 @@ Igual que arriba, con `"connection_method": "access_keys"` y:
 #### C. Servidor, base de datos o equipo con agente *(solo diseño)*
 Mismo cuerpo sin `external_account_id` ni `regions`, con `"connection_method": "agent"` y **`"os_version"`: la versión que el cliente declara** («Ubuntu 22.04 LTS»), un `value` de `GET /v1/catalogs/<sistema>_version` (D113). Es obligatoria: de ella salen el sistema (y con él el comando correcto) y qué evaluación se espera. Un valor que no es de ese catálogo, o de otro sistema que el de la plataforma elegida (p. ej. una versión de Windows para Linux), responde `422 VALIDATION_FAILED` en `os_version`. La respuesta (`201`) trae `agent: { status, os, os_version: { value, label } }` (el mismo texto que el catálogo) y `connection_setup` con **cuatro pasos** de instrucciones ya traducidos (entrar como administrador, copiar y ejecutar el comando, permitir la conexión de salida, esperar el estado «Conectado»); en las demás conexiones `agent` es `null`. Un alta rechazada no deja nada a medias: ni activo ni fila de agente. El activo se crea y su fila de agente nace `pending`, **sin agente todavía**: el comando de instalación lo entrega `GET /v1/assets/{id}/agent-install` ([`control-tecnico.md`](../../control-tecnico.md)), que es quien crea el agente en la sonda en el grupo de la empresa (D54). **No está construido:** `validate` responde `503` (`DT-57`; instalador y hospedaje, D71).
 
+#### D. Proyecto de GCP con federación de identidad (D112)
+```json
+{
+  "name": "GCP producción",
+  "connection_category": "ac_01",
+  "connection_method": "identity_federation",
+  "platform": "gcp",
+  "external_account_id": "acme-prod-421905",
+  "service_ids": ["5c2e8a41-7b9d-4e03-a1f6-8d40c2b7e915"]
+}
+```
+
+Sin `regions` ni `credentials` (`422 field.not_allowed` si llegan). Mientras `gcp` esté `coming_soon`, solo se acepta en desarrollo con `PREVIEW_PLATFORMS=gcp` (`DT-104`).
+La respuesta `201` es la de A con este `connection_setup`:
+
+| Campo | Qué es |
+|---|---|
+| `method` | `identity_federation` |
+| `external_id` | `mk-…`, por activo; GCP solo acepta la sesión de Monkey con este nombre. No es un secreto |
+| `project_id` | El ID del proyecto declarado |
+| `project_number` | `null` hasta que el cliente lo entregue |
+| `setup_command` | El comando listo para pegar en Cloud Shell, **con el script completo dentro** y los parámetros puestos (no se publica en ninguna URL). `null` si el servidor no tiene configurada la identidad de Monkey (`MONKEY_GCP_FEDERATION_ROLE_ARN`); entonces la plantilla responde `503 CONNECTION_UNAVAILABLE` |
+| `template_path` | `/v1/connection-templates/gcp-identity-federation` (el mismo script, para leerlo o descargarlo) |
+| `steps` | Textos ya traducidos (`DT-21`) |
+
+```json
+"connection_setup": {
+  "method": "identity_federation",
+  "external_id": "mk-3f9a1c7e2b",
+  "project_id": "acme-prod-421905",
+  "project_number": null,
+  "setup_command": "bash <<'MONKEY_SETUP' … MONKEY_SETUP",
+  "template_path": "/v1/connection-templates/gcp-identity-federation",
+  "steps": ["…texto ya traducido…", "…", "…"]
+}
+```
+
+> - El script crea **en el proyecto declarado** el pool `monkey-access`, el proveedor `monkey-aws` (solo acepta la sesión `…:assumed-role/monkey-gcp-federation/<external_id>`), la cuenta de servicio de solo lectura `monkey-reader` y activa las APIs necesarias. Es idempotente: correrlo dos veces no duplica nada.
+> - Al terminar imprime el **número de proyecto**, que el cliente entrega con `PATCH /v1/assets/{id}/connection`.
+> - El script y los textos nunca nombran al motor de evaluación (D70).
+
 ### PATCH /v1/assets/{id}/connection — Entregar el rol creado
 
 | | |
 |---|---|
 | **Quién** | `admin_empresa` |
 | **Éxito** | `200` con el mismo `provisioning` (sigue `pending`) |
-| **Errores** | `403` · `404` · `422 VALIDATION_FAILED` (no tiene forma de ARN o la cuenta del ARN no coincide con `external_account_id`) |
+| **Errores** | `403` · `404` · `422 VALIDATION_FAILED` (no tiene forma de ARN, la cuenta del ARN no coincide con `external_account_id`, o el número de proyecto no son dígitos) |
 
 #### Request
 | Campo | Tipo | Obligatorio | Regla |
 |---|---|---|---|
-| `role_arn` | string | sí | **Un `role_arn` no es un secreto** |
+| `role_arn` | string | sí en `readonly_role` | **Un `role_arn` no es un secreto** |
+| `project_number` | string | sí en `identity_federation` | 6 a 19 dígitos; lo imprime el script de alta. No es un secreto |
 
 ```json
 { "role_arn": "arn:aws:iam::123456789012:role/MonkeyReadOnly" }
 ```
+
+```json
+{ "project_number": "983014806332" }
+```
+
+> Un campo del otro canal da `422 field.not_allowed`.

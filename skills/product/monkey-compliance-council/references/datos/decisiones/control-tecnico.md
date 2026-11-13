@@ -247,6 +247,37 @@ evaluación (429 filas, ~3 min) → «Evaluación completada»; y el canal de ll
 
 **Fuente:** Rod, en la limpieza del cerebro del 2026-10-31.
 
+## D112 · GCP se conecta por federación de identidad desde el rol de AWS de Monkey, sin claves (2026-11-12)
+
+**Decisión** (Rod, 2026-11-12, MD-214; desarrollo; **pendiente de ratificar con el comité**). Concreta D53 y D58 para GCP:
+
+1. **Canal `identity_federation`** (`connection_method`), el único de `gcp`. El activo es el **proyecto** (`external_account_id` = ID del
+   proyecto) y **no lleva regiones**: el motor evalúa el proyecto completo y sus hallazgos son `global` (`cruce-nube-gcp.md`).
+2. **El cliente no entrega ningún secreto.** Pega en Cloud Shell un comando que Monkey arma con el script completo dentro (no se publica en
+   ninguna URL; también se descarga tras la sesión). El script crea **en el proyecto evaluado**: el pool `monkey-access`, el proveedor de AWS
+   `monkey-aws` que **solo acepta la sesión `arn:aws:sts::<cuenta de Monkey>:assumed-role/monkey-gcp-federation/<external_id>`**, la cuenta de
+   servicio `monkey-reader` con solo lectura (`roles/viewer`, `roles/iam.securityReviewer`, `roles/stackdriver.accounts.viewer`) y el permiso
+   para que esa sesión la use; activa las APIs que hacen falta e imprime el **número de proyecto**, que el cliente devuelve
+   (`PATCH /v1/assets/{id}/connection`).
+3. **La identidad de origen es un rol de AWS de Monkey, `monkey-gcp-federation`, sin permisos.** El trabajador lo asume con el
+   `external_id` del activo como nombre de sesión. Es lo que aísla a los clientes (el equivalente del `ExternalId`, D58): el proyecto de un
+   cliente rechaza la sesión de cualquier otro, así que declarar el proyecto ajeno no sirve.
+4. **El motor solo recibe un token de acceso de 1 h** de esa cuenta de servicio (`CLOUDSDK_AUTH_ACCESS_TOKEN`). El intercambio (STS de Google
+   y `generateAccessToken`) lo hace el trabajador; el motor no ve credenciales de AWS ni de Google (SEG-46).
+5. **Validar** = obtener el token y comprobar que el proyecto es el declarado. Un fallo es de conexión, no un incumplimiento (D57).
+6. **El trabajador se organiza por adaptadores de nube** (credencial, motor, inventario) detrás de los puertos que ya tiene: AWS y GCP sin
+   tocar el caso de uso (D110, «frontera del conector»).
+7. **GCP sigue «Próximamente» en el catálogo** hasta que existan sus pantallas; en desarrollo, `PREVIEW_PLATFORMS=gcp` deja declararlo por la
+   API (nunca en producción, `DT-104`).
+
+**Por qué.** Una clave JSON de una cuenta de servicio de Monkey sería un secreto de larga vida con acceso a todos los clientes (SEG-26). Una
+cuenta de servicio por cliente en el proyecto de Monkey choca con el tope de 100 por proyecto. Un proyecto dedicado en el cliente (como Vanta)
+exige permiso para crear proyectos y facturación propia para los checks de monitoreo; queda para conectar organizaciones completas.
+
+**Qué cambia.** `contracts/onboarding/conexion-activos/conectar.md`, `contracts/enums/onboarding/conexion-activos.md`, `contracts/control-tecnico.md`
+(API interna del trabajador), `cruce-nube-gcp.md`, `Backend/src/runner`, `DT-102` a `DT-104`. **DT-105 cerrada el 2026-11-13:** cada backend marca sus ejecuciones con su grupo (`RUNNER_POOL`, por defecto `default`) y solo entrega a su trabajador las de ese grupo, así que quien prueba en local con la base de desarrollo ya no compite con el trabajador del servidor. **DT-101 cerrada el 2026-11-13:** la política de confianza de `monkey-gcp-federation` solo acepta a `monkey-audit` (ya no a toda la cuenta de Monkey).
+
+**Fuente:** Rod, en la sesión de MD-214 del 2026-11-12 (eligió el rol de AWS de Monkey y la identidad en el proyecto evaluado).
 ---
 
 ## D113 · La sonda de servidores en el Backend: la lee el trabajador, cada servidor es un agente de su empresa y el volumen se conserva (BORRADOR, 2026-11-11; ajusta D54 y D71)
