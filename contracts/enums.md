@@ -39,7 +39,7 @@ Estos enums **no salen del Excel** (no trae opciones para ellos): son decisión 
 ### Qué listas sirve `GET /v1/catalogs/{name}`
 Actualizado el 2026-11-12 (MD-211: `integration_purpose` e `integration_status`; antes, D96 retiró `assessor_role` y `assessment_verdict`). Además de las del onboarding, sirve las de cumplimiento, las del catálogo maestro y las de integraciones (`integration_purpose` · `integration_status`):
 
-`risk_criterion` · `failure_category` · `risk_level` · `risk_treatment_decision` · `responsible_type` · `cause_control_effect` · `exclusion_status` · `audit_observation_type` · `audit_observation_status` · `dimension` · `control_type` · `catalog_origin` · `loss_type` · `risk_scale` (valores `1`–`5`, de la matriz 5×5)
+`risk_criterion` · `failure_category` · `risk_level` · `risk_treatment_decision` · `responsible_type` · `cause_control_effect` · `exclusion_status` · `audit_observation_type` · `audit_observation_status` · `dimension` · `control_type` · `catalog_origin` · `loss_type` · `risk_scale` (valores `1`–`5`, de la matriz 5×5) · `gcp_connection_scope` · `gcp_setup_method` (con `description`, `availability` y `tags`, D114). `connection_method` también devuelve esos tres campos
 
 La respuesta es la de siempre (`value` + `label` según `Accept-Language`), en el orden del enum. **Ningún cliente escribe estas listas a mano**: la fuente es el enum de la base y la etiqueta, `i18n/<idioma>/catalogs.json` del backend.
 

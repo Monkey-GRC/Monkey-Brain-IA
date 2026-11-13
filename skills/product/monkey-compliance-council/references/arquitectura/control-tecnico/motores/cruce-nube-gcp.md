@@ -86,5 +86,5 @@ esenciales de la organización.
 
 - **Ratificar** las asignaciones de GCP y decidir los 12 sin prueba (`P15`).
 - **Escanear con recursos reales** (VMs, SQL, buckets): requiere facturación en el proyecto de pruebas.
-- **Pantallas** del flujo de conexión (GCP sigue `coming_soon`, `DT-104`).
+- **Pantallas** del flujo de conexión (hechas en MD-214: asistente a pantalla completa; GCP es `available`).
 - **Azure:** sin probar (`P14` C5).

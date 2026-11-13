@@ -178,13 +178,6 @@ Parches vigentes de [Control técnico](../arquitectura/control-tecnico/README.md
 - **Por qué:** No hay una segunda cuenta de AWS de pruebas
 - **Qué lo cierra:** Conectar una cuenta de AWS distinta con la plantilla `MonkeyReadOnly` y validar y evaluar de punta a punta
 
-### DT-104 · GCP se puede declarar por la API en desarrollo aunque el catálogo lo muestre como «Próximamente»
-
-🟡 Mejora
-
-- **Qué está parchado:** `PREVIEW_PLATFORMS` (solo desarrollo; el backend se niega a arrancar con ella en producción) deja crear activos de una plataforma `coming_soon` para probar la conexión de punta a punta antes de que existan sus pantallas (D112)
-- **Por qué:** El flujo de pantallas de GCP se acuerda con Rod después del backend
-- **Qué lo cierra:** Las pantallas de conexión de GCP y pasar `gcp` a `available` en el catálogo; entonces se retira la variable
 
 ## Transversal
 

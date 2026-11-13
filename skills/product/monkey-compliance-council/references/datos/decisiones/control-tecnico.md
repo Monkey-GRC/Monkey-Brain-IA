@@ -267,15 +267,14 @@ evaluación (429 filas, ~3 min) → «Evaluación completada»; y el canal de ll
 5. **Validar** = obtener el token y comprobar que el proyecto es el declarado. Un fallo es de conexión, no un incumplimiento (D57).
 6. **El trabajador se organiza por adaptadores de nube** (credencial, motor, inventario) detrás de los puertos que ya tiene: AWS y GCP sin
    tocar el caso de uso (D110, «frontera del conector»).
-7. **GCP sigue «Próximamente» en el catálogo** hasta que existan sus pantallas; en desarrollo, `PREVIEW_PLATFORMS=gcp` deja declararlo por la
-   API (nunca en producción, `DT-104`).
+7. **GCP pasa a «Disponible» en el catálogo** cuando existen sus pantallas (MD-214, 2026-11-13): el asistente de conexión a pantalla completa. Se retiró `PREVIEW_PLATFORMS` y se cerró `DT-104`.
 
 **Por qué.** Una clave JSON de una cuenta de servicio de Monkey sería un secreto de larga vida con acceso a todos los clientes (SEG-26). Una
 cuenta de servicio por cliente en el proyecto de Monkey choca con el tope de 100 por proyecto. Un proyecto dedicado en el cliente (como Vanta)
 exige permiso para crear proyectos y facturación propia para los checks de monitoreo; queda para conectar organizaciones completas.
 
 **Qué cambia.** `contracts/onboarding/conexion-activos/conectar.md`, `contracts/enums/onboarding/conexion-activos.md`, `contracts/control-tecnico.md`
-(API interna del trabajador), `cruce-nube-gcp.md`, `Backend/src/runner`, `DT-102` a `DT-104`. **DT-105 cerrada el 2026-11-13:** cada backend marca sus ejecuciones con su grupo (`RUNNER_POOL`, por defecto `default`) y solo entrega a su trabajador las de ese grupo, así que quien prueba en local con la base de desarrollo ya no compite con el trabajador del servidor. **DT-101 cerrada el 2026-11-13:** la política de confianza de `monkey-gcp-federation` solo acepta a `monkey-audit` (ya no a toda la cuenta de Monkey).
+(API interna del trabajador), `cruce-nube-gcp.md`, `Backend/src/runner`, `DT-102` y `DT-103`. **DT-105 cerrada el 2026-11-13:** cada backend marca sus ejecuciones con su grupo (`RUNNER_POOL`, por defecto `default`) y solo entrega a su trabajador las de ese grupo, así que quien prueba en local con la base de desarrollo ya no compite con el trabajador del servidor. **DT-101 cerrada el 2026-11-13:** la política de confianza de `monkey-gcp-federation` solo acepta a `monkey-audit` (ya no a toda la cuenta de Monkey).
 
 **Fuente:** Rod, en la sesión de MD-214 del 2026-11-12 (eligió el rol de AWS de Monkey y la identidad en el proyecto evaluado).
 ---
@@ -308,3 +307,13 @@ exige permiso para crear proyectos y facturación propia para los checks de moni
 **Qué cambia.** `contracts/control-tecnico.md` (sección de la sonda), `datos/modelo/08-control-tecnico.md` (`asset_agents`), `deuda-tecnica/control-tecnico.md` (`DT-32`, `DT-33` y `DT-57` se cierran al construirse), `seguridad/control-tecnico.md` (`SEG-45` pasa a construido), `motores/wazuh-operacion.md` (el manager de hoy no corre en contenedor y trae indexador y panel).
 
 **Fuente:** Carlos Castaño, 2026-11-11 (trabajador, volumen y aislamiento por empresa), con la autorización de Héctor para tocar el Backend. Hechos verificados el 2026-11-11 contra el manager vigente, el esquema público de la sonda (v4.14.1) y el código del Backend.
+
+## D114 · Las opciones de conexión de GCP las sirve el Backend, con su disponibilidad y sus etiquetas (2026-11-13)
+
+**Decisión.** El alcance (`project`, `organization`) y el método (`cloud_shell`, `terraform`) del asistente de GCP son enums del contrato, servidos por `GET /v1/catalogs/gcp_connection_scope` y `gcp_setup_method` con `description`, `availability` y `tags`; `connection_method` suma los mismos campos. El frontend no tiene listas de opciones ni decide qué está construido.
+
+**Por qué.** MD-214 mostraba las opciones futuras bloqueadas («Próximamente») y el frontend las escribía a mano, contra la regla de que ningún cliente hardcodea listas. Pasar una opción a `available` es un cambio de dato, como las plataformas (D67).
+
+**Qué cambia.** `contracts/enums/onboarding/conexion-activos.md` y `conectar.md`, `contracts/enums.md`, el Backend (datos de referencia y catálogos) y los pasos «Cómo conectar» de GCP y AWS en Frontend-Platform.
+
+**Fuente:** Rod, 2026-11-13 («que GCP quede en el enum que es, todo funcional, sin cosas hardcodeadas que no sean necesarias»).

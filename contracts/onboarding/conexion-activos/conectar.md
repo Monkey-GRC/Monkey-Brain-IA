@@ -22,6 +22,7 @@ type: contract
 | `POST` | [`/v1/assets`](#post-v1assets--declarar-un-activo) | Declarar un activo: nube con rol, nube con llaves, o agente |
 | `PATCH` | [`/v1/assets/{id}/connection`](#patch-v1assetsidconnection--entregar-el-rol-creado) | El cliente entrega el rol creado |
 | `GET` | `/v1/connection-templates/aws-readonly-role` | La plantilla del rol de solo lectura |
+| `GET` | `/v1/catalogs/gcp_connection_scope` · `/v1/catalogs/gcp_setup_method` | Las opciones del primer paso de GCP, con `description`, `availability` y `tags` (D114; ver `enums/onboarding/conexion-activos.md`) |
 | `GET` | `/v1/connection-templates/gcp-identity-federation` | El script de alta de GCP (D112) |
 | `GET` | `/v1/catalogs/connection_method` · `/v1/catalogs/aws_region` · `/v1/catalogs/<sistema>_version` | Los canales, las regiones y las versiones de un sistema operativo que se pueden declarar para un servidor (`linux_version`, `windows_version`…; D113). Cada opción trae `value` (código de Monkey, p. ej. `ubuntu_22_04_lts`), `label` («Ubuntu 22.04 LTS»), `group` (la distribución) y `group_label`. Solo salen las versiones que la sonda entrega; un sistema sin ninguna responde `404` |
 
@@ -200,7 +201,7 @@ Mismo cuerpo sin `external_account_id` ni `regions`, con `"connection_method": "
 }
 ```
 
-Sin `regions` ni `credentials` (`422 field.not_allowed` si llegan). Mientras `gcp` esté `coming_soon`, solo se acepta en desarrollo con `PREVIEW_PLATFORMS=gcp` (`DT-104`).
+Sin `regions` ni `credentials` (`422 field.not_allowed` si llegan). `gcp` está `available` desde MD-214; una plataforma `coming_soon` sigue dando `422 connection.provider_not_supported`.
 La respuesta `201` es la de A con este `connection_setup`:
 
 | Campo | Qué es |
