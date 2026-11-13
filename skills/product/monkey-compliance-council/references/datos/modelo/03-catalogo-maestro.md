@@ -263,8 +263,8 @@ ninguno de esos textos sale tal cual a la UI, a un reporte ni a un texto generad
 base en el inventario de proveedores"; "N<5 → 100%; si no, 10% de la población (mín. 5, máx. 25)"), no
 enteros: el muestreo se guarda como dato y su cálculo se construye después (D8).
 
-**Checks del motor de nube (D56).** El catálogo del motor de AWS (662 checks) se carga con `origin = engine_native`,
-`platform = aws` y `policy_id = cloud_configuration` (el motor no agrupa en «políticas»; una constante conserva la clave de tres
+**Checks del motor de nube (D56).** El catálogo del motor por plataforma (AWS: 662 checks; GCP: 110, `cruce-nube-gcp.md`) se carga con `origin = engine_native`,
+`platform = aws | gcp` y `policy_id = cloud_configuration` (el motor no agrupa en «políticas»; una constante conserva la clave de tres
 partes). **El mapeo a SOC 2 no es check → requisito**: es check → **prueba** → control → punto de enfoque → requisito. El motor aporta
 su propio check → requisito (`check_mappings`, `engine_native`, con el id normalizado: `cc_6_6` → `CC6.6`), que **no decide**. El
 eslabón check → prueba (`test_checks`) lo asigna el comité; hasta que lo ratifique, Monkey lo **propone** (`monkey_proposed`) desde las

@@ -11,7 +11,7 @@ en `datos/` (el modelo y las decisiones) ni en `deuda-tecnica/` (lo parchado).
 | ¿Qué marcos trae etiquetados la sonda y cuáles hay que construir? | [`wazuh-compliance.md`](wazuh-compliance.md) |
 | (Componente 3 del onboarding) ¿Cómo conecta un cliente su nube y quién hace qué? (diagramas) | [`flujo-conexion-nube.md`](../../onboarding/conexion-activos/flujo-conexion-nube.md) |
 | ¿Qué reglas del motor de nube (Prowler) no se rompen y qué está verificado? | [`prowler.md`](prowler.md) |
-| ¿Qué dio el escaneo de la nube y cómo cubre las pruebas `T-CLD`? | [`cruce-nube-aws.md`](cruce-nube-aws.md) |
+| ¿Qué dio el escaneo de la nube y cómo cubre las pruebas `T-CLD`? | [`cruce-nube-aws.md`](cruce-nube-aws.md) (AWS) · [`cruce-nube-gcp.md`](cruce-nube-gcp.md) (GCP) |
 | ¿Cómo se ejecuta el motor de nube, quién lo lanza y con qué aislamiento? | `D57` (`datos/decisiones/control-tecnico.md`) y `Backend/src/runner/` |
 
 ## Dos motores, un mismo modelo
@@ -22,7 +22,7 @@ en `datos/` (el modelo y las decisiones) ni en `deuda-tecnica/` (lo parchado).
 | Activo | El servidor, la BD, el equipo | La **cuenta**; sus recursos cuelgan de ella (`asset_resources`, D56) |
 | Conexión | Agente pre-registrado por Monkey en el grupo del cliente (D54) | Rol de solo lectura entre cuentas (D53, P14 C) |
 | Resultado | `check_results` (5 estados) | `check_results` (mismo formato, con recurso y región) |
-| Estado | Verificado contra la API; sin agentes reales | Escaneo completo de AWS; Azure y GCP, por probar más adelante |
+| Estado | Verificado contra la API; sin agentes reales | Escaneo completo de AWS; GCP escaneado a mano en un proyecto de pruebas (`cruce-nube-gcp.md`); Azure, por probar |
 
 El catálogo, los checks y el mapeo a controles son **de Monkey**; los motores son adaptadores que entregan resultados crudos en un formato
 único. Ambos son internos: el cliente solo ve «sonda» o «evaluación automática». El rol de cada motor lo cerró **D100**; lo que sigue abierto de **P14** es la unidad de evaluación, la conexión y el catálogo. Qué se decidió y por qué: `D53` a `D56`.

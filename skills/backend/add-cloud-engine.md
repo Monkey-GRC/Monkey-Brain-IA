@@ -24,7 +24,8 @@ Esto **no** es una feature con endpoints de cara al cliente. La nube vive en tre
 ## Qué se extiende y cómo
 
 - **Otro proveedor (Azure, GCP):** un `CredentialBroker` nuevo (la federación de cada proveedor) y comprobar que el parser acepta su salida.
-  La prueba de Azure y GCP con una cuenta real está planificada (`P14` C5): hasta entonces no se promete cobertura de esos proveedores.
+  GCP ya se escaneó a mano y el parser acepta su salida; su catálogo se carga con `npm run cloud:extract -- <carpeta> 5.44.0 --platform gcp`
+  (`cruce-nube-gcp.md`). Falta su `CredentialBroker`. Azure sigue sin probar (`P14` C5): no se promete su cobertura.
 - **Otro ejecutor** (una tarea en la nube en lugar de Docker): un `ScanEngine` nuevo. El bucle del trabajador no cambia.
 - **Más checks o pruebas:** el seed (`npm run cloud:extract | cloud:load | cloud:verify`, D56). El mapeo lo pone Monkey y **gana el comité**
   (`mapping_provenance`); el seed nunca pisa una asignación `committee_ratified`.
