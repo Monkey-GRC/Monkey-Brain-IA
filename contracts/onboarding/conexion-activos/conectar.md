@@ -78,7 +78,7 @@ El cliente no elige una categoría técnica: **elige una plataforma**, y eso lo 
 | Servidor en nube, on-premise o equipo | `ac_02`, `ac_04`, `ac_06` | El **sistema operativo** | `agent` (solo diseño, `DT-57`) |
 | Base de datos | `ac_03`, `ac_05` | El **motor** | `agent` (solo diseño, `DT-57`) |
 
-**Disponibilidad.** `availability = available` solo si el flujo existe: **hoy solo AWS**. Las `coming_soon` **se muestran bloqueadas**. Dónde vive un servidor o una base (EC2, RDS, un VPS…) no se pregunta: lo dice la plataforma que el cliente elige (D92).
+**Disponibilidad.** `availability = available` solo si el flujo existe: **hoy AWS, y Linux y Windows en servidores on-premise (`ac_04`, D113)**. Las `coming_soon` **se muestran bloqueadas**. Dónde vive un servidor o una base (EC2, RDS, un VPS…) no se pregunta: lo dice la plataforma que el cliente elige (D92).
 
 #### Pantalla
 `/services/{id}/connections/new`; las plataformas disponibles llevan a `/services/{id}/connections/new/{catalog_code}/{platform}`.

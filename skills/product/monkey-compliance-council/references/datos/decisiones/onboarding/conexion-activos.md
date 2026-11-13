@@ -162,7 +162,7 @@ estaban en constantes del código (`technical-catalogs.ts`, `onboarding-catalogs
    Windows, macOS, Linux. En servidores y equipos la plataforma es el **sistema operativo**; en bases de datos, el **motor**. No es el hosting (EC2, Azure VM, RDS, Atlas…), que
    el comité cita solo como ejemplo de dónde vive: la medición depende del sistema operativo o del motor, y dónde vive ya lo dice el escenario (paso 1).
 3. **Se muestran todas; solo se elige la que tiene un flujo real.** Cada plataforma tiene `availability` (`available` | `coming_soon`, el mismo enum que los marcos, D50) y la
-   que no está disponible se muestra **bloqueada**. Hoy solo AWS está `available`. Marcar `available` sin flujo construido es un error; la API rechaza una plataforma bloqueada con
+   que no está disponible se muestra **bloqueada**. Hoy están `available` AWS y, en servidores on-premise (`ac_04`), Linux y Windows (D113). Marcar `available` sin flujo construido es un error; la API rechaza una plataforma bloqueada con
    `422 connection.provider_not_supported`.
 4. **Todo lo que la pantalla ofrece y valida sale de la base** (esquema `catalog`, lo escribe solo `admin_monkey`, SEG-06): las plataformas, los canales de cada una, las
    frecuencias de cada conexión, qué conexiones ofrece cada escenario, el tipo de activo que produce cada conexión y las regiones de cada plataforma. Dejan de ser constantes.

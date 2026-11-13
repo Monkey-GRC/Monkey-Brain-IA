@@ -128,7 +128,7 @@ Los nombres son marcas y **no se traducen**. `logo_key` es el nombre del SVG ofi
 | `ac_05` | `postgresql` PostgreSQL · `mysql_mariadb` MySQL / MariaDB · `sql_server` SQL Server · `oracle` Oracle · `mongodb` MongoDB |
 | `ac_06` | `windows` Windows · `macos` macOS · `linux` Linux |
 
-- **`availability`** (el enum de los marcos, D50): `available` | `coming_soon`. **Solo `aws` está `available`** (es el único flujo construido, D58); todas las demás se muestran **bloqueadas**.
+- **`availability`** (el enum de los marcos, D50): `available` | `coming_soon`. **Solo `aws` (D58) y `linux` y `windows` en `ac_04`, servidores on-premise (D113), están `available`** (son los flujos construidos); todas las demás se muestran **bloqueadas**.
   Pasar una a `available` exige que su flujo exista; es un cambio de dato, no de contrato.
 - **Canales** (`platform_connection_methods`, el primero es el recomendado): `aws` → `readonly_role`, `access_keys`; los sistemas operativos y los motores de bases de datos → `agent`
   (diseño, DT-57); Azure, GCP, Microsoft 365 y Google Workspace → ninguno hasta que se defina su canal.
