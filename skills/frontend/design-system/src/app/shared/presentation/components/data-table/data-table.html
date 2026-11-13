@@ -59,12 +59,39 @@
       </thead>
       <tbody class="divide-y divide-line" [class]="s().body">
         @if (loading()) {
-          <tr>
-            <td [attr.colspan]="columnCount()" class="px-4 py-10 text-center" [class]="s().cell" role="status">
-              <span class="material-symbols-rounded animate-spin text-[28px] text-action" aria-hidden="true">progress_activity</span>
-              <span class="sr-only">{{ 'COMMON.LOADING' | translate }}</span>
-            </td>
-          </tr>
+          <tr class="sr-only"><td [attr.colspan]="columnCount()" role="status">{{ 'COMMON.LOADING' | translate }}</td></tr>
+          @for (n of skeletonRows(); track n) {
+            <tr aria-hidden="true" data-skeleton-row [class]="s().row">
+              @if (selectable()) {
+                <td [class]="s().cell + ' ' + s().select"><app-skeleton shape="block" width="1rem" height="1rem" /></td>
+              }
+              @for (column of columns(); track column.key; let c = $index) {
+                <td [class]="s().cell + ' ' + cellPad() + ' ' + align(column) + ' ' + (column.class ?? '')" [attr.data-label]="column.srOnlyHeader || !stacked() ? null : (column.headerKey | translate)">
+                  @switch (column.skeleton ?? 'text') {
+                    @case ('badge') {
+                      <div class="flex" [class]="skeletonJustify(column)"><app-skeleton shape="badge" /></div>
+                    }
+                    @case ('person') {
+                      <div class="flex items-center gap-3">
+                        <app-skeleton shape="circle" [size]="36" />
+                        <app-skeleton class="min-w-0 flex-1" shape="line" [lines]="2" />
+                      </div>
+                    }
+                    @case ('actions') {
+                      <div class="flex" [class]="skeletonJustify(column)"><app-skeleton shape="block" width="2rem" height="2rem" /></div>
+                    }
+                    @case ('none') {}
+                    @default {
+                      <div class="flex" [class]="skeletonJustify(column)"><app-skeleton shape="line" [style.width]="skeletonWidth(n, c)" /></div>
+                    }
+                  }
+                </td>
+              }
+              @if (hasChevron()) {
+                <td class="w-12 py-2 pl-2 pr-4" [class]="s().cell + ' ' + s().chevron"></td>
+              }
+            </tr>
+          }
         } @else {
           @if (groupBy()) {
             @for (group of groups(); track group.key) {

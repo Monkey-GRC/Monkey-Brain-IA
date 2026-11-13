@@ -97,7 +97,11 @@ describe('ConfirmDialog', () => {
   it('ignores everything while the action is running', () => {
     fixture.componentRef.setInput('busy', true);
     fixture.detectChanges();
-    buttons().forEach((b) => expect(b.disabled).toBeTrue());
+    expect(buttons()[0].disabled).toBeTrue();
+    expect(buttons()[1].disabled).toBeFalse();
+    expect(buttons()[1].getAttribute('aria-disabled')).toBe('true');
+    expect(buttons()[1].getAttribute('aria-busy')).toBe('true');
+    expect(buttons()[1].querySelector('[data-busy-spinner]')).not.toBeNull();
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
     expect(cancelled).toBe(0);
   });

@@ -2,6 +2,8 @@ import { ChangeDetectionStrategy, Component, effect, input, output, signal, untr
 import { TranslatePipe } from '@ngx-translate/core';
 import { Modal } from '@shared/presentation/components/modal/modal';
 import { SecondFactorField } from '@shared/presentation/components/second-factor-field/second-factor-field';
+import { Busy } from '@shared/presentation/directives/busy';
+import { BusyFields } from '@shared/presentation/directives/busy-fields';
 
 export interface SecondFactorAnswer {
   code?: string;
@@ -13,7 +15,7 @@ export interface SecondFactorAnswer {
 // (`errorMessage`) para que se vea sin cerrar el modal. Con 6 dígitos del código de la app se envía solo; el código de recuperación lleva su botón.
 @Component({
   selector: 'app-second-factor-dialog',
-  imports: [TranslatePipe, Modal, SecondFactorField],
+  imports: [TranslatePipe, Modal, SecondFactorField, Busy, BusyFields],
   templateUrl: './second-factor-dialog.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

@@ -4,6 +4,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { PageInfo } from './table-page';
 import { Pagination } from '@shared/presentation/components/pagination/pagination';
 import { EmptyState } from '@shared/presentation/components/empty-state/empty-state';
+import { Skeleton } from '@shared/presentation/components/skeleton/skeleton';
 
 let nextId = 0;
 
@@ -92,6 +93,9 @@ export interface TableColumn<T> {
   class?: string;
   // El encabezado se oculta a la vista pero sigue ahí para los lectores de pantalla (columna de acciones).
   srOnlyHeader?: boolean;
+  // What the column holds, so the loading rows draw a cell of the same kind: `text` (default), `badge` (status, code), `person` (avatar and two lines), `actions` (a small button) or
+  // `none` (empty cell).
+  skeleton?: 'text' | 'badge' | 'person' | 'actions' | 'none';
 }
 
 // Marca la plantilla de una celda: `<ng-template appCell="status" let-row><app-status-indicator tone="ok" labelKey="..." /></ng-template>`.
@@ -102,8 +106,8 @@ export class TableCell {
 }
 
 // Tabla única del producto: cabecera pequeña en gris, filas con hover en toda la fila, bordes y radios por token, paginación al pie. Las columnas y las celdas son de
-// quien la usa; el estilo, no. Celdas y atajos que se reutilizan: `app-person-cell` (avatar con iniciales + nombre y correo), `app-status-indicator` (punto + palabra),
-// `app-tag` (código), `app-table-toolbar` + `app-table-filter` (barra con buscador, filtros y acciones). Opciones: `clickable` (fila activable con clic, Enter o Espacio; con `[focusable]="false"` solo con el mouse, para filas que ya traen su propio enlace o botón: una sola parada de Tab; pone un
+// quien la usa; el estilo, no. Celdas y atajos que se reutilizan: `app-person-cell` (avatar con iniciales + nombre y correo), `app-status-indicator` (badge de estado),
+// `app-tag` (badge de código), `app-table-toolbar` + `app-table-filter` (barra con buscador, filtros y acciones). Opciones: `clickable` (fila activable con clic, Enter o Espacio; con `[focusable]="false"` solo con el mouse, para filas que ya traen su propio enlace o botón: una sola parada de Tab; pone un
 // chevron al final salvo `[chevron]="false"`), `selectable` (casillas y «seleccionar todo» de la página; quien la usa guarda la selección).
 //
 // Tabla con paginación (la barra es `pagination`; el formato de `page`, `page_size`, `total` y `total_pages` es el del backend). No pide datos: recibe las filas y
@@ -115,7 +119,7 @@ export class TableCell {
 //   </app-data-table>
 @Component({
   selector: 'app-data-table',
-  imports: [NgTemplateOutlet, TranslatePipe, EmptyState, Pagination],
+  imports: [NgTemplateOutlet, TranslatePipe, EmptyState, Pagination, Skeleton],
   templateUrl: './data-table.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -127,7 +131,9 @@ export class DataTable<T> {
   readonly rowKey = input.required<(row: T) => string | number>();
   readonly page = input<PageInfo | null>(null);
   readonly pageSizes = input<number[]>([10, 25, 50]);
+  // Loading (D116): `loadingRows` skeleton rows with the same columns, widths and alignment as the real ones, under the real header (see `TableColumn.skeleton`). The layout does not move when the data arrives.
   readonly loading = input(false);
+  readonly loadingRows = input(5);
   // Las filas se pueden activar (clic, Enter) para abrir su detalle.
   readonly clickable = input(false);
   // Una fila activable es una parada de Tab (con nombre accesible de `rowLabel` y la descripción «Abrir detalle»). Si la fila ya contiene el enlace o botón que hace lo mismo,
@@ -185,6 +191,7 @@ export class DataTable<T> {
     const labelOf = this.groupLabel();
     return Array.from(byKey, ([key, rows]) => ({ key, label: labelOf ? labelOf(key, rows) : key, rows }));
   });
+  protected readonly skeletonRows = computed(() => Array.from({ length: Math.max(1, Math.floor(this.loadingRows())) }, (_, i) => i));
   private readonly collapsedGroups = signal<ReadonlySet<string>>(new Set());
 
   private readonly cells = contentChildren(TableCell);
@@ -201,6 +208,16 @@ export class DataTable<T> {
 
   protected cellFor(key: string): TemplateRef<unknown> | null {
     return this.cells().find((c) => c.key() === key)?.template ?? null;
+  }
+
+  // Width of a text skeleton: varies by row and column so the rows do not look like a stripe.
+  protected skeletonWidth(row: number, col: number): string {
+    return ['70%', '55%', '85%', '62%'][(row + col) % 4];
+  }
+
+  // Alignment of the skeleton inside its cell: the same as the column's text.
+  protected skeletonJustify(column: TableColumn<T>): string {
+    return column.align === 'right' ? 'justify-end' : column.align === 'center' ? 'justify-center' : 'justify-start';
   }
 
   protected align(column: TableColumn<T>): string {

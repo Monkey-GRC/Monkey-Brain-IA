@@ -1,6 +1,7 @@
 import { A11yModule } from '@angular/cdk/a11y';
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, input, output } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
+import { Busy } from '@shared/presentation/directives/busy';
 import { pushOverlay, takeEscape } from '@shared/presentation/components/overlay-stack/overlay-stack';
 
 let nextId = 0;
@@ -14,7 +15,7 @@ let nextId = 0;
 // Todos los textos son claves de traducción; si no se da `confirmLabelKey`/`cancelLabelKey` usa «Confirmar» y «Cancelar».
 @Component({
   selector: 'app-confirm-dialog',
-  imports: [A11yModule, TranslatePipe],
+  imports: [A11yModule, TranslatePipe, Busy],
   templateUrl: './confirm-dialog.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { '(document:keydown.escape)': 'onEscape($event)' },
@@ -26,9 +27,9 @@ export class ConfirmDialog {
   readonly messageParams = input<Record<string, unknown>>({});
   readonly confirmLabelKey = input('COMMON.CONFIRM');
   readonly cancelLabelKey = input('COMMON.CANCEL');
-  // `danger` pinta el botón de confirmar en rojo (eliminar, quitar); `primary` en azul.
-  readonly tone = input<'primary' | 'danger'>('primary');
-  // Mientras la acción corre, los botones se bloquean y no se puede cerrar.
+  // `danger` pinta el botón de confirmar en rojo (eliminar, quitar); `primary` en azul; `neutral` como botón secundario (una salida que no pierde nada).
+  readonly tone = input<'primary' | 'danger' | 'neutral'>('primary');
+  // Mientras la acción corre, «Cancelar» se bloquea, el botón de confirmar queda ocupado (`appBusy`) y no se puede cerrar.
   readonly busy = input(false);
 
   readonly confirmed = output<void>();

@@ -27,12 +27,9 @@
       <button
         type="button"
         (click)="confirm()"
-        [disabled]="busy()"
-        [class]="tone() === 'danger' ? 'mk-btn-danger' : 'mk-btn'"
+        [appBusy]="busy()"
+        [class]="tone() === 'danger' ? 'mk-btn-danger' : tone() === 'neutral' ? 'mk-btn-secondary' : 'mk-btn'"
       >
-        @if (busy()) {
-          <span class="material-symbols-rounded animate-spin text-[18px] leading-none" aria-hidden="true">progress_activity</span>
-        }
         {{ confirmLabelKey() | translate }}
       </button>
     </div>

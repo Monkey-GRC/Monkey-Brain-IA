@@ -42,6 +42,10 @@ cat > "$c/m/Frontend-Platform/src/app/a.html" <<'H'
 <select class="mk-input"><option>a</option></select>
 <input type="text" class="border bg-surface px-3" />
 <button class="enabled:hover:underline disabled:text-ink-faint">{{ 'OK.KEY' | translate }}</button>
+<app-loading-spinner />
+<app-loading-spinner data-long-process />
+<span class="animate-spin">a</span>
+<span class="animate-spin" data-long-process>b</span>
 H
 echo '{"OK":{"KEY":"a","ONLY_ES":"b"}}' > "$c/m/Frontend-Platform/public/i18n/es/a.json"
 echo '{"OK":{"KEY":"a"}}' > "$c/m/Frontend-Platform/public/i18n/en/a.json"
@@ -55,4 +59,7 @@ echo "$out" | grep -Eq 'input without text colour[[:space:]]+0[[:space:]]+1' || 
 echo "$out" | grep -q 'MISSING NO.SUCH_KEY' || fail "missing i18n key not reported"
 echo "$out" | grep -q 'ONLY-ES OK.ONLY_ES' || fail "es/en pair out of step not reported"
 echo "$out" | grep -q 'MISSING OK.KEY' && fail "an existing key was reported"
+# (5) D116 allowlist: a spinner marked data-long-process is not counted; an unmarked one is
+echo "$out" | grep -Eq 'app-loading-spinner[[:space:]]+0[[:space:]]+1' || fail "unmarked app-loading-spinner not counted, or the marked one was"
+echo "$out" | grep -Eq 'animate-spin by hand[[:space:]]+0[[:space:]]+1' || fail "unmarked animate-spin not counted, or the marked one was"
 echo "SELFTEST OK"
