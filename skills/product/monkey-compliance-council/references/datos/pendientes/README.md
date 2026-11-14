@@ -35,6 +35,7 @@ Lo que sigue abierto, con lo más urgente arriba. 🚧 bloquea trabajo · ⚠️
 | [P44](integraciones.md#p44--qué-checks-de-github-cuentan-y-a-qué-pruebas-y-controles-van) | Qué checks de GitHub cuentan y a qué pruebas y controles van | No bloquea: GitHub sigue `coming_soon` hasta responder (D110) | 2026-11-12 |
 | [P45](integraciones.md#p45--en-qué-categoría-de-activo-entra-github) | En qué categoría de activo entra GitHub | No bloquea: el flujo de conexión de GitHub | 2026-11-12 |
 | [P46](integraciones.md#p46--qué-hace-la-integración-con-jira) | Qué hace la integración con Jira | No bloquea: Jira sigue `coming_soon` hasta responder (D110) | 2026-11-12 |
+| [P47](gestion-usuarios.md#p47--qué-más-hace-admin_monkey-con-las-cuentas-y-las-empresas-mejoras-futuras-de-monkey-admin) | Qué más hace `admin_monkey` con las cuentas y las empresas (mejoras futuras de Monkey Admin) | No bloquea: ver el equipo de una empresa, soporte, exportar, más roles administrativos | 2026-11-13 |
 
 ---
 
@@ -52,7 +53,7 @@ Lo que sigue abierto, con lo más urgente arriba. 🚧 bloquea trabajo · ⚠️
 | [`control-tecnico.md`](control-tecnico.md) | 2 | [Control técnico](../../arquitectura/control-tecnico/README.md) |
 | [`cumplimiento.md`](cumplimiento.md) | 6 | [Cumplimiento](../../arquitectura/cumplimiento/README.md) |
 | [`notificaciones.md`](notificaciones.md) | 1 | [Notificaciones](../../arquitectura/notificaciones/README.md) |
-| [`gestion-usuarios.md`](gestion-usuarios.md) | 2 | [Gestión de usuarios](../../arquitectura/gestion-usuarios/README.md) |
+| [`gestion-usuarios.md`](gestion-usuarios.md) | 3 | [Gestión de usuarios](../../arquitectura/gestion-usuarios/README.md) |
 | [`integraciones.md`](integraciones.md) | 3 | [Integraciones](../../arquitectura/integraciones/README.md) |
 
 ---

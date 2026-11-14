@@ -62,21 +62,19 @@ Las de HTTP de aislamiento ya están en `develop` (PR #18 y #19). **Las de `test
 
 **Se recalcula de la columna *Estado*, no se mantiene a mano.** Lo que no está en ✅ es trabajo pendiente. Regla de conteo: **manda el primer estado de la celda**; lo que va en paréntesis (`✅ (índice 🟡)`, `✅ (API keys ⚪)`, `✅ (por rol 🟡)`) es un matiz del requisito, no otro estado. Los estados se revisaron por última vez el 2026-10-07 y los ⚪ incluyen los 5 retirados por D96, que se conservan tachados para no reutilizar su ID.
 
-> La tabla anterior, mantenida a mano, declaraba 34 ✅, 11 🟠 y 9 🔴 sobre 65. Con la regla de arriba salen **37 ✅, 9 🟠 y 8 🔴**: la diferencia son las tres filas con estado matizado (`SEG-05`, `SEG-16`, `SEG-17`). Ningún requisito cambió; cambió quién cuenta.
-
 | Módulo | ✅ | 🟡 | 🟠 | 🔴 | ⚪ | Total |
 |---|--:|--:|--:|--:|--:|--:|
 | [Aislamiento multi-tenant](aislamiento-tenant.md) | 6 | 1 | 1 | 1 | 0 | **9** |
 | [Autenticación](autenticacion.md) | 10 | 0 | 0 | 0 | 0 | **10** |
 | [Roles y permisos](roles-permisos.md) | 1 | 0 | 4 | 2 | 4 | **11** |
-| [Gestión de usuarios](gestion-usuarios.md) | 2 | 0 | 1 | 4 | 0 | **7** |
+| [Gestión de usuarios](gestion-usuarios.md) | 9 | 0 | 1 | 1 | 0 | **11** |
 | [Empresas](empresas.md) | 1 | 1 | 0 | 0 | 1 | **3** |
 | [Onboarding](onboarding.md) | 2 | 0 | 0 | 0 | 0 | **2** |
 | [Control técnico](control-tecnico.md) | 3 | 2 | 4 | 2 | 0 | **11** |
 | [Trazabilidad](trazabilidad.md) | 6 | 0 | 2 | 0 | 0 | **8** |
 | [Plataforma](plataforma.md) | 4 | 2 | 0 | 1 | 2 | **9** |
 | [Entrega](entrega.md) | 1 | 2 | 0 | 3 | 1 | **7** |
-| **Total** | **36** | **8** | **12** | **13** | **8** | **77** |
+| **Total** | **43** | **8** | **12** | **10** | **8** | **81** |
 
 ---
 
@@ -84,11 +82,11 @@ Las de HTTP de aislamiento ya están en `develop` (PR #18 y #19). **Las de `test
 
 El tablero: todo lo que **no** está ✅, por estado y por módulo. Cada ID se busca dentro del archivo de su módulo.
 
-**🔴 No implementado** (13)
+**🔴 No implementado** (10)
 
 - [Aislamiento multi-tenant](aislamiento-tenant.md): `SEG-09`
 - [Roles y permisos](roles-permisos.md): `SEG-22` · `SEG-66`
-- [Gestión de usuarios](gestion-usuarios.md): `SEG-73` · `SEG-74` · `SEG-75` · `SEG-76`
+- [Gestión de usuarios](gestion-usuarios.md): `SEG-76`
 - [Control técnico](control-tecnico.md): `SEG-26` · `SEG-45`
 - [Plataforma](plataforma.md): `SEG-25`
 - [Entrega](entrega.md): `SEG-28` · `SEG-31` · `SEG-41`
@@ -104,10 +102,10 @@ El tablero: todo lo que **no** está ✅, por estado y por módulo. Cada ID se b
 **🟡 Sin prueba automática** (8)
 
 - [Aislamiento multi-tenant](aislamiento-tenant.md): `SEG-08`
-- [Empresas](empresas.md): `SEG-71`
 - [Control técnico](control-tecnico.md): `SEG-29` · `SEG-49`
 - [Plataforma](plataforma.md): `SEG-19` · `SEG-60`
 - [Entrega](entrega.md): `SEG-30` · `SEG-42`
+- [Empresas](empresas.md): `SEG-71`
 
 **⚪ No verificable desde el repo, o retirado** (8)
 

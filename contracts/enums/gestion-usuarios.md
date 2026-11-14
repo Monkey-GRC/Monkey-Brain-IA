@@ -8,7 +8,7 @@
 | Valor | Etiqueta (es) | Qué significa |
 |---|---|---|
 | `active` | Activo | |
-| `inactive` | Inactivo | Dado de baja; sin acceso (CC6.3); libera el cupo |
+| `inactive` | Inactivo | Dado de baja; sin acceso (CC6.3); libera el cupo. En un `admin_monkey` es la gracia de 7 días: lleva `purge_at` y al vencer la cuenta se borra (D117) |
 | `suspended` | Suspendido | |
 | `pending` | Pendiente de activar | La cuenta existe pero aún no usó su código; no puede iniciar sesión (D95) |
 

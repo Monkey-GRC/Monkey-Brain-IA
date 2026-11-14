@@ -32,6 +32,7 @@ te toca. Si lo que vas a construir no está aquí, el contrato se acuerda primer
 |---|---|---|
 | Autenticación | [`autenticacion.md`](autenticacion.md) | Canje de la clave, login, refresh, segundo factor, activación y contraseña |
 | Gestión de usuarios | [`gestion-usuarios.md`](gestion-usuarios.md) | El administrador crea al equipo (`responsable`, `delegado`, `auditor`), se organizan en grupos y se asigna el dueño y el ejecutor de cada control |
+| | [`gestion-usuarios/administradores.md`](gestion-usuarios/administradores.md) | Monkey Admin: un `admin_monkey` invita, desactiva (7 días de gracia y luego se borra) y reactiva a otros administradores; el sello de la auditoría |
 | Empresas | [`empresas.md`](empresas.md) | Registro del tenant y clave de acceso (`companies`, `access_keys`) |
 | Catálogo maestro | [`catalogo-maestro.md`](catalogo-maestro.md) | Monkey Admin: ver y gestionar el catálogo (marcos, controles, riesgos, causas, pruebas, evidencias) |
 | Onboarding | [`onboarding/contexto-organizacional.md`](onboarding/contexto-organizacional.md) | Componente 1 — 10 campos de la empresa |

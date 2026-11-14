@@ -89,3 +89,25 @@ Por qué Gestión de usuarios es como es. **Se consulta para reabrir, no para co
 **Fuente:** Héctor Ríos, 2026-11-05: «así es como lo quería el comité; hubo una desviación en la planificación del sprint».
 
 ---
+
+## D117 · Un `admin_monkey` invita y desactiva a otros administradores; la baja dura 7 días y luego se borra, y la auditoría conserva un sello (2026-11-13)
+
+**Contexto.** Héctor Ríos (Rod), 2026-11-13, al planificar MD-215. Hoy los `admin_monkey` solo se crean por consola (`npm run bootstrap:admin`) y no hay pantalla ni endpoint. Hay cuatro (dos de desarrollo y dos del comité). **Amplía D103** (que fija un solo rol interno): no la reemplaza ni cambia sus puntos.
+
+**Decisión.**
+
+1. **El alta es por invitación de correo**, con el mismo mecanismo de D95 y D96: la cuenta nace `pending`, no inicia sesión, y se activa con un código de un solo uso que pone la contraseña y obliga a configurar el segundo factor (D94, D102). Se invita desde Monkey Admin y el enlace del correo apunta a Monkey Admin. **El rol viaja como campo** (hoy solo `admin_monkey`): Monkey prevé más roles administrativos, y cada uno pedirá su propia decisión; hasta entonces cualquier otro valor es `422`.
+2. **Cualquier `admin_monkey` activo puede desactivar y reactivar a otro**, sin jerarquía. Dos candados: **nadie se desactiva a sí mismo** y **el último `admin_monkey` activo no se puede desactivar**, ni siquiera con dos peticiones simultáneas.
+3. **Desactivar es una gracia de 7 días y luego un borrado total.** La cuenta pasa a `inactive` con una fecha de purga (`purge_at`, a 7 días), se cierran sus sesiones al instante y no puede entrar. **Dentro de esos 7 días se puede reactivar.** Al vencer, un proceso programado **borra su registro por completo** (cuenta, credenciales, segundo factor, sesiones y códigos). Es el mismo patrón de archivar y purgar empresas (D97). La razón de que sea borrado y no solo baja: un administrador de Monkey no recolecta datos a su nombre, así que no hay nada que conservar de él.
+4. **La auditoría conserva un sello mínimo.** Al purgar, en la misma transacción, se guarda en `audit.admin_tombstones` el **id, el nombre completo y el rol** del administrador (nunca el correo ni nada de acceso). Un registro de `audit_logs` (o de otra tabla que atribuya algo a una persona) cuyo autor ya no existe sigue mostrando quién fue, con su sello. `audit_logs` sigue siendo solo de añadir: no se reescribe ningún registro.
+5. **El correo queda libre** al purgar (D98 punto 5: el correo es único en toda la plataforma): se puede volver a invitar a esa persona.
+6. **Invitar y desactivar piden el código del segundo factor de quien actúa**, igual que archivar una empresa (D97). **Reactivar no lo pide.**
+7. **La empresa interna de Monkey no tiene límite de usuarios:** su `max_users` queda sin fijar (sin tope, D103) y ningún alta ni reactivación de un administrador pasa por `USER_LIMIT_REACHED`.
+
+**Qué hay que resolver al construir (el sello necesita quitar bloqueos).** Hoy varias claves foráneas hacia `users` son `Restrict` o no tienen acción, y un administrador puede estar referenciado por ellas: `audit_logs.user_id` (`Restrict`, a propósito, para no perder la atribución), `compliance_events.user_id`, `catalog_versions.published_by`, `access_keys.created_by` y `user_activation_codes.created_by` (quien invitó a otro). Para que el borrado sea posible, esas columnas de **atribución** dejan de tener clave foránea (siguen siendo un uuid) y la lectura resuelve el nombre con la cuenta o, si no existe, con su sello. Las columnas de credenciales del propio administrador se borran con él. La revisión tabla por tabla va en el ticket de backend (MD-215).
+
+**Qué cambia.** `contracts/gestion-usuarios/administradores.md` (nuevo) y su enlace en `contracts/gestion-usuarios.md` y `contracts/README.md`, `contracts/enums/gestion-usuarios.md` (`user_status` con `purge_at`), `datos/modelo/04-monkey-admin.md` (`admin_tombstones`, `users.purge_at`), `arquitectura/gestion-usuarios/README.md`, `seguridad/gestion-usuarios.md` (`SEG-79` a `SEG-82`). Las mejoras futuras del módulo van en `P47`.
+
+**Fuente:** Héctor Ríos (Rod), 2026-11-13: «la creación de un admin va a ser mediante invitación de correo»; «todos van a poder borrar a otro admin»; «no se puede desactivar a sí mismo y el último admin en pie tampoco»; «el desactivar admin lo ponemos a 7 días, luego de eso se borra por completo su registro»; «si en un log de auditoría aparece el nombre, id de un admin que ya no está, que siga saliendo»; «claro que se puede reactivar»; «pon esa info en la auditoría (id, nombre completo y rol)»; «la empresa interna de Monkey no tiene límite de usuarios»; «al reactivar un usuario no hace falta poner TOTP».
+
+---

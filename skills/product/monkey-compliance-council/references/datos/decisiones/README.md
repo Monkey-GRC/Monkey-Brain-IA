@@ -196,3 +196,4 @@ quedan aquí:
 | D114 | Las opciones de conexión de GCP (alcance y método) las sirve el Backend con su disponibilidad y etiquetas; el frontend no las escribe *(la decidió Rod, no el comité)* | [control-tecnico](control-tecnico.md) |
 | D115 | Un solo badge de rectángulo redondeado (código, atributo, estado) en las dos apps; color fijo por valor y punto en el estado *(la decidió Rod, no el comité)* | [plataforma](plataforma.md) |
 | D116 | Esqueleton para el contenido que carga; spinner solo en procesos y en botones ocupados (`appBusy`), hasta recibir la respuesta *(la decidió Rod, no el comité)* | [plataforma](plataforma.md) |
+| D117 | Un `admin_monkey` invita y desactiva a otros administradores; la baja dura 7 días y luego se borra; la auditoría conserva un sello (id, nombre y rol) *(amplía D103)* | [gestion-usuarios](gestion-usuarios.md) |
