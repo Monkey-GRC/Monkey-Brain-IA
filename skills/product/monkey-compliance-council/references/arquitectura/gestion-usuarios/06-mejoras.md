@@ -27,4 +27,4 @@ Una delegación temporal con fechas sería una tabla nueva. Fuera del sprint 3.
 Se ofrecen filtros y selección en bloque; repartir solo no se construye.
 
 ## M5 · Soporte de Monkey
-Un rol interno de soporte, sin definir (D103).
+Un rol interno de soporte, sin definir (D103). Las demás mejoras de Monkey Admin están en `P47`; las cuentas de administrador, en D117.

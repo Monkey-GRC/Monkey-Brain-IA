@@ -37,7 +37,7 @@ erDiagram
     companies ||--o{ access_keys : "se accede con"
 ```
 
-**`max_users` (D103).** El modelo de negocio cobra por usuarios creados. `admin_monkey` lo fija al registrar la empresa y lo puede subir después. Cuentan las cuentas `active`, `pending` y `suspended` (de cualquier rol); desactivar libera el cupo. No se puede fijar por debajo de las cuentas que ya cuentan.
+**`max_users` (D103).** El modelo de negocio cobra por usuarios creados. `admin_monkey` lo fija al registrar la empresa y lo puede subir después. Cuentan las cuentas `active`, `pending` y `suspended` (de cualquier rol); desactivar libera el cupo. No se puede fijar por debajo de las cuentas que ya cuentan. **La empresa interna de Monkey no tiene cupo** (`max_users` sin fijar = sin tope; D117): los administradores no cuentan para ningún límite.
 
 ### 4.2 El flujo de registro
 
@@ -60,6 +60,33 @@ requiere base de datos dedicada, y el correo administrativo de la empresa. Al en
 ### 4.2b Archivar y borrar una empresa (D97)
 
 Una empresa se **archiva** (`status = deactivated`, con `deactivated_at` y `archive_until`) y, al vencer el plazo que eligió `admin_monkey` (6 meses por defecto), se **borra definitivamente** con todo lo suyo. Al archivar: sin accesos, sin motores y sin datos nuevos; usuarios, asignaciones y datos quedan guardados y se toma una copia cifrada. Reversible solo dentro del plazo; avisa a los `admin_monkey` 3 días antes (correo y app); los respaldos generales rotan a 35 días. Del borrado solo sobrevive el rastro mínimo (`company_purge_log`: nombre, fecha y hora, quién). Archivar, reactivar y borrar son seguros ante peticiones o réplicas simultáneas: la condición va en el `UPDATE` y la purga toma un candado por empresa. Contrato: `contracts/empresas.md`; requisito: SEG-68; enmienda a D41.
+
+### 4.2c Cuentas de administrador y su sello (D117)
+
+Un `admin_monkey` pertenece a la empresa interna de Monkey. Lo invita otro `admin_monkey` (nace `pending`, se activa con un código de un solo uso; D95, D96) y lo desactiva otro. **Desactivar** deja la cuenta `inactive` con `users.purge_at` (a 7 días); dentro de ese plazo se reactiva (`purge_at` vuelve a `null`). **Al vencer**, un proceso programado la borra por completo.
+
+```mermaid
+erDiagram
+    users {
+        uuid id PK
+        string name
+        string last_name
+        enum role "admin_monkey (D117: el rol viaja como campo)"
+        enum status "pending|active|inactive"
+        datetime purge_at "nullable: solo admin inactivo; ahora + 7 dias"
+    }
+    admin_tombstones {
+        uuid user_id PK "el id que tenia en users; sin FK"
+        string name
+        string last_name
+        enum role
+        datetime purged_at
+    }
+```
+
+**`audit.admin_tombstones`** (el sello). Se inserta **en la transacción de la purga, antes de borrar la fila**. Solo id, nombre completo y rol: **nunca el correo** ni nada de acceso. Es de solo añadir (`REVOKE UPDATE, DELETE` y trigger, como `audit_logs`; D41) y no tiene RLS por empresa porque pertenece a la plataforma.
+
+**La atribución sobrevive al borrado.** Las columnas que dicen *quién hizo esto* y que pueden apuntar a un `admin_monkey` pierden la clave foránea hacia `users` (siguen siendo un uuid): `audit_logs.user_id` (hoy `Restrict`), `compliance_events.user_id`, `catalog_versions.published_by`, `access_keys.created_by` y `user_activation_codes.created_by`. La lectura resuelve el nombre con `users` y, si la cuenta ya no existe, con `admin_tombstones`. Las filas que son del propio administrador (sesiones, segundo factor, códigos de recuperación, historial de contraseñas, tokens de restablecimiento y códigos de activación recibidos) se borran con él. `audit_logs` no se reescribe. Requisitos: `SEG-79` a `SEG-82`. La revisión tabla por tabla de las claves foráneas se hace al construir (MD-215).
 
 ### 4.3 Aislamiento de datos (multi-tenancy)
 

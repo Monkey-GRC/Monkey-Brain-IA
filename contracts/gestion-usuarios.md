@@ -9,11 +9,11 @@ type: contract
 
 | | |
 |---|---|
-| **Estado** | **ACORDADO** (2026-11-03, D102 y D103; reemplaza el reparto por dimensión de D96 y D98). **Por construir en el sprint 3** (ver [Estado de implementación](#estado-de-implementación)) |
+| **Estado** | **ACORDADO** (2026-11-03, D102 y D103; reemplaza el reparto por dimensión de D96 y D98). **En construcción en el sprint 3** (ver [Estado de implementación](#estado-de-implementación)) |
 | **App** | Monkey Platform (equipo, grupos, asignación y «Mi trabajo») y Monkey Admin (el cupo de usuarios, `contracts/empresas.md`) |
 | **Reglas del modelo** | `modelo-datos.md` §5.1, §5.2 y §5.5 · convenciones: [`conventions.md`](conventions.md) · enums: [`enums.md`](enums.md) |
 
-**Qué es.** El `admin_empresa` es el líder de compliance. Crea a todo el equipo, lo organiza en **grupos** y asigna a cada control un **dueño** (un `responsable`, o él mismo). El `responsable` lidera un equipo de `delegado` y les asigna, de sus controles, los que deben **ejecutar**. Cada persona ve solo lo suyo; el `admin_empresa` ve todo; el `auditor` ve todo en solo lectura, incluida la cadena. `admin_monkey` no crea ni desactiva cuentas de una empresa.
+**Qué es.** El `admin_empresa` es el líder de compliance. Crea a todo el equipo, lo organiza en **grupos** y asigna a cada control un **dueño** (un `responsable`, o él mismo). El `responsable` lidera un equipo de `delegado` y les asigna, de sus controles, los que deben **ejecutar**. Cada persona ve solo lo suyo; el `admin_empresa` ve todo; el `auditor` ve todo en solo lectura, incluida la cadena. `admin_monkey` no crea ni desactiva cuentas de una empresa (sí las de otros `admin_monkey`: [`gestion-usuarios/administradores.md`](gestion-usuarios/administradores.md), D117).
 
 ## Índice de endpoints
 
