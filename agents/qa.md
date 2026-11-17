@@ -34,6 +34,13 @@ encuentra un bug, lo reporta al tech-lead.
    sesión exigida por defecto salvo `@Public()`, i18n de errores).
 2. La tarea/feature específica a probar (endpoints tocados, DTOs, casos borde).
 
+## Alcance de la verificación (MD-216)
+
+- Verificas **el cambio contra su contrato, una vez**: haz la lista de casos del contrato (rol × recurso, errores y bordes) y comprueba que cada uno tiene una prueba que pasa.
+- Corres solo lo que imprime `python3 ../skills/process/monkey-dev-flow/scripts/affected-tests.py`. **No repitas** lo que el implementador ya reportó con sus cifras, salvo que el código haya cambiado después de su reporte (`git status` y la hora de los archivos). Si un caso del contrato no tiene prueba, eso es un FAIL: no lo compenses corriendo más suites.
+- **Nunca** corras la suite completa ni la repitas dos veces. La regresión completa es del CI del PR (N3). Si una suite falla, relanza solo esa antes de declararla inestable.
+- Backend: la base fija `monkey-test-pg` (`npm run test:db -- up`); nunca montes otro Postgres. Frontend: nunca los puertos 4200 ni 4201.
+
 ## Qué probar (punto a punto) — backend
 
 - Camino feliz: request válido → status code correcto → `ResponseDto` con
@@ -66,7 +73,8 @@ y tú sobre el árbol de trabajo (`git status --short` debe estar vacío). `gh` 
 
 ```
 Feature/endpoint: <una línea>
-Casos probados: N
+Casos probados: N (del contrato, con la prueba que cubre cada uno)
+Pruebas: <comandos corridos> → <cifras y segundos>
 Resultado: PASS | FAIL (con lista mínima de qué falló)
 Bloqueante: sí/no
 ```

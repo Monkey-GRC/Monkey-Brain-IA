@@ -30,6 +30,13 @@ Identifica el módulo (`python3 skills/process/monkey-preflight/scripts/module-c
 imprime contrato, enums, decisiones, **pendientes abiertas**, deuda y seguridad. Si lo que vas a construir depende de una
 `P-n` abierta, **detente y pregunta**; no la resuelvas. Si el modelo ya lo describe y no hay `P-n`, está decidido: se construye.
 
+### 2b. Cruzar contrato y código antes de delegar
+
+Antes de asignar nada, recorre el contrato **endpoint por endpoint** contra el código (`grep` de rutas, `@Roles`, campos de
+respuesta y filtros) y anota cada diferencia: lo que falta, lo que sobra, lo que el contrato no dice. Con esa lista haz **una
+sola ronda de preguntas** al usuario (paso 4) y entrega a los subagentes la lista completa. Un hueco descubierto después de
+implementar cuesta una vuelta entera de implementación y verificación.
+
 ## 3. Contrato primero
 
 Todo endpoint o formulario existe antes en `contracts/` (y en `contracts/enums/` si trae opciones). Si no está, **el contrato se
@@ -58,24 +65,42 @@ Todo lo demás (implementación mecánica sobre un patrón aprobado, fixes menor
 | Ambos (endpoint + su consumo) | Backend primero; el frontend cuando el contrato esté fijado |
 | Alcance o prioridad dudosos | `product-owner` (consultor, no implementa) |
 
-El prompt al subagente incluye: la tarea, el módulo, la ruta del contrato, las `P-n`/`SEG-n` que aplican y qué **no** tocar.
-Pide un reporte corto: archivos cambiados y dudas.
+El prompt al subagente incluye: la tarea, el módulo, la ruta del contrato, las `P-n`/`SEG-n` que aplican, la lista del paso 2b
+y qué **no** tocar. Pide un reporte corto: archivos cambiados, **los comandos de prueba que corrió con sus cifras y segundos**
+y las dudas.
 
-## 6. Verificar
+**Paralelo por defecto.** Si dos tareas no comparten archivos (backend y frontend con el contrato ya fijado, o dos features
+distintas), lanza sus subagentes a la vez. En serie solo lo que depende de otro resultado.
 
-Delega en `qa` con los endpoints o pantallas tocados. `qa` no escribe código: si falla, devuelve el caso mínimo y vuelves
-al paso 5 con ese detalle. No des nada por listo sin un PASS de `qa` o, si no se pudo correr, **dilo explícitamente**.
-Con la rama ya subida, mira también el CI con `gh pr checks` y `gh run list` (solo lectura; ver `monkey-closeout` §5).
+## 6. Verificar: tres niveles, solo lo que se toca (MD-216)
 
-## 7. Revisar arquitectura
+`python3 skills/process/monkey-dev-flow/scripts/affected-tests.py [--repo backend|frontend|platform] [--run]` lee el diff de
+cada repo contra su rama de integración y devuelve los comandos que prueban **solo lo tocado**:
 
-Delega en `architecture-reviewer` (capas, imports entre features, `withScope`, contrato respetado). Una violación vuelve al
-senior con la corrección puntual; la sesión principal no reescribe código de producción.
+| Nivel | Quién | Qué corre |
+|---|---|---|
+| **N1** | `backend-senior` · `frontend-senior`, en cada iteración | Tipos y lint de lo cambiado; unitarias relacionadas (`jest --findRelatedTests`; `ng test --include` de los specs y de los consumidores directos); e2e de las features afectadas y de las suites que llaman a sus rutas |
+| **N2** | `qa`, **una vez** | Los casos del contrato del cambio, cada uno con la prueba que lo cubre. No repite lo que el implementador ya reportó, salvo que el código haya cambiado después |
+| **N3** | **CI del PR** (GitHub Actions) | La regresión completa: unitarias, `*:verify` y e2e completos, en los tres repos |
+
+- **Nadie corre la suite completa en local ni la repite** «para descartar inestables». Si una suite falla, se relanza solo esa.
+- El e2e del Backend usa la base fija `monkey-test-pg` (`npm run test:db -- up` en `Backend`): una plantilla con migraciones y
+  catálogos que se reconstruye sola al cambiar las migraciones, y una copia por worker. Ningún agente monta otro Postgres.
+- `qa` no escribe código: si falla, devuelve el caso mínimo y vuelves al paso 5 con ese detalle. No des nada por listo sin un
+  PASS de `qa` o, si no se pudo correr, **dilo explícitamente**. Con la rama ya subida, mira el CI con `gh pr checks` y
+  `gh run list` (solo lectura; ver `monkey-closeout` §5).
+
+## 7. Revisar arquitectura y seguridad, en paralelo con `qa`
+
+`qa`, `architecture-reviewer` (capas, imports entre features, `withScope`, contrato respetado) y, si la clase incluye
+seguridad, `monkey-security-review` se lanzan **a la vez**: los tres leen el mismo cambio y ninguno escribe código. Una
+violación vuelve al senior con la corrección puntual; la sesión principal no reescribe código de producción. Si una
+corrección cambia código, `qa` vuelve a verificar **solo** lo que tocó esa corrección.
 
 ## 8. Seguridad
 
-Si la clase incluye seguridad, invoca `monkey-security-review`. Los hooks de `.claude/` ya bloquean lo determinista
-(credenciales, commits, nombre del proveedor en superficie de producto), pero no revisan el diseño.
+La cubre el paso 7. Los hooks de `.claude/` ya bloquean lo determinista (credenciales, commits, nombre del proveedor en
+superficie de producto), pero no revisan el diseño.
 
 ## 9. Cierre
 

@@ -37,6 +37,12 @@ supertest, ESLint 9 + Prettier. Versiones exactas: `package.json`.
   httpOnly; contraseñas con bcrypt. Detalle y límites en `contracts/autenticacion.md`.
 - **Pruebas:** unitarias (`*.spec.ts`), verificadores contra la base (`catalog:verify`,
   `clone:verify`, `audit:verify`) y aislamiento entre empresas en `test/` (`npm run test:e2e`).
+  **e2e (MD-216, D120):** base fija `monkey-test-pg` (127.0.0.1:55432, `npm run test:db -- up|rebuild|clean|status`) con la
+  plantilla `monkey_template` (migraciones, catálogo y referencias; la huella de `prisma/migrations` y `prisma/seed` va en
+  `COMMENT ON DATABASE` y solo se reconstruye si cambia). `test/support/global-setup.ts` clona la base de `TEST_DATABASE_URL`
+  en `<base>_w1..N` y `worker-db.ts` apunta cada worker a la suya; `scripts/dev/e2e.js` corre en paralelo (`E2E_WORKERS`, 2 por
+  defecto; 3 en el CI) y luego, en serie, lo que liste `test/serial-suites.json` (hoy vacía). Con rutas, solo esas suites. En
+  local se corre lo que da `affected-tests.py`; la suite completa, en el CI.
   Estado y cobertura real en [`seguridad/`](../skills/product/monkey-compliance-council/references/seguridad/README.md).
 - **CI/CD:** `ci.yml` (lint, build, pruebas y verificadores en cada PR) y `deploy-dev.yml` (migra solo
   antes de levantar, con respaldo previo, D42). Limitación vigente: DT-41.

@@ -1,0 +1,26 @@
+{
+  "_doc": "MD-216 · Qué suites e2e del Backend son dueñas de cada feature. affected-tests.py suma además las suites que llaman a las rutas de la feature cambiada (detección automática). Lo mantiene monkey-closeout: una feature o carpeta de test nueva entra aquí en el mismo cambio.",
+  "backend": {
+    "features": {
+      "admin-users": ["test/administradores"],
+      "auth": ["test/autenticacion"],
+      "catalog-admin": ["test/catalogo"],
+      "catalogs": ["test/catalogo", "test/i18n"],
+      "companies": ["test/empresas", "test/auditoria/archivar-empresa.e2e-spec.ts", "test/auditoria/archivar-empresa-concurrencia.e2e-spec.ts", "test/auditoria/clave-por-correo.e2e-spec.ts"],
+      "compliance": ["test/cumplimiento"],
+      "integrations": ["test/integraciones"],
+      "onboarding": ["test/servicios"],
+      "services": ["test/servicios"],
+      "team": ["test/equipo"],
+      "technical-control": ["test/control-tecnico"]
+    },
+    "paths": {
+      "src/runner/": ["test/control-tecnico/runner.e2e-spec.ts", "test/control-tecnico/escaneo.e2e-spec.ts"],
+      "src/common/": ["test/aislamiento", "test/auditoria/audit-atomica.e2e-spec.ts"],
+      "src/infrastructure/": ["test/aislamiento", "test/auditoria/audit-atomica.e2e-spec.ts"],
+      "prisma/": ["test/aislamiento/rls-cobertura.e2e-spec.ts", "test/aislamiento/rls-comportamiento.e2e-spec.ts"],
+      "src/app.module.ts": ["test/aislamiento/http.e2e-spec.ts"],
+      "src/app.setup.ts": ["test/aislamiento/http.e2e-spec.ts", "test/autenticacion/limite-peticiones.e2e-spec.ts"]
+    }
+  }
+}

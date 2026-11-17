@@ -37,6 +37,12 @@ Marca solo lo que aplique y revisa en el archivo, no de memoria:
 
 Para cada hueco usa `monkey-registry` (altas y cierres). Cada dato vive en **un solo archivo**; los demás lo enlazan.
 
+### Mapa de pruebas (MD-216)
+
+Si el cambio crea una feature del Backend o una carpeta de `test/`, añádela a
+`skills/process/monkey-dev-flow/scripts/test-map.json` en el mismo cambio. `affected-tests.py` avisa cuando una feature
+cambiada no está en el mapa.
+
 ## 3. Integridad del cerebro (determinista)
 
 ```bash

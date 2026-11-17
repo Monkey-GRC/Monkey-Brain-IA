@@ -77,3 +77,17 @@ sale de un síntoma real: la base de dev tenía 3 migraciones aplicadas que el r
 **Fuente:** responsable de desarrollo, 2026-10-17.
 
 ---
+
+## D120 · En local se prueba solo lo que se toca; la suite completa es del CI (2026-11-17)
+
+**Decisión.**
+1. **Un ticket se verifica en local con las unitarias relacionadas y la integración (e2e) de lo afectado**: las suites de la feature cambiada, las de los módulos que llaman a sus rutas y las de los que importan su código. Las elige `skills/process/monkey-dev-flow/scripts/affected-tests.py`.
+2. **La regresión completa la corre el CI de GitHub Actions** en cada PR de los tres repos. Nadie la corre ni la repite en local.
+3. **El e2e del Backend usa una base fija** (`monkey-test-pg`, `npm run test:db -- up`). Es una plantilla con migraciones y catálogos que se reconstruye solo si cambian, y cada worker recibe su copia (`CREATE DATABASE … TEMPLATE`). Corre en paralelo: 2 workers en local, para no quitarle la RAM a la máquina de desarrollo, y 3 en el CI.
+4. Frontend: Karma con `ng test --include`. Pasar a Vitest se evaluará aparte.
+
+**Por qué.** MD-193 tardó ~4 h y la mayor parte se fue en correr el e2e completo (~8 min) unas 13 veces, cada vez sobre un Postgres montado desde cero. Con esta decisión, el e2e completo baja de 7:59 a 3:57 (2 workers), clonar una base cuesta 49 ms y verificar un cambio acotado tarda ~30 s.
+
+**Qué cambia.** `monkey-dev-flow` (pasos 2b, 5, 6 y 7), los agentes `qa`, `backend-senior` y `frontend-senior`, las skills `senior-backend-engineer` y `senior-frontend-engineer`, `monkey-closeout` (el mapa `test-map.json`), `CLAUDE.md`, y en el Backend `scripts/dev/test-db.sh`, `scripts/dev/e2e.js`, `test/jest-e2e.config.js` y el workflow del CI (MD-216).
+
+**Fuente:** Héctor Ríos (Rod), 2026-11-17: «no es nada productivo esperar 4 horas para poder hacer un ticket»; «la idea es que se pruebe con pruebas unitarias y de integración lo que se está tocando, y con el CI se hace la corrida completa»; «con el CI de GitHub Actions es más que suficiente».
