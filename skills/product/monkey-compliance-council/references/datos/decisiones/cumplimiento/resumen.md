@@ -36,3 +36,19 @@ Por qué este componente es como es. Lo vigente está en [`arquitectura/cumplimi
 **Pendiente de Héctor (backend):** si se quiere dejar el contrato sin el campo, hay que retirar `cutoff_date`/`cutoff_frozen` de `PUT …/evaluation-period` y del resumen; mientras tanto no estorba.
 
 **Fuente:** Carlos Castaño, 2026-11-07 («sigamos asumiendo que la fecha es siempre hoy, porque la idea es que se edite para que siempre haya una revisión diaria de la sonda»). Aún sin ratificar por el comité; si la ratificación cambia la decisión, se reabre aquí.
+
+---
+
+## D118 · El resumen del `responsable` y del `delegado` solo trae los marcos y las categorías donde tienen controles (2026-11-17; Héctor Ríos; *concreta D102*)
+
+**Decisión.**
+1. **Sus controles:** los vigentes de los que la persona es dueña o ejecutora activa (`client_control_assignments`). El resumen se calcula con el mismo motor, pero solo sobre ellos.
+2. **Solo salen los marcos y las categorías con al menos un control suyo.** La categoría obligatoria (Seguridad en SOC 2) **no se fuerza**: si no tienen controles en ella, no sale. Sin ningún control en el servicio, `frameworks` llega vacío (`200`, no falla).
+3. **`readiness`, `progress` y `coverage`** del marco y de cada categoría cuentan solo sus controles, con las reglas de siempre. `failing_controls` trae solo los suyos.
+4. **`evaluation`** (versión del catálogo, período y fecha de corte) es la del servicio.
+
+**Por qué.** D102 dice que cada persona ve el avance de lo suyo y nunca el de la empresa. Mostrar una categoría sin controles suyos solo agrega ruido, y un «Sin medir» vacío podría leerse como algo que le toca atender.
+
+**Qué cambia.** `contracts/cumplimiento/resumen.md` (Reglas) y el Backend en MD-193.
+
+**Fuente:** Héctor Ríos (Rod), 2026-11-17, al planificar MD-193; eligió la opción A: «solo las categorías donde tiene controles».

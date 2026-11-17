@@ -42,7 +42,7 @@ Los cambios de controles, riesgos y causas están en `contracts/cumplimiento/con
 | Dar el veredicto de un test manual | ✓ | `403` | `403` |
 | Revisar (validar o rechazar) una evidencia | ✓ cualquiera | ✓ **solo el `responsable` dueño**, lo que no subió él (`delegado`: `403`) | `403` |
 | Escribir, editar y cerrar una observación | `403` | `403` | ✓ las suyas |
-| Ver las observaciones | todas | **las de los controles de los que es responsable** | todas |
+| Ver las observaciones | todas | **las de sus controles** (dueño o ejecutor) | todas |
 | Responder una observación | ✓ | ✓ solo de un control suyo | `403` |
 | Decidir una exclusión (la propone y la aprueba en un acto) | ✓ | `403` | `403` |
 | Ver las exclusiones | ✓ | `403` | ✓ |
@@ -61,7 +61,7 @@ Los cambios de controles, riesgos y causas están en `contracts/cumplimiento/con
 
 - **Pruebas:** `revision-evidencia`, `veredictos`, `eventos-estado`, `exclusiones` y `evidencias` en `Backend/test/cumplimiento/`.
 
-El **`funcional` ve solo lo suyo** quedó construido el 2026-10-29 (B67, SEG-66) **por dimensión; D102 (2026-11-03) lo reemplaza: el `responsable` y el `delegado` ven solo los controles de los que son dueño o ejecutor** (ver `contracts/gestion-usuarios.md`, por construir). Hoy controles, evidencia, riesgos y hallazgos se filtran por el responsable efectivo de cada dimensión. Las **observaciones (MD-154)** quedaron construidas el 2026-10-29 (abajo).
+**Construido (MD-193, 2026-11-17): cada persona ve solo lo suyo (D102, SEG-66).** El `responsable` y el `delegado` ven y tocan solo los controles de los que son dueño o ejecutor activo, y lo que cuelga de ellos: pruebas, evidencia, riesgos y causas, observaciones, hallazgos de nube y servicios. El resumen es el de sus controles (D118). Sin controles, las listas llegan vacías. Lo ajeno de su empresa es `403`; lo de otra empresa, `404`. La regla vive en `compliance/domain/controls/control-access.ts`. Se retiró el reparto por dimensión de B67. Las **observaciones (MD-154)** quedaron construidas el 2026-10-29 (abajo).
 
 ## Preguntas abiertas (comunes)
 

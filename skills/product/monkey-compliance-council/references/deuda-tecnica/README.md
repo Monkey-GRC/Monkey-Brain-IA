@@ -110,11 +110,9 @@ Limitan el producto o al equipo.
 | [DT-78](control-tecnico.md#dt-78--la-guía-de-corrección-de-una-prueba-técnica-es-una-traducción-automática-sin-revisar-y-el-filtro-del-proveedor-es-una-red-de-seguridad) | La guía de corrección de una prueba técnica es una traducción automática sin revisar, y el filtro del proveedor es una red de seguridad | [Control técnico](control-tecnico.md) |
 | [DT-79](trazabilidad.md#dt-79--solo-algunas-escrituras-dejan-el-evento-de-cambio-de-estado-de-un-control) | Solo algunas escrituras dejan el evento de cambio de estado de un control | [Trazabilidad](trazabilidad.md) |
 | [DT-81](onboarding.md#dt-81--el-escenario-de-despliegue-ya-no-se-pregunta-pero-su-columna-y-sus-tablas-siguen-en-la-base) | El escenario de despliegue ya no se pregunta, pero su columna y sus tablas siguen en la base | [Onboarding](onboarding.md) |
-| [DT-82](onboarding.md#dt-82--la-lista-de-servicios-lee-cada-servicio-por-separado-y-solo-aguanta-porque-se-alargó-el-tiempo-de-la-transacción) | La lista de servicios lee cada servicio por separado y solo aguanta porque se alargó el tiempo de la transacción | [Onboarding](onboarding.md) |
 | [DT-83](notificaciones.md#dt-83--falta-el-aviso-a-los-admin_monkey-de-que-una-empresa-está-por-borrarse) | Falta el aviso a los `admin_monkey` de que una empresa está por borrarse | [Notificaciones](notificaciones.md) |
 | [DT-84](entrega.md#dt-84--el-respaldo-con-rotación-a-35-días-solo-existe-como-script-de-staging-y-nada-comprueba-que-corra) | El respaldo con rotación a 35 días solo existe como script de staging, y nada comprueba que corra | [Entrega](entrega.md) |
 | [DT-85](empresas.md#dt-85--la-clave-de-acceso-viaja-en-claro-por-un-servicio-de-correo-externo-y-el-resultado-del-envío-no-se-guarda) | La clave de acceso viaja en claro por un servicio de correo externo y el resultado del envío no se guarda | [Empresas](empresas.md) |
-| [DT-87](gestion-usuarios.md#dt-87--un-responsable-ve-solo-los-controles-de-los-que-es-dueño-o-ejecutor-y-el-delegado-solo-controles-evidencia-y-observaciones) | Un `responsable` ve solo los controles de los que es dueño o ejecutor, y el `delegado` solo controles, evidencia y observaciones | [Gestión de usuarios](gestion-usuarios.md) |
 
 ### 🟡 Mejoras
 
@@ -122,6 +120,7 @@ Pendientes sin urgencia.
 
 | ID | Qué | Módulo |
 |---|---|---|
+| [DT-109](trazabilidad.md#dt-109--technical-control-importa-el-registrador-de-cambios-de-estado-desde-dentro-de-compliance) | `technical-control` importa el registrador de cambios de estado desde dentro de `compliance` | [Trazabilidad](trazabilidad.md) |
 | [DT-103](control-tecnico.md#dt-103--no-se-ha-probado-que-la-identidad-de-aws-de-monkey-asuma-el-rol-de-una-cuenta-de-aws-de-otro-dueño) | No se ha probado que la identidad de AWS de Monkey asuma el rol de una cuenta de AWS de otro dueño | [Control técnico](control-tecnico.md) |
 | [DT-102](control-tecnico.md#dt-102--la-conexión-de-gcp-no-descubre-los-recursos-del-proyecto-al-validar) | La conexión de GCP no descubre los recursos del proyecto al validar | [Control técnico](control-tecnico.md) |
 | [DT-7](onboarding.md#dt-7--híbrido-ofrece-las-6-conexiones) | «Híbrido» ofrece las 6 conexiones | [Onboarding](onboarding.md) |

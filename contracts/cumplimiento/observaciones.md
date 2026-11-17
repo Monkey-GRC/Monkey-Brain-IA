@@ -9,7 +9,7 @@ type: contract
 
 | | |
 |---|---|
-| **Estado** | **ACORDADO** (D96), construido (MD-154, 2026-10-29); el alcance por dueño/ejecutor se ajusta en el sprint 3 (D102, MD-193) |
+| **Estado** | **ACORDADO** (D96), construido (MD-154, 2026-10-29); el alcance por dueño o ejecutor, en MD-193 (D102, 2026-11-17) |
 | **App** | Monkey Platform |
 | **Contexto común** | Quién puede qué, estado general y errores comunes: [`README.md`](README.md) |
 | **Entidades** | `audit_observations` (`modelo-datos.md` §7.6) · enums: [`enums.md`](../enums.md) (`audit_observation_type`, `audit_observation_status`) |

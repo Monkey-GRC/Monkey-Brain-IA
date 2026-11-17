@@ -131,6 +131,7 @@ Los requerimientos de un control, cada uno con sus entregas (la más reciente pr
 ```
 
 #### Reglas
+- **Control dado de baja (D119).** Ya no admite entregas nuevas (`409 CONTROL_RETIRED`), pero lo entregado se sigue listando y descargando, con la misma regla de alcance.
 - **`evidence_state`** sale de **combinar las revisiones del `responsable` y del `admin_empresa`** (D102; la que consume el motor): algún rechazo → rechazada; sin rechazos y con al menos una aprobación → validada; para todos los roles es la misma. Sin ninguna revisión humana es `pending`, o `in_review` si la IA ya la sugirió.
 - **`?view=technical`** agrega a cada entrega `technical: { "review": "ai_prevalidated", "attributes": { "type_ok": true, "period_ok": true, "valid_ok": null, "approved_ok": true, "signed_ok": null, "content_ok": true }, "note": null, "reviewed_by": null, "reviewed_at": null }`. Trae la revisión de cada rol (`reviews[]`, con `reviewer_role`), y la ven `admin_empresa` y `auditor` (el `responsable` y el `delegado` ven el estado y la nota de rechazo, no los atributos). Ya no se esconde la revisión de un rol al otro: SEG-61 se retira (D96).
 
@@ -158,7 +159,7 @@ Cada ítem es **el mismo requerimiento** de `GET /v1/controls/{id}/evidence` (mi
 |---|---|---|
 | `control_id` | uuid | El control al que pertenece el requerimiento |
 
-**Siempre devuelve, para cada control, exactamente lo mismo que `GET /v1/controls/{id}/evidence`.** Hoy eso incluye el filtro por dimensión del `responsable` (D96, SEG-66). Cuando MD-193 lo cambie al alcance por control de D102, cambian los dos endpoints juntos. Solo entran los controles vigentes (los dados de baja se omiten, como en el listado de controles). Orden: por control, en el orden por defecto del listado de controles (`sort=code`), y dentro de cada control por `sequence`. Un control sin requerimientos no aparece.
+**Siempre devuelve, para cada control, exactamente lo mismo que `GET /v1/controls/{id}/evidence`.** Los dos aplican la misma regla de alcance (D102, SEG-66): un `responsable` o `delegado` recibe solo sus controles y, de cada uno, todos sus requerimientos. Solo entran los controles vigentes (los dados de baja se omiten, como en el listado de controles). Orden: por control, en el orden por defecto del listado de controles (`sort=code`), y dentro de cada control por `sequence`. Un control sin requerimientos no aparece.
 
 ```json
 {
@@ -426,7 +427,7 @@ Todos con el mismo sobre (`conventions.md`); `message` es la clave i18n del erro
 
 ## Estado de implementación
 
-**Construido: MD-208** (2026-11-11): `GET /v1/services/{service_id}/evidence`. Número fijo de consultas (medido: las mismas con 3 que con 86 controles). Reutiliza el filtro por dimensión del endpoint por control (`visibleRequirements`) y la regla de qué controles ve cada rol (`canSeeControl`, compartida con el listado de controles): MD-193 cambia las dos para todos. Pruebas: `test/cumplimiento/evidencia-servicio.e2e-spec.ts`.
+**Construido: MD-208** (2026-11-11): `GET /v1/services/{service_id}/evidence`. Número fijo de consultas (medido: las mismas con 3 que con 86 controles). Reutiliza la regla de qué controles ve cada rol (`canSeeControl`, compartida con el listado de controles). **MD-193 (2026-11-17)** retiró el filtro por dimensión: quien ve un control ve todos sus requerimientos. Pruebas: `test/cumplimiento/evidencia-servicio.e2e-spec.ts`.
 
 **Construido (2026-10-28, B66):**
 - **Revisión de la evidencia (hasta D96; D102 la amplía a dos revisores, por construir).** Solo `admin_empresa` (`PUT /v1/evidence-submissions/{id}/review`); `evidence_reviews.reviewer_role` tiene el valor `admin_empresa` (migraciones `20261028202705_evidence_reviewer_admin_empresa` y `20261030000100_remove_consultant`: el enum queda solo con `admin_empresa`); una sola revisión por entrega; rechazar sin `note` es `422 note.required`. Todos los roles ven la misma revisión (SEG-61 retirado); quien sube recibe `review_note` en cada entrega. **D102:** `reviewer_role` pasa a `responsable` o `admin_empresa` y la clave única a `(evidence_submission_id, reviewer_role)`.
