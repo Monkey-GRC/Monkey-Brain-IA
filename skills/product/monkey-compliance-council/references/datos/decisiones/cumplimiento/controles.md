@@ -18,3 +18,15 @@ Por qué este componente es como es. Lo vigente está en [`arquitectura/cumplimi
 **Fuente:** responsable de producto, 2026-10-09; `modelo-datos.md` §7.1.
 
 ---
+
+## D119 · El historial de un control dado de baja se sigue leyendo (2026-11-17; Héctor Ríos; *amplía a evidencia y veredictos lo que ya decía observaciones*)
+
+**Decisión.**
+1. Un control dado de baja deja de verse en la lista y en su detalle (`404`), y no admite cambios nuevos (`409 CONTROL_RETIRED`: subir evidencia, abrir observaciones, editarlo).
+2. **Su historial se sigue leyendo:** las evidencias entregadas (lista y descarga), los veredictos y las observaciones. Rige la misma regla de alcance (D102): un `responsable` o `delegado` solo lo lee si es dueño o ejecutor activo del control.
+
+**Por qué.** Lo que se entregó y se decidió es rastro de auditoría. Esconderlo al dar de baja el control le quitaría al auditor parte de la historia. `contracts/cumplimiento/observaciones.md` ya lo decía para las observaciones; aquí se extiende a la evidencia y los veredictos.
+
+**Qué cambia.** `contracts/cumplimiento/controles.md`, `evidencia.md` y `veredictos.md` (una línea cada uno), y una prueba e2e en MD-193 (`test/cumplimiento/control-baja.e2e-spec.ts`). Los criterios del comité sobre las observaciones de controles dados de baja siguen en `P37`.
+
+**Fuente:** Héctor Ríos (Rod), 2026-11-17, al cerrar MD-193; eligió «Historial legible».

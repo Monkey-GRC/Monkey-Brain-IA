@@ -251,6 +251,8 @@ Todos con el mismo sobre (`conventions.md`); `message` es la clave i18n del erro
 
 ## Estado de implementación
 
+**Control dado de baja (D119).** Ya no admite veredictos nuevos, pero los que tenía se siguen leyendo, con la misma regla de alcance.
+
 **Construido (2026-10-28, B66):**
 - **Veredicto.** `POST` solo `admin_empresa`, `GET` del historial `admin_empresa` y `auditor`.
 - **Pruebas documentales por control (D88).** El estado sale de la revisión del `admin_empresa` (D102 lo cambia por la combinación de revisiones, MD-194).

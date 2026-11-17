@@ -58,7 +58,7 @@ type: contract
 | `type` | enum `control_type` | no | `manual` · `automated` · `hybrid` · `technical_manual` |
 | `readiness` | enum `readiness` | no | `ready` · `almost_ready` · `needs_work` · `not_measured` |
 | `responsible` | uuid | no | Solo los controles de los que esa persona (un `responsable` o `delegado`) es dueño o ejecutor (`gestion-usuarios.md`, D102) |
-| `assignment` | enum `assignment` | no | `unassigned` lista los **«Sin asignar»** (solo `admin_empresa`) |
+| `assignment` | enum `assignment` | no | `unassigned` lista los **«Sin asignar»** y `assigned` los que tienen dueño. Solo `admin_empresa`: otro rol que lo envíe recibe `403` |
 | `origin` | string | no | `catalog` · `own` |
 | `page`, `page_size` | integer | no | Ver `conventions.md` |
 | `sort` | string | no | `code` (por defecto: el código interno por prefijo y número, `IAC-2` antes que `IAC-10`, `C2` antes que `C10`), `-code`, `name`, `-name` |
@@ -361,11 +361,11 @@ Crear, editar dimensiones o dar de baja altera lo que se mide y deja además un 
 
 **Construido (2026-10-28, B66): listar, ver, crear, editar y dar de baja.**
 - `POST /v1/services/{id}/controls` (MD-150): el control propio nace `approved` y cuenta desde ya. `approval` sigue en la respuesta, siempre `approved`.
-- `PATCH /v1/controls/{id}` y `DELETE /v1/controls/{id}` (D96), solo `admin_empresa`, con `client_control.update` / `client_control.retire`, su evento de cumplimiento y, si editar dimensiones mueve algún control, el evento de estado (`cause: control_updated`). La baja es `is_active = false` (204); lo de baja deja de verse en lista y detalle (`404`) y editarlo o darlo de baja otra vez es `409 CONTROL_RETIRED`. **No está el `?include_inactive=true`.**
+- `PATCH /v1/controls/{id}` y `DELETE /v1/controls/{id}` (D96), solo `admin_empresa`, con `client_control.update` / `client_control.retire`, su evento de cumplimiento y, si editar dimensiones mueve algún control, el evento de estado (`cause: control_updated`). La baja es `is_active = false` (204); lo de baja deja de verse en lista y detalle (`404`) y editarlo o darlo de baja otra vez es `409 CONTROL_RETIRED`. **Su historial se sigue leyendo** (D119): evidencias entregadas, veredictos y observaciones. **No está el `?include_inactive=true`.**
 - **Retirado:** `POST` y `GET /v1/controls/{id}/changes`, `has_pending_change` y el filtro `approval`. También el filtro `assigned_to`. La tabla `client_control_changes` y sus enums quedan sin uso.
 - Pruebas: `Backend/test/cumplimiento/cambios.e2e-spec.ts` (crear, editar, baja) y `controles.e2e-spec.ts`.
 - `display_name` de una prueba es el nombre neutro que escribe Monkey (D70); mientras una prueba no lo tenga, sale un texto genérico de su dimensión («Prueba de nube», «Revisión documental»…). **Nunca** el nombre del comité. `display_description` sigue la misma regla (D82): el objetivo del comité o su reescritura neutra, nunca el texto que nombra al proveedor.
 - **Sin resultados guardados todo sale «Sin medir».** El motor de nube lo escribe desde 2026-10-22 al cerrar cada corrida (`DT-50`); la sonda de servidores, todavía no. Un control sube de «Sin medir» en cuanto existan evaluaciones de su test sobre los activos del servicio, y solo cuentan los checks que el comité ratificó (con `READINESS_INCLUDE_PROPOSED=true`, también los propuestos).
 - Un test de la dimensión documental sale de la revisión de lo que se entregó **para esa prueba en este control** (D88): sin evidencias o sin revisar, `pending`; nunca cumple por sí solo.
 
-**Hasta D102 (por reemplazar, MD-193):** el `funcional` ve solo lo suyo (B67, 2026-10-29): la lista y el detalle devuelven solo los controles de los que es responsable efectivo en alguna dimensión, y `failing` solo lo de sus dimensiones. Sigue el campo `assigned_to` de la respuesta (la primera persona responsable); `responsible` por dimensión como campo de la lista está sin construir. D102 lo sustituye por `owner` y `executor` (campos de arriba) y por el filtro `responsible` / `assignment`.
+**Construido (MD-193, 2026-11-17): cada persona ve solo lo suyo (D102).** La lista y el detalle devuelven al `responsable` y al `delegado` solo los controles de los que son dueño o ejecutor activo; un control ajeno de su empresa es `403`. `owner` y `executor` sustituyen a `assigned_to`, que se retiró. El filtro `responsible` está construido. Pruebas: `test/cumplimiento/controles.e2e-spec.ts` y la matriz de `test/equipo/equipo.e2e-spec.ts`.

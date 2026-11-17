@@ -311,7 +311,7 @@ Implementado en `Backend/src/features/services` (más `catalogs` y el progreso d
 | `PUT …/csocs` y `PUT …/cuecs` | ❌ No se construyeron (salen de las secciones 7 y 8 de la Descripción del Sistema, que aún no se procesa) |
 | `GET /v1/catalogs/{name}` | ✅ Nuevos: `service_type`, `served_industry`, `active_client_count`, `service_country`, `data_type`, `trust_criterion`, `subservice_type`, `expected_availability`, `previous_certification` y `frameworks` (sale de `catalog.frameworks`: hoy solo `soc2`) |
 
-**Quién lee (D96, hoy):** `admin_empresa` (todos), `auditor` (todos, solo lectura) y `funcional` (solo aquellos en los que es responsable de alguna dimensión; el detalle de otro, `403`). **D102 lo cambia** por dueño y ejecutor del control (MD-193).
+**Quién lee (D102, construido en MD-193):** `admin_empresa` (todos), `auditor` (todos, solo lectura), y `responsable` y `delegado` (solo aquellos con algún control del que son dueño o ejecutor; el detalle de otro, `403`). Pruebas: `test/servicios/servicios-alcance.e2e-spec.ts`.
 
 - **Aislamiento:** RLS por `tenant_id` entre empresas; entre servicios de la misma empresa, el filtro por `service_id` (cada servicio tiene su propia copia: único `service_id + control_id`). Un servicio de otra empresa responde `404`, no `403`.
 - **Qué se clona y cómo:** ver D45 (puntos 4 a 9). Con `security + availability + confidentiality`: 38 requisitos y 86 controles; con los 5 criterios: 61 y 118. Más 10 riesgos, 56 causas y sus relaciones.

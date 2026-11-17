@@ -197,3 +197,5 @@ quedan aquí:
 | D115 | Un solo badge de rectángulo redondeado (código, atributo, estado) en las dos apps; color fijo por valor y punto en el estado *(la decidió Rod, no el comité)* | [plataforma](plataforma.md) |
 | D116 | Esqueleton para el contenido que carga; spinner solo en procesos y en botones ocupados (`appBusy`), hasta recibir la respuesta *(la decidió Rod, no el comité)* | [plataforma](plataforma.md) |
 | D117 | Un `admin_monkey` invita y desactiva a otros administradores; la baja dura 7 días y luego se borra; la auditoría conserva un sello (id, nombre y rol) *(amplía D103)* | [gestion-usuarios](gestion-usuarios.md) |
+| D118 | El resumen del `responsable` y del `delegado` solo trae los marcos y las categorías donde tienen controles, calculados sobre los suyos *(concreta D102)* | [cumplimiento/resumen](cumplimiento/resumen.md) |
+| D119 | El historial de un control dado de baja (evidencia, veredictos y observaciones) se sigue leyendo; solo desaparece de la lista y del detalle | [cumplimiento/controles](cumplimiento/controles.md) |
