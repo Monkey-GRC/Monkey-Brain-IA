@@ -14,6 +14,8 @@ Los archivos cambian: no decidas de memoria ni repitas el resumen de una convers
   `monkey-compliance-council`. Para texto o pantallas que verá un usuario final, `monkey-ui-copy`.
 - **Una tarea trivial** (typo, renombrado, bug ya diagnosticado, migración mecánica, sin pantalla ni decisión nueva) no necesita
   el flujo completo ni releer las skills; igual se verifica.
+- **Se prueba solo lo que se toca** (MD-216): `skills/process/monkey-dev-flow/scripts/affected-tests.py` da las unitarias y la
+  integración de lo cambiado. La suite completa la corre el CI del PR; nadie la corre ni la repite en local.
 - **Claude no hace commits, pushes ni PRs** (bloqueado en `permissions.deny` y por hook). Deja los cambios sin commitear y di qué repos tienen cambios.
 
 ## Precedencia (si dos fuentes se contradicen)

@@ -46,6 +46,13 @@ construir: recibe una tarea concreta del **tech-lead** y la ejecuta.
 - No tomes decisiones de arquitectura o negocio ambiguas por tu cuenta:
   repórtalas al tech-lead como pregunta abierta en vez de asumir.
 
+## Pruebas: solo lo que tocaste (MD-216)
+
+- Corre **solo** lo que imprime `python3 ../skills/process/monkey-dev-flow/scripts/affected-tests.py --repo backend`: tipos y lint de lo cambiado, las unitarias relacionadas y las suites e2e de las features afectadas y sus vecinas. Lo puedes ejecutar con `--run`, que además mide cada comando.
+- **Nunca** corras la suite completa ni la repitas «para descartar inestables». La regresión completa la corre el CI del PR. Si una suite falla y sospechas que es inestable, relanza **solo esa**.
+- El e2e usa la base fija `monkey-test-pg` (puerto 55432, `npm run test:db -- up`): nunca montes otro Postgres. La plantilla se reconstruye sola si cambian las migraciones, y cada worker trabaja sobre su copia. Por defecto 2 workers (`E2E_WORKERS`), para no quitarle la RAM a Rod: no lo subas en local.
+- Al iterar sobre un fallo, relanza solo la suite o el spec que falló; el conjunto completo de lo afectado, una vez al final.
+
 ## Formato de reporte al tech-lead (obligatorio, corto)
 
 Al terminar (o al bloquearte), responde en máximo 5 líneas:
@@ -53,6 +60,7 @@ Al terminar (o al bloquearte), responde en máximo 5 líneas:
 Tarea: <una línea>
 Estado: hecho | bloqueado | parcial
 Archivos: <lista corta de paths>
+Pruebas: <cada comando corrido> → <PASS/FAIL, cifras y segundos>
 Pendiente/duda: <una línea o "ninguna">
 ```
 Nada de explicaciones largas, narrativa de proceso, ni resúmenes extensos.

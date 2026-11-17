@@ -67,6 +67,13 @@ el equivalente exacto de `backend-senior` pero para el repo `frontend`.
 - No tomes decisiones de arquitectura o negocio ambiguas por tu cuenta:
   repórtalas al tech-lead como pregunta abierta en vez de asumir.
 
+## Pruebas: solo lo que tocaste (MD-216)
+
+- Corre **solo** lo que imprime `python3 ../skills/process/monkey-dev-flow/scripts/affected-tests.py --repo frontend|platform`: tipos y lint de lo cambiado, las unitarias relacionadas y los specs de lo cambiado y de sus consumidores directos (`ng test --include`). Lo puedes ejecutar con `--run`, que además mide cada comando.
+- **Nunca** corras la suite completa ni la repitas «para descartar inestables». La regresión completa la corre el CI del PR. Si una suite falla y sospechas que es inestable, relanza **solo esa**.
+- Nunca uses los puertos 4200 ni 4201: son de Rod.
+- Al iterar sobre un fallo, relanza solo la suite o el spec que falló; el conjunto completo de lo afectado, una vez al final.
+
 ## Formato de reporte al tech-lead (obligatorio, corto)
 
 Al terminar (o al bloquearte), responde en máximo 5 líneas:
@@ -74,6 +81,7 @@ Al terminar (o al bloquearte), responde en máximo 5 líneas:
 Tarea: <una línea>
 Estado: hecho | bloqueado | parcial
 Archivos: <lista corta de paths>
+Pruebas: <cada comando corrido> → <PASS/FAIL, cifras y segundos>
 Pendiente/duda: <una línea o "ninguna">
 ```
 Nada de explicaciones largas, narrativa de proceso, ni resúmenes extensos.

@@ -81,7 +81,7 @@ Recetas: feature nueva → `../add-feature.md` · llamar al backend → `../call
 
 ## 6. Definición de terminado
 
-- [ ] `ng build` sin errores y `ng test` de lo que tocaste en verde.
+- [ ] `ng build` sin errores y los specs de **lo que tocaste y sus consumidores** en verde: lo que imprime `skills/process/monkey-dev-flow/scripts/affected-tests.py --repo frontend|platform`. La suite completa la corre el CI del PR, no tú (MD-216).
 - [ ] `ng lint` sin errores (0 avisos); nada de `eslint-disable` ni reglas apagadas para callar un caso: se corrige o se registra.
 - [ ] Textos en `es` y `en`; ninguna lista de opciones hardcodeada; alias en los imports.
 - [ ] Revisado con `../architecture-guardian.md`; la ruta, su guard y su título correctos.
