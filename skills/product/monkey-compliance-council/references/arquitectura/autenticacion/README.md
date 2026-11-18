@@ -20,11 +20,11 @@ Cualquier persona con cuenta (los 4 roles) y una persona sin cuenta que canjea u
 |---|---|
 | Endpoints, cuerpos y errores | [`contracts/autenticacion.md`](../../../../../../contracts/autenticacion.md) |
 | Políticas de sesión, contraseña y MFA (valores y porqué) | `datos/modelo/05-usuarios.md` §5.3 |
-| Requisitos de seguridad | [`seguridad/autenticacion.md`](../../seguridad/autenticacion.md): `SEG-10` · `SEG-11` · `SEG-12` · `SEG-13` · `SEG-14` · `SEG-15` · `SEG-16` · `SEG-17` · `SEG-18` · `SEG-64` |
-| Decisiones (`D-n`) | [`datos/decisiones/autenticacion.md`](../../datos/decisiones/autenticacion.md): `D66` · `D94` · `D95` · `D101` |
+| Requisitos de seguridad | [`seguridad/autenticacion.md`](../../seguridad/autenticacion.md): `SEG-10` · `SEG-11` · `SEG-12` · `SEG-13` · `SEG-14` · `SEG-15` · `SEG-16` · `SEG-17` · `SEG-18` · `SEG-64` · `SEG-84` |
+| Decisiones (`D-n`) | [`datos/decisiones/autenticacion.md`](../../datos/decisiones/autenticacion.md): `D66` · `D94` · `D95` · `D101` · `D123` · `D124` |
 | Pendientes del comité (`P-n`) | ninguno propio |
 | Código | `Backend/src/features/auth`; convenciones en `context/backend.md` |
-| Deuda vigente (1 `DT-n`) | [`deuda-tecnica/autenticacion.md`](../../deuda-tecnica/autenticacion.md) |
+| Deuda vigente (3 `DT-n`: `DT-37` · `DT-110` · `DT-111`) | [`deuda-tecnica/autenticacion.md`](../../deuda-tecnica/autenticacion.md) |
 
 ## Contenido
 

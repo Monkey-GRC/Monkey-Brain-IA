@@ -29,7 +29,7 @@ la cierra). Los ID (`DT-n`) no se reutilizan. Si una deuda depende del comité, 
 
 | Archivo | Fichas | El módulo que tendría que arreglarlo |
 |---|---|---|
-| [`autenticacion.md`](autenticacion.md) | 1 | [Autenticación](../arquitectura/autenticacion/README.md) |
+| [`autenticacion.md`](autenticacion.md) | 3 | [Autenticación](../arquitectura/autenticacion/README.md) |
 | [`catalogo-maestro.md`](catalogo-maestro.md) | 6 | [Catálogo maestro](../arquitectura/catalogo-maestro/README.md) |
 | [`control-tecnico.md`](control-tecnico.md) | 25 | [Control técnico](../arquitectura/control-tecnico/README.md) |
 | [`cumplimiento.md`](cumplimiento.md) | 6 | [Cumplimiento](../arquitectura/cumplimiento/README.md) |
@@ -120,6 +120,8 @@ Pendientes sin urgencia.
 
 | ID | Qué | Módulo |
 |---|---|---|
+| [DT-110](autenticacion.md#dt-110--validar-la-sesión-cuesta-dos-transacciones-por-petición) | Validar la sesión cuesta dos transacciones por petición | [Autenticación](autenticacion.md) |
+| [DT-111](autenticacion.md#dt-111--bcrypt-sin-tope-de-comparaciones-simultáneas-ante-ráfagas-de-login) | `bcrypt` sin tope de comparaciones simultáneas ante ráfagas de login | [Autenticación](autenticacion.md) |
 | [DT-109](trazabilidad.md#dt-109--technical-control-importa-el-registrador-de-cambios-de-estado-desde-dentro-de-compliance) | `technical-control` importa el registrador de cambios de estado desde dentro de `compliance` | [Trazabilidad](trazabilidad.md) |
 | [DT-103](control-tecnico.md#dt-103--no-se-ha-probado-que-la-identidad-de-aws-de-monkey-asuma-el-rol-de-una-cuenta-de-aws-de-otro-dueño) | No se ha probado que la identidad de AWS de Monkey asuma el rol de una cuenta de AWS de otro dueño | [Control técnico](control-tecnico.md) |
 | [DT-102](control-tecnico.md#dt-102--la-conexión-de-gcp-no-descubre-los-recursos-del-proyecto-al-validar) | La conexión de GCP no descubre los recursos del proyecto al validar | [Control técnico](control-tecnico.md) |

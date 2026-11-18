@@ -25,7 +25,7 @@ Por qué Autenticación es como es. **Se consulta para reabrir, no para construi
 7. **Quien ya existe entra a configurarlo en su próximo ingreso, sin periodo de gracia.**
 8. **Restablecer.** El `admin_empresa` restablece a su equipo (`DELETE /v1/users/{id}/mfa`: `funcional`, `consultor`, `auditor` de su empresa; no a sí mismo). Monkey restablece al `admin_empresa` con `npm run mfa:reset` (dry-run por defecto, `-- --apply`), tras verificar la identidad por otro canal; deja rastro `auth.mfa_reset`. Un endpoint de `admin_monkey` entre empresas queda para el módulo de usuarios (MD-131/132).
 9. **Interruptor.** `MFA_REQUIRED` (por defecto `true`). Solo puede ser `false` fuera de producción: en producción el Backend no arranca así. Es para desarrollo y pruebas.
-10. **Sin «recordar este dispositivo».** Cada ingreso pide el código. Se reconsidera si el comité lo pide.
+10. ~~**Sin «recordar este dispositivo».** Cada ingreso pide el código. Se reconsidera si el comité lo pide.~~ **Enmendado por D123 (2026-11-17):** la persona puede recordar un dispositivo por 30 días, salvo `admin_monkey`.
 11. **Pantallas.** Un solo campo de 6 dígitos que se envía solo, con `autocomplete="one-time-code"`; enlace «Usar un código de recuperación»; después, la página «Seguridad de la cuenta» (regenerar códigos).
 
 **Por qué.** D66 y SEG-16 exigen MFA en los 5 roles; TOTP es lo que acepta un auditor de SOC 2 sin depender de un proveedor de SMS, y los códigos de recuperación evitan que perder el celular deje a la empresa fuera.
@@ -79,3 +79,72 @@ Por qué Autenticación es como es. **Se consulta para reabrir, no para construi
 **Ratificada por el comité:** ya no hay 90 días en su modelo; D101 y §5.3 coinciden con él.
 
 **Fuente:** Hector Rios, tras acordarlo con el PM; el comité lo ratificó.
+
+---
+
+## D123 · «Recordar este dispositivo» por 30 días: la contraseña se pide siempre, el código del segundo factor no; excepto `admin_monkey` (2026-11-17; enmienda D94 punto 10)
+
+**Contexto.** El comité pidió un ingreso más fácil y propuso el inicio de sesión con Google. El análisis del Consejo
+mostró que lo que pesa no es la contraseña, sino **escribir el código TOTP en cada ingreso**. Google no lo quita, a menos
+que se renuncie a la MFA de Monkey, y no podemos comprobar que Google pidió un segundo factor (su token no lo garantiza).
+Recordar el dispositivo resuelve esa fricción sin bajar la seguridad y con mucho menos costo.
+
+**Decisión.**
+1. **Casilla opcional, desmarcada por defecto**, «Recordar este dispositivo por 30 días», al verificar el segundo factor:
+   con el código de la app, con un código de recuperación o al terminar de configurarlo.
+2. **Qué se salta:** solo el código. La **contraseña se pide siempre**, y la sesión sigue igual (30 min de inactividad,
+   8 h máximo; SEG-12).
+3. **Vigencia:** 30 días desde que se marca, sin renovarse con el uso.
+4. **Ligado a la persona y al navegador:** cookie `httpOnly` (`Secure` en producción); en la base solo su HMAC con
+   *pepper* (como el refresh, SEG-17). Otra cuenta en el mismo navegador ve su propio código.
+5. **Deja de valer** al vencer; al cambiar o recuperar la contraseña; al restablecer o reconfigurar la MFA; al regenerar
+   los códigos de recuperación; al desactivar o suspender la cuenta; o cuando la persona lo revoca. La revocación va en la
+   misma transacción que el cambio que la provoca.
+6. **La persona ve y revoca sus dispositivos** en Ajustes → Seguridad (uno o todos).
+7. **`admin_monkey` no puede recordar un dispositivo:** entra a todas las empresas y para él el código en cada ingreso
+   está justificado. La API lo rechaza; la app Admin (que solo admite `admin_monkey`) no muestra la casilla.
+8. **Auditoría:** `auth.device_trusted`, `auth.device_revoked` y el ingreso marcado como «sin código, dispositivo recordado».
+
+**Por qué.** Un ingreso con contraseña y dispositivo previamente verificado sigue siendo de dos factores (algo que sabe
++ algo que tiene, ya comprobado), con vigencia corta y revocable: es una práctica aceptada ante un auditor de SOC 2
+(CC6.1). Quitar el segundo factor a quien entra con un proveedor externo no lo sería.
+
+**Qué no se construye ahora.** El **inicio de sesión con Google** queda en **LATER**: entra si hay demanda comprobada
+de clientes, diseñado para varios proveedores (Google y Microsoft), como primer factor y **sin quitar la MFA de Monkey**.
+**NO BUILD:** registro abierto con un proveedor externo, vincular cuentas solo porque coincide el correo, o saltar la MFA
+de Monkey porque el proveedor dice tener la suya. También quedan en LATER las passkeys como segundo factor.
+
+**Qué cambia.** Tabla `trusted_devices` (RLS por tenant), `LoginUseCase`, `mfa/verify` y `mfa/setup/confirm`
+(`remember_device`), rutas `/v1/auth/devices`, `contracts/autenticacion.md`, `modelo/05-usuarios.md` §5.3, SEG-84.
+Se construye en **MD-217**.
+
+**Fuente:** comité, 2026-11-17, a propuesta del Consejo; lo trajo Hector Rios. La exclusión de `admin_monkey`, Hector
+Rios, 2026-11-17.
+
+---
+
+## D124 · Límite de peticiones compartido en Redis; la sesión se valida con una consulta y sin caché; bcrypt acotado por instancia (2026-11-17)
+
+**Contexto.** Las mejoras M1, M2 y M3 de [`arquitectura/autenticacion/06-mejoras.md`](../../arquitectura/autenticacion/06-mejoras.md)
+se aprobaron junto con D123. El límite de peticiones (SEG-19) y el freno de la clave de acceso viven en la memoria de
+cada instancia (DT-37), y las rutas públicas no tienen tope por dirección.
+
+**Decisión.**
+1. **M2 · Redis** guarda los contadores del límite de peticiones, compartidos entre instancias. Se descartó un contador
+   en Postgres: se elige Redis pensando en la escalabilidad (varias réplicas, sin cargar la base). Redis guarda **solo
+   contadores**; lo que deba ser durable o auditable (sesiones, dispositivos recordados) sigue en Postgres.
+2. **Tope por dirección en las rutas públicas** de autenticación, con `trust proxy` configurado para el proxy real.
+3. **M1 · Una sola consulta** para validar la sesión (sesión, usuario, rol y estado), **sin caché**: una caché
+   retrasaría la revocación.
+4. **M3 ·** subir `UV_THREADPOOL_SIZE` y limitar las comparaciones bcrypt simultáneas por instancia; el costo 12 no cambia.
+5. **Pendiente de confirmar al implementar M2:** qué pasa si Redis no responde. La propuesta es rechazar en las rutas
+   públicas (*fail-closed*) y dejar pasar con alerta en el límite general (*fail-open*).
+
+**Por qué.** El Backend no tiene estado salvo estos contadores: compartirlos es lo único que falta para correr varias
+instancias (`plataforma/07-estudio.md`). Las dos transacciones por petición son el costo fijo más alto de la API.
+
+**Qué cambia.** Redis en la VPS, en `docker-compose.dev.yml` y en el CI; `REDIS_URL`; `RateLimitGuard` y el freno de la
+clave de acceso; `ValidateSessionUseCase`; `PasswordHasher`. Cierra DT-37, DT-110 y DT-111 y lleva SEG-19 a ✅. Se
+construye en **MD-218** (M2 y M3) y **MD-219** (M1).
+
+**Fuente:** Hector Rios, 2026-11-17 (Redis en lugar de Postgres y la aprobación de M1 a M3).
