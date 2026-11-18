@@ -66,15 +66,15 @@ Las de HTTP de aislamiento ya están en `develop` (PR #18 y #19). **Las de `test
 |---|--:|--:|--:|--:|--:|--:|
 | [Aislamiento multi-tenant](aislamiento-tenant.md) | 6 | 1 | 1 | 1 | 0 | **9** |
 | [Autenticación](autenticacion.md) | 10 | 0 | 0 | 0 | 0 | **10** |
-| [Roles y permisos](roles-permisos.md) | 4 | 0 | 3 | 0 | 4 | **11** |
+| [Roles y permisos](roles-permisos.md) | 5 | 0 | 2 | 0 | 4 | **11** |
 | [Gestión de usuarios](gestion-usuarios.md) | 10 | 0 | 1 | 0 | 0 | **11** |
 | [Empresas](empresas.md) | 1 | 1 | 0 | 0 | 1 | **3** |
 | [Onboarding](onboarding.md) | 2 | 0 | 0 | 0 | 0 | **2** |
 | [Control técnico](control-tecnico.md) | 3 | 2 | 4 | 2 | 0 | **11** |
-| [Trazabilidad](trazabilidad.md) | 6 | 0 | 2 | 0 | 0 | **8** |
+| [Trazabilidad](trazabilidad.md) | 7 | 0 | 2 | 0 | 0 | **9** |
 | [Plataforma](plataforma.md) | 4 | 2 | 0 | 1 | 2 | **9** |
 | [Entrega](entrega.md) | 1 | 2 | 0 | 3 | 1 | **7** |
-| **Total** | **47** | **8** | **11** | **7** | **8** | **81** |
+| **Total** | **49** | **8** | **10** | **7** | **8** | **82** |
 
 ---
 
@@ -89,10 +89,10 @@ El tablero: todo lo que **no** está ✅, por estado y por módulo. Cada ID se b
 - [Plataforma](plataforma.md): `SEG-25`
 - [Entrega](entrega.md): `SEG-28` · `SEG-31` · `SEG-41`
 
-**🟠 Parcial** (11)
+**🟠 Parcial** (10)
 
 - [Aislamiento multi-tenant](aislamiento-tenant.md): `SEG-07`
-- [Roles y permisos](roles-permisos.md): `SEG-21` · `SEG-54` · `SEG-67`
+- [Roles y permisos](roles-permisos.md): `SEG-21` · `SEG-54`
 - [Gestión de usuarios](gestion-usuarios.md): `SEG-23`
 - [Control técnico](control-tecnico.md): `SEG-39` · `SEG-46` · `SEG-47` · `SEG-78`
 - [Trazabilidad](trazabilidad.md): `SEG-35` · `SEG-37`

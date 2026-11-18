@@ -39,7 +39,8 @@ Los cambios de controles, riesgos y causas están en `contracts/cumplimiento/con
 |---|---|---|---|
 | Ver los tests de un control (vista técnica, D81) | ✓ | `403` | ✓ |
 | Ver qué falló y cómo corregirlo en una prueba de nube (hallazgos) | ✓ | ✓ solo la suya | ✓ |
-| Dar el veredicto de un test manual | ✓ | `403` | `403` |
+| Registrar el veredicto de un test manual (D121) | ✓ (nace aprobado) | ✓ solo de un control suyo (nace pendiente) | `403` |
+| Revisar (aprobar o rechazar) un veredicto (D121) | ✓ cualquiera | ✓ **solo el `responsable` dueño**, lo que no registró él (`delegado`: `403`) | `403` |
 | Revisar (validar o rechazar) una evidencia | ✓ cualquiera | ✓ **solo el `responsable` dueño**, lo que no subió él (`delegado`: `403`) | `403` |
 | Escribir, editar y cerrar una observación | `403` | `403` | ✓ las suyas |
 | Ver las observaciones | todas | **las de sus controles** (dueño o ejecutor) | todas |

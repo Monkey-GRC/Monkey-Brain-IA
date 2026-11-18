@@ -9,7 +9,7 @@ type: contract
 
 | | |
 |---|---|
-| **Estado** | **ACORDADO** (D96), construido (2026-10-28, B66 y MD-177). **D102 cambia quién da y quién revisa el veredicto** (ver [Veredicto: lo que cambia con D102](#veredicto-lo-que-cambia-con-d102)), por construir en MD-194 |
+| **Estado** | **ACORDADO** (D96), construido (2026-10-28, B66 y MD-177). **D102 y D121 cambian quién da y quién revisa el veredicto** (ver [Veredicto en dos niveles](#veredicto-en-dos-niveles-d102-d121)), construido en MD-194 (2026-11-17) |
 | **App** | Monkey Platform |
 | **Contexto común** | Quién puede qué, estado general y errores comunes: [`README.md`](README.md) |
 | **Entidades** | `evaluations`, `client_control_tests` (`modelo-datos.md` §7.4, §7.5, §9) · enums: [`enums.md`](../enums.md) (`test_state`, `verdict_result`) |
@@ -20,8 +20,9 @@ type: contract
 |---|---|---|---|
 | `GET` | [`/v1/controls/{id}/tests`](#get-v1controlsidtests--los-tests-de-un-control) | `admin_empresa` · `auditor` | Los tests de un control, con su estado |
 | `GET` | [`/v1/controls/{control_id}/tests/{test_id}/findings`](#get-v1controlscontrol_idteststest_idfindings--qué-falló-y-cómo-corregirlo) | `admin_empresa` · `auditor` · dueño y ejecutor | Qué falló y cómo corregirlo (D90) |
-| `POST` | [`/v1/controls/{control_id}/tests/{test_id}/verdicts`](#post-v1controlscontrol_idteststest_idverdicts--dar-el-veredicto) | `admin_empresa` *(hoy)* | El veredicto de una prueba manual |
-| `GET` | `/v1/controls/{control_id}/tests/{test_id}/verdicts` | `admin_empresa` · `auditor` | Historial de veredictos (paginado) |
+| `POST` | [`/v1/controls/{control_id}/tests/{test_id}/verdicts`](#post-v1controlscontrol_idteststest_idverdicts--dar-el-veredicto) | `admin_empresa` · dueño · ejecutor | Registrar el veredicto de una prueba manual (D121) |
+| `PUT` | [`/v1/verdicts/{id}/review`](#put-v1verdictsidreview--revisar-un-veredicto) | `admin_empresa` · dueño (si no lo registró él) | Aprobar o rechazar un veredicto (D121) |
+| `GET` | `/v1/controls/{control_id}/tests/{test_id}/verdicts` | `admin_empresa` · `auditor` · dueño y ejecutor | Historial de veredictos con su estado y sus revisiones (paginado) |
 
 ---
 
@@ -45,7 +46,7 @@ La vista técnica de un control: los tests que lo verifican, **todos con su esta
 | `is_mandatory`, `is_active` | boolean | |
 | `shared_with[]` | `{ id, code }` | Los **otros** controles vigentes del servicio que llevan el test (D85); su veredicto vale en todos. **Siempre vacío en un test documental** (D88) |
 | `state` | enum `test_state` | Un test documental sale de las evidencias de este control (D88), no es fijo `pending` |
-| `last_verdict` | `{ result, evaluated_at, confirmed_by }` \| null | |
+| `last_verdict` | `{ result, evaluated_at, confirmed_by }` \| null | El último veredicto **aprobado** del test en el servicio (D121): `evaluated_at` es cuándo se registró y `confirmed_by` quien lo aprobó (el `admin_empresa` si aprobaron los dos). Uno `pending` o `rejected` no sale aquí |
 | `ai_suggestion` | objeto \| null | Siempre marcada como de la IA y **nunca decide** (hoy es siempre `null`) |
 
 ```json
@@ -131,7 +132,7 @@ De una **prueba automática** de un control (de **nube** o de **servidores**, D1
 
 | | |
 |---|---|
-| **Quién** | `admin_empresa` *(hoy; ver [D102](#veredicto-lo-que-cambia-con-d102))*; cualquier otro rol, `403` |
+| **Quién** | `admin_empresa`, el dueño (`responsable`) o el ejecutor (`delegado`) del control (D102, D121); `auditor`, `admin_monkey` y quien no es dueño ni ejecutor, `403` |
 | **Éxito** | `201` (queda **una evaluación nueva e inmutable**; la anterior se conserva) |
 | **Errores** | `403` · `404` · `409 TEST_NOT_MANUAL` · `409 TEST_DECIDED_BY_EVIDENCE` · `409 TEST_HAS_NO_ASSETS` · `422 closure_reason.required` |
 
@@ -159,13 +160,14 @@ Con observaciones abiertas (criterio provisional, D85: cuentan solo las de **ese
 #### Response `201`
 | Campo | Tipo | Qué es |
 |---|---|---|
-| `id` | uuid | La evaluación nueva |
+| `id` | uuid | El veredicto registrado (`test_verdicts`, D121) |
 | `control_id`, `test_id`, `dimension` | | |
 | `origin` | enum `evaluation_origin` | `manual` |
 | `result` | enum `verdict_result` | |
 | `note`, `closure_observation_reason` | string \| null | |
-| `confirmed_by` | `{ id, name, last_name }` | Quién la confirmó |
-| `evaluated_at` | datetime | |
+| `confirmed_by` | `{ id, name, last_name }` | Quién lo registró (igual que `registered_by`; se conserva por compatibilidad) |
+| `evaluated_at` | datetime | Cuándo se registró |
+| `state`, `registered_by`, `reviews[]` | | Ver «Veredicto en dos niveles» abajo |
 | `test_state` | enum `test_state` | |
 | `applies_to_controls[]` | `{ id, code }` | Los controles donde cuenta |
 
@@ -190,15 +192,50 @@ Con observaciones abiertas (criterio provisional, D85: cuentan solo las de **ese
 }
 ```
 
-> Un test sin veredicto está `pending` y **no cuenta como cumplido**. `GET /v1/controls/{control_id}/tests/{test_id}/verdicts` lista el historial (paginado; `admin_empresa` y `auditor`).
+> Un test sin veredicto está `pending` y **no cuenta como cumplido**. `GET /v1/controls/{control_id}/tests/{test_id}/verdicts` lista el historial (paginado; `admin_empresa`, `auditor` y el dueño y el ejecutor del control), cada uno con su estado y sus revisiones.
 
-## Veredicto: lo que cambia con D102
+## Veredicto en dos niveles (D102, D121)
+
+El veredicto de una prueba manual **no documental** sigue el mismo flujo que la evidencia: alguien lo **registra** y otra persona lo **revisa**.
 
 | | |
 |---|---|
-| **Regla (D102)** | El veredicto de una prueba manual **no documental** sigue el mismo flujo que la evidencia: lo registra el **ejecutor** (o el dueño) y lo revisan el **dueño** y el `admin_empresa`, con la misma combinación (cualquier rechazo gana; con una sola aprobación vale; con dos, deben aprobar las dos) |
-| **Estado** | **Por construir en MD-194.** Lo construido hoy es lo de arriba: solo el `admin_empresa` da el veredicto |
-| **Por definir antes de construir** | La forma exacta de las rutas: cómo se **registra** (ejecutor o dueño) y cómo se **revisa** (dueño y administrador) un veredicto. El contrato se escribe aquí primero (`CLAUDE.md`, regla 6); no se inventa en el código |
+| **Registrar** | `POST …/verdicts` (arriba). Lo registra el ejecutor, el dueño o el `admin_empresa`. Nace `pending` y **todavía no cuenta**. Si lo registra el `admin_empresa`, nace con su aprobación y cuenta al instante (P34 sigue abierta: queda en el rastro quién registró y quién aprobó, y el auditor es el contrapeso) |
+| **Revisar** | `PUT /v1/verdicts/{id}/review` (abajo). Lo revisa el dueño, si no lo registró él, y el `admin_empresa` siempre. Una revisión por rol y veredicto: un segundo `PUT` del mismo rol reemplaza la suya |
+| **Estado** (`verdict_state`) | **Algún rechazo → `rejected`**; sin rechazos y con al menos una aprobación → `approved`; sin revisión → `pending`. Un rechazo posterior a una aprobación la anula |
+| **Qué cuenta** | El estado del test sale del **último veredicto registrado** del test en el servicio: si está `approved`, cuenta su `result`; si está `pending` o `rejected`, el test queda `pending` (no cuenta como cumplido, §9). Rechazado ⇒ se registra uno nuevo; el anterior se conserva |
+| **Inmutable** | Un veredicto no se edita ni se borra; sus revisiones solo se reemplazan por la del mismo rol, y cada cambio queda en el rastro |
+
+### PUT /v1/verdicts/{id}/review — Revisar un veredicto
+
+| | |
+|---|---|
+| **Quién** | El dueño del control de origen (si no registró el veredicto él mismo) y el `admin_empresa` (siempre, también lo que registró él). `delegado`, `auditor`, `admin_monkey` y un `responsable` que no es el dueño, `403`; el que lo registró sin ser `admin_empresa`, `403` |
+| **Éxito** | `200` con el veredicto y su estado combinado |
+| **Errores** | `403` · `404` (no existe para esta empresa) · `409 VERDICT_SUPERSEDED` (ya hay un veredicto más nuevo del mismo test en el servicio) · `422 note.required` (rechazar sin nota) |
+
+El `reviewer_role` lo pone el servidor desde quien llama (`responsable` · `admin_empresa`).
+
+#### Request
+| Campo | Tipo | Obligatorio | Regla |
+|---|---|---|---|
+| `decision` | enum `verdict_review_decision` | sí | `approve` · `reject` |
+| `note` | string | al rechazar | Por qué se rechaza; en blanco no vale |
+
+```json
+{ "decision": "reject", "note": "La evidencia de la restauración es de otro período." }
+```
+
+#### Response `200`
+| Campo | Tipo | Qué es |
+|---|---|---|
+| `id` | uuid | El veredicto |
+| `result` | enum `verdict_result` | Lo que se registró |
+| `state` | enum `verdict_state` | `pending` · `approved` · `rejected` |
+| `registered_by` | `{ id, name, last_name, role }` | Quién lo registró |
+| `reviews[]` | objeto | Una por rol: `reviewer_role`, `decision`, `note`, `reviewed_by`, `reviewed_at` |
+
+Las mismas columnas `state`, `registered_by` y `reviews[]` salen en `POST …/verdicts` (`201`) y en cada ítem de `GET …/verdicts`.
 
 ## Errores del módulo
 
@@ -210,8 +247,10 @@ Los errores comunes (`FORBIDDEN`, `NOT_FOUND`, `VALIDATION_FAILED`) están en [`
 | 409 | `TEST_DECIDED_BY_EVIDENCE` | Dar un veredicto sobre un test documental: se resuelve revisando su evidencia (D88) |
 | 409 | `TEST_HAS_NO_ASSETS` | El servicio no tiene activos de la dimensión del test: no hay sobre qué dar el veredicto |
 | 422 | `VALIDATION_FAILED` (`closure_reason.required`) | Veredicto con observaciones abiertas y sin razón |
+| 409 | `VERDICT_SUPERSEDED` | Revisar un veredicto que ya no es el último del test en el servicio |
+| 422 | `VALIDATION_FAILED` (`note.required`) | Rechazar un veredicto sin nota |
 
-**Claves i18n:** `control_test.list`, `verdict.issued`, `verdict.list`.
+**Claves i18n:** `control_test.list`, `verdict.issued`, `verdict.list`, `verdict.reviewed`, `verdict.superseded`.
 
 ### Ejemplos de error
 
@@ -241,7 +280,10 @@ Todos con el mismo sobre (`conventions.md`); `message` es la clave i18n del erro
 
 | `action` | Cuándo | Quién |
 |---|---|---|
-| `test_verdict.issue` | Veredicto de un test (también deja el evento `control.state` de cada control que cambie de estado, D91) | `admin_empresa` |
+| `test_verdict.issue` | Se registra un veredicto. Si nace aprobado (lo registra el `admin_empresa`), deja también el evento `control.state` de cada control que cambie de estado (D91) | `admin_empresa`, dueño o ejecutor |
+| `test_verdict.review` | Se aprueba o rechaza un veredicto (crear o reemplazar la revisión de ese rol), con quién lo registró y quién lo revisa. Deja `control.state` (causa `test_verdict_review`) si el estado del test cambia | dueño o `admin_empresa` |
+
+Recursos del rastro: `test_verdict` (el veredicto) y `test_verdict_review` (la revisión de un rol). La nota de la revisión no se copia al rastro: vive en la revisión.
 
 ## Preguntas abiertas
 

@@ -189,6 +189,23 @@
 | `compliant` | Cumple |
 | `non_compliant` | No cumple |
 
+### `verdict_state`
+**Dónde se usa:** el estado combinado de un veredicto (`cumplimiento/veredictos.md`, D121). Se **deriva** de sus revisiones; no se guarda.
+
+| Valor | Etiqueta (es) | Qué significa |
+|---|---|---|
+| `pending` | Pendiente de revisión | Nadie lo ha revisado; no cuenta |
+| `approved` | Aprobado | Al menos una aprobación y ningún rechazo; cuenta su `result` |
+| `rejected` | Rechazado | Algún rechazo; no cuenta y se registra uno nuevo |
+
+### `verdict_review_decision`
+**Columna:** `test_verdict_reviews.decision` (D121).
+
+| Valor | Etiqueta (es) |
+|---|---|
+| `approve` | Aprobar |
+| `reject` | Rechazar |
+
 ### `asset_result`
 **Columna:** `evaluations.result` · El resultado de un activo en un test.
 
@@ -250,7 +267,7 @@ Una persona lo guarda solo como `pending_review` o `human_validated`; **`ai_prev
 | `human_validated` | Validada por una persona |
 
 ### `reviewer_role`
-**Columna:** `evidence_reviews.reviewer_role` (D102, que ajusta D96) · **Una revisión por rol y entrega.** Si hay rechazo gana; con dos revisiones aprueban los dos. Sube el ejecutor, el dueño o el `admin_empresa`; el `auditor` la lee y no la revisa.
+**Columnas:** `evidence_reviews.reviewer_role` y `test_verdict_reviews.reviewer_role` (D102, que ajusta D96; D121) · **Una revisión por rol y entrega.** Si hay rechazo gana; con dos revisiones aprueban los dos. Sube el ejecutor, el dueño o el `admin_empresa`; el `auditor` la lee y no la revisa.
 
 | Valor | Etiqueta (es) | Qué significa |
 |---|---|---|
