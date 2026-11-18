@@ -52,6 +52,7 @@ construir: recibe una tarea concreta del **tech-lead** y la ejecuta.
 - **Nunca** corras la suite completa ni la repitas «para descartar inestables». La regresión completa la corre el CI del PR. Si una suite falla y sospechas que es inestable, relanza **solo esa**.
 - El e2e usa la base fija `monkey-test-pg` (puerto 55432, `npm run test:db -- up`): nunca montes otro Postgres. La plantilla se reconstruye sola si cambian las migraciones, y cada worker trabaja sobre su copia. Por defecto 2 workers (`E2E_WORKERS`), para no quitarle la RAM a Rod: no lo subas en local.
 - Al iterar sobre un fallo, relanza solo la suite o el spec que falló; el conjunto completo de lo afectado, una vez al final.
+- **Si creas migraciones, aplícalas también a la base de desarrollo de Rod** con `npm run prisma:migrate:deploy` (autorizado; el modo dev y el reset siguen prohibidos) y di en el reporte cuáles se aplicaron, incluidas las ajenas que estuvieran pendientes. Sin eso, Rod prueba contra una base sin la tabla (MD-217: `trusted_devices does not exist`).
 
 ## Formato de reporte al tech-lead (obligatorio, corto)
 

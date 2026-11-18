@@ -124,10 +124,14 @@ superficie de producto), pero no revisan el diseño.
   textos de interfaz), **detente y pide a Rod sus indicaciones** antes de diseñar o implementar. El backend y la
   infraestructura avanzan sin esperar.
 - **Cambio visual: aprobación antes de los commits.**
-  - Saca capturas reales (`skills/frontend/visual-verification.md`): de las dos apps si el cambio toca el design system, en
-    claro y oscuro, en es y en.
-  - Pregunta «¿apruebas el estilo?». Los comandos de commit van en el mensaje siguiente a su aprobación.
-- **Comandos de commit:** `scripts/ticket-commands.py MD-n --scope <módulo>` los arma desde el `git status` de cada repo
+  - **Sin capturas** (Rod no las usa): comprueba que su `ng serve` sirve el build nuevo y dale la lista de pantallas a revisar en
+    su app, con ruta y cómo llegar, de las dos apps si el cambio toca el design system (`skills/frontend/visual-verification.md`).
+  - Pregunta «¿apruebas el estilo?» **por cada pantalla**, nombrándola. Una aprobación cubre solo lo que Rod vio: aprobar la
+    pantalla del código no aprueba la lista de dispositivos (MD-217). Antes de dar algo por aprobado, enumera las pantallas
+    que aún no ha visto.
+  - **Los comandos de commit solo se entregan cuando Rod los pide explícitamente**, con todas las pantallas aprobadas. Nunca
+    por iniciativa propia ni como «siguiente paso» de una aprobación (MD-217: se entregaron sin que los pidiera).
+- **Comandos de commit (cuando Rod los pida):** `scripts/ticket-commands.py MD-n --scope <módulo>` los arma desde el `git status` de cada repo
   (nunca de memoria) y avisa si algo quedó sin agrupar. Los mensajes se completan en inglés y sin atribución a Claude.
 
 Invoca `monkey-closeout`. Si el cambio dejó desactualizado `context/backend.md`, `context/frontend.md` o un contrato,
