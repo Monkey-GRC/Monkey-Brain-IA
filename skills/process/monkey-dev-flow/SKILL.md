@@ -13,6 +13,22 @@ Lo ejecuta **la sesión principal** (es el rol que antes tenía el `tech-lead`: 
 Los subagentes son trabajadores: implementan, verifican o revisan, y no coordinan a otros. Reporta al usuario en
 **3–4 líneas**, sin narrar el proceso.
 
+## 0. Ciclo del ticket (lo automatizan los scripts de `scripts/`)
+
+- **Un ticket por vez.** Rod verifica y sube uno antes del siguiente; no se encadenan.
+- **Arranque:** `scripts/start-ticket.sh MD-n slug brain backend [frontend] [platform]`.
+  - Pone al día la rama de integración: el Brain en `main`; Backend y frontends en `develop`.
+  - Borra las ramas locales ya fusionadas. Las remotas las borra Rod.
+  - Crea `docs|feat/MD-n-slug`, con el mismo slug en todos los repos, y arranca el reloj.
+  - Se detiene si un repo tiene cambios sin commitear.
+  - Nada de worktrees: está bloqueado.
+- **Reloj:** `scripts/ticket-clock.sh MD-n <fase>` al empezar cada fase (planificacion · implementacion · verificacion ·
+  ajustes · cierre · fin). Al cerrar, `ticket-clock.sh MD-n report` da la tabla de métricas que se entrega a Rod (paso 10).
+- **Jira:** se **reescribe la descripción** con lo que de verdad se hizo y **no se dejan comentarios** (está bloqueado). El
+  estado lo mueve Rod.
+- **Sin huecos:** antes que dejar una brecha, se amplía el alcance. Lo que quede pendiente va como `DT-n` o al ticket que lo
+  cierra.
+
 ## 1. Clasificar la tarea
 
 | Clase | Cómo se reconoce | Qué cambia en el flujo |
@@ -104,16 +120,50 @@ superficie de producto), pero no revisan el diseño.
 
 ## 9. Cierre
 
+- **Pantallas: parar antes del diseño.** Al llegar a la parte visual de cualquier ticket (pantallas, flujo de UI, componentes,
+  textos de interfaz), **detente y pide a Rod sus indicaciones** antes de diseñar o implementar. El backend y la
+  infraestructura avanzan sin esperar.
+- **Cambio visual: aprobación antes de los commits.**
+  - Saca capturas reales (`skills/frontend/visual-verification.md`): de las dos apps si el cambio toca el design system, en
+    claro y oscuro, en es y en.
+  - Pregunta «¿apruebas el estilo?». Los comandos de commit van en el mensaje siguiente a su aprobación.
+- **Comandos de commit:** `scripts/ticket-commands.py MD-n --scope <módulo>` los arma desde el `git status` de cada repo
+  (nunca de memoria) y avisa si algo quedó sin agrupar. Los mensajes se completan en inglés y sin atribución a Claude.
+
 Invoca `monkey-closeout`. Si el cambio dejó desactualizado `context/backend.md`, `context/frontend.md` o un contrato,
 pregunta si lo actualizas ahora (es documentación: se edita directo, sin pasar por los seniors).
 
 ## 10. Reporte
+
+Incluye la tabla de métricas de `ticket-clock.sh MD-n report`: tiempo por fase, cuántas corridas de prueba hubo y de qué
+tamaño. Compárala con la línea base de MD-193 (~3 h 50 min). Lo estimado se marca como estimado.
 
 ```
 <tarea>: <hecho / QA pasó / bloqueado>
 <si bloqueado: 1 línea de por qué y qué necesita>
 Pendiente de commit: <repos con cambios>  (Claude no hace commits ni PRs)
 ```
+
+## Bugs de sesión
+
+Ante «no entra» o «vuelve al login al recargar», **reprodúcelo primero con un navegador limpio** contra los servidores de Rod
+(4200 Platform, 4201 Admin, 3000 Backend), antes de tocar código. El 2026-11-11 se resolvió limpiando las cookies y los datos
+del sitio. Cada app manda `X-Monkey-Client` y usa su propio juego de cookies (`contracts/autenticacion.md`). En local, la clave
+de acceso de una empresa nueva sale en la terminal del Backend con `MAIL_PROVIDER=log`.
+
+## Lo que imponen los hooks (`.claude/hooks/pre-bash-guard.sh` y `permissions.deny`)
+
+- Commits, pushes y PRs.
+- Leer credenciales.
+- Servidores en 3000, 4200 o 4201.
+- El e2e completo, o `ng test` sin `--include` (D120).
+- Migrar la base con el modo de desarrollo o resetearla: la base de dev tiene drift. Solo `migrate deploy`, que Rod autorizó
+  sin preguntar.
+- Git worktrees.
+- Comentarios en Jira.
+
+El hook mira el texto del comando, así que también bloquea esas palabras dentro de un heredoc. Para editar documentos usa Edit
+o Write. Si un hook bloquea algo legítimo, díselo a Rod; no lo esquives.
 
 ## Límites
 
