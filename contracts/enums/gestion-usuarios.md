@@ -37,7 +37,7 @@
 | `executor` | Ejecutor | Es el `delegado` que lo ejecuta |
 
 ## `work_bucket`
-**Dónde se usa:** filtro `bucket` de `GET /v1/me/work`.
+**Dónde se usa:** filtro `bucket` y campo de cada ítem de `GET /v1/me/work`. Un control cae en el primero que le aplique, en este orden (D122): `rejected`, `to_review`, `to_upload`, `in_review`, `done`.
 
 | Valor | Etiqueta (es) | Qué significa |
 |---|---|---|

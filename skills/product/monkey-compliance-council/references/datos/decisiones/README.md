@@ -201,3 +201,4 @@ quedan aquí:
 | D119 | El historial de un control dado de baja (evidencia, veredictos y observaciones) se sigue leyendo; solo desaparece de la lista y del detalle | [cumplimiento/controles](cumplimiento/controles.md) |
 | D120 | En local se prueba solo lo que se toca (unitarias e integración de lo afectado); la suite completa es del CI; e2e con base plantilla y en paralelo | [entrega](entrega.md) |
 | D121 | El veredicto manual se registra y se revisa en dos niveles, como la evidencia; el `admin_empresa` cuenta su propia aprobación *(concreta D102)* | [cumplimiento/veredictos](cumplimiento/veredictos.md) |
+| D122 | «Mi trabajo» y la carga de trabajo usan el avance del resumen; cada control cae en un solo bucket (rechazado → por revisar → por subir → en revisión → listo) | [gestion-usuarios](gestion-usuarios.md) |
