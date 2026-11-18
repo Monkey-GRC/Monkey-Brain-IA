@@ -117,7 +117,14 @@ JWT_SECRET="..."                  # 64 bytes aleatorios, distinto por ambiente
 JWT_ACCESS_EXPIRES_IN=900         # access token: 15 min
 SESSION_IDLE_TIMEOUT=1800         # cierre a los 30 min sin actividad
 SESSION_MAX_DURATION=28800        # tope absoluto: 8 h
-TOKEN_HASH_PEPPER="..."           # HMAC de refresh tokens y claves de acceso; cambiarlo cierra todas las sesiones
+TOKEN_HASH_PEPPER="..."           # HMAC de refresh tokens, claves de acceso y dispositivos recordados; cambiarlo cierra todas las sesiones y olvida los dispositivos
+
+# Ubicación de los dispositivos recordados (D123). Base GeoLite2-City local: la IP no sale a ningún tercero. La cuenta y la clave de
+# MaxMind solo sirven para descargarla y actualizarla (`npm run geoip:update`, cron semanal en la VPS); el archivo no se versiona y en
+# la VPS vive en un volumen montado. Sin el archivo, país y ciudad salen null y el login funciona igual.
+MAXMIND_ACCOUNT_ID=""
+MAXMIND_LICENSE_KEY=""            # secreto; nunca en el repo
+GEOIP_DB_PATH="geoip/GeoLite2-City.mmdb"
 ACTIVATION_CODE_TTL_HOURS=168       # horas que sirve un código de activación de cuenta (D95, D96). Opcional: 168 (7 días). Aún no la lee nadie: la usará el módulo de equipo al emitir el código
 
 # Correo (D99, D101). Lo usan la clave de acceso y los correos de la contraseña (enlace de recuperación y aviso de cambio). Todos comparten la plantilla de marca
@@ -198,6 +205,7 @@ filtrarían a otra petición del pool): `app.tenant_id`, `app.user_id`, `app.use
    quien emite lo comprueba la aplicación (la base no mira otra tabla en un `CHECK`).
 
 7. `user_activation_codes` (D95, D96): patrón normal por `company_id` (el de la cuenta a activar). `code_hash` es HMAC con `TOKEN_HASH_PEPPER`, como `access_keys`.
+8. `trusted_devices` (D123): patrón normal por `company_id`, RLS forzada. `token_hash` es HMAC con `TOKEN_HASH_PEPPER`.
 
 **Búsquedas previas al tenant** (login, canje de clave, refresh, API key): cuatro funciones
 `SECURITY DEFINER`, angostas, con `search_path` fijo y `REVOKE … FROM PUBLIC; GRANT EXECUTE … TO
@@ -207,7 +215,7 @@ monkey_app`: `platform.find_login_candidates(email)`, `find_access_key(code_hash
 sigue con RLS normal. El email es único global (D29), así que el login devuelve a lo sumo un
 usuario.
 
-**Otras funciones `SECURITY DEFINER` (mismo patrón: angostas, `search_path` fijo, `REVOKE … FROM PUBLIC; GRANT EXECUTE … TO monkey_app`):** `platform.find_mfa_challenge(token_hash)` (D94) y `platform.find_activation_code(code_hash)` (D95, D96; antes de conocer el tenant).
+**Otras funciones `SECURITY DEFINER` (mismo patrón: angostas, `search_path` fijo, `REVOKE … FROM PUBLIC; GRANT EXECUTE … TO monkey_app`):** `platform.find_mfa_challenge(token_hash)` (D94), `platform.find_activation_code(code_hash)` (D95, D96; antes de conocer el tenant) y `platform.find_trusted_device(token_hash)` (D123: cerrar sesión sin sesión vigente olvida igual el dispositivo; devuelve solo `id`, `company_id` y `user_id` de uno vigente).
 
 **Columnas denormalizadas por RLS:** `sessions`, `user_groups` y `client_control_assignments` llevan `company_id`
 propio (el ER solo llegaba a la empresa vía `user_id`), para que la política sea una comparación
