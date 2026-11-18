@@ -139,6 +139,22 @@ erDiagram
         datetime created_at "inicio: tope de 8 h"
         datetime last_activity_at "inactividad: 30 min"
     }
+    trusted_devices {
+        uuid id PK
+        uuid company_id FK "denormalizado: lo pide el RLS"
+        uuid user_id FK
+        string token_hash "HMAC con pepper, unico"
+        string browser "nullable"
+        string os "nullable"
+        string device_type "computer, mobile o tablet; nullable"
+        string ip_address "ultimo ingreso"
+        string country "ISO alfa-2, nullable"
+        json city "es y en, nullable"
+        datetime expires_at "created_at + 30 dias, no se renueva"
+        datetime last_used_at "nullable"
+        datetime revoked_at "nullable"
+        datetime created_at
+    }
     api_keys {
         uuid id PK
         uuid company_id FK
@@ -176,11 +192,14 @@ erDiagram
     users ||--o{ client_control_assignments : "es dueno o ejecutor"
     users ||--o{ user_activation_codes : "se activa con"
     users ||--o{ sessions : "abre"
+    users ||--o{ trusted_devices : "recuerda"
     users ||--o{ audit_logs : "registra"
     companies ||--o{ api_keys : "integra con"
 ```
 
 **`sessions`:** access token de 15 min; refresh token rotado en cada uso; la sesión se cierra a los **30 min sin actividad** (`last_activity_at`) y a las **8 h de creada** (`created_at`, `expires_at`), como pide §5.3. Las dos columnas de actividad se añadieron el 2026-09-30 (migración `platform_sessions_activity_tracking`): sin ellas el servidor no podía aplicar esa política.
+
+**`trusted_devices` (D123, SEG-84, MD-217):** un navegador donde la persona marcó «Recordar este dispositivo»; ahí el login pide la contraseña pero no el código. El token vive solo en la cookie `mnk_device`; aquí, su HMAC. Vence a los 30 días sin renovarse y se revoca (`revoked_at`) al cerrar sesión, al cambiar o recuperar la contraseña, al restablecer la MFA, al regenerar los códigos de recuperación, al dar de baja a la persona o archivar su empresa, o cuando la persona lo olvida. `browser`, `os` y `device_type` se toman al recordarlo (la UI agrupa por tipo y sistema); `ip_address`, `country` y `city` son del último ingreso; la ubicación sale de una base GeoIP local (la IP no va a terceros).
 
 **`pending` y los códigos de activación (D95, D96).** Una cuenta que crea alguien más (las de `responsable`, `delegado` y `auditor`, que crea el `admin_empresa`, o la de `delegado`, que también crea su `responsable`) existe desde el alta en estado `pending`, con una contraseña imposible de adivinar (el hash de un secreto aleatorio que se descarta, con el mismo costo que uno real: desde fuera no se distingue de una contraseña mala), y **no puede iniciar sesión**. La persona la activa con un **código de un solo uso**, ligado al correo de la cuenta (`user_activation_codes`): pone su contraseña y la cuenta pasa a `active`, todo en una transacción. El código se guarda solo como HMAC, vence (7 días), se puede reemitir mientras la cuenta siga `pending` (el anterior queda `revoked`) y comparte el freno de intentos de las claves de acceso. Es el mismo mecanismo de la clave de acceso de una empresa (D43, D51), pero de una persona y no de una empresa.
 

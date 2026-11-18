@@ -30,6 +30,9 @@ type: contract
 | `POST` | [`/v1/auth/mfa/setup/confirm`](#segundo-factor-d94) | Desafío `mnk_mfa` | Confirmar la configuración y abrir sesión |
 | `POST` | [`/v1/auth/mfa/recovery-codes`](#segundo-factor-d94) | Con sesión | Regenerar los códigos de recuperación |
 | `DELETE` | [`/v1/users/{id}/mfa`](#segundo-factor-d94) | `admin_empresa` | Restablecer el segundo factor de alguien |
+| `GET` | [`/v1/auth/devices`](#dispositivos-recordados-d123-seg-84) | Con sesión (no `admin_monkey`) | Mis dispositivos recordados |
+| `DELETE` | [`/v1/auth/devices/{id}`](#dispositivos-recordados-d123-seg-84) | Con sesión (no `admin_monkey`) | Olvidar un dispositivo |
+| `DELETE` | [`/v1/auth/devices`](#dispositivos-recordados-d123-seg-84) | Con sesión (no `admin_monkey`) | Olvidar todos mis dispositivos |
 | `POST` | [`/v1/auth/activate/lookup`](#activación-de-una-cuenta-que-crea-el-administrador-d95-d96) | Público | Comprobar el código de activación |
 | `POST` | [`/v1/auth/activate`](#activación-de-una-cuenta-que-crea-el-administrador-d95-d96) | Público | Activar una cuenta invitada |
 | `POST` | [`/v1/auth/password/change`](#post-v1authpasswordchange--cambio-voluntario) | Con sesión | Cambiar la contraseña |
@@ -166,6 +169,8 @@ Crea la cuenta con la clave que le entregó `admin_monkey`. **Solo se pide la co
 #### Response `200`
 Con sesión abierta: el mismo objeto `user` + `company` del canje. Con el segundo factor obligatorio, el paso intermedio (ver [Segundo factor](#segundo-factor-d94)); el cliente distingue por la presencia de `next_step`.
 
+**Dispositivo recordado (D123).** Si la contraseña es correcta, la cuenta está activa y la cookie `mnk_device` corresponde a un dispositivo vigente **de esa misma persona**, el login abre la sesión directamente (sin `next_step`) y el rastro `auth.login` lleva `mfa: "trusted_device"`. La contraseña se comprueba siempre y antes que el dispositivo: un fallo suma al bloqueo igual que sin él. Una cookie ausente, vencida, revocada, manipulada o de otra persona no da error: el login sigue al desafío normal.
+
 > **Política de sesión (§5.3):** 30 min de inactividad y 8 h máximo. Bloqueo a los **5 intentos fallidos, por 15 min**. El contrato fija: access token **15 min** y refresh hasta el máximo de 8 h de sesión (el código anterior ponía la cookie a 3 h en login y 15 min en refresh, lo que no cuadraba con la política).
 
 ### POST /v1/auth/refresh — Renovar la sesión
@@ -185,7 +190,7 @@ Sin cuerpo.
 | | |
 |---|---|
 | **Quién** | Con sesión |
-| **Éxito** | `204`, cookies invalidadas (idempotente) |
+| **Éxito** | `204`, cookies invalidadas (idempotente). También olvida el dispositivo recordado de este navegador y borra `mnk_device` ([D123](#dispositivos-recordados-d123-seg-84)) |
 
 Sin cuerpo.
 
@@ -228,10 +233,10 @@ Sin cookie `mnk_mfa` válida, los endpoints `mfa/*` responden `401 MFA_CHALLENGE
 
 | Endpoint | Request | Response |
 |---|---|---|
-| `POST /v1/auth/mfa/verify` | `{ "code": "123456" }` **o** `{ "recovery_code": "K7QWM-3PZ9T" }` | `200` con `user` + `company` + `onboarding` (como el login) y las cookies de sesión; con un código de recuperación, además `recovery_codes_left` |
+| `POST /v1/auth/mfa/verify` | `{ "code": "123456" }` **o** `{ "recovery_code": "K7QWM-3PZ9T" }`, más `remember_device` opcional (boolean, por defecto `false`; D123) | `200` con `user` + `company` + `onboarding` (como el login) y las cookies de sesión; con un código de recuperación, además `recovery_codes_left`. Con `remember_device: true`, además la cookie `mnk_device` |
 | `POST /v1/auth/mfa/setup` | Sin cuerpo | `200` `{ secret, otpauth_uri, issuer, account }`. Idempotente: devuelve el mismo secreto mientras el desafío viva. **El QR se dibuja en el navegador** con `otpauth_uri`; el secreto no se manda a ningún servicio externo |
-| `POST /v1/auth/mfa/setup/confirm` | `{ "code": "123456" }` | `200` como el login **más `recovery_codes`** (10, `XXXXX-XXXXX`, **se muestran una sola vez**); abre la sesión |
-| `POST /v1/auth/mfa/recovery-codes` | `{ "code": "123456" }` (con sesión) | `200` `{ recovery_codes }`; los anteriores dejan de servir |
+| `POST /v1/auth/mfa/setup/confirm` | `{ "code": "123456" }`, más `remember_device` opcional (D123) | `200` como el login **más `recovery_codes`** (10, `XXXXX-XXXXX`, **se muestran una sola vez**); abre la sesión. Con `remember_device: true`, además la cookie `mnk_device` |
+| `POST /v1/auth/mfa/recovery-codes` | `{ "code": "123456" }` (con sesión) | `200` `{ recovery_codes }`; los anteriores dejan de servir **y se olvidan todos los dispositivos recordados de la persona** (D123) |
 | `DELETE /v1/users/{id}/mfa` | Sin cuerpo | `204`. Solo `admin_empresa`, sobre `responsable`, `delegado` o `auditor` de su empresa y nunca sobre sí mismo. Borra el secreto y los códigos y cierra las sesiones de esa persona |
 
 **Reglas:**
@@ -242,6 +247,87 @@ Sin cookie `mnk_mfa` válida, los endpoints `mfa/*` responden `401 MFA_CHALLENGE
 - **`MFA_REQUIRED`** (variable de entorno, por defecto `true`): en `false` el login abre la sesión directo. En producción el Backend no arranca con `false`.
 - **`is_mfa_enabled`** del `user` indica si la persona ya configuró su factor.
 - **TOTP obligatoria para todos los roles** (D66, D94, D102) hasta que existan otras formas de ingreso.
+
+---
+
+## Dispositivos recordados (D123, SEG-84)
+
+«Recordar este dispositivo por 30 días» **solo salta el código** del segundo factor; la contraseña se pide siempre y la
+sesión sigue la misma política (30 min de inactividad, 8 h máximo).
+
+**La cookie.** `mnk_device`: `httpOnly`, `SameSite=Lax`, `Secure` en producción, ruta `/v1/auth`, vida de 30 días. Lleva un
+token opaco; en la base solo queda su HMAC con `TOKEN_HASH_PEPPER` (SEG-17). **Una por navegador:** si otra persona marca
+«recordar» en el mismo navegador, la pisa y la anterior vuelve a ver su código. Nunca viaja en el cuerpo ni entra a la
+auditoría. Solo existe con prefijo `mnk_`: Monkey Admin no la usa (`admin_monkey` no puede recordar dispositivos).
+
+**Cómo nace.** `remember_device: true` en `mfa/verify` (con código de la app o de recuperación) o en `mfa/setup/confirm`,
+una vez que el código es correcto. El dispositivo y su rastro `auth.device_trusted` se guardan en la misma transacción que
+la sesión. Con `admin_monkey`, la petición responde `422 REMEMBER_DEVICE_NOT_ALLOWED` **antes** de comprobar el código: no
+gasta el código ni cuenta como intento fallido.
+
+**Vigencia.** 30 días desde que se marca; el uso no la renueva. Deja de valer, en la misma transacción que el cambio que
+la provoca: al cambiar o recuperar la contraseña; al restablecer la MFA (`DELETE /v1/users/{id}/mfa` o `npm run mfa:reset`);
+al regenerar los códigos de recuperación; al desactivar a la persona o archivar su empresa; cuando la persona lo olvida
+aquí; y **al cerrar sesión**.
+
+**Cerrar sesión lo olvida (D123).** Quien pulsa «Cerrar sesión» espera que en ese navegador no quede rastro de su
+identidad: `POST /v1/auth/logout` revoca el dispositivo de la cookie `mnk_device` (si es de esa persona) y la borra, en la
+misma transacción que cierra la sesión, y deja `auth.device_revoked` (`{ device_id, scope: "logout" }`). El siguiente ingreso
+vuelve a pedir el código y a ofrecer la casilla. Lo único que conserva el dispositivo es **no** cerrar sesión (cerrar la
+pestaña o dejar que la sesión venza por inactividad o a las 8 h): ahí el próximo ingreso pide solo la contraseña, hasta que
+venzan los 30 días.
+
+### GET /v1/auth/devices — Mis dispositivos recordados
+
+| | |
+|---|---|
+| **Quién** | Con sesión, cualquier rol salvo `admin_monkey` (`403`) |
+| **Éxito** | `200` con la lista de dispositivos **vigentes** de la persona, del más reciente al más antiguo. Sin paginación: son pocos y vencen solos |
+
+```json
+{
+  "data": [
+    {
+      "id": "7d4c2b1e-…",
+      "device_type": "computer",
+      "browser": "Chrome",
+      "os": "Windows",
+      "ip_address": "181.49.12.7",
+      "country": "CO",
+      "city": "Bogotá",
+      "created_at": "2026-11-18T15:04:00Z",
+      "expires_at": "2026-12-18T15:04:00Z",
+      "last_used_at": "2026-11-20T13:10:00Z",
+      "is_current": true
+    }
+  ]
+}
+```
+
+`device_type` (`computer` · `mobile` · `tablet`), `browser` y `os` los resume el backend a partir del user agent al recordar
+el dispositivo; si no los reconoce, vienen `null` y la UI muestra un texto genérico. Límite conocido: un iPad con iPadOS 13 o posterior se anuncia como un Mac, así que sale `computer` · `macOS`. La UI **agrupa** los dispositivos por
+`device_type` + `os` (p. ej. «Computador · Linux», «Celular · Android»), cada grupo con su icono, y dentro de cada grupo
+lista los navegadores. `ip_address`, `country` y `city` son los del **último ingreso** con ese dispositivo
+(al recordarlo o, después, al entrar sin código). `country` es el código ISO 3166-1 alfa-2 (la UI muestra el nombre en su
+idioma) y `city` viene en el idioma de la petición (`Accept-Language`); los dos son aproximados y pueden venir `null` (IP
+privada o no encontrada). La ubicación sale de una **base GeoIP local** en el Backend: la IP no se manda a ningún tercero.
+`last_used_at` es el último ingreso sin código (`null` si nunca se usó). `is_current` es `true` para el de la cookie de esta
+petición.
+
+### DELETE /v1/auth/devices/{id} — Olvidar un dispositivo
+
+| | |
+|---|---|
+| **Quién** | Con sesión, cualquier rol salvo `admin_monkey` (`403`) |
+| **Éxito** | `204`. Rastro `auth.device_revoked` (`{ device_id, scope: "one" }`) en la misma transacción. Si es el de esta petición, también limpia la cookie |
+| **Errores** | `404 DEVICE_NOT_FOUND` (no existe, ya no está vigente o es de otra persona; no se dice cuál) |
+
+### DELETE /v1/auth/devices — Olvidar todos mis dispositivos
+
+| | |
+|---|---|
+| **Quién** | Con sesión, cualquier rol salvo `admin_monkey` (`403`) |
+| **Éxito** | `204`, idempotente; limpia la cookie. Rastro `auth.device_revoked` (`{ scope: "all", count }`) solo si olvidó al menos uno |
 
 ---
 
@@ -316,6 +402,8 @@ Una cuenta `pending` no tiene contraseña que recuperar: se activa con su códig
 | 401 | `MFA_CODE_INVALID` | El código (o el de recuperación) es incorrecto o ya se usó. Cuenta como intento fallido |
 | 409 | `MFA_SETUP_NOT_STARTED` | Se confirmó la configuración sin haber pedido el QR (`mfa/setup`) |
 | 409 | `MFA_NOT_ENABLED` | Se pidió regenerar códigos o restablecer a alguien que no tiene el segundo factor |
+| 422 | `REMEMBER_DEVICE_NOT_ALLOWED` | Un `admin_monkey` mandó `remember_device: true` (D123). No gasta el código ni cuenta como intento |
+| 404 | `DEVICE_NOT_FOUND` | Olvidar un dispositivo que no existe, ya no está vigente o es de otra persona |
 | 403 | `CURRENT_PASSWORD_INVALID` | La contraseña actual del cambio voluntario es incorrecta. Suma al bloqueo de la cuenta |
 | 422 | `PASSWORD_REUSED` | La contraseña nueva es la actual o una de las 5 anteriores |
 | 429 | `PASSWORD_CHANGE_LIMIT` | Más de 3 cambios en 24 h |
@@ -323,7 +411,7 @@ Una cuenta `pending` no tiene contraseña que recuperar: se activa con su códig
 | 429 | `RATE_LIMITED` | Más de 100 peticiones por minuto por usuario o de 1000 por empresa (SEG-19); incluye `retry_after_seconds` y la cabecera `Retry-After`. Solo en rutas con sesión |
 | 429 | `ACCESS_KEY_RATE_LIMITED` | 10 intentos fallidos con la clave en 15 min desde una misma dirección (`redeem` y `redeem/lookup`; D51, DT-37) |
 
-**Claves i18n:** `auth.account_created`, `auth.logged_in`, `auth.logged_out`, `auth.invalid_credentials`, `auth.session_expired`, `auth.account_locked`, `auth.account_inactive`, `auth.mfa_required`, `auth.mfa_setup_required`, `auth.mfa_setup_started`, `auth.mfa_enabled`, `auth.mfa_recovery_regenerated`, `auth.password_changed`, `auth.password_reset_requested`, `auth.current_password_invalid`, `auth.password_reused`, `auth.password_change_limit`, `auth.password_reset_invalid`, `access_key.invalid`, `access_key.already_used`, `access_key.expired`, `auth.access_key_found`, `auth.access_key_rate_limited`, `user.email_taken`, `validation.failed`.
+**Claves i18n:** `auth.account_created`, `auth.logged_in`, `auth.logged_out`, `auth.invalid_credentials`, `auth.session_expired`, `auth.account_locked`, `auth.account_inactive`, `auth.mfa_required`, `auth.mfa_setup_required`, `auth.mfa_setup_started`, `auth.mfa_enabled`, `auth.mfa_recovery_regenerated`, `auth.remember_device_not_allowed`, `auth.device_not_found`, `auth.devices_listed`, `auth.device_revoked`, `auth.devices_revoked`, `auth.password_changed`, `auth.password_reset_requested`, `auth.current_password_invalid`, `auth.password_reused`, `auth.password_change_limit`, `auth.password_reset_invalid`, `access_key.invalid`, `access_key.already_used`, `access_key.expired`, `auth.access_key_found`, `auth.access_key_rate_limited`, `user.email_taken`, `validation.failed`.
 
 ## Notas
 
@@ -343,7 +431,7 @@ De `datos/pendientes/empresas.md` P2; **las más urgentes son (a) y (c)**.
 
 ---
 
-## Estado de implementación (2026-09-30)
+## Estado de implementación (2026-11-18)
 
 Implementado en `Backend/src/features/auth` (feature de referencia del backend), consumido por `Frontend` (Monkey Admin) y `Frontend-Platform`.
 
@@ -356,6 +444,7 @@ Implementado en `Backend/src/features/auth` (feature de referencia del backend),
 | `POST /v1/auth/logout` | ✅ `204`, idempotente |
 | `POST /v1/auth/activate/lookup` · `POST /v1/auth/activate` | ✅ (D95, D96) Código de activación de un solo uso para las cuentas que crea el administrador de la empresa; mismo freno de intentos que las claves de acceso. **El alta y el envío del código por correo están construidos (MD-188, MD-190)**: ver `gestion-usuarios.md` |
 | `GET /v1/auth/me` | ✅ `user` + `company` + `onboarding` (solo para `admin_empresa`; `login` y `redeem` lo traen igual). Desde D89 Platform solo mira si `organizational_context` está completo: declarar servicios y conectar activos ya no son pasos del onboarding, aunque la API los siga listando. `next_step` es el primer paso sin hacer y `null` si ya terminó los tres; `completed_steps` lista los hechos. **Hoy solo se deriva el Componente 1** (existe su fila en `organizations`): al completarlo, `next_step` pasa a `service_context`. Los pasos `service_context` y `technical_control` se suman a `completed_steps` cuando esos componentes existan (MD-78, MD-85) |
+| `GET /v1/auth/devices` · `DELETE /v1/auth/devices/{id}` · `DELETE /v1/auth/devices` | ✅ (D123, MD-217) Dispositivos recordados de la persona; `admin_monkey` 403 |
 
 Decisiones de implementación, dentro de lo que el contrato ya decía:
 
@@ -364,5 +453,6 @@ Decisiones de implementación, dentro de lo que el contrato ya decía:
 - **Refresh tokens y claves de acceso** se guardan como HMAC-SHA256 con `TOKEN_HASH_PEPPER`.
 - **Canje (D43):** solo con el `admin_email` de la empresa; la clave se acepta tal como el cliente la escriba (sin guiones, en minúsculas); marcarla como usada y crear el usuario es una sola transacción condicional. Vencida → `409 ACCESS_KEY_EXPIRED`; revocada, inexistente o de empresa suspendida → `404 ACCESS_KEY_INVALID`.
 - **Qué app acepta a quién:** Monkey Admin solo admite `admin_monkey`; Monkey Platform rechaza a `admin_monkey`. Es un control de las apps (D24), no del endpoint: el login es el mismo.
-- **Pendiente:** el `429 RATE_LIMITED` general (solo existe el freno de intentos de la clave de acceso, `ACCESS_KEY_RATE_LIMITED`) y MFA (MD-94).
+- **Segundo factor (D94):** construido. **Dispositivos recordados (D123, MD-217, 2026-11-18):** construidos en el Backend (`trusted_devices`, cookie `mnk_device`, `/v1/auth/devices`, olvido en logout y en cada cambio de credenciales) y en Platform (casilla en las tres pantallas del código y Ajustes → Seguridad → Dispositivos recordados). Admin no muestra la casilla.
+- **Pendiente:** el límite de peticiones compartido entre instancias y el tope por dirección en rutas públicas (D124, MD-218).
 - **En local**, las dos apps comparten las cookies de `localhost` (los puertos no las separan): una sesión en Admin (puerto 4201) y otra en Platform (4200) en el mismo navegador se pisan. En dominios propios no pasa.

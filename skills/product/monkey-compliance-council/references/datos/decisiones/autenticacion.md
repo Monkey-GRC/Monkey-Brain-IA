@@ -98,9 +98,14 @@ Recordar el dispositivo resuelve esa fricción sin bajar la seguridad y con much
 4. **Ligado a la persona y al navegador:** cookie `httpOnly` (`Secure` en producción); en la base solo su HMAC con
    *pepper* (como el refresh, SEG-17). Otra cuenta en el mismo navegador ve su propio código.
 5. **Deja de valer** al vencer; al cambiar o recuperar la contraseña; al restablecer o reconfigurar la MFA; al regenerar
-   los códigos de recuperación; al desactivar o suspender la cuenta; o cuando la persona lo revoca. La revocación va en la
-   misma transacción que el cambio que la provoca.
-6. **La persona ve y revoca sus dispositivos** en Ajustes → Seguridad (uno o todos).
+   los códigos de recuperación; al desactivar o suspender la cuenta; cuando la persona lo revoca; o **al cerrar sesión**.
+   La revocación va en la misma transacción que el cambio que la provoca.
+   **Cerrar sesión lo olvida** (Hector Rios, 2026-11-18): quien pulsa «Cerrar sesión» espera que en ese navegador no quede
+   rastro de su identidad; mantener el dispositivo sería una brecha. El siguiente ingreso vuelve a pedir el código y a
+   ofrecer la casilla. Solo lo conserva no cerrar sesión (cerrar la pestaña o dejar vencer la sesión).
+6. **La persona ve y revoca sus dispositivos** en Ajustes → Seguridad (uno o todos), con navegador, sistema, IP, país y
+   ciudad del último ingreso. La ubicación sale de una base GeoIP local en el Backend (la IP no va a ningún tercero;
+   Hector Rios, 2026-11-18).
 7. **`admin_monkey` no puede recordar un dispositivo:** entra a todas las empresas y para él el código en cada ingreso
    está justificado. La API lo rechaza; la app Admin (que solo admite `admin_monkey`) no muestra la casilla.
 8. **Auditoría:** `auth.device_trusted`, `auth.device_revoked` y el ingreso marcado como «sin código, dispositivo recordado».

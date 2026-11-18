@@ -16,6 +16,7 @@ ruta están en `contracts/autenticacion.md`; aquí solo el movimiento de la info
 | Clave de acceso | `admin_monkey` al registrar | Correo del administrador | HMAC en `access_keys` | Vence; uso único |
 | Código de activación | `admin_empresa` al invitar | Respuesta de la API, una vez | HMAC en `user_activation_codes` | 7 días; uso único |
 | Token de recuperación | API | Correo | HMAC en `password_reset_tokens` | Corto; uso único |
+| Dispositivo recordado (D123) | API al verificar el código con la casilla | Cookie `httpOnly` `mnk_device` (ruta `/v1/auth`) | HMAC en `trusted_devices` | 30 días sin renovarse; se olvida al cerrar sesión o cambiar credenciales |
 
 ## 1 · Entrar (con y sin segundo factor)
 
@@ -33,11 +34,15 @@ sequenceDiagram
         UC-->>FE: INVALID_CREDENTIALS (no dice cuál falló)
     else correcta
         UC->>UC: ¿cuenta activa? ¿tiene MFA o es obligatoria?
-        opt MFA
+        UC->>DB: ¿mnk_device es un dispositivo vigente de esta persona? (no admin_monkey, D123)
+        opt MFA y sin dispositivo recordado
             UC->>DB: mfa_challenges (verify o setup)
             UC-->>FE: desafío; el cliente pide el código TOTP
             FE->>UC: mfa/verify (código)
             UC->>DB: valida y consume el desafío
+            opt casilla «Recordar este dispositivo»
+                UC->>DB: trusted_devices + auth.device_trusted (misma transacción que la sesión)
+            end
         end
         UC->>DB: sesión + auth.login en audit_logs (una sola transacción)
         UC-->>FE: cookies access y refresh
@@ -45,7 +50,8 @@ sequenceDiagram
 ```
 
 Los intentos **fallidos** se auditan aparte (`auth.login_failed`, sin tenant, porque el correo puede no existir);
-el acceso correcto se audita con la sesión, en la misma transacción (D52, SEG-36).
+el acceso correcto se audita con la sesión, en la misma transacción (D52, SEG-36). Con un dispositivo recordado, el rastro
+`auth.login` lleva `mfa: "trusted_device"` y el dispositivo anota su último uso y ubicación en esa misma transacción (D123, SEG-84).
 
 ## 2 · Cada petición autenticada
 

@@ -236,7 +236,8 @@ def frontend(repo: Path, files: list[str]) -> tuple[list[str], list[str]]:
     cmds: list[str] = []
     lint = [f for f in src if f.endswith(('.ts', '.html'))]
     if lint:
-        cmds.append('npx ng lint --lint-file-patterns ' + ' '.join(shlex.quote(f) for f in lint))
+        # `ng lint --lint-file-patterns` no existe en el builder de esta versión del CLI (MD-217): eslint directo sobre lo cambiado.
+        cmds.append('npx eslint ' + ' '.join(shlex.quote(f) for f in lint))
     if specs:
         rel = sorted(str(s.relative_to(repo)) for s in specs)
         cmds.append('npx ng test --watch=false --browsers=ChromeHeadless ' + ' '.join(f'--include={shlex.quote(r)}' for r in rel))
