@@ -16,6 +16,9 @@ Los archivos cambian: no decidas de memoria ni repitas el resumen de una convers
   el flujo completo ni releer las skills; igual se verifica.
 - **Se prueba solo lo que se toca** (MD-216): `skills/process/monkey-dev-flow/scripts/affected-tests.py` da las unitarias y la
   integración de lo cambiado. La suite completa la corre el CI del PR; nadie la corre ni la repite en local.
+- **Ciclo del ticket automatizado** (`monkey-dev-flow` §0): `start-ticket.sh` (ramas), `ticket-clock.sh` (métricas por fase) y
+  `ticket-commands.py` (los `git add`/`git commit` desde `git status`). Ante la UI, **parar y pedir indicaciones a Rod**; en un
+  cambio visual, capturas y su aprobación antes de los commits. Lo determinista lo imponen los hooks.
 - **Claude no hace commits, pushes ni PRs** (bloqueado en `permissions.deny` y por hook). Deja los cambios sin commitear y di qué repos tienen cambios.
 
 ## Precedencia (si dos fuentes se contradicen)

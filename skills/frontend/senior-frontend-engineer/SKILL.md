@@ -86,6 +86,7 @@ Recetas: feature nueva → `../add-feature.md` · llamar al backend → `../call
 - [ ] Textos en `es` y `en`; ninguna lista de opciones hardcodeada; alias en los imports.
 - [ ] Revisado con `../architecture-guardian.md`; la ruta, su guard y su título correctos.
 - [ ] Estados de carga, vacío y error; sin permiso; móvil.
+- [ ] Si se ve en pantalla: capturas reales según `../visual-verification.md` (los agentes no ven el navegador).
 - [ ] Nada de lo que ve el cliente nombra a Wazuh ni a Prowler.
 - [ ] Si tocaste estilos compartidos: `check-design-system.sh` sin archivos distintos del canónico entre las dos apps.
 - [ ] Contrato, `enums.md` y docs afectados al día en el mismo cambio.

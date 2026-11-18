@@ -425,14 +425,14 @@ Un grupo tiene un nombre y un líder; cada persona (salvo `admin_empresa` y `aud
 | `items[].user` | `{ id, name, last_name, role }` | |
 | `items[].owned_count` | integer | Controles de los que es dueño |
 | `items[].executed_count` | integer | Controles que ejecuta |
-| `items[].progress` | `{ state, percent, coverage }` | Mismo objeto de avance de Cumplimiento (`cumplimiento/resumen.md`): estado, porcentaje y cobertura juntos |
+| `items[].progress` | `{ readiness, progress: { done, total }, coverage: { measured, applicable } }` | El avance de **sus** controles (los que posee y los que ejecuta), con el mismo objeto y las mismas reglas que el marco en `cumplimiento/resumen.md` (D122): semáforo, controles hechos sobre el total y cobertura, juntos. El porcentaje no viaja: lo deriva la pantalla |
 | `unassigned_count` | integer | Controles «Sin asignar» de toda la empresa |
 
 ```json
-{ "items": [ { "user": { "id": "7d2e…", "name": "María", "last_name": "Gómez", "role": "responsable" }, "owned_count": 50, "executed_count": 12, "progress": { "state": "pending", "percent": 40, "coverage": 92 } } ], "unassigned_count": 8 }
+{ "items": [ { "user": { "id": "7d2e…", "name": "María", "last_name": "Gómez", "role": "responsable" }, "owned_count": 50, "executed_count": 12, "progress": { "readiness": "needs_work", "progress": { "done": 20, "total": 50 }, "coverage": { "measured": 46, "applicable": 50 } } } ], "unassigned_count": 8 }
 ```
 
-> **Sin tope** de controles por persona.
+> **Sin tope** de controles por persona. **Quién sale:** cada `responsable` y `delegado` activo de la empresa (con cero si no tiene controles) y cada `admin_empresa` que sea dueño de algún control. Orden: por rol (`responsable`, `delegado`, `admin_empresa`) y por nombre. Sin paginación.
 
 ### GET /v1/me/work — «Mi trabajo»
 
@@ -459,12 +459,34 @@ Un grupo tiene un nombre y un líder; cada persona (salvo `admin_empresa` y `aud
 | `items[].bucket` | enum `work_bucket` | |
 | `items[].pending_items` | integer | Lo que falta; incluye las observaciones abiertas del auditor |
 | `items[].state` | enum `control_state` | |
-| `progress` | `{ state, percent, coverage }` | Avance de **sus** controles |
+| `progress` | `{ readiness, progress: { done, total }, coverage: { measured, applicable } }` | Avance de **sus** controles, como en el resumen (D122). Con `service_id`, solo los de ese servicio |
 
 ```json
-{ "items": [ { "client_control_id": "e1…", "code": "CC6.1", "title": "…", "service": { "id": "…", "name": "Servicio IA" }, "role_in_control": "executor", "bucket": "to_upload", "pending_items": 2, "state": "pending" } ],
-  "progress": { "state": "pending", "percent": 40, "coverage": 92 } }
+{ "items": [ { "client_control_id": "e1…", "code": "CC6.1", "title": "…", "service": { "id": "…", "name": "Servicio IA" }, "role_in_control": "executor", "bucket": "to_upload", "pending_items": 2, "state": "incomplete" } ],
+  "progress": { "readiness": "needs_work", "progress": { "done": 12, "total": 30 }, "coverage": { "measured": 26, "applicable": 30 } } }
 ```
+
+#### En qué bucket cae cada control (D122)
+
+Un control cae en **un solo** `bucket`, el primero que le aplique visto desde quien pregunta:
+
+1. **`rejected`**: alguna evidencia o veredicto del control que subió o registró la persona (o su delegado, si es el dueño) tiene su última versión rechazada y hay que rehacerla.
+2. **`to_review`** (solo el `responsable` dueño): algo que subió o registró otra persona espera **su** revisión.
+3. **`to_upload`**: a una prueba documental le falta evidencia, o a una prueba manual no documental le falta el veredicto.
+4. **`in_review`**: todo está entregado y espera la revisión de otra persona.
+5. **`done`**: nada pendiente de su parte.
+
+`pending_items` suma lo que falta subir, lo rechazado, lo que tiene que revisar y las **observaciones abiertas del auditor** sobre el control. Las fallas de las pruebas automáticas no son un bucket: se ven en `state` (el estado del control).
+
+Precisiones de la construcción (MD-195):
+- **Qué se cuenta:** cada evidencia requerida de cada prueba documental, también la de una prueba que aún no tiene ninguna entrega, y cada prueba manual no documental con el último veredicto del servicio (D121).
+- **Evidencia vencida** (`expired`) cuenta como `rejected` para quien la subió: hay que rehacerla.
+- **Lo de su delegado** cuenta como propio solo para el dueño, a efectos de `rejected`. Un veredicto registrado desde otro control no genera `to_review` en este: lo revisa el dueño del control de origen.
+- **`bucket=to_review` pedido por un `delegado`** devuelve la lista vacía, no `422`.
+- **Orden de la lista:** por bucket (en el orden de arriba), luego servicio y código.
+- **`progress` de una persona** junta controles de varios servicios y marcos, así que no aplica la regla «marco sin período → `not_measured`» del resumen. Usa los mismos cortes de semáforo, hechos y cobertura sobre los estados que ya calculó el motor.
+- **`unassigned_count`** cuenta los controles vigentes sin dueño activo.
+- **Consultas:** `me/work` y `team/workload` hacen un número fijo (≤ 4), sin importar cuántas personas o controles haya.
 
 ---
 
@@ -536,14 +558,13 @@ Cada `control_assignment.set` lleva `resource = 'control_assignment'` y, dentro 
 | Asignación de dueño y ejecutor (MD-192, 2026-11-12) | `GET /v1/assignments` (en `compliance`: reutiliza el cálculo de estado por servicio y `canSeeControl`; número fijo de consultas por servicio) y `PUT /v1/assignments/owner` y `/executor` (en `team`). «Sin asignar» es **no tener fila** en `client_control_assignments`: `owner_id: null` la borra. Las escrituras van en lote (como mucho 4 sentencias). Orden de errores: persona `404`, control `404`, (ejecutor) control ajeno `403`, `CONTROL_RETIRED`, `OWNER_NOT_ELIGIBLE` o `EXECUTOR_NOT_IN_TEAM`; un `admin_monkey` como dueño es `404` (RLS lo oculta). Bloqueos: actor y dueño o ejecutor en `KEY SHARE` por id (paso 1), relectura de estado, grupo y líder, luego las filas de los controles `FOR NO KEY UPDATE` por id (paso 4b: dos asignaciones al mismo control se turnan y la baja de un control no se cuela) y las asignaciones por id. El clonado no crea asignaciones. Pruebas: `test/equipo/asignacion.e2e-spec.ts` |
 | Visibilidad por dueño y ejecutor (MD-193, 2026-11-17) | El `responsable` y el `delegado` ven y tocan solo sus controles (dueño o ejecutor activo) en controles, pruebas, evidencia, riesgos y causas, observaciones, hallazgos y servicios, y reciben el resumen de lo suyo (D118). Sin controles, listas vacías; lo ajeno de la empresa es `403`, lo de otra empresa `404`; `view=technical` es `403`. El `delegado` entra en lectura al resumen, los riesgos, los servicios y los hallazgos. La regla vive en `compliance/domain/controls/control-access.ts` (`services` y `technical-control` la repiten en su repositorio). `DT-87` cerrada; SEG-22, SEG-66, SEG-70 y SEG-76 cumplidos. Pruebas: la matriz rol × recurso de `test/equipo/equipo.e2e-spec.ts` y los e2e de cada recurso |
 | Revisión en dos niveles (MD-194, 2026-11-17) | Evidencia: la revisan el `responsable` dueño (lo que no subió él) y el `admin_empresa`, una revisión por rol, y el estado combina las dos (un rechazo gana). Veredicto manual no documental (D121): se registra (ejecutor, dueño o admin; el del admin nace aprobado) y se revisa igual (`PUT /v1/verdicts/{id}/review`), en `test_verdicts` y `test_verdict_reviews`, inmutables (SEG-83). SEG-67 cumplido. Pruebas: `test/cumplimiento/revision-evidencia.e2e-spec.ts` y `veredictos.e2e-spec.ts` |
+| «Mi trabajo» y carga de trabajo (MD-195, 2026-11-17) | `GET /v1/me/work` (responsable y delegado) y `GET /v1/team/workload` (admin_empresa), en `compliance/*/work/`; reutilizan el estado por servicio de `GET /v1/assignments`, el módulo de alcance y el avance del resumen (D122, `summarizeControls`). Pruebas: `test/equipo/trabajo.e2e-spec.ts` |
 | Grupos (MD-189) | `GET`/`POST`/`PATCH /v1/groups`: el responsable crea su equipo y el administrador el de un responsable o un grupo de responsables; `user_groups.kind` (`group_kind`) con un índice único parcial por líder (un equipo por responsable); «Responsables» reservado (`GROUP_RESERVED`, `GROUP_NAME_TAKEN`); mover un delegado con `PATCH /v1/users/{id}` (`group_id`, `confirm_unassign`, `USER_HAS_ASSIGNMENTS`) |
 | Invitación por correo (MD-190) | El alta y el reenvío envían el código por correo (después del commit); ninguna respuesta lo trae; el reenvío responde `200` con `invitation`; el correo no nombra al proveedor de la sonda ni de la nube. SEG-75 cumplido; ver `DT-90` |
 | Alta y lista del equipo (MD-188) | `POST`/`GET /v1/users` con `group_id`, `is_internal`, `group` y `responsible`; el responsable queda en «Responsables» y crea delegados de su equipo (`RESPONSIBLE_HAS_NO_TEAM` si no lo tiene); el alta no devuelve el código (`invitation`); migración que mete a los responsables existentes en «Responsables»; `group` y `responsible` en `/auth/me` |
 | Cupo de usuarios (MD-187) | `USER_LIMIT_REACHED` (`409`, con `error.max_users` y `error.users_count`) en el alta, en la reactivación `inactive`→`active` y en el canje de la clave; desactivar libera el cupo. Ver `empresas.md` y SEG-72 |
 
-| Sigue por construir | Ticket |
-|---|---|
-| Carga de trabajo y «Mi trabajo» | MD-195 |
+**La API del sprint 3 está completa** (MD-186 a MD-195). Lo que sigue son las pantallas (MD-197 y MD-199 a MD-204, ver `context/frontend.md`).
 
 Lo que **sigue vigente**:
 

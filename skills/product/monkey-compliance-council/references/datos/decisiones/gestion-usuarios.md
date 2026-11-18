@@ -111,3 +111,18 @@ Por qué Gestión de usuarios es como es. **Se consulta para reabrir, no para co
 **Fuente:** Héctor Ríos (Rod), 2026-11-13: «la creación de un admin va a ser mediante invitación de correo»; «todos van a poder borrar a otro admin»; «no se puede desactivar a sí mismo y el último admin en pie tampoco»; «el desactivar admin lo ponemos a 7 días, luego de eso se borra por completo su registro»; «si en un log de auditoría aparece el nombre, id de un admin que ya no está, que siga saliendo»; «claro que se puede reactivar»; «pon esa info en la auditoría (id, nombre completo y rol)»; «la empresa interna de Monkey no tiene límite de usuarios»; «al reactivar un usuario no hace falta poner TOTP».
 
 ---
+
+---
+
+## D122 · «Mi trabajo» y la carga de trabajo usan el avance del resumen, y cada control cae en un solo bucket con un orden fijo (2026-11-17; Héctor Ríos)
+
+**Decisión.**
+1. **Avance:** `GET /v1/me/work` y `GET /v1/team/workload` devuelven el mismo objeto que el marco en el resumen de Cumplimiento: `{ readiness, progress: { done, total }, coverage: { measured, applicable } }`, calculado con el motor sobre los controles de la persona. El porcentaje no viaja: lo deriva la pantalla. Esto reemplaza el `{ state, percent, coverage }` que decía el contrato, que contradecía al del resumen.
+2. **Bucket:** un control cae en el primero que le aplique, en este orden: `rejected` (hay que rehacer) → `to_review` (solo el responsable dueño, algo de otro espera su revisión) → `to_upload` (falta evidencia o veredicto) → `in_review` (entregado, espera a otro) → `done`. `pending_items` suma lo que falta subir, lo rechazado, lo que tiene que revisar y las observaciones abiertas del auditor. Las fallas automáticas se ven en el estado del control.
+3. **Carga de trabajo:** sale cada `responsable` y `delegado` activo (con cero si no tiene controles) y cada `admin_empresa` dueño de algún control, sin tope ni paginación.
+
+**Por qué.** Un solo objeto de avance en todo Cumplimiento (regla de producto: estado, avance y cobertura juntos). El orden de los buckets pone primero lo que bloquea y es de la persona.
+
+**Qué cambia.** `contracts/gestion-usuarios.md` (`GET /v1/me/work` y `GET /v1/team/workload`), `contracts/enums/gestion-usuarios.md` (`work_bucket`) y el Backend en MD-195.
+
+**Fuente:** Héctor Ríos (Rod), 2026-11-17, al planificar MD-195. Eligió «el del resumen» y «ese orden».

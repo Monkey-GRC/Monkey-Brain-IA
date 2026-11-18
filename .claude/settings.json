@@ -52,7 +52,12 @@
       "Edit(//**/*credentials*.json)",
       "Edit(//**/conexion_api_*)",
       "Edit(//**/*.pem)",
-      "Edit(//**/id_rsa*)"
+      "Edit(//**/id_rsa*)",
+      "EnterWorktree",
+      "Bash(git worktree add *)",
+      "Bash(npx prisma migrate dev*)",
+      "Bash(npx prisma migrate reset*)",
+      "mcp__atlassian__addOrEditJiraIssueComment"
     ]
   },
   "hooks": {
