@@ -1,6 +1,12 @@
 {
   "_doc": "MD-216 · Qué suites e2e del Backend son dueñas de cada feature. affected-tests.py suma además las suites que llaman a las rutas de la feature cambiada (detección automática). Lo mantiene monkey-closeout: una feature o carpeta de test nueva entra aquí en el mismo cambio.",
   "backend": {
+    "_always_unit": "Tests unitarios globales: arman la app entera o recorren todo el catálogo, así que jest --findRelatedTests no los elige. Corren con CUALQUIER cambio en src/. api-docs.spec.ts cuenta las rutas de la API y exige descripción en cada propiedad de Swagger (el CI de MD-195 cayó por él).",
+    "always_unit": [
+      "src/common/swagger/api-docs.spec.ts",
+      "src/common/catalogs/compliance-catalogs.spec.ts",
+      "src/common/catalogs/integration-catalogs.spec.ts"
+    ],
     "features": {
       "admin-users": ["test/administradores"],
       "auth": ["test/autenticacion"],

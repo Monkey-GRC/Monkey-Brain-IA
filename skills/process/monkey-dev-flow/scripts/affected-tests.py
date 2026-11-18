@@ -171,7 +171,12 @@ def backend(repo: Path, files: list[str]) -> tuple[list[str], list[str]]:
 
     cmds: list[str] = []
     if unit_inputs:
-        cmds.append('npx jest --findRelatedTests ' + ' '.join(shlex.quote(f) for f in unit_inputs) + ' --passWithNoTests')
+        # TODAS las unitarias del Backend (~6 s): así no se escapa ningún test global que arme la app o recorra el catálogo,
+        # que --findRelatedTests no elige (`always_unit` de test-map.json; el CI de MD-195 cayó por api-docs.spec.ts).
+        cmds.append('npx jest')
+        api = [f for f in unit_inputs if f.endswith(('.controller.ts', '.responses.ts', '.dto.ts', '.query.ts'))]
+        if api:
+            notes.append('cambió la API pública: `src/common/swagger/api-docs.spec.ts` exige actualizar el conteo de rutas y una `description` en cada propiedad de Swagger')
     if e2e:
         cmds.append('npm run -s test:db -- up && TEST_DATABASE_URL=${TEST_DATABASE_URL:-postgresql://postgres:test@localhost:55432/monkey_template} npm run test:e2e -- ' + ' '.join(shlex.quote(f) for f in sorted(e2e)))
         if len(e2e) > E2E_WARN:
