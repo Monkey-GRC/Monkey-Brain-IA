@@ -81,6 +81,10 @@ sonda (Wazuh) → `../add-wazuh-integration.md` · motor de nube (Prowler) → `
 
 - [ ] Pruebas de **lo que tocaste** en verde: lo que imprime `skills/process/monkey-dev-flow/scripts/affected-tests.py --repo backend` (tipos, lint, unitarias relacionadas y e2e de las features afectadas). La suite completa la corre el CI del PR, no tú (MD-216).
 - [ ] Contrato, `enums.md`, i18n (`es` y `en`) y Swagger al día con el código.
+- [ ] **Endpoint nuevo o respuesta cambiada → Swagger completo.** `src/common/swagger/api-docs.spec.ts` cuenta las rutas
+  públicas (actualiza el número esperado, con un comentario del ticket) y exige `description` en cada propiedad de cada
+  `@ApiProperty`/`@ApiPropertyOptional` (respuestas, DTOs y queries). Lo corre `npx jest`, que va siempre completo (~6 s). El CI
+  de MD-195 cayó por esto.
 - [ ] Revisado con `../architecture-guardian.md`; sin carpetas con más de ~9 archivos sueltos.
 - [ ] `SEG-n`, `DT-n`, `P-n` y `D-n` afectados actualizados en el mismo cambio.
 - [ ] Nada de lo que ve el cliente nombra a Wazuh ni a Prowler.

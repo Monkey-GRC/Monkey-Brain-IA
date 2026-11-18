@@ -204,16 +204,16 @@ erDiagram
 | Contraseña — longitud | 12+ caracteres | NIST SP 800-63 |
 | Contraseña — complejidad | mayúscula + minúscula + número + símbolo | Encarece la fuerza bruta |
 | Contraseña — expiración | No vence (D101). Cambio voluntario con contraseña actual + segundo factor; recuperación por correo + segundo factor | Fatiga de contraseñas (NIST SP 800-63B) |
-| MFA | TOTP obligatoria para **todos los roles** (D66, D96, D102: se mantiene hasta que existan otras formas de ingreso) | Protege el acceso crítico |
+| MFA | TOTP obligatoria para **todos los roles** (D66, D96, D102: se mantiene hasta que existan otras formas de ingreso). La persona puede **recordar un dispositivo 30 días**: ahí solo pide la contraseña; `admin_monkey` no (D123) | Protege el acceso crítico |
 | Cifrado en reposo | AES-256 (bcrypt+salt para contraseñas, secreto MFA cifrado) | Requisito NIST |
 | Cifrado en tránsito | TLS 1.3 + HSTS | Requisito PCI DSS |
 | Rotación de API keys | 90 días | Acota el daño de una key comprometida |
-| Rate limiting | 100/min por usuario, 1000/min por empresa | Previene abuso y DoS |
+| Rate limiting | 100/min por usuario, 1000/min por empresa, más un tope por dirección en las rutas públicas; contadores compartidos en Redis (D124) | Previene abuso y DoS |
 | Retención del audit trail | 7 años, inmutable, append-only (salvo una empresa dada de baja, D97) | SOC 2 Type II |
 | IP whitelist | opcional, configurable | Control adicional de acceso |
 | Bloqueo de cuenta | 5 intentos fallidos, 15 min | Previene fuerza bruta |
 
-> **MFA es un requisito de seguridad sin excepciones.** Es TOTP con 10 códigos de recuperación y se exige en el ingreso de todos los roles (D94, D102); `MFA_REQUIRED=false` solo se admite fuera de producción.
+> **MFA es un requisito de seguridad sin excepciones.** Es TOTP con 10 códigos de recuperación y se exige en el ingreso de todos los roles (D94, D102); `MFA_REQUIRED=false` solo se admite fuera de producción. Un dispositivo recordado (D123, SEG-84) no la quita: es un segundo factor ya verificado en ese navegador, vence a los 30 días y se revoca al cambiar la contraseña o la MFA.
 
 La autorización se verifica **en cada request** (*"no confiar en el frontend"*), con caché de 5 min.
 

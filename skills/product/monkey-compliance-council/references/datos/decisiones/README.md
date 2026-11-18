@@ -202,3 +202,5 @@ quedan aquí:
 | D120 | En local se prueba solo lo que se toca (unitarias e integración de lo afectado); la suite completa es del CI; e2e con base plantilla y en paralelo | [entrega](entrega.md) |
 | D121 | El veredicto manual se registra y se revisa en dos niveles, como la evidencia; el `admin_empresa` cuenta su propia aprobación *(concreta D102)* | [cumplimiento/veredictos](cumplimiento/veredictos.md) |
 | D122 | «Mi trabajo» y la carga de trabajo usan el avance del resumen; cada control cae en un solo bucket (rechazado → por revisar → por subir → en revisión → listo) | [gestion-usuarios](gestion-usuarios.md) |
+| D123 | «Recordar este dispositivo» 30 días: la contraseña siempre, el código del segundo factor no; excepto `admin_monkey`; el ingreso con Google queda LATER *(enmienda D94 punto 10)* | [autenticacion](autenticacion.md) |
+| D124 | Límite de peticiones compartido en Redis y tope por dirección en rutas públicas; la sesión se valida con una consulta y sin caché; bcrypt acotado por instancia | [autenticacion](autenticacion.md) |

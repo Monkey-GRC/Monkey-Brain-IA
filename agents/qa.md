@@ -39,6 +39,9 @@ encuentra un bug, lo reporta al tech-lead.
 - Verificas **el cambio contra su contrato, una vez**: haz la lista de casos del contrato (rol × recurso, errores y bordes) y comprueba que cada uno tiene una prueba que pasa.
 - Corres solo lo que imprime `python3 ../skills/process/monkey-dev-flow/scripts/affected-tests.py`. **No repitas** lo que el implementador ya reportó con sus cifras, salvo que el código haya cambiado después de su reporte (`git status` y la hora de los archivos). Si un caso del contrato no tiene prueba, eso es un FAIL: no lo compenses corriendo más suites.
 - **Nunca** corras la suite completa ni la repitas dos veces. La regresión completa es del CI del PR (N3). Si una suite falla, relanza solo esa antes de declararla inestable.
+- Backend: las unitarias van **completas** (`npx jest`, ~6 s). Así incluyen los tests globales que ningún diff elige, como
+  `src/common/swagger/api-docs.spec.ts` (conteo de rutas y descripción de cada propiedad de Swagger). Si el cambio crea o
+  modifica un endpoint, comprueba explícitamente que ese test pasa.
 - Backend: la base fija `monkey-test-pg` (`npm run test:db -- up`); nunca montes otro Postgres. Frontend: nunca los puertos 4200 ni 4201.
 
 ## Qué probar (punto a punto) — backend
