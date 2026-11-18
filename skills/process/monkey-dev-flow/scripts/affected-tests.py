@@ -114,7 +114,7 @@ def backend_importers(repo: Path, changed: list[str]) -> set[str]:
     targets = {str((repo / f).with_suffix('').resolve()): f for f in changed}
     found: set[str] = set()
     for ts in (repo / 'src').rglob('*.ts'):
-        if ts.name.endswith('.spec.ts'):
+        if ts.name.endswith(('.spec.ts', '.module.ts')):  # un módulo Nest solo cablea: no es integración
             continue
         rel = str(ts.relative_to(repo))
         for a, b in IMPORT.findall(ts.read_text()):
@@ -142,7 +142,8 @@ def backend(repo: Path, files: list[str]) -> tuple[list[str], list[str]]:
     # Integración sin HTTP: otra feature (o el runner) que importa un archivo cambiado también queda afectada,
     # con el archivo que importa como si hubiera cambiado (un nivel). Así entra, p. ej., technical-control cuando cambia
     # el registrador de estados de compliance que usa por dentro (DT-109).
-    importers = backend_importers(repo, [f for f in files if f.startswith('src/') and f.endswith('.ts') and not f.endswith('.spec.ts')])
+    # Solo desde código de una feature: src/common y src/infrastructure los importa todo, y su efecto lo cubren test-map.json (paths) y las unitarias.
+    importers = backend_importers(repo, [f for f in files if f.startswith('src/features/') and f.endswith('.ts') and not f.endswith('.spec.ts')])
     for imp in sorted(importers - set(files)):
         notes.append(f'`{imp}` importa algo cambiado: se suman sus pruebas')
     files = sorted(set(files) | importers)

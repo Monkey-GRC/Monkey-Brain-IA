@@ -47,3 +47,20 @@ Por qué este componente es como es. Lo vigente está en [`arquitectura/cumplimi
 **Qué cambia.** `modelo/07-cumplimiento.md` (§7.3), `modelo/03-catalogo-maestro.md`, `modelo/09-calculo-cumplimiento.md`, `contracts/cumplimiento/evidencia.md`, `contracts/cumplimiento/veredictos.md`, `P25` (cerrada), `DT-71` (la parte documental) y `DT-76` (nueva). Migración: `evidence_reviews` (que el modelo ya describía y nunca se creó) y `test_id` en `evidence_requirements` y `control_evidence_templates`.
 
 **Fuente:** Carlos Castaño, 2026-10-22 (responsable de producto, con autorización para mover el Backend y la base de datos).
+
+---
+
+## D121 · El veredicto manual se registra y se revisa en dos niveles, como la evidencia (2026-11-17; Héctor Ríos; *concreta D102*)
+
+**Decisión.**
+1. **Registrar:** el ejecutor, el dueño o el `admin_empresa` registran el veredicto de una prueba manual no documental (`POST …/verdicts`). Nace `pending` y no cuenta.
+2. **Revisar:** el dueño, si no lo registró él, y el `admin_empresa` lo aprueban o lo rechazan (`PUT /v1/verdicts/{id}/review`). Hay una revisión por rol y veredicto, y la nota es obligatoria al rechazar.
+3. **Estado combinado:** algún rechazo → `rejected`; al menos una aprobación sin rechazos → `approved` (cuenta); sin revisión → `pending`. Decide el último veredicto registrado del test en el servicio.
+4. **El `admin_empresa`** cuenta su propia aprobación: lo que registra nace aprobado. `P34` sigue abierta y el auditor es el contrapeso.
+5. **Tablas nuevas** `test_verdicts` y `test_verdict_reviews` (modelo §7.4b). Las evaluaciones manuales que ya existían se migran como veredictos aprobados.
+
+**Por qué.** D102 pide el mismo flujo de dos niveles para la evidencia y para el veredicto, pero el contrato del veredicto estaba «por definir». Esto lo define siguiendo el patrón que ya existe para la evidencia.
+
+**Qué cambia.** `contracts/cumplimiento/veredictos.md`, `contracts/enums/cumplimiento.md` (`verdict_state`, `verdict_review_decision`), `datos/modelo/07-cumplimiento.md` §7.4b y el Backend en MD-194.
+
+**Fuente:** Héctor Ríos (Rod), 2026-11-17, al planificar MD-194. Eligió «propuesta + revisión» y que el `admin_empresa` cuente su propia aprobación.

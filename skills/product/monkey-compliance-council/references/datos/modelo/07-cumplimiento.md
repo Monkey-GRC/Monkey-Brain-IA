@@ -418,6 +418,17 @@ sonda. Si lo causa el sistema (la sonda), `user_id`, `ip_address` y `user_agent`
 los controles de gestión de vulnerabilidades y parches (`CC7.1` / `A.8.8`). El módulo con
 vida propia no entra al MVP.
 
+### 7.4b Veredicto en dos niveles (D102, D121)
+
+El veredicto de una prueba manual **no documental** se registra y se revisa como la evidencia.
+
+| Tabla | Columnas | Reglas |
+|---|---|---|
+| `test_verdicts` | `id`, `tenant_id` (RLS), `service_id`, `client_control_id` (control de origen), `test_id`, `result` (`verdict_result`), `note`, `closure_observation_reason`, `registered_by` (FK `users`), `registered_at` | Inmutable: nunca se edita ni se borra. El **último** registrado de un test en un servicio decide el estado del test |
+| `test_verdict_reviews` | `id`, `tenant_id` (RLS), `test_verdict_id`, `reviewer_role` (`reviewer_role`), `decision` (`verdict_review_decision`), `note`, `reviewed_by` (FK `users`), `reviewed_at` | Única por (`test_verdict_id`, `reviewer_role`); un segundo `PUT` del mismo rol la reemplaza. `note` obligatoria al rechazar |
+
+**Estado (`verdict_state`, derivado):** algún rechazo → `rejected`; al menos una aprobación sin rechazos → `approved`; ninguna → `pending`. Solo un veredicto `approved` cuenta en el motor (§9): da su `result` a todos los controles del servicio que llevan el test (D85). Si lo registra el `admin_empresa`, nace con su aprobación (P34). Las evaluaciones manuales que ya existían en `evaluations` se migran como veredictos aprobados por quien las dio (no hay empresas reales, D102).
+
 ### 7.5 La IA y el veredicto
 
 La IA evalúa evidencia, sugiere una conclusión y recomendaciones; **nunca da el veredicto**. El veredicto de un test documental o manual lo da el
