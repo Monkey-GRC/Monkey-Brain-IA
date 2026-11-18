@@ -95,7 +95,7 @@ cada repo contra su rama de integración y devuelve los comandos que prueban **s
 
 | Nivel | Quién | Qué corre |
 |---|---|---|
-| **N1** | `backend-senior` · `frontend-senior`, en cada iteración | Tipos y lint de lo cambiado; unitarias: en el Backend **todas** (`npx jest`, ~6 s, para que no se escapen los tests globales como el de Swagger) y en los frontends las de lo cambiado y sus consumidores directos (`ng test --include`); e2e de las features afectadas y de las suites que llaman a sus rutas |
+| **N1** | `backend-senior` · `frontend-senior`, en cada iteración | Si cambiaron dependencias, el lockfile contra el npm del CI; en el Backend, los pasos baratos del CI (tipos, `lint:ci` y `nest build`); en los frontends, tipos y lint de lo cambiado; unitarias: en el Backend **todas** (`npx jest`, ~6 s, para que no se escapen los tests globales como el de Swagger) y en los frontends las de lo cambiado y sus consumidores directos (`ng test --include`); e2e de las features afectadas y de las suites que llaman a sus rutas |
 | **N2** | `qa`, **una vez** | Los casos del contrato del cambio, cada uno con la prueba que lo cubre. No repite lo que el implementador ya reportó, salvo que el código haya cambiado después |
 | **N3** | **CI del PR** (GitHub Actions) | La regresión completa: unitarias, `*:verify` y e2e completos, en los tres repos |
 

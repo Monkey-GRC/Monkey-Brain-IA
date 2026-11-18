@@ -48,10 +48,11 @@ construir: recibe una tarea concreta del **tech-lead** y la ejecuta.
 
 ## Pruebas: solo lo que tocaste (MD-216)
 
-- Corre **solo** lo que imprime `python3 ../skills/process/monkey-dev-flow/scripts/affected-tests.py --repo backend`: tipos y lint de lo cambiado, las unitarias relacionadas y las suites e2e de las features afectadas y sus vecinas. Lo puedes ejecutar con `--run`, que además mide cada comando.
+- Corre **solo** lo que imprime `python3 ../skills/process/monkey-dev-flow/scripts/affected-tests.py --repo backend`: los mismos pasos baratos del CI (lockfile con el npm del CI si cambiaron dependencias, tipos, lint de todo el repo y `nest build`), todas las unitarias y las suites e2e de las features afectadas y sus vecinas. Lo puedes ejecutar con `--run`, que además mide cada comando.
 - **Nunca** corras la suite completa ni la repitas «para descartar inestables». La regresión completa la corre el CI del PR. Si una suite falla y sospechas que es inestable, relanza **solo esa**.
 - El e2e usa la base fija `monkey-test-pg` (puerto 55432, `npm run test:db -- up`): nunca montes otro Postgres. La plantilla se reconstruye sola si cambian las migraciones, y cada worker trabaja sobre su copia. Por defecto 2 workers (`E2E_WORKERS`), para no quitarle la RAM a Rod: no lo subas en local.
 - Al iterar sobre un fallo, relanza solo la suite o el spec que falló; el conjunto completo de lo afectado, una vez al final.
+- **Dependencias:** se añaden con `npm install <paquete>` desde `Backend` (su `.npmrc` fija `legacy-peer-deps=false`, como el CI). Nunca borres ni regeneres `package-lock.json` a mano. Si `affected-tests.py` marca el lockfile, no sigas hasta que pase (MD-217: el CI cayó en `npm ci`).
 - **Si creas migraciones, aplícalas también a la base de desarrollo de Rod** con `npm run prisma:migrate:deploy` (autorizado; el modo dev y el reset siguen prohibidos) y di en el reporte cuáles se aplicaron, incluidas las ajenas que estuvieran pendientes. Sin eso, Rod prueba contra una base sin la tabla (MD-217: `trusted_devices does not exist`).
 
 ## Formato de reporte al tech-lead (obligatorio, corto)

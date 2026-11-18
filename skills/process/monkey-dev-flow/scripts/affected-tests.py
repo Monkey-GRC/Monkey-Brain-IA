@@ -184,7 +184,9 @@ def backend(repo: Path, files: list[str]) -> tuple[list[str], list[str]]:
     if any(f.startswith('prisma/') for f in files):
         notes.append('cambió prisma/: `npm run test:db -- up` reconstruye la plantilla sola al detectar migraciones nuevas')
     if unit_inputs or e2e:
-        cmds.insert(0, 'npx tsc --noEmit && npx eslint ' + ' '.join(shlex.quote(f) for f in files if f.endswith('.ts')))
+        # Los mismos pasos baratos del CI (MD-217): el lint de TODO el repo (`lint:ci`, ~5 s; el de solo lo cambiado no ve
+        # `scripts/` ni lo que rompe un import), los tipos con las pruebas y el `nest build` (~11 s).
+        cmds.insert(0, 'npx tsc --noEmit && npm run -s lint:ci && npm run -s build')
     return cmds, notes
 
 
@@ -252,6 +254,24 @@ def frontend(repo: Path, files: list[str]) -> tuple[list[str], list[str]]:
 
 # ---------------------------------------------------------------- main
 
+def ci_npm_version(repo: Path) -> str:
+    """El npm que trae el Node del CI del repo (`node-version` de .github/workflows/ci.yml)."""
+    wf = repo / '.github' / 'workflows' / 'ci.yml'
+    m = re.search(r'node-version:\s*["\']?(\d+)', wf.read_text(encoding='utf-8')) if wf.exists() else None
+    return {'18': '10', '20': '10.8.2', '22': '10', '24': '11'}.get(m.group(1) if m else '', '10')
+
+
+def lockfile_check(repo: Path, files: list[str]) -> str | None:
+    """MD-217: el CI cayó en `npm ci` porque el lockfile se regeneró con otro npm y con `legacy-peer-deps=true` del
+    ~/.npmrc de Rod (faltaban las peers `react`/`react-dom` de Prisma Studio). Ninguna prueba local lo veía. Se valida igual
+    que el CI: el npm de su Node, sin la configuración de usuario, en una copia aparte para no tocar node_modules."""
+    if not any(f in ('package.json', 'package-lock.json') for f in files):
+        return None
+    v = ci_npm_version(repo)
+    return ('d=$(mktemp -d) && cp package.json package-lock.json "$d"/ && (cd "$d" && NPM_CONFIG_USERCONFIG=/dev/null '
+            f'npx -y npm@{v} ci --dry-run --ignore-scripts --no-audit --no-fund >/dev/null); r=$?; rm -rf "$d"; exit $r')
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('--repo', choices=[*REPOS, 'all'], default='all')
@@ -268,6 +288,9 @@ def main() -> int:
             print('   sin cambios\n')
             continue
         cmds, notes = (backend if name == 'backend' else frontend)(repo, files)
+        if (lock := lockfile_check(repo, files)):
+            cmds.insert(0, lock)
+            notes.append('cambió package.json o package-lock.json: se comprueba con el npm del CI y sin el ~/.npmrc local (MD-217)')
         for c in cmds:
             print(f'   $ {c}' if len(c) < 400 else f'   $ {c[:400]}… ({len(c)} caracteres)')
         for n in notes:
