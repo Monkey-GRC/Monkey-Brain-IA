@@ -113,7 +113,6 @@ Pendientes sin urgencia.
 | ID | Qué | Módulo |
 |---|---|---|
 | [DT-112](roles-permisos.md#dt-112--los-grupos-de-permiso-por-rol-están-repetidos-en-cada-pantalla-de-platform) | Los grupos de permiso por rol están repetidos en cada pantalla de Platform | [Roles y permisos](roles-permisos.md) |
-| [DT-110](autenticacion.md#dt-110--validar-la-sesión-cuesta-dos-transacciones-por-petición) | Validar la sesión cuesta dos transacciones por petición | [Autenticación](autenticacion.md) |
 | [DT-111](autenticacion.md#dt-111--bcrypt-sin-tope-de-comparaciones-simultáneas-ante-ráfagas-de-login) | `bcrypt` sin tope de comparaciones simultáneas ante ráfagas de login | [Autenticación](autenticacion.md) |
 | [DT-109](trazabilidad.md#dt-109--technical-control-importa-el-registrador-de-cambios-de-estado-desde-dentro-de-compliance) | `technical-control` importa el registrador de cambios de estado desde dentro de `compliance` | [Trazabilidad](trazabilidad.md) |
 | [DT-103](control-tecnico.md#dt-103--no-se-ha-probado-que-la-identidad-de-aws-de-monkey-asuma-el-rol-de-una-cuenta-de-aws-de-otro-dueño) | No se ha probado que la identidad de AWS de Monkey asuma el rol de una cuenta de AWS de otro dueño | [Control técnico](control-tecnico.md) |

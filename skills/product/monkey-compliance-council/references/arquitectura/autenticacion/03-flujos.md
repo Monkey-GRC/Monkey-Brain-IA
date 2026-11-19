@@ -66,16 +66,18 @@ sequenceDiagram
     FE->>G: cualquier ruta con cookie
     G->>V: access token
     V->>V: firma del JWT
-    V->>DB: sesión (transacción propia)
-    V->>DB: usuario y rol (transacción propia)
-    V->>DB: actualiza last_activity_at, como mucho 1 vez por minuto
+    V->>DB: sesión + usuario, rol y estado (una transacción, un SELECT con JOIN)
+    V->>DB: actualiza last_activity_at, como mucho 1 vez por minuto (transacción aparte)
     V-->>G: Principal (empresa, usuario, rol, sesión)
     G->>D: Principal
     D-->>FE: sigue, o 401 · 403 · 429
 ```
 
 El rol sale de la base y no del token. Si la sesión venció o la cuenta se desactivó, se revoca en ese momento.
-Costo de este flujo y su salida: [`06-mejoras.md`](06-mejoras.md) (M1).
+Desde MD-219 (D124, sin caché) la validación abre **una** transacción: `SessionRepository.findWithOwner` lee la sesión y su
+dueño con un `LEFT JOIN` bajo el mismo RLS. La escritura de `last_activity_at` sigue aparte para no revivir una sesión
+vencida. `GET /v1/auth/me` abre 2 en total (el guard y una sola de caso de uso, `CurrentUserReader`, con el perfil y el
+avance del onboarding); antes eran hasta 6. Lo mide `Backend/test/autenticacion/transacciones.e2e-spec.ts`.
 
 ## 3 · Activar una cuenta
 

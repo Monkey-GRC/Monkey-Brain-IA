@@ -15,14 +15,6 @@ Parches vigentes de [Autenticación](../arquitectura/autenticacion/README.md). T
 
 ## Carga del login y de la sesión (`arquitectura/autenticacion/06-mejoras.md`, D124)
 
-### DT-110 · Validar la sesión cuesta dos transacciones por petición
-
-🟡 Mejora
-
-- **Qué está parchado:** `ValidateSessionUseCase` lee la sesión y luego el usuario, cada uno en su propia transacción con `set_config`, antes de **cualquier** caso de uso (M1)
-- **Por qué:** Se construyó por partes (sesión primero, rol desde la base después) sin juntar las lecturas
-- **Qué lo cierra:** Una sola consulta (sesión, usuario, rol y estado), sin caché (D124). Ticket: **MD-219**
-
 ### DT-111 · `bcrypt` sin tope de comparaciones simultáneas ante ráfagas de login
 
 🟡 Mejora
