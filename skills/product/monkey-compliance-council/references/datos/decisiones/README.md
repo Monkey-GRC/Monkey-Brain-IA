@@ -204,3 +204,4 @@ quedan aquí:
 | D122 | «Mi trabajo» y la carga de trabajo usan el avance del resumen; cada control cae en un solo bucket (rechazado → por revisar → por subir → en revisión → listo) | [gestion-usuarios](gestion-usuarios.md) |
 | D123 | «Recordar este dispositivo» 30 días: la contraseña siempre, el código del segundo factor no; excepto `admin_monkey`; el ingreso con Google queda LATER *(enmienda D94 punto 10)* | [autenticacion](autenticacion.md) |
 | D124 | Límite de peticiones compartido en Redis y tope por dirección en rutas públicas; la sesión se valida con una consulta y sin caché; bcrypt acotado por instancia | [autenticacion](autenticacion.md) |
+| D125 | Una transacción por caso de uso: `TransactionRunner.run` y `withScope` reutiliza la transacción en curso con el mismo scope | [plataforma](plataforma.md) |

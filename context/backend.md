@@ -102,6 +102,15 @@ capacidades automatizadas; idempotente; `reference:verify` solo compara) y `cata
 - Acceso a datos por `PrismaService` con `APP_DATABASE_URL`. **Toda consulta a una tabla con RLS va
   dentro de `withScope(scope, tx => …)`**. Las búsquedas previas al tenant (login, canje, refresh)
   usan las funciones `SECURITY DEFINER` de `platform` con `$queryRaw`.
+- **Una transacción por caso de uso (D125, MD-230).** Si un caso de uso llama a más de un repositorio, envuelve el
+  trabajo en `TransactionRunner.run(scope, async () => …)` (`src/common/tenancy/transaction-runner.ts`). Los `withScope`
+  de dentro, con el mismo scope, reutilizan esa transacción.
+  - Dentro de `run`, todo va en serie: nada de `Promise.all` de consultas.
+  - Un scope distinto es error.
+  - El `timeoutMs` se fija en el `run`.
+  - No se hacen llamadas externas (correo, S3, APIs) ni esperas largas dentro de `run`: retienen la conexión.
+  - Se mide con un spy sobre `$transaction` (`test/cumplimiento/transacciones-ruta.e2e-spec.ts`); el objetivo es 2 por
+    petición, la del guard y la del caso de uso.
 - Schema en `prisma/schema/<catalog|platform|tenant|audit>/*.prisma`, un solo `prisma.config.ts`.
   Migrar con `npx prisma migrate dev` (dev) o `migrate deploy` (staging/prod); ver
   `skills/backend/add-prisma-model.md`.

@@ -103,3 +103,32 @@ La propuso desarrollo y la aprobó el responsable de producto; **no es una decis
 **Qué cambia.** El design system suma `app-skeleton` y `appBusy` y la tabla acepta `loading`; las pantallas que usan `app-loading-spinner` para cargar datos pasan a esqueleton; los botones con spinner propio pasan a `appBusy`. Es elemento compartido, idéntico en Frontend y Frontend-Platform.
 
 **Fuente:** Rod, 2026-11-13 (esqueleton para campos, tablas y casillas; spinner solo en procesos y botones; el spinner permanece hasta recibir la respuesta; botón y campos bloqueados; esqueleton por región).
+
+## D125 · Una transacción por caso de uso: `TransactionRunner.run` y `withScope` que reutiliza la transacción en curso (2026-11-19)
+
+**Decisión.** Un caso de uso que lee o escribe con varios repositorios lo hace en **una** transacción. Para eso usa el
+puerto común `TransactionRunner` (`Backend/src/common/tenancy/transaction-runner.ts`): `run(scope, fn)` abre una
+transacción con su `set_config` una sola vez, y todo `withScope` que se llame dentro de `fn` **con el mismo scope**
+(empresa, usuario y rol) la reutiliza en lugar de abrir otra. Reglas:
+
+1. Un `withScope` con **otro scope** dentro de un `run` es un error, nunca abre otra transacción ni mezcla empresas.
+2. Dentro de `run` las consultas van **en serie**: nada de `Promise.all` sobre la misma transacción.
+3. Un `withScope` anidado no puede pedir más tiempo que el `run`: el límite se fija al abrirlo (`timeoutMs`).
+4. Si algo falla dentro, se revierte **todo**, incluida la auditoría escrita en la misma transacción (SEG-36).
+5. Fuera de `run`, `withScope` se comporta como antes: cada repositorio abre la suya.
+
+**Por qué.** Cada transacción cuesta tres viajes a la base (BEGIN, `set_config`, COMMIT) y una conexión del pool. La
+auditoría de rendimiento del 2026-11-18 encontró rutas con 3 a 6 transacciones por petición. Antes de probar Monkey con
+clientes reales, la API tiene que escalar: cada ruta debe abrir la del guard y una del caso de uso. Juntar las lecturas
+en métodos combinados por repositorio habría bajado la lógica de acceso al repositorio y obligado a repetir el trabajo en
+cada ticket.
+
+**Qué cambia.** `PrismaService.run` (contexto ambiente con `AsyncLocalStorage`) y `withScope` en
+`Backend/src/infrastructure/database/prisma.service.ts`. Primeras rutas: `PATCH /v1/controls/:id`,
+`GET /v1/controls/:id/tests`, `GET /v1/evidence-requirements/:id/submissions` y `GET /v1/services/:id` (MD-230), todas en
+2 transacciones por petición. Es el patrón para MD-220 a MD-225. Lo prueban `test/aislamiento/transaccion-caso-de-uso.e2e-spec.ts`
+y `test/cumplimiento/transacciones-ruta.e2e-spec.ts`. Convención para quien escribe casos de uso: `context/backend.md`.
+
+La propuso desarrollo y la aprobó el responsable de producto; **no es una decisión del comité**.
+
+**Fuente:** Rod (Hector Rios), sesión de MD-230, 2026-11-19.
