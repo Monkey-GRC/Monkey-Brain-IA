@@ -111,6 +111,12 @@ capacidades automatizadas; idempotente; `reference:verify` solo compara) y `cata
   - No se hacen llamadas externas (correo, S3, APIs) ni esperas largas dentro de `run`: retienen la conexión.
   - Se mide con un spy sobre `$transaction` (`test/cumplimiento/transacciones-ruta.e2e-spec.ts`); el objetivo es 2 por
     petición, la del guard y la del caso de uso.
+- **«El último» de una tabla que solo crece (MD-220).** No se usa `distinct` de Prisma: sin `nativeDistinct`, trae todas
+  las filas y deduplica en memoria. Se usa `JOIN LATERAL (… ORDER BY … DESC, id DESC LIMIT 1)` sobre un índice que lo
+  cubra, con los ids como un solo parámetro `uuid[]` (`ANY(...)`), nunca listas `IN` enormes. El ejemplo está en
+  `compliance/infrastructure/shared/latest-results.query.ts`.
+  - Los índices parciales (`WHERE origin <> 'manual'`) solo viven en la migración. Prisma no los declara: hay que
+    revisar que un `migrate dev` no proponga borrarlos.
 - Schema en `prisma/schema/<catalog|platform|tenant|audit>/*.prisma`, un solo `prisma.config.ts`.
   Migrar con `npx prisma migrate dev` (dev) o `migrate deploy` (staging/prod); ver
   `skills/backend/add-prisma-model.md`.

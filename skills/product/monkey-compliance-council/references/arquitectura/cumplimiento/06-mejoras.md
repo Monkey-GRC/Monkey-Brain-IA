@@ -45,9 +45,21 @@ done
 el usuario es un `funcional` que ve pocos. Y cada escritura toma **dos** fotos completas (antes y después), más una
 tercera en el veredicto para devolver el estado de la prueba.
 
-Hoy es razonable: evita el problema de N+1. Pero el costo crece con el tamaño del servicio y con el histórico de
-`evaluations` (la lectura de «lo más reciente» usa `DISTINCT` sobre una tabla que solo crece). **No optimizar sin
-medir**: corre el ejercicio 4 de [`07-estudio.md`](07-estudio.md) con un servicio grande y mira el tiempo.
+Hoy es razonable: evita el problema de N+1. El costo crece con el tamaño del servicio. **No optimizar sin medir**:
+corre el ejercicio 4 de [`07-estudio.md`](07-estudio.md) con un servicio grande y mira el tiempo.
+
+**El histórico ya no pesa (MD-220, 2026-11-19).** La lectura de «lo más reciente» ya no trae todo el histórico para
+deduplicarlo en Node, como hacía el `distinct` de Prisma. Ahora hace una búsqueda acotada en el índice parcial
+`evaluations_latest_idx` por cada (control, prueba, activo). Las piezas:
+
+- **La consulta:** `JOIN LATERAL … LIMIT 1`, en `Backend/src/features/compliance/infrastructure/shared/latest-results.query.ts`.
+- **Los veredictos:** usan lo mismo por (servicio, prueba).
+- **Medido con 1000 corridas:** la consulta pasó de 33 ms a 1,3 ms y `compliance-overview` de ~170 ms a ~50 ms.
+- **El costo que queda:** crece con controles × pruebas × activos, no con las corridas. Si hiciera falta, se acota por
+  dimensión de la prueba.
+- **La prueba:** `test/cumplimiento/ultimo-resultado.e2e-spec.ts`.
+
+Las dos fotos por escritura siguen: las quita MD-222.
 
 Alternativas si hiciera falta (no decididas): paginar antes de calcular, o guardar el último resultado por
 `(control, prueba, activo)` en una tabla aparte como optimización (sigue siendo derivable).
