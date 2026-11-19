@@ -43,6 +43,32 @@ Si el cambio crea una feature del Backend o una carpeta de `test/`, añádela a
 `skills/process/monkey-dev-flow/scripts/test-map.json` en el mismo cambio. `affected-tests.py` avisa cuando una feature
 cambiada no está en el mapa.
 
+## 2b. Tickets relacionados en Jira (siempre)
+
+Pedido por Rod (2026-11-19). En **todo** cierre, busca en Jira los tickets que el cambio deja resueltos **además del
+principal**, y pásalos a «Listo» con `transitionJiraIssue` (la transición se llama «Listo»).
+
+**Qué cuenta como relacionado:**
+
+- **Historias de usuario** (`HU-…`, etiqueta `historias`) del módulo cuya conducta ya existe completa.
+- **Tickets duplicados o reemplazados** por el que se cierra; por ejemplo, MD-446 y MD-447 frente a MD-218.
+- **Tickets que quedaron sin objeto** por una decisión (`D-n`).
+- **Tickets de deuda** cuya `DT-n` borró el cambio.
+
+**Cómo buscarlos:**
+
+```
+project = MD AND statusCategory != Done AND (text ~ "DT-n" OR text ~ "MD-n" OR labels = <módulo>)
+```
+
+Revisa también la épica del módulo.
+
+**Reglas:**
+
+- **Solo se cierra lo resuelto de verdad.** Lo que quede a medias sigue abierto y se nombra en el reporte.
+- **El motivo de cada cierre va en el reporte a Rod**, porque los comentarios en Jira están bloqueados.
+- **El ticket principal lo mueve Rod después del merge**, salvo que pida moverlo.
+
 ## 3. Integridad del cerebro (determinista)
 
 ```bash
@@ -86,5 +112,6 @@ Un paso en rojo se reporta con su error y su archivo; no se corrige a ciegas. `g
 Cierre: <tarea>
 Actualizado: <contrato, D/P/DT/SEG, docs>
 Verificación: <check-brain OK | qué falló>
+Jira: <tickets relacionados cerrados y por qué · los que siguen abiertos y qué les falta>
 Sin commitear: <repos con cambios>
 ```
