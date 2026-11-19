@@ -3,15 +3,17 @@
 Responde: **¿qué conviene cambiar y qué riesgo de carga tiene este sistema?** Son propuestas; lo que se apruebe pasa a
 `deuda-tecnica/` (`DT-n`). Las cifras son estimaciones hasta que exista la prueba de carga.
 
-**Estado (2026-11-17):** las tres están aprobadas por **D124** y tienen ticket. M2 usa **Redis**; M1 va **sin caché**.
+**Estado (2026-11-19):** las tres están aprobadas por **D124**. **M1 está hecha** (MD-219, sin caché); M2 (Redis) y M3 siguen en MD-218.
 
 | # | Mejora | Prio | Esfuerzo | Deuda · ticket |
 |---|---|---|---|---|
-| M1 | Validar la sesión con una sola consulta (sin caché, D124) | A | S | DT-110 · MD-219 |
+| M1 | ~~Validar la sesión con una sola consulta (sin caché, D124)~~ · **Hecha** (MD-219) | — | — | — |
 | M2 | Límite de peticiones compartido entre instancias (Redis, D124) y por IP en rutas públicas | A | M | DT-37 · MD-218 |
 | M3 | Aislar el costo de `bcrypt` ante ráfagas de login | B | S | DT-111 · MD-218 |
 
 ## M1 · La sesión cuesta dos transacciones por petición
+**Resuelta en MD-219 (2026-11-19):** una transacción y un `SELECT` con `JOIN` por validación; `/auth/me` baja de hasta 6 a 2. El análisis original queda como contexto.
+
 `ValidateSessionUseCase` lee la sesión y luego el usuario, cada una en su propia transacción con `set_config`, y esto
 ocurre antes de **cualquier** caso de uso. A 100 peticiones por segundo son 200 transacciones por segundo que no
 aportan al negocio. Salidas: una sola consulta con `JOIN`, o una caché de 10 a 30 s por sesión. La caché retrasa
