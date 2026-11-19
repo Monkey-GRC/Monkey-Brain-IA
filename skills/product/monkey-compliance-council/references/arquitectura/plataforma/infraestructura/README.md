@@ -88,7 +88,7 @@ Consumo medido con `docker stats` el 2026-11-18 a media tarde (con poca carga).
 
 | Proyecto (carpeta) | Contenedor | Imagen | Puertos | Límite de RAM | RAM usada |
 |---|---|---|---|---|---|
-| `monkey-dev` | `monkey-dev-backend-1` | `monkey-dev-backend:latest` (build local) | 3000 interno | **ninguno** | 76 MB |
+| `monkey-dev` | `monkey-dev-backend-1` | `monkey-dev-backend:latest` (build local) · monta `./geoip` en solo lectura | 3000 interno | **ninguno** | 76 MB |
 | `monkey-dev` | `monkey-dev-runner-1` | la misma | — | 256 MB | 43 MB |
 | `monkey-dev` | `monkey-dev-docker-proxy-1` | `tecnativa/docker-socket-proxy:0.3.0` | 2375 interno | ninguno | 4 MB |
 | `monkey-dev` | `monkey-dev-frontend-1` | build local (nginx) | 80 interno | ninguno | 8 MB |
@@ -138,8 +138,12 @@ sequenceDiagram
 
 - Los archivos de entorno (`~/monkey-dev/.env`, `runner.env`) **viven solo en el servidor**; el despliegue no los
   escribe. Se editan con `backend/scripts/deploy/set-env.sh` y `check-env.sh` detiene el despliegue si falta algo.
-- El compose de `monkey-dev` está versionado en el repo del Backend; los otros cinco (`minio`, `n8n`,
-  `nginx_proxy_manager`, `postgres-staging`, `wazuh-manager`) solo existen en `/home/ubuntu/<proyecto>/`.
+- El compose de `monkey-dev` está versionado en el repo del Backend (`deploy/docker-compose.dev.yml`); los otros cinco
+  (`minio`, `n8n`, `nginx_proxy_manager`, `postgres-staging`, `wazuh-manager`) solo existen en `/home/ubuntu/<proyecto>/`.
+- **El despliegue no actualiza el compose que corre.** Copia el repo a `~/monkey-dev/backend/`, pero
+  `~/monkey-dev/docker-compose.yml` se queda como estaba. Si un ticket cambia `deploy/docker-compose.dev.yml`, alguien
+  con el usuario `ubuntu` lo copia a mano (respaldando el anterior) y recrea el servicio (`docker compose up -d <servicio>`).
+  Así se hizo con el volumen de GeoIP (MD-217, 2026-11-19).
 - El build se hace **en la VPS**: cada despliegue compila con la CPU y la RAM del servidor y acumula capas en disco.
 - La URL de la API de los frontends se hornea en el build (`API_URL: https://api-dev.monkey360.io/v1`).
 
@@ -151,7 +155,14 @@ sequenceDiagram
 | Archivos (evidencias, copias de empresas archivadas) | `minio`, carpeta `~/minio/data` | API S3 en 9000 |
 | Respaldos de la base | `scripts/deploy/backup-staging.sh`: `pg_dump` nocturno **a ese mismo MinIO**, expira a 30 días, 7 copias locales | Están **en la misma máquina** que la base. Que el cron corra no se puede ver con `claude-ro` (SEG-35, `DT-84`) |
 | Configuración de la sonda | 8 volúmenes `wazuh_*` | Es lo que más disco mueve: 594 GB leídos y 485 GB escritos desde que arrancó (5 semanas) |
-| Base de ubicación (MD-217) | `~/monkey-dev/geoip/GeoLite2-City.mmdb`, montada en el backend como `/app/geoip` (solo lectura) | La actualiza `scripts/deploy/geoip-update.sh` (cron semanal); el backend relee el archivo solo, como mucho una hora después. Las credenciales de MaxMind van en `~/monkey-dev/geoip.env`, no en el `.env` del backend |
+| Base de ubicación (MD-217) | `~/monkey-dev/geoip/GeoLite2-City.mmdb` (≈ 50 MB), montada en el backend como `/app/geoip` (solo lectura). En servicio desde el 2026-11-19 | La actualiza `backend/scripts/deploy/geoip-update.sh` con un cron semanal de `ubuntu` (ver abajo); el backend relee el archivo solo, como mucho una hora después, y solo deja log si falla. Las credenciales de MaxMind van en `~/monkey-dev/geoip.env` (600), no en el `.env` del backend. Hasta MD-218 (`trust proxy`) el backend ve la IP del proxy y la ubicación sale desconocida |
+
+Cron de GeoIP (`crontab -e` del usuario `ubuntu`). `set -a` exporta las variables de `geoip.env`; sin él, el script no
+las recibe:
+
+```cron
+0 4 * * 1 cd /home/ubuntu/monkey-dev && set -a && . ./geoip.env && set +a && bash backend/scripts/deploy/geoip-update.sh >> geoip/update.log 2>&1
+```
 
 ## Seguridad del servidor
 

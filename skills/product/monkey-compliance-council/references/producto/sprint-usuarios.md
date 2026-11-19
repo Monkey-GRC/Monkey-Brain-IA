@@ -31,7 +31,7 @@ está escrito: [`contracts/gestion-usuarios.md`](../../../../../contracts/gestio
 
 | # | Ticket nuevo | Pts | Contrato / requisito |
 |---|---|--:|---|
-| B0 · MD-185 | Ratificar el modelo y los contratos de D102 con Carlos (y Nelson si lo pide) | 1 | `contracts/gestion-usuarios.md` |
+| B0 · MD-185 | Ratificar el modelo y los contratos de D102 con Carlos (y Nelson si lo pide). Cerrado el 2026-11-19: D102 y D103 aprobadas y la API construida sobre ellas (MD-186 a MD-195) | 1 | `contracts/gestion-usuarios.md` |
 | B1 · MD-186 | **Migración:** eliminar `user_dimensions` y `service_dimension_owners`; `client_control_assignments` y `user_groups`; `users.group_id` e `is_internal`; enum `user_role` (`responsable`, `delegado`, sin `funcional`); `companies.max_users`; `evidence_reviews` con `reviewer_role` y clave única por rol; RLS | 8 | `modelo/05-usuarios.md` §5.2 |
 | B2 · MD-187 | **Cupo de usuarios:** `max_users` en alta, listado y detalle de empresa, `PATCH …/max-users`, y `USER_LIMIT_REACHED` al crear o reactivar, con la empresa bloqueada | 5 | `contracts/empresas.md` · SEG-72 |
 | B3 · MD-188 | **Equipo:** `POST`/`GET`/`PATCH /v1/users` con los roles nuevos, grupo, `is_internal`; el `responsable` crea delegados de su equipo; un responsable nuevo queda en «Responsables» y su equipo **no** se crea con él (D104) | 8 | `contracts/gestion-usuarios.md` |
@@ -66,9 +66,9 @@ está escrito: [`contracts/gestion-usuarios.md`](../../../../../contracts/gestio
 
 | Ticket | Qué pasó |
 |---|---|
-| MD-131 · MD-132 · MD-134 | **Reemplazados** por MD-188 (+ MD-190), MD-191 y MD-197 (+ MD-198, MD-206). Etiquetas `sprint-3` y `reemplazado-d102`; **no están en el sprint** para no contar el trabajo dos veces; siguen «Por hacer» como histórico hasta que Rod decida cerrarlos |
+| MD-131 · MD-132 · MD-134 | **Reemplazados** por MD-188 (+ MD-190), MD-191 y MD-197 (+ MD-198, MD-206). Etiquetas `sprint-3` y `reemplazado-d102`; **no están en el sprint** para no contar el trabajo dos veces; MD-131 y MD-132 se cerraron como «Listo» el 2026-11-19 (resueltos por D102) |
 | MD-143 | **Entra al sprint** con alcance decidido: retirar la gestión de usuarios heredada de Monkey Admin (D103). 2 pts. Cuelga del épico MD-184 |
-| MD-158 | **Sin objeto por D102** (etiqueta `sin-objeto-d102`); se elimina en B1 y lo reemplaza B7 |
+| MD-158 | **Sin objeto por D102** (etiqueta `sin-objeto-d102`); se elimina en B1 y lo reemplaza B7. Cerrado como «Listo» el 2026-11-19 |
 | MD-94 · MD-175 | Siguen en curso; alcance «todos los roles» (D102, punto 13) |
 | MD-69 | Aclarado: la clave de acceso ya sale por correo (D99); la invitación de usuarios es MD-190. Revisar si se cierra |
 | MD-146 | Se queda en el backlog (la vista de solo lectura de `admin_monkey` no está en D103) |
