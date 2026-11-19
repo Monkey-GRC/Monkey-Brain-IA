@@ -86,6 +86,7 @@ Fuera de `references/`:
   `context/frontend.md` (el código tal como está, no el diseño objetivo).
 - **Cambio visual** (aspecto, tokens, componentes base, menú lateral, tablas) → `skills/frontend/design-system/README.md`: es la fuente única de
   los dos frontends, que deben verse idénticos. Lo ejecuta el subagente `frontend-design`, que sincroniza con `skills/frontend/design-system/scripts/sync-design-system.sh`.
+  Para auditar o pulir pantallas existentes, la skill `monkey-design-audit` (diagnóstico antes de corregir).
 - **Reglas de mantenimiento de este repo** → `STANDARD.md`. Estado del proyecto (reconstrucción) → `producto/mvp-roadmap.md`.
 
 ## Automatización (`.claude/`)

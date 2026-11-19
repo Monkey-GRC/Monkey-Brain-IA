@@ -26,6 +26,8 @@ archivos de `skills/frontend/` (un nivel arriba de esta carpeta); aquí se enlaz
 5. **Lo visual es de un sistema, no de la vista.** Colores, radios, tablas, tarjetas, diálogos y menú vienen de `../design-system/README.md` y se
    reutilizan (`data-table`, `app-card`, `donut`, `side-drawer`…); no se inventan estilos por vista. Un cambio de aspecto que afecte a las dos apps lo
    ejecuta el subagente `frontend-design` y se sincroniza con `skills/frontend/design-system/scripts/sync-design-system.sh`.
+   Para pulir o auditar una pantalla existente (textos genéricos, colores, estados, tipografía) se usa
+   `../monkey-design-audit/SKILL.md`: primero el diagnóstico, después la corrección.
 
 ## 2. El mapa de cada app
 
