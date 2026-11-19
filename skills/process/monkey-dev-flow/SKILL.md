@@ -25,7 +25,8 @@ Los subagentes son trabajadores: implementan, verifican o revisan, y no coordina
 - **Reloj:** `scripts/ticket-clock.sh MD-n <fase>` al empezar cada fase (planificacion · implementacion · verificacion ·
   ajustes · cierre · fin). Al cerrar, `ticket-clock.sh MD-n report` da la tabla de métricas que se entrega a Rod (paso 10).
 - **Jira:** se **reescribe la descripción** con lo que de verdad se hizo y **no se dejan comentarios** (está bloqueado). El
-  estado lo mueve Rod.
+  estado del ticket principal lo mueve Rod. Al planificar, anota qué otros tickets cubre la tarea (historias, duplicados,
+  deuda). Al cerrar, `monkey-closeout` §2b los pasa a «Listo».
 - **Sin huecos:** antes que dejar una brecha, se amplía el alcance. Lo que quede pendiente va como `DT-n` o al ticket que lo
   cierra.
 
@@ -130,10 +131,12 @@ superficie de producto), pero no revisan el diseño.
   - Pregunta «¿apruebas el estilo?» **por cada pantalla**, nombrándola. Una aprobación cubre solo lo que Rod vio: aprobar la
     pantalla del código no aprueba la lista de dispositivos (MD-217). Antes de dar algo por aprobado, enumera las pantallas
     que aún no ha visto.
-  - **Los comandos de commit solo se entregan cuando Rod los pide explícitamente**, con todas las pantallas aprobadas. Nunca
-    por iniciativa propia ni como «siguiente paso» de una aprobación (MD-217: se entregaron sin que los pidiera).
-- **Comandos de commit (cuando Rod los pida):** `scripts/ticket-commands.py MD-n --scope <módulo>` los arma desde el `git status` de cada repo
-  (nunca de memoria) y avisa si algo quedó sin agrupar. Los mensajes se completan en inglés y sin atribución a Claude.
+  - En un cambio visual, los comandos de commit van **después** de que todas las pantallas estén aprobadas.
+- **Comandos de commit: siempre los entrega Claude** (Rod, 2026-11-19). Van al cerrar el ticket, o antes de arrancar otro
+  si quedaron cambios sin commitear. No se le pide a Rod que los escriba ni que los pida.
+  - `scripts/ticket-commands.py MD-n --scope <módulo>` los arma desde el `git status` de cada repo (nunca de memoria) y avisa
+    si algo quedó sin agrupar.
+  - Los mensajes se completan en inglés y sin atribución a Claude.
 
 Invoca `monkey-closeout`. Si el cambio dejó desactualizado `context/backend.md`, `context/frontend.md` o un contrato,
 pregunta si lo actualizas ahora (es documentación: se edita directo, sin pasar por los seniors).
