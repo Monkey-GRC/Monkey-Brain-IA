@@ -8,8 +8,8 @@ description: >-
 
 # Cierre de una tarea
 
-Un cambio no termina hasta cerrar lo que toca, **en el mismo cambio** (`STANDARD.md` §5). La plantilla de PR del cerebro tiene la
-misma lista; esta skill la hace ejecutable.
+Un cambio no termina hasta cerrar lo que toca, **en el mismo cambio** (`STANDARD.md` §5). Esta skill es la lista y la hace
+ejecutable.
 
 ## 1. Estado de los repos
 
