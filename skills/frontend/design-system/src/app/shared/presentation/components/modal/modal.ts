@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, ElementRef, effect, input, output, 
 import { pushOverlay, takeEscape } from '@shared/presentation/components/overlay-stack/overlay-stack';
 
 const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
-const SIZES = { sm: 'max-w-sm', md: 'max-w-md', lg: 'max-w-lg', xl: 'max-w-4xl', wide: 'max-w-2xl' } as const;
+const SIZES = { sm: 'max-w-sm', md: 'max-w-md', lg: 'max-w-lg', xl: 'max-w-4xl', wide: 'max-w-2xl', max: 'max-w-6xl' } as const;
 
 // La base de todos los modales de la app: el fondo oscuro, el panel y lo que un modal bien hecho debe hacer siempre. Lo de adentro lo pone quien lo usa:
 //   <app-modal [open]="abierto" labelledBy="mi-titulo" (dismissed)="cerrar()"> <h2 id="mi-titulo">…</h2> … </app-modal>

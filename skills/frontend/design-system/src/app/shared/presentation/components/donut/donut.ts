@@ -28,7 +28,7 @@ const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
       }
     </svg>
     @if (text()) {
-    <span class="absolute inset-0 flex items-center justify-center font-semibold leading-none text-ink" [class]="large() ? 'text-3xl' : 'text-sm'" aria-hidden="true">{{ text() }}</span>
+    <span class="absolute inset-0 flex items-center justify-center font-semibold leading-none tabular-nums text-ink" [class]="large() ? 'text-3xl' : 'text-sm'" aria-hidden="true">{{ text() }}</span>
     }
   `,
 })

@@ -70,9 +70,9 @@ export interface StepperItem { icon?: string; label: string; description?: strin
               </span>
             </div>
             @if (selectable(i)) {
-              <button type="button" (click)="stepSelected.emit(i)" [title]="step.label | translate" class="line-clamp-2 max-w-full px-1 text-center text-[11px] leading-tight [overflow-wrap:anywhere] after:absolute after:inset-0 focus:outline-none focus-visible:after:ring-2 focus-visible:after:ring-action/40" [class]="hLabel(i + 1)">{{ step.label | translate }}</button>
+              <button type="button" (click)="stepSelected.emit(i)" [title]="step.label | translate" class="line-clamp-2 max-w-full px-1 text-center text-xs leading-tight [overflow-wrap:anywhere] after:absolute after:inset-0 focus:outline-none focus-visible:after:ring-2 focus-visible:after:ring-action/40" [class]="hLabel(i + 1)">{{ step.label | translate }}</button>
             } @else {
-              <span class="line-clamp-2 max-w-full px-1 text-center text-[11px] leading-tight [overflow-wrap:anywhere]" [class]="hLabel(i + 1)" [attr.title]="step.label | translate">{{ step.label | translate }}</span>
+              <span class="line-clamp-2 max-w-full px-1 text-center text-xs leading-tight [overflow-wrap:anywhere]" [class]="hLabel(i + 1)" [attr.title]="step.label | translate">{{ step.label | translate }}</span>
             }
           </li>
         }
@@ -94,7 +94,7 @@ export class Stepper {
   }
 
   circle(n: number): string {
-    if (n < this.current()) return 'border-action bg-action text-white';
+    if (n < this.current()) return 'border-action bg-action text-on-action';
     if (n === this.current()) return 'border-action bg-tint text-action ring-4 ring-action/20';
     return 'border-line text-ink-faint';
   }

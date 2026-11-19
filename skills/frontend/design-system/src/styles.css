@@ -1,7 +1,8 @@
-@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap") layer(base);
-
 @import "tailwindcss";
 @import 'material-symbols';
+/* Fonts come from npm (same origin, no CDN). `wght.css` has no italic faces: the system has no italics. */
+@import "@fontsource-variable/geist/wght.css";
+@import "@fontsource-variable/geist-mono/wght.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -11,8 +12,10 @@
  * Only the block between `app-specific:start` and `app-specific:end` belongs to the app.
  */
 @theme {
+  /* One family: Geist for text, Geist Mono only for codes (`CC6.1`, hashes, tokens). The default Tailwind stacks are cleared on purpose. */
   --font-*: initial;
-  --font-outfit: Outfit, sans-serif;
+  --font-sans: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono Variable", ui-monospace, SFMono-Regular, Menlo, monospace;
 
   --breakpoint-*: initial;
   --breakpoint-2xsm: 375px;
@@ -34,6 +37,9 @@
   --text-theme-sm--line-height: 20px;
   --text-theme-xs: 12px;
   --text-theme-xs--line-height: 18px;
+  /* Principal figure of a KPI (README, typography). 600 weight, tabular figures. */
+  --text-kpi: 28px;
+  --text-kpi--line-height: 32px;
 
   --color-current: currentColor;
   --color-transparent: transparent;
@@ -163,9 +169,16 @@
   --color-line-strong: var(--color-gray-300); /* dividers that must be seen (menu sections), not hairlines */
   --color-ink: var(--color-gray-900);
   --color-ink-muted: var(--color-gray-600);
-  --color-ink-faint: var(--color-gray-500);
+  /* `ink-faint` is a darker step than gray-500 (#667085 gave 4.23:1 on `canvas` and 3.93:1 on `tint-strong`): 5.02:1 on `canvas`, 4.65:1 on `tint-strong`. */
+  --color-ink-faint: #596579;
+  /* Border of a control (field, select, secondary button): >= 3:1 against its background (WCAG 1.4.11). `line` stays for dividers and cards. */
+  --color-line-control: #7d8799;
   --color-action: var(--color-brand-500);
   --color-action-hover: var(--color-brand-600);
+  /* Text and icons ON a filled `action` surface (primary button, selected step, active page). Its own token: the dark `action` is light, so white would fail. */
+  --color-on-action: #ffffff;
+  /* Brand panel of the sign-in shell (white text on it: 12.6:1 light, 11.7:1 dark; it must be lighter than the form side in dark, which is `surface`). */
+  --color-brand-panel: var(--color-primary-500);
   /* Status only. A status colour is never written as green-600 or amber-500 in a template. */
   --color-ok: var(--color-success-600);
   --color-bad: var(--color-error-600);
@@ -208,39 +221,57 @@
   --color-data-4: #a1337f;
   --color-data-5: #8a5a0b;
 
-  /* Badge (design-system README section 2, D115): `app-badge` paints a soft tint of its colour (8 % over `surface`), a 1 px line of the same hue and the text in a strong tone (>= 4.5:1 on the tint, light and dark;
+  /* Badge (design-system README section 2, D115): `app-badge` paints a soft tint of its colour (18 % over `surface`), a 1 px line of the same hue and the text in a strong tone (>= 4.5:1 on the tint, light and dark;
      `check-design-system.sh` computes it). Three triplets per variant: `badge-X-bg`, `badge-X-line`, `badge-X-ink`. X = ok | warn | bad | neutral (status), brand (code and `info`), data-1..5 (attribute,
      the data palette) and risk-low | moderate | high | critical (the risk level, reusing the risk tokens). Mixed with `surface`, so `.dark` redefines the tints. */
-  --color-badge-ok-bg: color-mix(in srgb, var(--color-ok) 8%, var(--color-surface));
-  --color-badge-ok-line: color-mix(in srgb, var(--color-ok) 28%, var(--color-surface));
+  --color-badge-ok-bg: color-mix(in srgb, var(--color-ok) 18%, var(--color-surface));
+  --color-badge-ok-line: color-mix(in srgb, var(--color-ok) 42%, var(--color-surface));
   --color-badge-ok-ink: color-mix(in srgb, var(--color-ok-ink) 72%, var(--color-ink));
-  --color-badge-warn-bg: color-mix(in srgb, var(--color-warn) 8%, var(--color-surface));
-  --color-badge-warn-line: color-mix(in srgb, var(--color-warn) 28%, var(--color-surface));
+  --color-badge-warn-bg: color-mix(in srgb, var(--color-warn) 18%, var(--color-surface));
+  --color-badge-warn-line: color-mix(in srgb, var(--color-warn) 42%, var(--color-surface));
   --color-badge-warn-ink: color-mix(in srgb, var(--color-warn-ink) 72%, var(--color-ink));
-  --color-badge-bad-bg: color-mix(in srgb, var(--color-bad) 8%, var(--color-surface));
-  --color-badge-bad-line: color-mix(in srgb, var(--color-bad) 28%, var(--color-surface));
+  --color-badge-bad-bg: color-mix(in srgb, var(--color-bad) 18%, var(--color-surface));
+  --color-badge-bad-line: color-mix(in srgb, var(--color-bad) 42%, var(--color-surface));
   --color-badge-bad-ink: color-mix(in srgb, var(--color-bad-ink) 72%, var(--color-ink));
-  --color-badge-neutral-bg: color-mix(in srgb, var(--color-neutral) 8%, var(--color-surface));
-  --color-badge-neutral-line: color-mix(in srgb, var(--color-neutral) 28%, var(--color-surface));
+  --color-badge-neutral-bg: color-mix(in srgb, var(--color-neutral) 18%, var(--color-surface));
+  --color-badge-neutral-line: color-mix(in srgb, var(--color-neutral) 42%, var(--color-surface));
   --color-badge-neutral-ink: var(--color-ink-muted);
-  --color-badge-brand-bg: color-mix(in srgb, var(--color-action) 8%, var(--color-surface));
-  --color-badge-brand-line: color-mix(in srgb, var(--color-action) 28%, var(--color-surface));
+  --color-badge-brand-bg: color-mix(in srgb, var(--color-action) 18%, var(--color-surface));
+  --color-badge-brand-line: color-mix(in srgb, var(--color-action) 42%, var(--color-surface));
   --color-badge-brand-ink: color-mix(in srgb, var(--color-tint-ink) 75%, var(--color-ink));
-  --color-badge-data-1-bg: color-mix(in srgb, var(--color-data-1) 8%, var(--color-surface));
-  --color-badge-data-1-line: color-mix(in srgb, var(--color-data-1) 28%, var(--color-surface));
+  --color-badge-data-1-bg: color-mix(in srgb, var(--color-data-1) 18%, var(--color-surface));
+  --color-badge-data-1-line: color-mix(in srgb, var(--color-data-1) 42%, var(--color-surface));
   --color-badge-data-1-ink: color-mix(in srgb, var(--color-data-1) 68%, var(--color-ink));
-  --color-badge-data-2-bg: color-mix(in srgb, var(--color-data-2) 8%, var(--color-surface));
-  --color-badge-data-2-line: color-mix(in srgb, var(--color-data-2) 28%, var(--color-surface));
+  --color-badge-data-2-bg: color-mix(in srgb, var(--color-data-2) 18%, var(--color-surface));
+  --color-badge-data-2-line: color-mix(in srgb, var(--color-data-2) 42%, var(--color-surface));
   --color-badge-data-2-ink: color-mix(in srgb, var(--color-data-2) 68%, var(--color-ink));
-  --color-badge-data-3-bg: color-mix(in srgb, var(--color-data-3) 8%, var(--color-surface));
-  --color-badge-data-3-line: color-mix(in srgb, var(--color-data-3) 28%, var(--color-surface));
+  --color-badge-data-3-bg: color-mix(in srgb, var(--color-data-3) 18%, var(--color-surface));
+  --color-badge-data-3-line: color-mix(in srgb, var(--color-data-3) 42%, var(--color-surface));
   --color-badge-data-3-ink: color-mix(in srgb, var(--color-data-3) 68%, var(--color-ink));
-  --color-badge-data-4-bg: color-mix(in srgb, var(--color-data-4) 8%, var(--color-surface));
-  --color-badge-data-4-line: color-mix(in srgb, var(--color-data-4) 28%, var(--color-surface));
+  --color-badge-data-4-bg: color-mix(in srgb, var(--color-data-4) 18%, var(--color-surface));
+  --color-badge-data-4-line: color-mix(in srgb, var(--color-data-4) 42%, var(--color-surface));
   --color-badge-data-4-ink: color-mix(in srgb, var(--color-data-4) 68%, var(--color-ink));
-  --color-badge-data-5-bg: color-mix(in srgb, var(--color-data-5) 8%, var(--color-surface));
-  --color-badge-data-5-line: color-mix(in srgb, var(--color-data-5) 28%, var(--color-surface));
+  --color-badge-data-5-bg: color-mix(in srgb, var(--color-data-5) 18%, var(--color-surface));
+  --color-badge-data-5-line: color-mix(in srgb, var(--color-data-5) 42%, var(--color-surface));
   --color-badge-data-5-ink: color-mix(in srgb, var(--color-data-5) 68%, var(--color-ink));
+  --color-metric-ok-bg: color-mix(in srgb, var(--color-ok) 28%, var(--color-surface));
+  --color-metric-ok-line: color-mix(in srgb, var(--color-ok) 42%, var(--color-surface));
+  --color-metric-warn-bg: color-mix(in srgb, var(--color-warn) 28%, var(--color-surface));
+  --color-metric-warn-line: color-mix(in srgb, var(--color-warn) 42%, var(--color-surface));
+  --color-metric-bad-bg: color-mix(in srgb, var(--color-bad) 28%, var(--color-surface));
+  --color-metric-bad-line: color-mix(in srgb, var(--color-bad) 42%, var(--color-surface));
+  --color-metric-neutral-bg: color-mix(in srgb, var(--color-neutral) 28%, var(--color-surface));
+  --color-metric-neutral-line: color-mix(in srgb, var(--color-neutral) 42%, var(--color-surface));
+  --color-metric-data-1-bg: color-mix(in srgb, var(--color-data-1) 28%, var(--color-surface));
+  --color-metric-data-1-line: color-mix(in srgb, var(--color-data-1) 42%, var(--color-surface));
+  --color-metric-data-2-bg: color-mix(in srgb, var(--color-data-2) 28%, var(--color-surface));
+  --color-metric-data-2-line: color-mix(in srgb, var(--color-data-2) 42%, var(--color-surface));
+  --color-metric-data-3-bg: color-mix(in srgb, var(--color-data-3) 28%, var(--color-surface));
+  --color-metric-data-3-line: color-mix(in srgb, var(--color-data-3) 42%, var(--color-surface));
+  --color-metric-data-4-bg: color-mix(in srgb, var(--color-data-4) 28%, var(--color-surface));
+  --color-metric-data-4-line: color-mix(in srgb, var(--color-data-4) 42%, var(--color-surface));
+  --color-metric-data-5-bg: color-mix(in srgb, var(--color-data-5) 28%, var(--color-surface));
+  --color-metric-data-5-line: color-mix(in srgb, var(--color-data-5) 42%, var(--color-surface));
   --color-badge-risk-low-bg: var(--color-risk-low-bg);
   --color-badge-risk-low-line: color-mix(in srgb, var(--color-risk-low) 45%, var(--color-risk-low-bg));
   --color-badge-risk-low-ink: var(--color-risk-low-ink);
@@ -296,22 +327,27 @@
     border-color: var(--color-line, currentColor);
   }
 
+  /* Figures align in columns: Geist has `tnum`. */
+  table {
+    font-variant-numeric: tabular-nums;
+  }
+
   button:not(:disabled),
   [role="button"]:not(:disabled) {
     cursor: pointer;
   }
 
   body {
-    @apply relative font-normal font-outfit z-1 bg-canvas;
+    @apply relative font-normal font-sans z-1 bg-canvas;
   }
 }
 
 /* Buttons. The primary one is Monkey blue and filled; the secondary one has a border. One primary action per view. */
 @utility mk-btn {
-  @apply inline-flex items-center justify-center gap-2 rounded-control bg-action px-4 py-2.5 text-sm font-semibold text-white transition enabled:hover:bg-action-hover focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/25 disabled:cursor-not-allowed disabled:bg-line disabled:text-ink-muted disabled:shadow-none;
+  @apply inline-flex items-center justify-center gap-2 rounded-control bg-action px-4 py-2.5 text-sm font-semibold text-on-action transition enabled:hover:bg-action-hover focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/25 disabled:cursor-not-allowed disabled:bg-line disabled:text-ink-muted disabled:shadow-none;
 }
 @utility mk-btn-secondary {
-  @apply inline-flex items-center justify-center gap-2 rounded-control border border-gray-300 bg-surface px-4 py-2.5 text-sm font-semibold text-ink transition enabled:hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/20 disabled:cursor-not-allowed disabled:border-transparent disabled:bg-line disabled:text-ink-muted disabled:shadow-none dark:border-gray-700 dark:enabled:hover:bg-gray-800;
+  @apply inline-flex items-center justify-center gap-2 rounded-control border border-line-control bg-surface px-4 py-2.5 text-sm font-semibold text-ink transition enabled:hover:bg-tint focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/20 disabled:cursor-not-allowed disabled:border-transparent disabled:bg-line disabled:text-ink-muted disabled:shadow-none;
 }
 @utility mk-btn-danger {
   @apply inline-flex items-center justify-center gap-2 rounded-control bg-bad px-4 py-2.5 text-sm font-semibold text-white transition enabled:hover:bg-bad/90 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-bad/25 disabled:cursor-not-allowed disabled:bg-line disabled:text-ink-muted disabled:shadow-none;
@@ -319,7 +355,7 @@
 
 /* Form controls (text input and select) used inside `app-field`. */
 @utility mk-input {
-  @apply h-10 w-full rounded-control border border-gray-300 bg-surface px-3 text-sm text-ink placeholder:text-ink-faint focus:border-action focus:outline-none focus:ring-2 focus:ring-action/20 disabled:cursor-not-allowed disabled:bg-tint disabled:text-ink-faint dark:border-gray-700;
+  @apply h-10 w-full rounded-control border border-line-control bg-surface px-3 text-sm text-ink placeholder:text-ink-faint focus:border-action focus:outline-none focus:ring-2 focus:ring-action/20 disabled:cursor-not-allowed disabled:bg-tint disabled:text-ink-faint;
 }
 
 /* Loading (D116). `mk-skeleton` is the block of `app-skeleton`: the `line` token as fill and a soft sweep of `surface` over it (readable on light and dark, no fixed colour).
@@ -352,7 +388,7 @@ button[aria-busy='true']:hover {
 .mk-btn[aria-busy='true'],
 .mk-btn[aria-busy='true']:hover {
   background-color: var(--color-action);
-  color: var(--color-white);
+  color: var(--color-on-action);
 }
 .mk-btn-danger[aria-busy='true'],
 .mk-btn-danger[aria-busy='true']:hover {
@@ -361,38 +397,39 @@ button[aria-busy='true']:hover {
 }
 .mk-btn-secondary[aria-busy='true'],
 .mk-btn-secondary[aria-busy='true']:hover {
-  border-color: var(--color-gray-300);
+  border-color: var(--color-line-control);
   background-color: var(--color-surface);
   color: var(--color-ink);
-}
-.dark .mk-btn-secondary[aria-busy='true'],
-.dark .mk-btn-secondary[aria-busy='true']:hover {
-  border-color: var(--color-gray-700);
 }
 [data-busy-fields] :is(input, textarea, select, button):disabled,
 [data-busy-fields] input:read-only {
   cursor: progress;
 }
 
-/* Dark mode: near-neutral graphite surfaces. Without a layer, so it wins over the theme tokens. The semantic tokens are redefined here and nowhere else. */
+/* Dark mode: blue-black surfaces (decision of Rod, MD-483; the first navy was too blue and light). Without a layer, so it wins over the theme tokens. The semantic tokens are redefined here and nowhere else.
+   Measured contrast (check-design-system.sh): ink on surface 16.3:1, ink-muted 6.8:1, ink-faint 5.9:1, action on surface 6.4:1, control border 3.5:1. Hierarchy: canvas darkest, panels one step up, tints barely lighter than the panel. */
 .dark {
-  --color-gray-950: #0b0d11;
-  --color-gray-900: #15181e;
-  --color-gray-800: #1f232b;
-  --color-gray-700: #2c313b;
-  --color-gray-dark: #1a1d24;
-  --color-canvas: #0e1116;
+  --color-gray-950: #03050a;
+  --color-gray-900: #0a0f1a;
+  --color-gray-800: #182133;
+  --color-gray-700: #26334d;
+  --color-gray-dark: #070b13;
+  --color-canvas: #05080f;
 
   --color-surface: var(--color-gray-900);
   --color-line: var(--color-gray-800);
-  --color-line-strong: var(--color-gray-600);
-  --color-ink: var(--color-gray-100);
-  --color-ink-muted: var(--color-gray-400);
-  --color-ink-faint: var(--color-gray-400);
-  --color-action: var(--color-brand-400);
+  --color-line-strong: #34466a;
+  --color-line-control: #556a90;
+  --color-ink: #e8edf5;
+  --color-ink-muted: #8e9bb3;
+  --color-ink-faint: #7f90ad;
+  --color-action: #4a9be0;
   --color-action-hover: var(--color-brand-300);
-  --color-tint: color-mix(in srgb, var(--color-brand-400) 12%, var(--color-gray-900));
-  --color-tint-strong: color-mix(in srgb, var(--color-brand-400) 22%, var(--color-gray-900));
+  /* Dark text on the light blue of `action`: 6.13:1 (white would be 2.98:1). Isolated here on purpose: Rod may change the dark primary button. */
+  --color-on-action: #05080f;
+  --color-brand-panel: #10264a;
+  --color-tint: color-mix(in srgb, var(--color-action) 8%, var(--color-surface));
+  --color-tint-strong: color-mix(in srgb, var(--color-action) 16%, var(--color-surface));
   --color-tint-ink: var(--color-brand-300);
   --color-data-1: var(--color-brand-300);
   --color-data-2: #3fc1b8;
@@ -418,36 +455,54 @@ button[aria-busy='true']:hover {
   --color-risk-critical-on: #450a0a;
   --color-risk-critical-bg: #4a1d1d;
   --color-risk-critical-ink: #fca5a5;
-  --color-badge-ok-bg: color-mix(in srgb, var(--color-ok) 8%, var(--color-surface));
-  --color-badge-ok-line: color-mix(in srgb, var(--color-ok) 28%, var(--color-surface));
-  --color-badge-warn-bg: color-mix(in srgb, var(--color-warn) 8%, var(--color-surface));
-  --color-badge-warn-line: color-mix(in srgb, var(--color-warn) 28%, var(--color-surface));
-  --color-badge-bad-bg: color-mix(in srgb, var(--color-bad) 8%, var(--color-surface));
-  --color-badge-bad-line: color-mix(in srgb, var(--color-bad) 28%, var(--color-surface));
-  --color-badge-neutral-bg: color-mix(in srgb, var(--color-neutral) 8%, var(--color-surface));
-  --color-badge-neutral-line: color-mix(in srgb, var(--color-neutral) 28%, var(--color-surface));
+  --color-badge-ok-bg: color-mix(in srgb, var(--color-ok) 18%, var(--color-surface));
+  --color-badge-ok-line: color-mix(in srgb, var(--color-ok) 42%, var(--color-surface));
+  --color-badge-warn-bg: color-mix(in srgb, var(--color-warn) 18%, var(--color-surface));
+  --color-badge-warn-line: color-mix(in srgb, var(--color-warn) 42%, var(--color-surface));
+  --color-badge-bad-bg: color-mix(in srgb, var(--color-bad) 18%, var(--color-surface));
+  --color-badge-bad-line: color-mix(in srgb, var(--color-bad) 42%, var(--color-surface));
+  --color-badge-neutral-bg: color-mix(in srgb, var(--color-neutral) 18%, var(--color-surface));
+  --color-badge-neutral-line: color-mix(in srgb, var(--color-neutral) 42%, var(--color-surface));
   --color-badge-ok-ink: color-mix(in srgb, var(--color-ok-ink) 72%, var(--color-ink));
   --color-badge-warn-ink: color-mix(in srgb, var(--color-warn-ink) 72%, var(--color-ink));
   --color-badge-bad-ink: color-mix(in srgb, var(--color-bad-ink) 72%, var(--color-ink));
   --color-badge-neutral-ink: var(--color-ink-muted);
   --color-badge-brand-ink: color-mix(in srgb, var(--color-tint-ink) 75%, var(--color-ink));
-  --color-badge-brand-bg: color-mix(in srgb, var(--color-action) 8%, var(--color-surface));
-  --color-badge-brand-line: color-mix(in srgb, var(--color-action) 28%, var(--color-surface));
-  --color-badge-data-1-bg: color-mix(in srgb, var(--color-data-1) 8%, var(--color-surface));
-  --color-badge-data-1-line: color-mix(in srgb, var(--color-data-1) 28%, var(--color-surface));
+  --color-badge-brand-bg: color-mix(in srgb, var(--color-action) 18%, var(--color-surface));
+  --color-badge-brand-line: color-mix(in srgb, var(--color-action) 42%, var(--color-surface));
+  --color-badge-data-1-bg: color-mix(in srgb, var(--color-data-1) 18%, var(--color-surface));
+  --color-badge-data-1-line: color-mix(in srgb, var(--color-data-1) 42%, var(--color-surface));
   --color-badge-data-1-ink: color-mix(in srgb, var(--color-data-1) 68%, var(--color-ink));
-  --color-badge-data-2-bg: color-mix(in srgb, var(--color-data-2) 8%, var(--color-surface));
-  --color-badge-data-2-line: color-mix(in srgb, var(--color-data-2) 28%, var(--color-surface));
+  --color-badge-data-2-bg: color-mix(in srgb, var(--color-data-2) 18%, var(--color-surface));
+  --color-badge-data-2-line: color-mix(in srgb, var(--color-data-2) 42%, var(--color-surface));
   --color-badge-data-2-ink: color-mix(in srgb, var(--color-data-2) 68%, var(--color-ink));
-  --color-badge-data-3-bg: color-mix(in srgb, var(--color-data-3) 8%, var(--color-surface));
-  --color-badge-data-3-line: color-mix(in srgb, var(--color-data-3) 28%, var(--color-surface));
+  --color-badge-data-3-bg: color-mix(in srgb, var(--color-data-3) 18%, var(--color-surface));
+  --color-badge-data-3-line: color-mix(in srgb, var(--color-data-3) 42%, var(--color-surface));
   --color-badge-data-3-ink: color-mix(in srgb, var(--color-data-3) 68%, var(--color-ink));
-  --color-badge-data-4-bg: color-mix(in srgb, var(--color-data-4) 8%, var(--color-surface));
-  --color-badge-data-4-line: color-mix(in srgb, var(--color-data-4) 28%, var(--color-surface));
+  --color-badge-data-4-bg: color-mix(in srgb, var(--color-data-4) 18%, var(--color-surface));
+  --color-badge-data-4-line: color-mix(in srgb, var(--color-data-4) 42%, var(--color-surface));
   --color-badge-data-4-ink: color-mix(in srgb, var(--color-data-4) 68%, var(--color-ink));
-  --color-badge-data-5-bg: color-mix(in srgb, var(--color-data-5) 8%, var(--color-surface));
-  --color-badge-data-5-line: color-mix(in srgb, var(--color-data-5) 28%, var(--color-surface));
+  --color-badge-data-5-bg: color-mix(in srgb, var(--color-data-5) 18%, var(--color-surface));
+  --color-badge-data-5-line: color-mix(in srgb, var(--color-data-5) 42%, var(--color-surface));
   --color-badge-data-5-ink: color-mix(in srgb, var(--color-data-5) 68%, var(--color-ink));
+  --color-metric-ok-bg: color-mix(in srgb, var(--color-ok) 28%, var(--color-surface));
+  --color-metric-ok-line: color-mix(in srgb, var(--color-ok) 42%, var(--color-surface));
+  --color-metric-warn-bg: color-mix(in srgb, var(--color-warn) 28%, var(--color-surface));
+  --color-metric-warn-line: color-mix(in srgb, var(--color-warn) 42%, var(--color-surface));
+  --color-metric-bad-bg: color-mix(in srgb, var(--color-bad) 28%, var(--color-surface));
+  --color-metric-bad-line: color-mix(in srgb, var(--color-bad) 42%, var(--color-surface));
+  --color-metric-neutral-bg: color-mix(in srgb, var(--color-neutral) 28%, var(--color-surface));
+  --color-metric-neutral-line: color-mix(in srgb, var(--color-neutral) 42%, var(--color-surface));
+  --color-metric-data-1-bg: color-mix(in srgb, var(--color-data-1) 28%, var(--color-surface));
+  --color-metric-data-1-line: color-mix(in srgb, var(--color-data-1) 42%, var(--color-surface));
+  --color-metric-data-2-bg: color-mix(in srgb, var(--color-data-2) 28%, var(--color-surface));
+  --color-metric-data-2-line: color-mix(in srgb, var(--color-data-2) 42%, var(--color-surface));
+  --color-metric-data-3-bg: color-mix(in srgb, var(--color-data-3) 28%, var(--color-surface));
+  --color-metric-data-3-line: color-mix(in srgb, var(--color-data-3) 42%, var(--color-surface));
+  --color-metric-data-4-bg: color-mix(in srgb, var(--color-data-4) 28%, var(--color-surface));
+  --color-metric-data-4-line: color-mix(in srgb, var(--color-data-4) 42%, var(--color-surface));
+  --color-metric-data-5-bg: color-mix(in srgb, var(--color-data-5) 28%, var(--color-surface));
+  --color-metric-data-5-line: color-mix(in srgb, var(--color-data-5) 42%, var(--color-surface));
   --color-badge-risk-low-bg: var(--color-risk-low-bg);
   --color-badge-risk-low-line: color-mix(in srgb, var(--color-risk-low) 45%, var(--color-risk-low-bg));
   --color-badge-risk-low-ink: var(--color-risk-low-ink);
@@ -485,10 +540,88 @@ button[aria-busy='true']:hover {
   @apply flex min-w-0 items-baseline gap-2;
 }
 @utility mk-stat-value {
-  @apply shrink-0 text-2xl leading-none font-semibold text-action;
+  @apply shrink-0 text-2xl leading-none font-semibold tabular-nums text-action;
 }
 @utility mk-stat-label {
   @apply min-w-0 text-sm text-ink-muted;
+}
+
+/* Metric card (app-metric-card, MD-483): a line icon inside a soft circle of the metric's colour. The circle is 56 px with a 28 % tint of the colour over `surface` and a 1 px line at 42 % (as vivid as `app-badge`); the icon (28 px) is the badge's strong tone. `--color-metric-X-bg|-line`; `check-design-system.sh` measures the icon on the circle (light and dark). `data-1..5` for a plain count, `ok|warn|bad|neutral` only when the metric IS that status (expired, failing). */
+@utility mk-metric-icon {
+  @apply inline-flex size-14 shrink-0 items-center justify-center rounded-full border;
+}
+@utility mk-metric-icon-ok {
+  border-color: var(--color-metric-ok-line);
+  background-color: var(--color-metric-ok-bg);
+  color: var(--color-badge-ok-ink);
+}
+@utility mk-metric-icon-warn {
+  border-color: var(--color-metric-warn-line);
+  background-color: var(--color-metric-warn-bg);
+  color: var(--color-badge-warn-ink);
+}
+@utility mk-metric-icon-bad {
+  border-color: var(--color-metric-bad-line);
+  background-color: var(--color-metric-bad-bg);
+  color: var(--color-badge-bad-ink);
+}
+@utility mk-metric-icon-neutral {
+  border-color: var(--color-metric-neutral-line);
+  background-color: var(--color-metric-neutral-bg);
+  color: var(--color-badge-neutral-ink);
+}
+@utility mk-metric-icon-data-1 {
+  border-color: var(--color-metric-data-1-line);
+  background-color: var(--color-metric-data-1-bg);
+  color: var(--color-badge-data-1-ink);
+}
+@utility mk-metric-icon-data-2 {
+  border-color: var(--color-metric-data-2-line);
+  background-color: var(--color-metric-data-2-bg);
+  color: var(--color-badge-data-2-ink);
+}
+@utility mk-metric-icon-data-3 {
+  border-color: var(--color-metric-data-3-line);
+  background-color: var(--color-metric-data-3-bg);
+  color: var(--color-badge-data-3-ink);
+}
+@utility mk-metric-icon-data-4 {
+  border-color: var(--color-metric-data-4-line);
+  background-color: var(--color-metric-data-4-bg);
+  color: var(--color-badge-data-4-ink);
+}
+@utility mk-metric-icon-data-5 {
+  border-color: var(--color-metric-data-5-line);
+  background-color: var(--color-metric-data-5-bg);
+  color: var(--color-badge-data-5-ink);
+}
+/* A row of metric cards: 4 per row on desktop, 2 on tablet, 1 on mobile; cards of a row share its height (the content stays vertically centred). `mk-metric-grid-3` is for a row of 3; `mk-metric-grid-6` is the compact row of six (6 from 1440 px with a divider between the two groups of three, 3 on a laptop or tablet, 2 on mobile). */
+@utility mk-metric-grid {
+  @apply grid grid-cols-1 items-stretch gap-4 *:min-w-0 sm:grid-cols-2 xl:grid-cols-4;
+}
+@utility mk-metric-grid-6 {
+  @apply grid grid-cols-2 items-stretch gap-3 *:min-w-0 md:grid-cols-3;
+  /* From 1440 px: one row, three cards, a column of its own for the divider (`mk-metric-divider`), three cards. The six cards keep the same width. */
+  @media (min-width: 1440px) {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) auto repeat(3, minmax(0, 1fr));
+    column-gap: 1rem;
+  }
+}
+/* Divider between two groups of cards in `mk-metric-grid-6`: its own grid element (an `aria-hidden` span between the third and the fourth card), 1 px `line-strong`, 65 % of the row and centred.
+   Its 1 rem margin on each side adds to the 1 rem column gap: exactly 2 rem (twice the gap between cards) to the card on the left and to the one on the right. Below 1440 px it does not exist. */
+@utility mk-metric-divider {
+  display: none;
+  @media (min-width: 1440px) {
+    display: block;
+    width: 1px;
+    height: 65%;
+    align-self: center;
+    margin-inline: 1rem;
+    background-color: var(--color-line-strong);
+  }
+}
+@utility mk-metric-grid-3 {
+  @apply grid grid-cols-1 items-stretch gap-4 *:min-w-0 sm:grid-cols-2 xl:grid-cols-3;
 }
 
 /* Support card: a soft brand tint with a tint border. For secondary figures next to the featured card; several per view are fine, unlike the featured one. */
@@ -497,7 +630,7 @@ button[aria-busy='true']:hover {
 }
 
 /* State card: a verdict or a notice that is itself a status. A faint tint of the status token over `surface` plus a full 1 px border of the same hue (never a side stripe); the text stays `ink`
-   (contrast of ink on the tint >= 13:1 in light and dark). Only for `ok`/`warn`/`bad`/`neutral`; brand tints carry no status. */
+   (contrast of ink on the tint >= 12:1 in light and dark). Only for `ok`/`warn`/`bad`/`neutral`; brand tints carry no status. */
 @utility mk-surface-state-ok {
   @apply rounded-card border shadow-soft;
   border-color: color-mix(in srgb, var(--color-ok) 35%, var(--color-surface));
@@ -760,10 +893,8 @@ textarea::placeholder {
     content: attr(data-label);
     display: block;
     margin-bottom: 0.125rem;
-    font-size: 0.6875rem;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
+    font-size: 0.75rem;
+    font-weight: 500;
     color: var(--color-ink-faint);
   }
 }
@@ -773,10 +904,8 @@ textarea::placeholder {
     content: attr(data-label);
     display: block;
     margin-bottom: 0.125rem;
-    font-size: 0.6875rem;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
+    font-size: 0.75rem;
+    font-weight: 500;
     color: var(--color-ink-faint);
   }
 }

@@ -31,8 +31,8 @@
           (click)="go(n)"
           [attr.aria-current]="n === page().page ? 'page' : null"
           [attr.aria-label]="'COMMON.TABLE.GO_TO_PAGE' | translate: { page: n }"
-          class="inline-flex h-9 min-w-9 items-center justify-center rounded-control border px-2 text-sm font-medium transition focus:outline-none focus-visible:ring-2 focus-visible:ring-action/40"
-          [class]="n === page().page ? 'border-action bg-action text-white' : 'border-line text-ink-muted hover:bg-tint'"
+          class="inline-flex h-9 min-w-9 items-center justify-center rounded-control border px-2 text-sm font-medium tabular-nums transition focus:outline-none focus-visible:ring-2 focus-visible:ring-action/40"
+          [class]="n === page().page ? 'border-action bg-action text-on-action' : 'border-line text-ink-muted hover:bg-tint'"
         >
           {{ n }}
         </button>

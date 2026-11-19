@@ -13,7 +13,7 @@
     <ng-content></ng-content>
 
     <!-- Brand panel (desktop) -->
-    <div class="relative items-center hidden w-full h-full lg:w-1/2 lg:grid bg-primary-500 dark:bg-white/5" data-testid="auth-brand-panel">
+    <div class="relative items-center hidden w-full h-full lg:w-1/2 lg:grid bg-brand-panel" data-testid="auth-brand-panel">
       <div class="flex items-center justify-center z-1">
         <div class="absolute right-0 top-0 -z-1 w-full max-w-[250px] xl:max-w-[450px]">
           <img src="/images/shape/grid-01.svg" alt="" />
@@ -26,7 +26,7 @@
           <a routerLink="/" class="block mb-4">
             <img width="190" height="40" src="/images/logo/logo-blanco.svg" alt="Monkey" />
           </a>
-          <p class="text-center text-white/90 dark:text-white/75" data-testid="auth-tagline">
+          <p class="text-center text-white/90" data-testid="auth-tagline">
             {{ 'AUTH.LAYOUT.TAGLINE' | translate }}
           </p>
         </div>
