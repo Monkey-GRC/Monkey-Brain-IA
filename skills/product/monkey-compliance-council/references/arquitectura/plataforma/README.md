@@ -29,7 +29,7 @@ Las guardas y el `TenantScope` también son transversales, pero tienen dueño pr
 | El sobre, los códigos de error, i18n, fechas, paginación, multi-select | `contracts/conventions.md` |
 | Variables de entorno de correo, S3 y cifrado | `datos/schema-implementacion.md` §4 |
 | Requisitos de seguridad | [`seguridad/plataforma.md`](../../seguridad/plataforma.md): `SEG-19` · `SEG-24` · `SEG-25` · `SEG-32` · `SEG-43` · `SEG-44` · `SEG-59` · `SEG-60` · `SEG-62` |
-| Decisiones (`D-n`) | [`datos/decisiones/plataforma.md`](../../datos/decisiones/plataforma.md): `D49` · `D106` · `D107` · `D108` · `D109` |
+| Decisiones (`D-n`) | [`datos/decisiones/plataforma.md`](../../datos/decisiones/plataforma.md): `D49` · `D106` · `D107` · `D108` · `D109` · `D125` |
 | Pendientes del comité (`P-n`) | ninguno propio |
 | Convenciones del código | `context/backend.md` |
 | Deuda vigente (3 `DT-n`; los frontends, `DT-99`) | [`deuda-tecnica/plataforma.md`](../../deuda-tecnica/plataforma.md) |

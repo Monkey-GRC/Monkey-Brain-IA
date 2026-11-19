@@ -33,6 +33,11 @@ emitir un veredicto.
 1. **Aislamiento por tenant:** ninguna consulta a una tabla con RLS se ejecuta fuera de
    `prisma.withScope(...)`, y nadie se conecta con `DATABASE_URL` (superusuario) en runtime. Un
    `WHERE tenant_id = ?` a mano no reemplaza a RLS (`modelo-datos.md` §4.3).
+1b. **Una transacción por caso de uso (D125):**
+   - Un caso de uso que llama a varios repositorios lo hace dentro de `TransactionRunner.run`.
+   - Dentro del `run` no hay `Promise.all` sobre la transacción, ni llamadas externas (correo, S3, HTTP, la sonda), ni
+     `catch` que trague un error de Postgres para seguir.
+   - Las pruebas nuevas cuentan las transacciones por petición.
 2. **Domain puro:** nada en `domain/` importa `@nestjs/*`, `@prisma/*`, `generated/prisma` ni
    ningún paquete de infraestructura.
 3. **Dirección de dependencias:** `presentation` solo importa de `application`;

@@ -26,6 +26,11 @@ flowchart LR
 Tres transacciones o más por petición, cada una con `BEGIN`, `set_config`, consulta y `COMMIT`. Las dos primeras no
 aportan nada al negocio: son el costo de verificar quién eres.
 
+> **Al 2026-11-19 (MD-219, MD-230, D125):** el guard valida la sesión en **una** transacción, y cuatro rutas
+> (`PATCH /v1/controls/:id`, `GET /v1/controls/:id/tests`, `GET /v1/evidence-requirements/:id/submissions`,
+> `GET /v1/services/:id`) abren una sola para el caso de uso: **2 por petición**. El diagrama y las cuentas de abajo
+> son el punto de partida de la auditoría; el resto de rutas sigue con 3 o más hasta que se apliquen MD-220 a MD-225.
+
 ## Dónde se atoraría, de mayor a menor riesgo
 
 | # | Punto | Qué pasa | Estimación |
@@ -41,7 +46,7 @@ aportan nada al negocio: son el costo de verificar quién eres.
 
 1. **Medir primero** ([`06-mejoras.md`](06-mejoras.md), M2): k6 con 100 req/s sostenidos y un pico de 500 logins en 30 s. Registrar p95, errores y
    conexiones en uso. Sin esto, todo lo siguiente es opinión.
-2. **Quitar las dos transacciones de la sesión** ([`autenticacion/06-mejoras.md`](../autenticacion/06-mejoras.md), M1): una consulta o caché de 10–30 s. Baja un tercio de la carga
+2. **Quitar las dos transacciones de la sesión** *(hecho en MD-219; y una transacción por caso de uso, D125, en 4 rutas: pendiente el resto)* ([`autenticacion/06-mejoras.md`](../autenticacion/06-mejoras.md), M1): una consulta o caché de 10–30 s. Baja un tercio de la carga
    a la base en todo el producto con poco código.
 3. **Fijar el pool** ([`06-mejoras.md`](06-mejoras.md), M1): `max` entre 20 y 30 (sin pasar de `max_connections` de Postgres menos las del Runner y
    migraciones). Más conexiones no arregla un cálculo lento: solo mueve la cola.

@@ -67,6 +67,17 @@ interior de otra:
    `app.user_role` para esa transacción (`modelo-datos.md` §4.4). Sin eso, RLS devuelve cero filas.
    Las búsquedas previas al tenant (login, canje, refresh) usan las funciones `SECURITY DEFINER`
    con `$queryRaw` y luego siguen con `withScope`.
+   **Un caso de uso que llama a más de un repositorio** abre **una** transacción con
+   `TransactionRunner.run(scope, async () => …)` (D125). Los `withScope` de dentro, con el mismo scope, la reutilizan.
+   El objetivo es que cada petición abra 2 transacciones: la del guard y la del caso de uso. Reglas:
+   - **En serie:** nada de `Promise.all` sobre la transacción, tampoco dentro de un repositorio.
+   - **Mismo scope:** un scope distinto es un error.
+   - **Timeout:** el `timeoutMs` se pide en el `run`. Un `withScope` interno que pida más tiempo falla.
+   - **Nada externo dentro:** correo, S3, la sonda o HTTP van antes o después del `run`, porque retienen la conexión.
+   - **Errores de Postgres:** no se atrapan para seguir dentro del `run`, porque la transacción queda abortada. Un
+     reintento por choque de unicidad va fuera del `run`.
+   - **Sin promesas sueltas:** nada de promesas sin `await` dentro del `run`, porque heredarían una transacción ya cerrada.
+   - **Medición:** con un spy sobre `$transaction` (ver `test/cumplimiento/transacciones-ruta.e2e-spec.ts`).
 7. **Controller** en `presentation/`. Solo mapea request → caso de uso → `ResponseDto` con el
    mapper. Todo endpoint exige sesión por defecto (`SessionAuthGuard` global); `@Public()` para lo
    abierto y `@Roles(...)` para restringir por rol. El usuario llega con `@CurrentUser()`.
