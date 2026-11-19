@@ -10,7 +10,7 @@ manejador.
 ```mermaid
 flowchart LR
     ok["Éxito<br/>{ statusCode, message, data }"]
-    er["Error<br/>{ statusCode, message, error: { code, details } }"]
+    er["Error<br/>{ statusCode, message, data: null, error: { code, fields? } }"]
 ```
 
 - **`message` se traduce** según `Accept-Language`; es para la persona.
@@ -27,10 +27,10 @@ sequenceDiagram
     participant UC as Caso de uso
     participant F as HttpExceptionFilter
     participant FE as Frontend
-    UC->>UC: lanza DomainError('CONNECTION_UNAVAILABLE', detalles)
+    UC->>UC: lanza DomainError('CONNECTION_UNAVAILABLE')
     UC->>F: la excepción sube sin tocar HTTP
     F->>F: traduce el código a su estado HTTP y su mensaje
-    F-->>FE: mismo sobre, con error.code y details
+    F-->>FE: mismo sobre, con error.code (y error.fields si es de validación)
 ```
 
 **El caso de uso no sabe de HTTP.** Lanza un error de dominio; traducirlo a un `409` o un `503` es trabajo del
@@ -72,11 +72,12 @@ El bucket **no es público** (SEG-44) y el contenido se valida de verdad, no por
 
 ## 5 · El correo
 
-Hoy solo salen dos: la **clave de acceso** de una empresa nueva (D99) y los de **contraseña** (enlace de
-recuperación y aviso de cambio, D101). Comparten la plantilla de marca, y el logo viaja **incrustado** en el
+Hoy salen cinco: la **clave de acceso** de una empresa nueva (D99), las **invitaciones** (el código de activación de una
+cuenta de empresa, D102 punto 14, y la de un `admin_monkey`, D117) y los de **contraseña** (enlace de recuperación y aviso
+de cambio, D101). Comparten la plantilla de marca, y el logo viaja **incrustado** en el
 mensaje, no como URL: así se ve aunque la dirección de la app no sea pública y aunque el cliente bloquee imágenes
 remotas. Todo lo demás que debería notificarse está en [Notificaciones](../notificaciones/README.md).
 
 ## Cómo verificarlo
 
-`contracts/conventions.md`, `Backend/src/common/filters/http-exception.filter.ts` y `Backend/src/i18n/`.
+`contracts/conventions.md`, `Backend/src/common/filters/http-exception.filter.ts` y `Backend/i18n/`.

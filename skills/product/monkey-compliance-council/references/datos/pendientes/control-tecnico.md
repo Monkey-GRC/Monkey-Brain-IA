@@ -36,7 +36,7 @@ cálculo de cobertura en nube; no bloquean el módulo de Cumplimiento.
 1. Licencia y forma de uso del motor (redistribuir o ofrecer como servicio). No verificado.
 2. Quién revisa el texto de IA antes de que llegue al cliente y quién responde por un falso positivo.
 
-**Qué depende:** columnas nuevas de `check_results` (recurso, región, detalle), carga de checks, `Evaluation` en nube y el paso 3 del onboarding para nube (DT-35).
+**Qué depende:** columnas nuevas de `check_results` (recurso, región, detalle), carga de checks, `Evaluation` en nube y el paso 3 del onboarding para nube (construido para AWS y GCP, D58 y D112).
 
 ---
 

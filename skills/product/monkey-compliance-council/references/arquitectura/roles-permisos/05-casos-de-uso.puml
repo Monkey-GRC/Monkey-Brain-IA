@@ -1,0 +1,52 @@
+@startuml
+' Diagrama UML de casos de uso de Roles y permisos. Fuente: 05-casos-de-uso.md (cada óvalo es un CU-ROL-nn).
+' Se genera con skills/process/monkey-docs/scripts/render-uml.sh → 05-casos-de-uso.svg. No editar el SVG a mano.
+!pragma layout smetana
+top to bottom direction
+skinparam shadowing false
+skinparam defaultFontName Helvetica
+skinparam packageStyle rectangle
+skinparam ArrowColor #4A5568
+skinparam usecase {
+  BackgroundColor #EEF4FB
+  BorderColor #013362
+}
+skinparam actor {
+  BorderColor #013362
+}
+
+actor "Persona con cuenta" as ConCuenta
+actor "admin_monkey" as AdminMonkey
+actor "Persona de Platform" as Platform
+actor "admin_empresa" as AdminEmpresa
+actor "auditor" as Auditor
+actor "Persona asignada\n(responsable · delegado)" as Asignada
+actor "responsable" as Responsable
+
+AdminMonkey -up-|> ConCuenta
+Platform -up-|> ConCuenta
+AdminEmpresa -up-|> Platform
+Auditor -up-|> Platform
+Asignada -up-|> Platform
+Responsable -up-|> Asignada
+
+rectangle "Monkey · Roles y permisos" {
+  usecase "CU-ROL-06\nRegistrar y cerrar\nuna observación" as CU6
+  usecase "CU-ROL-05\nLeer el cumplimiento\ncomo auditor" as CU5
+  usecase "CU-ROL-02\nAcotar lo que ve\nuna persona asignada" as CU2
+  usecase "CU-ROL-04\nRevisar una evidencia\no un veredicto" as CU4
+  usecase "CU-ROL-01\nAutorizar una petición" as CU1
+  usecase "CU-ROL-03\nPedir la vista técnica" as CU3
+}
+
+ConCuenta --> CU1
+Asignada --> CU2
+Responsable --> CU4
+AdminEmpresa --> CU4
+Platform --> CU3
+Auditor --> CU5
+Auditor --> CU6
+
+CU5 ..> CU3 : <<include>>
+CU2 ..> CU1 : <<extend>>\nrol responsable o delegado
+@enduml

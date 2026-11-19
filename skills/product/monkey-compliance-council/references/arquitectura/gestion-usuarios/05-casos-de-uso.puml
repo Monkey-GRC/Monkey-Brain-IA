@@ -1,0 +1,73 @@
+@startuml
+' Diagrama UML de casos de uso de Gestión de usuarios. Fuente: 05-casos-de-uso.md (cada óvalo es un CU-USR-nn).
+' Se genera con skills/process/monkey-docs/scripts/render-uml.sh → 05-casos-de-uso.svg. No editar el SVG a mano.
+!pragma layout smetana
+left to right direction
+skinparam shadowing false
+skinparam defaultFontName Helvetica
+skinparam packageStyle rectangle
+skinparam ArrowColor #4A5568
+skinparam usecase {
+  BackgroundColor #EEF4FB
+  BorderColor #013362
+}
+skinparam actor {
+  BorderColor #013362
+}
+
+actor "Persona de empresa" as Persona
+actor "Quien arma el equipo" as Gestor
+actor "admin_empresa" as AdminEmpresa
+actor "responsable" as Responsable
+actor "delegado · auditor" as Lector
+actor "admin_monkey" as AdminMonkey
+actor "Correo" as Correo <<sistema>>
+actor "Proceso programado" as Proceso <<sistema>>
+
+Persona <|-- Gestor
+Persona <|-- Lector
+Gestor <|-- AdminEmpresa
+Gestor <|-- Responsable
+
+rectangle "Monkey · Gestión de usuarios" {
+  usecase "CU-USR-11\nConsultar la asignación\ny «Mi trabajo»" as CU11
+  usecase "CU-USR-01\nInvitar a una persona" as CU1
+  usecase "CU-USR-03\nConsultar el equipo" as CU3
+  usecase "CU-USR-07\nGestionar grupos" as CU7
+  usecase "CU-USR-10\nAsignar el ejecutor" as CU10
+  usecase "CU-USR-02\nReenviar la invitación" as CU2
+  usecase "CU-USR-04\nEditar a una persona" as CU4
+  usecase "CU-USR-05\nDar de baja a una persona" as CU5
+  usecase "CU-USR-06\nReactivar a una persona" as CU6
+  usecase "CU-USR-08\nMover a un delegado" as CU8
+  usecase "CU-USR-09\nAsignar el dueño" as CU9
+  usecase "CU-USR-12\nConsultar la carga de trabajo" as CU12
+  usecase "CU-USR-13\nFijar el cupo de usuarios" as CU13
+  usecase "CU-USR-14\nInvitar a un administrador" as CU14
+  usecase "CU-USR-15\nDesactivar y reactivar\na un administrador" as CU15
+  usecase "CU-USR-16\nPurgar a un\nadministrador vencido" as CU16
+}
+
+Persona --> CU11
+Gestor --> CU1
+Gestor --> CU3
+Gestor --> CU7
+Responsable --> CU10
+AdminEmpresa --> CU2
+AdminEmpresa --> CU4
+AdminEmpresa --> CU5
+AdminEmpresa --> CU6
+AdminEmpresa --> CU8
+AdminEmpresa --> CU9
+AdminEmpresa --> CU12
+AdminMonkey --> CU13
+AdminMonkey --> CU14
+AdminMonkey --> CU15
+CU16 <-- Proceso
+CU1 --> Correo
+CU2 --> Correo
+CU14 --> Correo
+
+CU1 <.. CU2 : <<extend>>\nel correo no salió
+CU15 <.. CU16 : <<extend>>\nvencidos los 7 días
+@enduml

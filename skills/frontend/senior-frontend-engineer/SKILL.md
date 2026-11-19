@@ -25,7 +25,7 @@ archivos de `skills/frontend/` (un nivel arriba de esta carpeta); aquí se enlaz
 4. **Lee la feature vecina** como plantilla: `Frontend/.../features/companies`; en Platform, `compliance`, `team` o `services`.
 5. **Lo visual es de un sistema, no de la vista.** Colores, radios, tablas, tarjetas, diálogos y menú vienen de `../design-system/README.md` y se
    reutilizan (`data-table`, `app-card`, `donut`, `side-drawer`…); no se inventan estilos por vista. Un cambio de aspecto que afecte a las dos apps lo
-   ejecuta el subagente `frontend-design` y se sincroniza con `scripts/sync-design-system.sh`.
+   ejecuta el subagente `frontend-design` y se sincroniza con `skills/frontend/design-system/scripts/sync-design-system.sh`.
 
 ## 2. El mapa de cada app
 

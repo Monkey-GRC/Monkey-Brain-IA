@@ -2,7 +2,7 @@
 
 Responde: **¿qué pasa al dar un veredicto sobre una prueba manual?**
 
-`POST /v1/controls/:controlId/tests/:testId/verdicts` · **solo `admin_empresa`** (D96).
+`POST /v1/controls/:controlId/tests/:testId/verdicts` · `admin_empresa`, dueño (`responsable`) o ejecutor (`delegado`) del control (D121). Lo revisa después el dueño (si no lo registró él) o el `admin_empresa` (`PUT /v1/verdicts/:id/review`).
 
 ```mermaid
 sequenceDiagram
@@ -23,7 +23,7 @@ sequenceDiagram
     R->>DB: ¿hay observaciones abiertas del auditor? si sí, exige motivo de cierre
     R->>DB: busca todos los controles del servicio que llevan esta prueba y los activos de su dimensión
     R->>E: captureControlStates (foto ANTES)
-    R->>DB: crea una evaluación por cada control × activo, con la misma hora
+    R->>DB: crea el veredicto del test en el servicio (`pending`; aprobado de nacimiento si lo registra el `admin_empresa`, P34)
     R->>DB: lee la foto DESPUÉS para devolver el estado de la prueba
     R->>DB: insertAuditLog (rastro de auditoría)
     R->>E: recordControlStateChanges (foto DESPUÉS, compara, escribe eventos)
@@ -35,11 +35,11 @@ sequenceDiagram
 
 ## Qué mirar
 
-- **Un veredicto es del test en el servicio, no del control** (D85). Por eso se crean varias filas (control × activo)
-  con **la misma hora**.
-- **Todo en una transacción.** Evaluaciones, rastro de auditoría y eventos se confirman juntos o ninguno. Si el
+- **Un veredicto es del test en el servicio, no del control** (D85). Por eso hay **un solo veredicto** por registro
+  y su efecto vale en todos los controles que llevan la prueba.
+- **Todo en una transacción.** El veredicto, el rastro de auditoría y los eventos se confirman juntos o ninguno. Si el
   rastro falla, el veredicto no existe (D52).
-- **Nada se pisa.** Un veredicto nuevo agrega filas nuevas; el estado actual es «la más reciente».
+- **Nada se pisa.** Un veredicto nuevo agrega una fila nueva; el estado actual sale del más reciente y de sus revisiones (D121).
 - **Antes y después** (pasos 9 y 13): como el estado se deriva, para saber *si cambió* hay que comparar dos fotos
   del servicio. Es el patrón de D91, común a todas las escrituras.
 - Si el control lleva observaciones abiertas, el veredicto **se permite pero exige explicar por qué** (MD-154).

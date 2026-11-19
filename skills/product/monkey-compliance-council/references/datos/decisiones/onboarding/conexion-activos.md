@@ -6,7 +6,7 @@ Por qué este componente es como es. Lo vigente está en [`arquitectura/onboardi
 
 **Decisiones** (Carlos, 2026-10-01; **pendientes de ratificar con el comité**; ninguna toca cómo se
 calcula el cumplimiento). Es el registro de cada hueco que `contracts/onboarding/conexion-activos/README.md` dejaba abierto
-y cómo se cubrió. Lo que sigue siendo un parche está en **`deuda-tecnica/README.md`** (DT-1 a DT-36).
+y cómo se cubrió. Lo que sigue siendo un parche está en **`deuda-tecnica/README.md`** (DT-2 en adelante).
 
 **Cambios de schema** (migración 25, `asset_provisioning_schedule_frequency`, más el seed de las 6 capacidades):
 
@@ -42,7 +42,7 @@ y cómo se cubrió. Lo que sigue siendo un parche está en **`deuda-tecnica/READ
    - `simulated` (solo desarrollo y demostración): da por buena la conexión si las credenciales están completas
      y **nunca confirma que el activo opere**: al activar queda `warning` y la pantalla lo etiqueta «modo
      demostración». El backend **se niega a arrancar** con `simulated` en producción.
-   Cuando exista un conector real se agrega un tercer adaptador sin tocar los casos de uso (DT-1).
+   Cuando exista un conector real se agrega un tercer adaptador sin tocar los casos de uso (el de la nube, `runner`, es D58).
 10. **`GET /v1/services/{id}/technical-control`** devuelve en una lectura el escenario, las conexiones que
     aplican, el scope (declarado y conectado), `is_complete` y `probe_mode`. `POST /validate` añade `mode`
     (`demo` | `live`). Se añaden `GET /v1/assets/{id}` y el error `409 ASSET_NOT_ACTIVE` (programar sin activar).
@@ -88,7 +88,7 @@ evalúa cumplimiento sobre activos, no sobre conexiones.
    siguen siendo evidencia). `kind = other` son recursos que solo conoce la evaluación (usuarios, políticas…) y **no** se muestran como activos.
 4. **El sistema operativo es una inferencia.** AWS no dice el sistema operativo de una máquina; dice la **imagen** con la que se lanzó. Se infiere
    (`Ubuntu 22.04`, `Amazon Linux 2023`…) y se guarda con `os_source = image`; si la imagen no se puede leer o no se reconoce, queda **sin decir**
-   (`DT-59`). La versión exacta llega con el canal de agente (`DT-57`).
+   (`DT-59`). La versión exacta llega con el canal de agente (D113, hoy solo en servidores on-premise).
 5. **Seguridad.** Solo lectura; el error del proveedor nunca se registra ni se devuelve (puede traer datos de la cuenta); los atributos que entrega el
    trabajador se limpian (valores simples y cortos) antes de guardarse; máx. 500 recursos.
 
@@ -171,7 +171,7 @@ estaban en constantes del código (`technical-catalogs.ts`, `onboarding-catalogs
 6. **Logos.** Cada plataforma lleva su **logo en SVG**, un icono cuadrado a todo color y sin fondo, del mismo tamaño para todas y con su variante para tema oscuro (`<logo_key>.svg` y `<logo_key>-dark.svg`), guardado en la plataforma (`Frontend-Platform`); la base solo guarda `logo_key`. Se muestra con `<img>`: nunca se
    inyecta SVG como HTML. Accesibilidad: el **nombre de la plataforma va siempre como texto visible** y el logo es decorativo (`alt` vacío); el estado bloqueado se dice con texto y
    `aria-disabled`, no solo con opacidad; el contraste se cumple en tema claro y oscuro con la variante oscura del logo (sin baldosa de fondo ni filtros); el logo no se redibuja.
-7. **Consecuencia que conviene tener presente:** servidores, bases de datos y equipos quedan **bloqueados** hasta que exista el canal de agente (DT-57). El formulario provisional de
+7. **Consecuencia que conviene tener presente:** servidores, bases de datos y equipos quedan **bloqueados** hasta que exista su canal de agente (D113 abrió Linux y Windows en servidores on-premise; el resto sigue bloqueado). El formulario provisional de
    esas conexiones (DT-31, DT-56) deja de ofrecerse y la API lo rechaza: en desarrollo ya no se podrá dar de alta un servidor ni siquiera en modo simulado.
 
 **Qué cambia en el modelo** (`modelo/06-onboarding.md` §6.3): tablas nuevas `capability_platforms`, `platform_connection_methods`, `platform_regions`, `capability_frequencies` y

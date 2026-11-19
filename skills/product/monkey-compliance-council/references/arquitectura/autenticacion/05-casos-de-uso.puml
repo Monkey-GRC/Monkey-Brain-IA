@@ -1,0 +1,52 @@
+@startuml
+' Diagrama UML de casos de uso de Autenticación. Fuente: 05-casos-de-uso.md (cada óvalo es un CU-AUTH-nn).
+' Se genera con skills/process/monkey-docs/scripts/render-uml.sh → 05-casos-de-uso.svg. No editar el SVG a mano.
+!pragma layout smetana
+top to bottom direction
+skinparam shadowing false
+skinparam defaultFontName Helvetica
+skinparam packageStyle rectangle
+skinparam ArrowColor #4A5568
+skinparam usecase {
+  BackgroundColor #EEF4FB
+  BorderColor #013362
+}
+skinparam actor {
+  BorderColor #013362
+}
+
+actor "Persona sin cuenta\n(clave o código)" as Invitado
+actor "Persona con cuenta" as ConCuenta
+actor "Persona de Platform\n(responsable · delegado · auditor)" as Persona
+actor "admin_empresa" as AdminEmpresa
+actor "admin_monkey" as AdminMonkey
+actor "Correo" as Correo <<sistema>>
+
+Persona -up-|> ConCuenta
+AdminEmpresa -up-|> Persona
+AdminMonkey -up-|> ConCuenta
+
+rectangle "Monkey · Autenticación" {
+  usecase "CU-AUTH-01\nActivar cuenta" as CU1
+  usecase "CU-AUTH-02\nConfigurar segundo factor" as CU2
+  usecase "CU-AUTH-03\nIniciar sesión" as CU3
+  usecase "CU-AUTH-05\nMantener y cerrar la sesión" as CU5
+  usecase "CU-AUTH-06\nCambiar la contraseña" as CU6
+  usecase "CU-AUTH-07\nRecuperar la contraseña" as CU7
+  usecase "CU-AUTH-04\nGestionar dispositivos recordados" as CU4
+  usecase "CU-AUTH-08\nRestablecer el segundo\nfactor de otro" as CU8
+}
+
+Invitado --> CU1
+ConCuenta --> CU3
+ConCuenta --> CU5
+ConCuenta --> CU6
+ConCuenta --> CU7
+Persona --> CU4
+AdminEmpresa --> CU8
+CU7 --> Correo
+
+CU1 ..> CU2 : <<include>>
+CU2 ..> CU3 : <<extend>>\nsin segundo factor
+CU8 ..> CU2 : <<include>>\nen su próximo ingreso
+@enduml

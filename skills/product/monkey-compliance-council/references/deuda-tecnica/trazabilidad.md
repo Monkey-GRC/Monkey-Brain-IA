@@ -26,7 +26,7 @@ Parches vigentes de [Trazabilidad](../arquitectura/trazabilidad/README.md). Tabl
 
 🟠 Importante
 
-- **Qué está parchado:** el evento `control.state` (D91) lo escriben el veredicto de un test manual, la entrega y la revisión de una evidencia, aprobar una exclusión y lo que mide la sonda. **No lo escriben** otras escrituras que también pueden mover el estado de un control: conectar, dar de baja o reactivar un activo (cambia el universo de sus pruebas), desactivar un test, dar de baja un control o decidir un cambio de control (MD-156, aún sin construir), y el **vencimiento** de una exclusión, que se deriva al leer (`DT-72`).
+- **Qué está parchado:** el evento `control.state` (D91) lo escriben el veredicto de un test manual, la entrega y la revisión de una evidencia, aprobar una exclusión, editar las dimensiones de un control (`control_updated`) y lo que mide la sonda. **No lo escriben** otras escrituras que también pueden mover el estado de un control: conectar, dar de baja o reactivar un activo (cambia el universo de sus pruebas), desactivar un test, dar de baja un control, y el **vencimiento** de una exclusión, que se deriva al leer (`DT-72`).
 - **Por qué:** cada escritura tiene que tomar la foto de antes y llamar a `recordControlStateChanges`; se cableó en las que el ticket construía. Los activos viven en otra feature (`technical-control`) y el vencimiento no tiene un proceso que lo escriba.
 - **Qué lo cierra:** llamar al mismo registrador desde cada una de esas escrituras (con su causa) y, para el vencimiento, el proceso diario de `DT-72`. Mientras tanto el historial de un control puede omitir un cambio causado por una de ellas; el estado que se muestra siempre es el correcto porque se deriva.
 

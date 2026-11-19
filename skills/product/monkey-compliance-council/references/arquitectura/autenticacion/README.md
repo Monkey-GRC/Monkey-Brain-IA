@@ -28,4 +28,5 @@ Cualquier persona con cuenta (los 4 roles) y una persona sin cuenta que canjea u
 
 ## Contenido
 
-[`01-c4.md`](01-c4.md) · [`02-modelo.md`](02-modelo.md) · [`03-flujos.md`](03-flujos.md) · [`06-mejoras.md`](06-mejoras.md)
+[`01-c4.md`](01-c4.md) · [`02-modelo.md`](02-modelo.md) · [`03-flujos.md`](03-flujos.md) · [`04-historias.md`](04-historias.md) ·
+[`05-casos-de-uso.md`](05-casos-de-uso.md) · [`06-mejoras.md`](06-mejoras.md)

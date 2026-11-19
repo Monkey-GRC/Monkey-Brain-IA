@@ -353,9 +353,9 @@ Solo nube → `ac_01` · nube con servidores → `ac_01`+`ac_02`+`ac_03` · on-p
 `ac_02`/`ac_04` servidor · `ac_03`/`ac_05` base de datos · `ac_06` endpoint. El cliente ya no declara cuántos
 activos tiene (D60): los ve al conectar.
 
-**Honestidad: Automatizado ≠ Operativo.** Mientras no haya una sonda real, una conexión no puede declararse
+**Honestidad: Automatizado ≠ Operativo.** Mientras la comprobación no sea real (fuera del modo `runner` de la nube, D58), una conexión no puede declararse
 `operational`: la comprobación está `unavailable` (503, el activo sigue `pending`) o `simulated` (solo
-desarrollo y demostración, el activo queda en `warning`). Ver D46 y `deuda-tecnica/README.md` DT-1.
+desarrollo y demostración, el activo queda en `warning`). Ver D46.
 
 **El flujo de cada conexión es conectar → validar → activar → programar.**
 

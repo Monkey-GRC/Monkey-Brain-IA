@@ -1,0 +1,57 @@
+@startuml
+' Diagrama UML de casos de uso de Notificaciones. Fuente: 05-casos-de-uso.md (cada óvalo es un CU-NOT-nn).
+' Se genera con skills/process/monkey-docs/scripts/render-uml.sh → 05-casos-de-uso.svg. No editar el SVG a mano.
+' Los casos marcados «por construir» dependen de P39 (abierta) o de DT-83.
+!pragma layout smetana
+top to bottom direction
+skinparam shadowing false
+skinparam defaultFontName Helvetica
+skinparam packageStyle rectangle
+skinparam ArrowColor #4A5568
+skinparam usecase {
+  BackgroundColor #EEF4FB
+  BorderColor #013362
+}
+skinparam actor {
+  BorderColor #013362
+}
+
+actor "Persona con cuenta" as ConCuenta
+actor "Persona de Platform\n(responsable · delegado · auditor)" as Persona
+actor "responsable" as Responsable
+actor "admin_empresa" as AdminEmpresa
+actor "admin_monkey" as AdminMonkey
+actor "Monkey\n(eventos y planificador)" as Reloj <<sistema>>
+actor "Correo" as Correo <<sistema>>
+
+Persona -up-|> ConCuenta
+Responsable -up-|> Persona
+AdminEmpresa -up-|> Persona
+AdminMonkey -up-|> ConCuenta
+
+rectangle "Monkey · Notificaciones" {
+  usecase "CU-NOT-01\nEntregar la clave\nde acceso por correo" as CU1
+  usecase "CU-NOT-02\nInvitar a una persona\npor correo" as CU2
+  usecase "CU-NOT-03\nAvisar un evento\nde la contraseña" as CU3
+  usecase "CU-NOT-04\nComponer y entregar\nun correo" as CU4
+  usecase "CU-NOT-05\nAvisar a la cadena\nde un control\n(por construir · P39)" as CU5
+  usecase "CU-NOT-06\nConsultar mis avisos\ny preferencias\n(por construir · P39)" as CU6
+  usecase "CU-NOT-07\nAvisar del borrado\npróximo de una empresa\n(por construir · DT-83)" as CU7
+}
+
+AdminMonkey --> CU1
+AdminMonkey --> CU2
+Responsable --> CU2
+AdminEmpresa --> CU2
+ConCuenta --> CU3
+Persona --> CU6
+Reloj --> CU5
+Reloj --> CU7
+CU4 --> Correo
+
+CU1 ..> CU4 : <<include>>
+CU2 ..> CU4 : <<include>>
+CU3 ..> CU4 : <<include>>
+CU7 ..> CU4 : <<include>>
+CU5 ..> CU4 : <<include>>\nsi el canal es correo (P39)
+@enduml

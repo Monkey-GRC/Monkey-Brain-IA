@@ -20,7 +20,7 @@ aplicada en dev: la base compartida solo se migra desde `develop` (§7).
 ## 1. Arquitectura
 
 - **Una sola base de datos (`monkey`)** con **4 schemas de Postgres**: `catalog`, `platform`,
-  `tenant`, `audit` (D25). Se eliminó el modelo viejo de `prisma/central/` + `prisma/tenant/`
+  `tenant`, `audit` (D25). Se eliminó el modelo viejo de las carpetas prisma/central + prisma/tenant
   (dos bases, dos configs, dos clientes).
 - **RLS sobre `tenant_id`** aísla a los clientes, no bases separadas. El caso `dedicated`
   (D14/D24) sigue siendo una réplica física en otra base, pero su aprovisionamiento **no se ha
@@ -207,7 +207,7 @@ filtrarían a otra petición del pool): `app.tenant_id`, `app.user_id`, `app.use
 7. `user_activation_codes` (D95, D96): patrón normal por `company_id` (el de la cuenta a activar). `code_hash` es HMAC con `TOKEN_HASH_PEPPER`, como `access_keys`.
 8. `trusted_devices` (D123): patrón normal por `company_id`, RLS forzada. `token_hash` es HMAC con `TOKEN_HASH_PEPPER`.
 
-**Búsquedas previas al tenant** (login, canje de clave, refresh, API key): cuatro funciones
+**Búsquedas previas al tenant** (login, canje de clave, refresh; `find_api_key` existe pero ningún endpoint autentica aún con API key): cuatro funciones
 `SECURITY DEFINER`, angostas, con `search_path` fijo y `REVOKE … FROM PUBLIC; GRANT EXECUTE … TO
 monkey_app`: `platform.find_login_candidates(email)`, `find_access_key(code_hash)`,
 `find_session_by_token(refresh_token_hash)` y `find_api_key(key_hash)`. Se llaman con `$queryRaw`
@@ -215,7 +215,7 @@ monkey_app`: `platform.find_login_candidates(email)`, `find_access_key(code_hash
 sigue con RLS normal. El email es único global (D29), así que el login devuelve a lo sumo un
 usuario.
 
-**Otras funciones `SECURITY DEFINER` (mismo patrón: angostas, `search_path` fijo, `REVOKE … FROM PUBLIC; GRANT EXECUTE … TO monkey_app`):** `platform.find_mfa_challenge(token_hash)` (D94), `platform.find_activation_code(code_hash)` (D95, D96; antes de conocer el tenant) y `platform.find_trusted_device(token_hash)` (D123: cerrar sesión sin sesión vigente olvida igual el dispositivo; devuelve solo `id`, `company_id` y `user_id` de uno vigente).
+**Otras funciones `SECURITY DEFINER` (mismo patrón: angostas, `search_path` fijo, `REVOKE … FROM PUBLIC; GRANT EXECUTE … TO monkey_app`):** `platform.find_mfa_challenge(token_hash)` (D94), `platform.find_activation_code(code_hash)` (D95, D96; antes de conocer el tenant) `platform.find_password_reset_token(token_hash)` (D101; devuelve `id`, `company_id` y `user_id`) y `platform.find_trusted_device(token_hash)` (D123: cerrar sesión sin sesión vigente olvida igual el dispositivo; devuelve solo `id`, `company_id` y `user_id` de uno vigente).
 
 **Columnas denormalizadas por RLS:** `sessions`, `user_groups` y `client_control_assignments` llevan `company_id`
 propio (el ER solo llegaba a la empresa vía `user_id`), para que la política sea una comparación

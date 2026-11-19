@@ -92,8 +92,9 @@ porque son texto de un estándar y viven en la misma base (§3.5, D25).
 
 ## 6. Control Técnico (antes, Componente 3 del onboarding; desde D89 va después de evaluar los riesgos del servicio)
 
-> **Provisional (D48):** la parte de «conectar» no coincide con cómo funciona la sonda real (el cliente instala un agente y
-> Monkey lee lo que el agente reporta; no se entregan credenciales). Se rediseña con D71 (DT-32 a DT-36).
+> **Cómo se conecta hoy:** la nube (AWS y GCP) con un rol de solo lectura que el cliente crea en su cuenta (D58, D112); un servidor
+> Linux o Windows on-premise con un agente de la sonda que el cliente instala con un comando y Monkey lee (D113; no se entregan
+> credenciales). Bases de datos, equipos y servidores en la nube siguen bloqueados («próximamente», D67).
 
 El cliente conecta su infraestructura real. Elige la plataforma del catálogo (no declara dónde vive, D92), y por cada
 conexión del catálogo AC-01…AC-06 corre conectar → validar → activar → programar. El
@@ -101,7 +102,7 @@ cliente nunca ve el nombre real del motor de monitoreo detrás ("sonda",
 "capacidad automática").
 
 El paso ya no es del onboarding (D89) y se da por hecho con la primera conexión (D92); conectar sistemas se recomienda pero se puede dejar
-para después (D46). Hoy no hay conectores reales: la comprobación es `unavailable` o `simulated` y **nunca se
+para después (D46). La comprobación de la nube es real (la hace el trabajador, `PROBE_MODE=runner`); en los otros modos es `unavailable` o `simulated` y **nunca se
 finge una conexión** (Automatizado ≠ Operativo).
 
 **Entidades:** `assets`, `automated_capabilities`.

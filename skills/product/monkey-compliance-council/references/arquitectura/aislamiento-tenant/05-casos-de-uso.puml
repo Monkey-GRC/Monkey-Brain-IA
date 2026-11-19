@@ -1,0 +1,45 @@
+@startuml
+' Diagrama UML de casos de uso de Aislamiento multi-tenant. Fuente: 05-casos-de-uso.md (cada óvalo es un CU-TEN-nn).
+' Se genera con skills/process/monkey-docs/scripts/render-uml.sh → 05-casos-de-uso.svg. No editar el SVG a mano.
+!pragma layout smetana
+top to bottom direction
+skinparam shadowing false
+skinparam defaultFontName Helvetica
+skinparam packageStyle rectangle
+skinparam ArrowColor #4A5568
+skinparam usecase {
+  BackgroundColor #EEF4FB
+  BorderColor #013362
+}
+skinparam actor {
+  BorderColor #013362
+}
+
+actor "Persona sin sesión" as SinSesion
+actor "Persona de Platform\n(admin_empresa · responsable\ndelegado · auditor)" as Persona
+actor "admin_monkey" as AdminMonkey
+actor "CI · auditor de seguridad" as Verificador
+actor "PostgreSQL\n(políticas RLS)" as PG <<sistema>>
+
+rectangle "Monkey · Aislamiento multi-tenant" {
+  usecase "CU-TEN-01\nDeclarar la empresa\nde la transacción" as CU1
+  usecase "CU-TEN-02\nLeer o modificar datos\nde la empresa" as CU2
+  usecase "CU-TEN-03\nEscribir un registro enlazado\na otro de la empresa" as CU3
+  usecase "CU-TEN-04\nIdentificar a la persona antes\nde conocer su empresa" as CU4
+  usecase "CU-TEN-05\nAdministrar el catálogo\ny las empresas" as CU5
+  usecase "CU-TEN-06\nVerificar el aislamiento" as CU6
+  usecase "CU-TEN-07\nRegistrar una empresa\ncon base dedicada (por construir)" as CU7
+}
+
+Persona --> CU2
+SinSesion --> CU4
+AdminMonkey --> CU5
+AdminMonkey --> CU7
+Verificador --> CU6
+CU1 --> PG
+
+CU2 ..> CU1 : <<include>>
+CU3 ..> CU2 : <<extend>>\nla escritura lleva FK
+CU4 ..> CU1 : <<include>>\ncon el company_id hallado
+CU5 ..> CU1 : <<include>>
+@enduml

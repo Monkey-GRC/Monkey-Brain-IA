@@ -1,151 +1,90 @@
 # Monkey-Brain-IA
 
-El cerebro de Monkey: contexto de producto, contratos, skills y agentes para trabajar los repos del proyecto con IA.
-Es Markdown con front-matter YAML y un índice en JSON (`manifest.json`); no depende de ninguna herramienta, aunque
-está preparado para **Claude Code**.
-
-## Qué cubre
+El cerebro de Monkey: el producto, los contratos, la arquitectura y las reglas con las que se trabajan sus repos con IA.
+Es Markdown (más un índice en `manifest.json`) y está preparado para **Claude Code**, que se abre **siempre desde aquí**.
+Vive como carpeta hermana de los repos de código:
 
 | Repo | Qué es |
 |---|---|
-| `Backend` | La API (NestJS, Clean Architecture por features, Prisma, Postgres con RLS). |
-| `Frontend` | El **admin interno**: empresas, usuarios y catálogo maestro GRC. |
-| `Frontend-Platform` | La **plataforma del cliente**: onboarding, equipo y estado de cumplimiento. |
-| `monkey-cis-sync` | Sincroniza el catálogo de checks de la sonda. Hoy es una carpeta de scripts Python, **no un repo git**. |
-
-Este repo es independiente del código de producto. Se usa como carpeta **hermana** de los demás
-(`Monkey/Backend/`, `Monkey/Frontend/`… junto a `Monkey/Monkey-Brain-IA/`). Claude Code se abre **siempre desde aquí**.
+| `Backend` | La API (NestJS, Clean Architecture por features, Prisma, Postgres con RLS) |
+| `Frontend` | **Monkey Admin**, el panel interno: empresas, cuentas y catálogo maestro |
+| `Frontend-Platform` | **Monkey Platform**, la aplicación del cliente: onboarding, equipo y cumplimiento |
+| `monkey-cis-sync` | Scripts que sincronizan el catálogo de checks de la sonda (no es un repo git) |
 
 ## Por dónde empezar
 
-| Si eres… | Empieza por |
+| Si quieres… | Lee |
 |---|---|
-| Una IA a punto de trabajar | [`CLAUDE.md`](CLAUDE.md): reglas que no se rompen y la tabla «qué leer según la tarea» |
-| Alguien que mantiene el cerebro | [`STANDARD.md`](STANDARD.md): un dato, un dueño; tamaños; IDs; cierre de tarea |
-| Alguien que busca un dato del producto | [`references/README.md`](skills/product/monkey-compliance-council/references/README.md): mapa de carpetas del conocimiento |
-| Una herramienta que descubre recursos | [`manifest.json`](manifest.json) |
+| Trabajar con IA en el proyecto (las reglas que no se rompen y qué leer según la tarea) | [`CLAUDE.md`](CLAUDE.md) |
+| Saber qué existe de un módulo o dónde está un dato del producto | [`references/README.md`](skills/product/monkey-compliance-council/references/README.md) y el [índice de arquitectura](skills/product/monkey-compliance-council/references/arquitectura/README.md) |
+| Conocer un endpoint (cuerpo, errores, roles) | [`contracts/`](contracts/README.md) |
+| Ver la infraestructura (VPS, contenedores, despliegue) | [`plataforma/infraestructura/`](skills/product/monkey-compliance-council/references/arquitectura/plataforma/infraestructura/README.md) |
+| Mantener el cerebro (un dato un dueño, tamaños, IDs, formato, automatización) | [`STANDARD.md`](STANDARD.md) |
 
-## Mapa del repo
+## Qué hay en cada carpeta
 
-```mermaid
-flowchart LR
-    B([Monkey-Brain-IA])
-    B --> CL[CLAUDE.md<br/>reglas y ruteo]
-    B --> ST[STANDARD.md<br/>cómo se mantiene]
-    B --> MF[manifest.json<br/>índice]
-    B --> CX[context/<br/>código tal como está]
-    B --> CT[contracts/<br/>forma de cada endpoint]
-    B --> AS[assets/<br/>fuente del comité]
-    B --> AG[agents/<br/>roles y subagentes]
-    B --> SK[skills/]
-    B -.-> CD[.claude/<br/>permisos, hooks, symlinks]
-    SK --> SP[process/<br/>flujo de trabajo]
-    SK --> SB[backend/<br/>recetas NestJS]
-    SK --> SF[frontend/<br/>recetas Angular]
-    SK --> SQ[product/<br/>el Consejo de compliance]
-    SQ --> RF[references/<br/>arquitectura · datos · seguridad<br/>deuda-tecnica · producto]
+| Carpeta | Qué hay |
+|---|---|
+| `skills/product/monkey-compliance-council/references/` | El conocimiento del producto: `arquitectura/` (un módulo por carpeta), `datos/` (modelo, decisiones, pendientes), `seguridad/`, `deuda-tecnica/`, `producto/` |
+| `contracts/` | La forma de cada endpoint y de cada enum; se escribe **antes** que el código |
+| `context/` | El código **tal como está** (`backend.md`, `frontend.md`) |
+| `assets/` | Los documentos del **comité funcional**: mandan sobre todo lo demás ([precedencia](CLAUDE.md#precedencia-si-dos-fuentes-se-contradicen)) |
+| `skills/process/` | El flujo de trabajo: `monkey-dev-flow`, `-preflight`, `-closeout`, `-registry`, `-security-review`, `-ui-copy`, `-docs` |
+| `skills/backend/`, `skills/frontend/` | Recetas técnicas y el sistema de diseño (`frontend/design-system/`) |
+| `agents/` | Los subagentes (ver abajo) |
+| `.claude/` | Solo Claude Code: permisos, hooks y enlaces a `skills/` y `agents/` |
+
+## Tareas habituales
+
+| Quiero… | Cómo |
+|---|---|
+| Hacer un ticket (feature, fix, endpoint, pantalla) | `/monkey-dev` en Claude Code: [`monkey-dev-flow`](skills/process/monkey-dev-flow/SKILL.md) clasifica, delega, verifica y cierra |
+| Saber qué está decidido de un módulo antes de tocarlo | Skill `monkey-preflight <módulo>` |
+| Registrar una decisión, un pendiente, una deuda o un requisito de seguridad | Skill `monkey-registry` |
+| Documentar las historias y los casos de uso de un módulo | Skill [`monkey-docs`](skills/process/monkey-docs/SKILL.md) (sección siguiente) |
+| Comprobar que el cerebro no tiene nada roto | `python3 skills/process/monkey-closeout/scripts/check-brain.py` y `check-doc-drift.py`; o el subagente `docs-guardian` |
+
+> Claude **no hace commits, pushes ni PRs**: deja los cambios sin commitear y dice en qué repos.
+
+## Historias de usuario, casos de uso y su PDF
+
+Cada módulo de `arquitectura/` tiene `04-historias.md` y `05-casos-de-uso.md`; el diagrama UML de casos de uso está al lado,
+en PlantUML (`05-casos-de-uso.puml`) con su imagen (`05-casos-de-uso.svg`). El formato y las reglas (de dónde sale el
+contenido, nada se inventa) están en la skill [`monkey-docs`](skills/process/monkey-docs/SKILL.md); el ejemplo de referencia
+es [Autenticación](skills/product/monkey-compliance-council/references/arquitectura/autenticacion/04-historias.md).
+
+```bash
+# 1. Regenerar los diagramas UML (después de editar un .puml). Necesita Java 17+; baja PlantUML la primera vez.
+skills/process/monkey-docs/scripts/render-uml.sh
+
+# 2. Exportar a PDF las historias y los casos de uso de un módulo (portada, historias, diagrama y casos)
+skills/process/monkey-docs/scripts/export-pdf.sh autenticacion
+#    → exports/autenticacion-historias-y-casos-de-uso-<fecha>.pdf
+
+# 3. O todos los módulos que ya los tienen
+skills/process/monkey-docs/scripts/export-pdf.sh --all
 ```
 
-| Carpeta | Qué hay | Detalle |
-|---|---|---|
-| `context/` | `backend.md`, `frontend.md`: convenciones y mapa de features **del código tal como está** | |
-| `contracts/` | Request, response y errores de cada endpoint; `conventions.md` (sobre, errores, i18n, paginación) y `enums/` | [`contracts/README.md`](contracts/README.md) |
-| `assets/` | Documentos del **comité funcional**: la fuente de verdad (ver más abajo) | |
-| `agents/` | Un archivo por rol; son subagentes reales en Claude Code | [Equipo de agentes](#equipo-de-agentes) |
-| `skills/process/` | `monkey-dev-flow`, `-preflight`, `-closeout`, `-registry`, `-security-review`, `-ui-copy` | |
-| `skills/backend/`, `skills/frontend/` | Recetas técnicas; cada `senior-*-engineer` las enruta | `type: recipe` (no son skills sueltas) |
-| `skills/product/monkey-compliance-council/` | El **Consejo**: qué exige cada marco, modelo de datos, decisiones, pendientes, deuda, seguridad | [`references/README.md`](skills/product/monkey-compliance-council/references/README.md) |
-| `.claude/` | Solo para Claude Code: permisos, hooks y symlinks a `skills/` y `agents/` | `settings.json` |
+El PDF necesita Node y Google Chrome. `exports/` y `tools/` no se versionan: el PDF es la entrega para el comité o un
+auditor; la fuente es siempre el cerebro. En Jira, cada módulo tiene una épica «Historias · <Módulo>» con una historia por
+`HU-…` (Autenticación: [MD-247](https://rod2408.atlassian.net/browse/MD-247)).
 
-## Cómo se trabaja una tarea
+## Agentes
 
-La sesión principal ejecuta la skill `monkey-dev-flow` (`/monkey-dev`); los subagentes son trabajadores.
-Los pasos detallados están en [`skills/process/monkey-dev-flow/SKILL.md`](skills/process/monkey-dev-flow/SKILL.md).
-
-```mermaid
-flowchart TD
-    T([Tarea]) --> C{¿Trivial?}
-    C -- sí --> I
-    C -- no --> P[Preflight del módulo<br/>contrato · P-n · DT · SEG]
-    P --> Q{¿Depende de una<br/>P-n abierta?}
-    Q -- sí --> U[Preguntar al usuario]
-    U --> P
-    Q -- no --> K[Contrato primero<br/>en contracts/]
-    K --> I[Implementar<br/>backend-senior / frontend-senior]
-    I --> V[qa<br/>PASS o FAIL]
-    V -- FAIL --> I
-    V -- PASS --> A[architecture-reviewer]
-    A --> S{¿Superficie<br/>de seguridad?}
-    S -- sí --> R[monkey-security-review]
-    S -- no --> Z
-    R --> Z[monkey-closeout<br/>contrato · D/P/DT/SEG · docs]
-    Z --> F([Cambios sin commitear<br/>commitea el usuario])
-```
-
-> Claude **no hace commits, pushes ni PRs**: lo bloquean `permissions.deny` y un hook.
-
-## Equipo de agentes
-
-```mermaid
-flowchart TD
-    U([Usuario]) <--> M[Sesión principal<br/>skill monkey-dev-flow]
-    M --> BS[backend-senior<br/>Backend · monkey-cis-sync]
-    M --> FS[frontend-senior<br/>Frontend · Frontend-Platform]
-    M --> QA[qa<br/>verifica, no escribe código]
-    M --> AR[architecture-reviewer<br/>capas y contrato]
-    M -. consulta .-> PO[product-owner<br/>qué y en qué orden]
-    M -. consulta .-> WZ[wazuh-integration-expert<br/>sonda, solo lectura]
-```
+La sesión principal coordina (skill `monkey-dev-flow`); los subagentes trabajan y no se coordinan entre sí.
 
 | Agente | Hace | No hace |
 |---|---|---|
-| `backend-senior` · `frontend-senior` | Implementan lo que se les asigna, siguiendo las recetas del repo | Decidir alcance o prioridad |
-| `qa` | Prueba punto a punto con peticiones y flujos reales; devuelve PASS o FAIL con el caso mínimo | Escribir o corregir código de producción |
-| `architecture-reviewer` | Revisa un cambio ya hecho contra las capas y el contrato; devuelve violaciones con `archivo:línea` | Reescribir código |
-| `product-owner` | Clasifica MUST / SHOULD / LATER / NO BUILD con el marco del Consejo | Tocar código |
-| `wazuh-integration-expert` | Explica la sonda y su integración | Actuar por su cuenta; un cambio de puertos, firewall o credenciales siempre se pregunta al usuario |
+| `backend-senior` · `frontend-senior` | Implementan lo asignado, con las recetas del repo | Decidir alcance o prioridad |
+| `frontend-design` | Sistema de diseño y que las dos apps se vean idénticas | Lógica, rutas, contratos |
+| `qa` | Verifica el cambio contra su contrato; PASS o FAIL con el caso mínimo | Escribir código |
+| `architecture-reviewer` | Revisa capas, imports, `withScope` y contrato; violaciones con `archivo:línea` | Reescribir código |
+| `docs-guardian` | Mantiene la documentación al día: enlaces, rutas, registros, índices, contratos frente al código | Tocar código o decidir |
+| `product-owner` | Qué se construye y en qué orden (MUST / SHOULD / LATER / NO BUILD) | Tocar código |
+| `wazuh-integration-expert` | Explica la sonda y su integración (solo lectura) | Actuar por su cuenta |
 
-El rol `tech-lead` (`agents/tech-lead.md`) queda como referencia: hoy lo ejecuta la sesión principal.
-Todo lo que deba escalarse va **al usuario que usa la herramienta en ese momento**, nunca a una persona fija.
+El formato de skills y agentes, cómo los carga Claude Code y las convenciones de diagramas están en
+[`STANDARD.md`](STANDARD.md#10-formato-y-carga-en-claude-code).
 
-## Las fuentes del comité (`assets/`)
-
-`assets/` no es una carpeta de adjuntos: son los documentos del **comité funcional** y mandan sobre todo lo demás.
-
-```mermaid
-flowchart LR
-    A[assets/<br/>documentos del comité] -->|gana ante una discrepancia| R[references/*.md<br/>transcripciones]
-    R --> M[modelo de datos<br/>y contracts/]
-    M --> C[código existente]
-```
-
-La precedencia completa está en [`CLAUDE.md`](CLAUDE.md#precedencia-si-dos-fuentes-se-contradicen). El inventario de fuentes
-(qué define cada una y quién la consume) está en `modelo-datos.md` §0 y en el bloque `sources` de `manifest.json`.
-Parte de ellas vive fuera de este repo, en la carpeta `Monkey/`, porque incluyen datos operativos o credenciales.
-
-Dos avisos:
-
-- `conexion_api_wazuh_monkey.txt` contiene credenciales: no se lee, no se copia a ningún repo.
-- La sonda y el motor de nube son **confidenciales frente al cliente final**: en producto se dice «sonda» o «capacidad automática»
-  (regla 1 de `CLAUDE.md`).
-
-## Cómo se carga en Claude Code
-
-| Pieza | Dónde vive | Cómo se registra |
-|---|---|---|
-| Reglas permanentes | `CLAUDE.md` | Se carga al arrancar |
-| Permisos y hooks | `.claude/settings.json` + `.claude/hooks/` | Claude Code los lee y recarga solos |
-| Skills | `skills/process/`, `skills/backend/senior-*`, `skills/frontend/senior-*`, `skills/product/` | Symlinks en `.claude/skills/` |
-| Subagentes | `agents/*.md` (frontmatter: `name`, `description`, `tools`, `model`) | Symlinks en `.claude/agents/` |
-
-Para ver qué se cargó en una sesión: `/memory` y `/status`.
-
-## Convenciones de formato
-
-- Cada archivo de `agents/` y `skills/` lleva front-matter YAML (`id`, `name`, `description`, `type`) y Markdown plano.
-- Los `path` de `manifest.json` son relativos a esta carpeta.
-- Una skill nueva va en su categoría (`process/`, `backend/`, `frontend/`, `product/`), nunca suelta en la raíz de `skills/`.
-- El contenido de `skills/`, `agents/`, `references/` y `contracts/` es portable; **`.claude/` es específico de Claude Code**.
-- Excepción: `skills/product/monkey-compliance-council/` conserva su formato original de Skill (`SKILL.md` con `name`/`description` + `references/`);
-  cualquier herramienta puede leer igual el Markdown de sus `references/`.
-- Los diagramas se escriben en **Mermaid**.
+> **Confidencial:** la sonda y el motor de nube no se nombran ante el cliente final (regla 1 de `CLAUDE.md`), y ningún
+> archivo de credenciales se lee ni se copia (regla 2).

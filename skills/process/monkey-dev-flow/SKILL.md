@@ -108,8 +108,9 @@ cada repo contra su rama de integración y devuelve los comandos que prueban **s
 
 ## 7. Revisar arquitectura y seguridad, en paralelo con `qa`
 
-`qa`, `architecture-reviewer` (capas, imports entre features, `withScope`, contrato respetado) y, si la clase incluye
-seguridad, `monkey-security-review` se lanzan **a la vez**: los tres leen el mismo cambio y ninguno escribe código. Una
+`qa`, `architecture-reviewer` (capas, imports entre features, `withScope`, contrato respetado), **`docs-guardian`**
+(enlaces, rutas y registros citados, contratos y estados de implementación frente al código; solo edita el cerebro) y, si la
+clase incluye seguridad, `monkey-security-review` se lanzan **a la vez**: los tres leen el mismo cambio y ninguno escribe código. Una
 violación vuelve al senior con la corrección puntual; la sesión principal no reescribe código de producción. Si una
 corrección cambia código, `qa` vuelve a verificar **solo** lo que tocó esa corrección.
 

@@ -4,15 +4,14 @@ Propuestas; lo aprobado pasa a `DT-n` o a una `D-n`.
 
 | # | Mejora | Prio | Esfuerzo |
 |---|---|---|---|
-| M1 | Nadie dispara la purga de empresas vencidas | B | M |
+| M1 | ~~Nadie dispara la purga de empresas vencidas~~ · **Resuelta** | — | — |
 | M2 | La base dedicada se ofrece y no existe | B | L |
 | M3 | Recuperar una empresa sin administrador activo | B | M |
 
-## M1 · La purga no se ejecuta sola
-`PurgeExpiredCompanies` existe como caso de uso y `GET /companies/pending-purge` las lista, pero nada dentro de
-`Backend/src/` lo invoca de forma periódica. Es el mismo hueco de planificación que
-[`control-tecnico/06-mejoras.md`](../control-tecnico/06-mejoras.md) (M1): conviene resolver los dos juntos, con un
-solo mecanismo y con bloqueo entre instancias.
+## M1 · Resuelta: la purga corre sola y con varias instancias
+`CompanyPurgeScheduler` la corre cada `COMPANY_PURGE_INTERVAL_MINUTES` (60 por defecto) y `PurgeExpiredCompaniesUseCase`
+borra cada empresa con su propio candado: si otra réplica ya la tomó, la salta (`skipped`), y si algo falla la empresa
+queda archivada y se reintenta en la siguiente pasada (una sola transacción). Comprobado en el código el 2026-11-18.
 
 ## M2 · La base dedicada
 El formulario tiene el check y el registro lo rechaza (`DEDICATED_DATABASE_NOT_AVAILABLE`). Está bien no fingirlo,

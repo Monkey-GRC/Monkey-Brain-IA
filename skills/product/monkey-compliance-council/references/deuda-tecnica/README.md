@@ -30,15 +30,16 @@ la cierra). Los ID (`DT-n`) no se reutilizan. Si una deuda depende del comité, 
 | Archivo | Fichas | El módulo que tendría que arreglarlo |
 |---|---|---|
 | [`autenticacion.md`](autenticacion.md) | 3 | [Autenticación](../arquitectura/autenticacion/README.md) |
-| [`catalogo-maestro.md`](catalogo-maestro.md) | 6 | [Catálogo maestro](../arquitectura/catalogo-maestro/README.md) |
-| [`control-tecnico.md`](control-tecnico.md) | 25 | [Control técnico](../arquitectura/control-tecnico/README.md) |
+| [`catalogo-maestro.md`](catalogo-maestro.md) | 5 | [Catálogo maestro](../arquitectura/catalogo-maestro/README.md) |
+| [`control-tecnico.md`](control-tecnico.md) | 20 | [Control técnico](../arquitectura/control-tecnico/README.md) |
 | [`cumplimiento.md`](cumplimiento.md) | 6 | [Cumplimiento](../arquitectura/cumplimiento/README.md) |
 | [`empresas.md`](empresas.md) | 5 | [Empresas](../arquitectura/empresas/README.md) |
-| [`gestion-usuarios.md`](gestion-usuarios.md) | 2 | [Gestión de usuarios](../arquitectura/gestion-usuarios/README.md) |
-| [`notificaciones.md`](notificaciones.md) | 2 | [Notificaciones](../arquitectura/notificaciones/README.md) |
-| [`onboarding.md`](onboarding.md) | 18 | [Onboarding](../arquitectura/onboarding/README.md) y sus tres componentes |
+| [`gestion-usuarios.md`](gestion-usuarios.md) | 3 | [Gestión de usuarios](../arquitectura/gestion-usuarios/README.md) |
+| [`notificaciones.md`](notificaciones.md) | 1 | [Notificaciones](../arquitectura/notificaciones/README.md) |
+| [`onboarding.md`](onboarding.md) | 15 | [Onboarding](../arquitectura/onboarding/README.md) y sus tres componentes |
 | [`plataforma.md`](plataforma.md) | 3 | [Plataforma](../arquitectura/plataforma/README.md) |
-| [`trazabilidad.md`](trazabilidad.md) | 3 | [Trazabilidad](../arquitectura/trazabilidad/README.md) |
+| [`roles-permisos.md`](roles-permisos.md) | 1 | [Roles y permisos](../arquitectura/roles-permisos/README.md) |
+| [`trazabilidad.md`](trazabilidad.md) | 4 | [Trazabilidad](../arquitectura/trazabilidad/README.md) |
 | [`entrega.md`](entrega.md) | 6 | **Ninguno**: pruebas, CI, despliegue, respaldos y runtime |
 
 **La regla para clasificar una deuda nueva:** va al módulo **donde está el código que hay que cambiar**. Si toca
@@ -60,9 +61,6 @@ Pueden causar daño o engaño si se ignoran.
 
 | ID | Qué | Módulo |
 |---|---|---|
-| [DT-1](control-tecnico.md#dt-1--la-sonda-es-simulada-o-no-está-disponible) | La sonda es simulada o no está disponible | [Control técnico](control-tecnico.md) |
-| [DT-32](control-tecnico.md#dt-32--no-hay-vínculo-activo--agente) | No hay vínculo activo ↔ agente | [Control técnico](control-tecnico.md) |
-| [DT-33](control-tecnico.md#dt-33--aislamiento-entre-empresas-sin-imponer) | Aislamiento entre empresas sin imponer | [Control técnico](control-tecnico.md) |
 | [DT-43](control-tecnico.md#dt-43--el-motor-de-nube-se-probó-en-el-mismo-servidor-que-la-sonda-y-con-llaves-estáticas-del-cliente-guardadas-allí) | El motor de nube se probó en el mismo servidor que la sonda y con llaves estáticas del cliente guardadas allí | [Control técnico](control-tecnico.md) |
 
 ### 🟠 Importantes
@@ -75,16 +73,11 @@ Limitan el producto o al equipo.
 | [DT-3](onboarding.md#dt-3--ac_04-a-ac_06-se-completaron-por-analogía) | `ac_04` a `ac_06` se completaron por analogía | [Onboarding](onboarding.md) |
 | [DT-4](onboarding.md#dt-4--credenciales-por-conexión-definidas-por-desarrollo) | Credenciales por conexión definidas por desarrollo | [Onboarding](onboarding.md) |
 | [DT-5](plataforma.md#dt-5--llave-de-cifrado-en-el-env) | Llave de cifrado en el `.env` | [Plataforma](plataforma.md) |
-| [DT-9](onboarding.md#dt-9--responsible_id-se-acepta-en-la-api-pero-no-hay-forma-de-crear-cargos) | `responsible_id` se acepta en la API pero no hay forma de crear cargos | [Onboarding](onboarding.md) |
-| [DT-10](notificaciones.md#dt-10--la-ui-promete-te-avisaremos-cuando-la-evaluación-automática-esté-disponible-y-no-existe-ningún-aviso) | La UI promete «te avisaremos» cuando la evaluación automática esté disponible, y no existe ningún aviso | [Notificaciones](notificaciones.md) |
 | [DT-12](onboarding.md#dt-12--descripción-del-sistema-el-archivo-se-guarda-d51-pero-no-se-procesa) | Descripción del Sistema: el archivo se guarda (D51) pero no se procesa | [Onboarding](onboarding.md) |
 | [DT-20](entrega.md#dt-20--las-pruebas-automáticas-están-a-medias-en-los-repositorios) | Las pruebas automáticas están a medias en los repositorios | [Entrega](entrega.md) |
 | [DT-21](plataforma.md#dt-21--traducciones-al-inglés-hechas-por-desarrollo) | Traducciones al inglés hechas por desarrollo | [Plataforma](plataforma.md) |
 | [DT-22](empresas.md#dt-22--base-de-datos-dedicada--no-disponible) | Base de datos dedicada → «no disponible» | [Empresas](empresas.md) |
-| [DT-25](catalogo-maestro.md#dt-25--ver-el-catálogo-maestro-soc-2-en-monkey-admin-y-poder-crear-un-control-riesgo-o-causa-nuevos) | Ver el catálogo maestro SOC 2 en Monkey Admin y poder crear un control, riesgo o causa nuevos | [Catálogo maestro](catalogo-maestro.md) |
 | [DT-26](empresas.md#dt-26--los-marcos-se-contratan-solo-al-registrar-la-empresa) | Los marcos se contratan solo al registrar la empresa | [Empresas](empresas.md) |
-| [DT-34](control-tecnico.md#dt-34--cobertura-honesta-de-plataformas) | Cobertura honesta de plataformas | [Control técnico](control-tecnico.md) |
-| [DT-35](onboarding.md#dt-35--conexión-a-la-nube-diferida) | Conexión a la nube diferida | [Onboarding](onboarding.md) |
 | [DT-36](entrega.md#dt-36--el-env-de-pruebas-usa-el-superusuario-de-la-base-de-la-sonda-y-un-usuario-de-api-con-permisos-amplios) | El `.env` de pruebas usa el superusuario de la base de la sonda y un usuario de API con permisos amplios | [Entrega](entrega.md) |
 | [DT-37](autenticacion.md#dt-37--el-límite-de-intentos-con-la-clave-de-acceso-vive-en-la-memoria-de-la-instancia) | El límite de intentos con la clave de acceso vive en la memoria de la instancia | [Autenticación](autenticacion.md) |
 | [DT-38](catalogo-maestro.md#dt-38--las-categorías-de-cada-marco-siguen-siendo-las-5-de-soc-2) | Las categorías de cada marco siguen siendo las 5 de SOC 2 | [Catálogo maestro](catalogo-maestro.md) |
@@ -96,7 +89,6 @@ Limitan el producto o al equipo.
 | [DT-50](control-tecnico.md#dt-50--el-intérprete-check_results--evaluations-solo-cubre-el-motor-de-nube) | El intérprete `check_results → evaluations` solo cubre el motor de nube | [Control técnico](control-tecnico.md) |
 | [DT-51](control-tecnico.md#dt-51--el-trabajador-usa-un-proxy-de-docker-que-filtra-por-ruta-no-por-contenido) | El trabajador usa un proxy de Docker que filtra por ruta, no por contenido | [Control técnico](control-tecnico.md) |
 | [DT-54](entrega.md#dt-54--el-backend-el-ci-y-el-dockerfile-corren-en-node-20) | El Backend, el CI y el `Dockerfile` corren en Node 20 | [Entrega](entrega.md) |
-| [DT-57](control-tecnico.md#dt-57--el-canal-de-agente-solo-existe-como-diseño) | El canal de agente solo existe como diseño: | [Control técnico](control-tecnico.md) |
 | [DT-59](control-tecnico.md#dt-59--el-sistema-operativo-de-un-servidor-de-la-nube-es-una-inferencia) | El sistema operativo de un servidor de la nube es una inferencia | [Control técnico](control-tecnico.md) |
 | [DT-60](control-tecnico.md#dt-60--sin-límite-de-uso-ni-cola-justa-en-la-comprobación-y-la-evaluación) | Sin límite de uso ni cola justa en la comprobación y la evaluación | [Control técnico](control-tecnico.md) |
 | [DT-61](control-tecnico.md#dt-61--las-llaves-base-de-aws-identidad-monkey-audit-son-de-larga-vida-y-viven-en-varios-sitios) | Las llaves base de AWS (identidad `monkey-audit`) son de larga vida y viven en varios sitios: | [Control técnico](control-tecnico.md) |
@@ -120,6 +112,7 @@ Pendientes sin urgencia.
 
 | ID | Qué | Módulo |
 |---|---|---|
+| [DT-112](roles-permisos.md#dt-112--los-grupos-de-permiso-por-rol-están-repetidos-en-cada-pantalla-de-platform) | Los grupos de permiso por rol están repetidos en cada pantalla de Platform | [Roles y permisos](roles-permisos.md) |
 | [DT-110](autenticacion.md#dt-110--validar-la-sesión-cuesta-dos-transacciones-por-petición) | Validar la sesión cuesta dos transacciones por petición | [Autenticación](autenticacion.md) |
 | [DT-111](autenticacion.md#dt-111--bcrypt-sin-tope-de-comparaciones-simultáneas-ante-ráfagas-de-login) | `bcrypt` sin tope de comparaciones simultáneas ante ráfagas de login | [Autenticación](autenticacion.md) |
 | [DT-109](trazabilidad.md#dt-109--technical-control-importa-el-registrador-de-cambios-de-estado-desde-dentro-de-compliance) | `technical-control` importa el registrador de cambios de estado desde dentro de `compliance` | [Trazabilidad](trazabilidad.md) |

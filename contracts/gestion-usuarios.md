@@ -207,7 +207,7 @@ Se pueden combinar. No cambia el rol.
 |---|---|
 | **Quién** | `admin_empresa` |
 | **Éxito** | `200` con `invitation` |
-| **Errores** | `403` · `404` · `409 USER_ALREADY_ACTIVE` |
+| **Errores** | `403` · `403 ACCOUNT_INACTIVE` · `404` · `409 USER_ALREADY_ACTIVE` |
 
 #### Request
 Sin cuerpo.
@@ -290,7 +290,7 @@ Un grupo tiene un nombre y un líder; cada persona (salvo `admin_empresa` y `aud
 |---|---|
 | **Quién** | `admin_empresa` |
 | **Éxito** | `200` |
-| **Errores** | `403` · `404` · `409 GROUP_NAME_TAKEN` · `409 GROUP_RESERVED` · `409 GROUP_NOT_EMPTY` (solo si se expone el borrado) |
+| **Errores** | `403` · `404` · `409 GROUP_NAME_TAKEN` · `409 GROUP_RESERVED` |
 
 #### Request
 | Campo | Tipo | Obligatorio | Regla |
@@ -532,7 +532,6 @@ Cada `control_assignment.set` lleva `resource = 'control_assignment'` y, dentro 
 | 409 | `USER_HAS_ASSIGNMENTS` | Se desactiva o mueve a quien tiene controles, sin `confirm_unassign` (`error.controls_count`) |
 | 409 | `TEAM_LEADER_INACTIVE` | Se reactiva a un `delegado` cuyo responsable no está `active` ni `pending` |
 | 409 | `RESPONSIBLE_HAS_DELEGATES` | Se desactiva a un `responsable` con delegados activos o pendientes (`error.delegates_count`) |
-| 409 | `GROUP_NOT_EMPTY` | Se intenta borrar un grupo con miembros |
 | 409 | `EXECUTOR_NOT_IN_TEAM` | El ejecutor no es un delegado del equipo del dueño |
 | 409 | `OWNER_NOT_ELIGIBLE` | El dueño no es un `responsable` (ni el propio `admin_empresa`) activo o pendiente de la empresa |
 | 409 | `CONTROL_RETIRED` | Se asigna un control dado de baja |
@@ -556,7 +555,7 @@ Cada `control_assignment.set` lleva `resource = 'control_assignment'` y, dentro 
 | Revisión de evidencia | `evidence_reviewer_role` admite `responsable`; la lógica de dos niveles es MD-194 |
 | Baja con aviso (MD-191) | `PATCH /v1/users/{id}`: `RESPONSIBLE_HAS_DELEGATES` (la confirmación no lo salta), `USER_HAS_ASSIGNMENTS` con `confirm_unassign` también al desactivar (el delegado queda sin ejecutor; el responsable sin delegados y el administrador dejan sus controles «Sin asignar»), `TEAM_LEADER_INACTIVE` al reactivar a un delegado sin líder vigente, `is_internal`, y una entrada `control_assignment.set` por control al desactivar o mover (también en el movimiento de MD-189). Crear, mover y reactivar a un delegado bloquean la fila de su responsable (`FOR SHARE`), y la baja del responsable la suya (`FOR UPDATE`): nunca queda un delegado vigente bajo un responsable inactivo. SEG-74 cumplido |
 | Asignación de dueño y ejecutor (MD-192, 2026-11-12) | `GET /v1/assignments` (en `compliance`: reutiliza el cálculo de estado por servicio y `canSeeControl`; número fijo de consultas por servicio) y `PUT /v1/assignments/owner` y `/executor` (en `team`). «Sin asignar» es **no tener fila** en `client_control_assignments`: `owner_id: null` la borra. Las escrituras van en lote (como mucho 4 sentencias). Orden de errores: persona `404`, control `404`, (ejecutor) control ajeno `403`, `CONTROL_RETIRED`, `OWNER_NOT_ELIGIBLE` o `EXECUTOR_NOT_IN_TEAM`; un `admin_monkey` como dueño es `404` (RLS lo oculta). Bloqueos: actor y dueño o ejecutor en `KEY SHARE` por id (paso 1), relectura de estado, grupo y líder, luego las filas de los controles `FOR NO KEY UPDATE` por id (paso 4b: dos asignaciones al mismo control se turnan y la baja de un control no se cuela) y las asignaciones por id. El clonado no crea asignaciones. Pruebas: `test/equipo/asignacion.e2e-spec.ts` |
-| Visibilidad por dueño y ejecutor (MD-193, 2026-11-17) | El `responsable` y el `delegado` ven y tocan solo sus controles (dueño o ejecutor activo) en controles, pruebas, evidencia, riesgos y causas, observaciones, hallazgos y servicios, y reciben el resumen de lo suyo (D118). Sin controles, listas vacías; lo ajeno de la empresa es `403`, lo de otra empresa `404`; `view=technical` es `403`. El `delegado` entra en lectura al resumen, los riesgos, los servicios y los hallazgos. La regla vive en `compliance/domain/controls/control-access.ts` (`services` y `technical-control` la repiten en su repositorio). `DT-87` cerrada; SEG-22, SEG-66, SEG-70 y SEG-76 cumplidos. Pruebas: la matriz rol × recurso de `test/equipo/equipo.e2e-spec.ts` y los e2e de cada recurso |
+| Visibilidad por dueño y ejecutor (MD-193, 2026-11-17) | El `responsable` y el `delegado` ven y tocan solo sus controles (dueño o ejecutor activo) en controles, pruebas, evidencia, riesgos y causas, observaciones, hallazgos y servicios, y reciben el resumen de lo suyo (D118). Sin controles, listas vacías; lo ajeno de la empresa es `403`, lo de otra empresa `404`; `view=technical` es `403`. El `delegado` entra en lectura al resumen, los riesgos, los servicios y los hallazgos. La regla vive en `compliance/domain/controls/control-access.ts` (`services` y `technical-control` la repiten en su repositorio). la deuda del acotamiento provisional quedó cerrada; SEG-22, SEG-66, SEG-70 y SEG-76 cumplidos. Pruebas: la matriz rol × recurso de `test/equipo/equipo.e2e-spec.ts` y los e2e de cada recurso |
 | Revisión en dos niveles (MD-194, 2026-11-17) | Evidencia: la revisan el `responsable` dueño (lo que no subió él) y el `admin_empresa`, una revisión por rol, y el estado combina las dos (un rechazo gana). Veredicto manual no documental (D121): se registra (ejecutor, dueño o admin; el del admin nace aprobado) y se revisa igual (`PUT /v1/verdicts/{id}/review`), en `test_verdicts` y `test_verdict_reviews`, inmutables (SEG-83). SEG-67 cumplido. Pruebas: `test/cumplimiento/revision-evidencia.e2e-spec.ts` y `veredictos.e2e-spec.ts` |
 | «Mi trabajo» y carga de trabajo (MD-195, 2026-11-17) | `GET /v1/me/work` (responsable y delegado) y `GET /v1/team/workload` (admin_empresa), en `compliance/*/work/`; reutilizan el estado por servicio de `GET /v1/assignments`, el módulo de alcance y el avance del resumen (D122, `summarizeControls`). Pruebas: `test/equipo/trabajo.e2e-spec.ts` |
 | Grupos (MD-189) | `GET`/`POST`/`PATCH /v1/groups`: el responsable crea su equipo y el administrador el de un responsable o un grupo de responsables; `user_groups.kind` (`group_kind`) con un índice único parcial por líder (un equipo por responsable); «Responsables» reservado (`GROUP_RESERVED`, `GROUP_NAME_TAKEN`); mover un delegado con `PATCH /v1/users/{id}` (`group_id`, `confirm_unassign`, `USER_HAS_ASSIGNMENTS`) |

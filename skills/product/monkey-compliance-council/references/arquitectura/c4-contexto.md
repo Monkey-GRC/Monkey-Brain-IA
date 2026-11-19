@@ -24,7 +24,7 @@ flowchart TB
     monkey -- "envía correos" --> correo
     monkey -- "guarda y descarga evidencia" --> almacen
     monkey -- "evalúa con credenciales temporales" --> nube
-    monkey -. "mide con la sonda<br/>(provisional, DT-32…36)" .-> servidores
+    monkey -. "mide con la sonda<br/>(servidores Linux y Windows)" .-> servidores
 ```
 
 ## Qué mirar aquí

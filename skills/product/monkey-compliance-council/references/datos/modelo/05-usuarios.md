@@ -66,7 +66,7 @@ Puede subir evidencia, pero **no es su foco**. Que quien sube también revise es
 1. **Lo crea solo `admin_empresa`**, desde la gestión de usuarios de su empresa, para una auditoría concreta. `admin_monkey` no crea auditores.
 2. **Su cuenta pertenece a la empresa** (`users.company_id`). Por eso ve únicamente su empresa y no existe ninguna excepción de aislamiento para él. Cuando termina su trabajo, la empresa lo desactiva (`status = inactive`, `CC6.3`).
 3. **Ve todo el cumplimiento de su empresa, en solo lectura**: todos los servicios, sus controles, tests, evidencias y el audit trail, con la **vista técnica** (códigos de requisito y de control, resultados por check).
-4. **La vista técnica es del auditor y del `admin_empresa`** (D81, mientras no se definan los permisos por pantalla: `P3`). El `responsable` y el `delegado` ven solo la vista de negocio, de lo suyo.
+4. **La vista técnica es del auditor y del `admin_empresa`** (D81; `P3` cerrada por D102: no hay Excel por pantalla y manda la matriz de §5.5). El `responsable` y el `delegado` ven solo la vista de negocio, de lo suyo.
 5. **Escribe observaciones** (§7.6), que llegan al dueño y al ejecutor del control; descarga evidencias y exporta reportes. **No valida** la evidencia, no crea ni edita controles ni riesgos, y no ejecuta tests.
 6. **MFA TOTP obligatoria** (§5.3).
 
@@ -234,7 +234,7 @@ erDiagram
 
 > **MFA es un requisito de seguridad sin excepciones.** Es TOTP con 10 códigos de recuperación y se exige en el ingreso de todos los roles (D94, D102); `MFA_REQUIRED=false` solo se admite fuera de producción. Un dispositivo recordado (D123, SEG-84) no la quita: es un segundo factor ya verificado en ese navegador, vence a los 30 días y se revoca al cambiar la contraseña o la MFA.
 
-La autorización se verifica **en cada request** (*"no confiar en el frontend"*), con caché de 5 min.
+La autorización se verifica **en cada request** (*"no confiar en el frontend"*), sin caché: la sesión y el usuario se leen de la base en cada petición (D124).
 
 ### 5.4 Responsables organizacionales
 

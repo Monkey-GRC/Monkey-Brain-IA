@@ -26,7 +26,7 @@ También es el orden de lectura. Un número con decimal es un **componente**.
 |---|---|---|---|
 | **1** | Este archivo | La idea, el vocabulario y el mapa de código | 5 min |
 | **2** | [`01-c4.md`](01-c4.md) | Quién participa y qué piezas tocan el módulo | 15 min |
-| **3** | [**Motor**](motor/README.md) → [`01-reglas.md`](motor/01-reglas.md) | Las reglas del cálculo, con un ejemplo con números | 25 min |
+| **3** | [**Motor**](motor/README.md) → [`reglas.md`](motor/reglas.md) | Las reglas del cálculo, con un ejemplo con números | 25 min |
 | **4** | [`03-flujos.md`](03-flujos.md) | Las dos clases de operación y el patrón común de escritura | 10 min |
 | 4.1 | ↳ [Controles](controles/README.md) · [flujos](controles/03-flujos.md) | Leer la lista y el detalle de los controles de un servicio | 10 min |
 | 4.2 | ↳ [Resumen](resumen/README.md) · [flujos](resumen/03-flujos.md) | El estado por marco y categoría, y el período auditado | 10 min |
@@ -36,8 +36,10 @@ También es el orden de lectura. Un número con decimal es un **componente**.
 | 4.6 | ↳ [Observaciones](observaciones/README.md) · [flujos](observaciones/03-flujos.md) | Lo que escribe el auditor y cómo se atiende | 5 min |
 | 4.7 | ↳ [Riesgos](riesgos/README.md) · [flujos](riesgos/03-flujos.md) | Riesgos, causas, evaluación 5×5 y tratamiento | 15 min |
 | **5** | [`02-modelo.md`](02-modelo.md) | Qué tablas se leen y cuáles se escriben en cada operación | 15 min |
-| **6** | [`06-mejoras.md`](06-mejoras.md) | Lo que conviene revisar del módulo | libre |
-| **7** | [`07-estudio.md`](07-estudio.md) | Ejercicios para comprobar que lo entendiste | libre |
+| **6** | [`04-historias.md`](04-historias.md) | Las historias de usuario y sus criterios de aceptación | 20 min |
+| **7** | [`05-casos-de-uso.md`](05-casos-de-uso.md) | Los casos de uso, sus flujos y el diagrama UML | 20 min |
+| **8** | [`06-mejoras.md`](06-mejoras.md) | Lo que conviene revisar del módulo | libre |
+| **9** | [`07-estudio.md`](07-estudio.md) | Ejercicios para comprobar que lo entendiste | libre |
 
 La otra puerta de entrada de hechos no es de este módulo: los resultados de la sonda los escribe
 [Control técnico](../control-tecnico/README.md).

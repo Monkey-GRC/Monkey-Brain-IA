@@ -142,7 +142,8 @@
       "description": "Revisa un cambio ya hecho contra las reglas de arquitectura (capas, imports entre features, withScope, auditoria atomica, contrato). No implementa.",
       "model": "sonnet",
       "reports_to": "monkey-dev-flow"
-    }
+    },
+    { "id": "docs-guardian", "path": "agents/docs-guardian.md", "description": "Mantiene la documentación del cerebro al día: enlaces, rutas y registros citados, numeración de módulos, índices, y contratos y estados de implementación frente al código. Solo edita el cerebro.", "model": "sonnet", "applies_to": ["brain"], "reports_to": "monkey-dev-flow" }
   ],
   "skills": [
     {
@@ -317,7 +318,8 @@
       "id": "monkey-closeout",
       "path": "skills/process/monkey-closeout/SKILL.md",
       "description": "Cierre de una tarea: lista de cierre y verificacion de integridad del cerebro (check-brain.py)."
-    }
+    },
+    { "id": "monkey-docs", "path": "skills/process/monkey-docs/SKILL.md", "description": "Historias de usuario (04) y casos de uso (05) de un módulo, su diagrama UML en PlantUML, la exportación a PDF y la épica de Jira." }
   ],
   "entrypointNote": "CLAUDE.md fija las reglas obligatorias antes de cualquier decision. README.md describe la estructura del repo.",
   "contracts": {

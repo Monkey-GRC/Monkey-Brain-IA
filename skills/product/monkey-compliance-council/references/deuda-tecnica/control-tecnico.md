@@ -4,14 +4,6 @@ Parches vigentes de [Control técnico](../arquitectura/control-tecnico/README.md
 
 ## Componente 3 — Control Técnico (D46)
 
-### DT-1 · La sonda es simulada o no está disponible
-
-🔴 Crítica
-
-- **Qué está parchado:** No existen conectores productivos: `PROBE_MODE=simulated` da por buena una conexión con credenciales completas (y nunca la marca `operational`: queda `warning`); sin él, `validate` responde `503 CONNECTION_UNAVAILABLE`
-- **Por qué:** El sprint entrega el flujo y la UI, no la integración (`contracts/onboarding/conexion-activos/README.md`)
-- **Qué lo cierra:** Un adaptador real de `ConnectionProbe` (sin tocar los casos de uso) y retirar las etiquetas de «modo demostración». Mientras tanto el backend **se niega a arrancar** con `simulated` en producción
-
 ### DT-2 · «n/18» y `checks_available` son constantes
 
 🟠 Importante
@@ -21,30 +13,6 @@ Parches vigentes de [Control técnico](../arquitectura/control-tecnico/README.md
 - **Qué lo cierra:** Que el comité entregue las 18 y se siembren los checks; la cobertura pasa a calcularse
 
 ## Paso 3 del control técnico: el modelo de conexión (D48)
-
-### DT-32 · No hay vínculo activo ↔ agente
-
-🔴 Crítica
-
-- **Qué está parchado:** `assets` no sabe qué agente de la sonda es, así que no hay forma real de «validar» una conexión ni de leer resultados
-- **Por qué:** Depende del diseño del canal de agente (D71)
-- **Qué lo cierra:** Campo o tabla de enlace y un adaptador real de `ConnectionProbe` que lea la sonda en **solo lectura**
-
-### DT-33 · Aislamiento entre empresas sin imponer
-
-🔴 Crítica
-
-- **Qué está parchado:** Clave de inscripción global y grupo autodeclarado por el agente: sin una regla de Monkey, un agente podría caer en otra empresa
-- **Por qué:** Es una propiedad de la sonda, no de Monkey
-- **Qué lo cierra:** **Decidido en D54** (un manager, un grupo por cliente, agente pre-registrado por Monkey; flujo verificado contra la API, D55). Falta construir el pre-registro y validar la pertenencia al sincronizar
-
-### DT-34 · Cobertura honesta de plataformas
-
-🟠 Importante
-
-- **Qué está parchado:** Hoy hay pruebas para Ubuntu 22.04, Ubuntu 14.04 y Windows 11; la pantalla ofrece más tipos de sistema
-- **Por qué:** La UI nació del contrato, no de la cobertura
-- **Qué lo cierra:** Mostrar qué sistemas tienen evaluación real y marcar el resto «próximamente»
 
 ### DT-43 · El motor de nube se probó en el mismo servidor que la sonda y con llaves estáticas del cliente guardadas allí
 
@@ -98,21 +66,13 @@ Parches vigentes de [Control técnico](../arquitectura/control-tecnico/README.md
 
 ## Flujo de conexión de la nube (D58)
 
-### DT-57 · El canal de agente solo existe como diseño:
-
-🟠 Importante
-
-- **Qué está parchado:** la pantalla no ofrece servidores ni bases de datos con agente, y el backend responde «no disponible» al validarlos. Tampoco se genera el comando de instalación ni se pre-registra el agente (D54)
-- **Por qué:** Alcance de la etapa: solo AWS
-- **Qué lo cierra:** Adaptador de la sonda de servidores en el backend y el instalador de Monkey (D71). Hasta entonces sus plataformas están `coming_soon` (D67)
-
 ### DT-59 · El sistema operativo de un servidor de la nube es una inferencia
 
 🟠 Importante
 
 - **Qué está parchado:** a partir de la imagen (AMI) con la que se lanzó: sin imagen legible o con una imagen propia, queda sin decir; la versión exacta no se conoce. Además, el inventario solo cubre EC2, RDS, S3 y Lambda, y se refresca **solo al volver a comprobar la conexión** (D59)
 - **Por qué:** AWS no expone el SO de una máquina sin un agente
-- **Qué lo cierra:** El canal de agente (`DT-57`) o inventario de SSM; ampliar servicios (ECS, EKS, DynamoDB…) y refrescar con la programación
+- **Qué lo cierra:** Un agente en el servidor de la nube (D113 solo lo construyó para servidores on-premise) o inventario de SSM; ampliar servicios (ECS, EKS, DynamoDB…) y refrescar con la programación
 
 ### DT-60 · Sin límite de uso ni cola justa en la comprobación y la evaluación
 
@@ -203,7 +163,7 @@ Parches vigentes de [Control técnico](../arquitectura/control-tecnico/README.md
 
 - **Qué está parchado:** *2026-10-09: construido el intérprete puro, el calculador de preparación por activo y la persistencia de una corrida (`executions`, `check_results`, `asset_resources`, en una transacción con su rastro; 8 pruebas contra Postgres). *2026-10-14 (MD-117): los activos aplicables de un test ya se determinan por la dimensión del activo (servidor, base de datos, nube, aplicación; `modelo-datos.md` §2).* *2026-10-22: **el motor de nube ya escribe `evaluations`** al cerrar una corrida (misma transacción que `check_results`): una fila por control del servicio, test de nube y activo, con `origin: automated` y el porcentaje de lo decidido que pasó. «Todo o nada»: un fallo ⇒ `non_compliant`; lo no decidido (`not_run`, `invalid`) ⇒ `pending`; sin filas en ningún check del test ⇒ `not_applicable`. Solo cuentan los checks ratificados por el comité (`READINESS_INCLUDE_PROPOSED=true` cuenta también los propuestos, solo desarrollo y demostración). **Sigue sin hacerse:** `invalid` se guarda como `pending` (`evaluation_result` no tiene `error`); los activos descubiertos dentro de la cuenta (servidores, bases de datos) no reciben evaluación propia, solo la cuenta; las filas de `findings` (necesitan los siete campos, `P14` E2); y la sonda de servidores, que no escribe aún.* Los umbrales del activo son los de D62 (DT-66).*  R-04 dice que «Monkey interpreta el criterio», pero no está escrito dónde vive el criterio (`tests.compliance_criterion` es texto libre), cómo se determinan los activos aplicables de un control (R-02), qué pasa con un resultado sin check conocido (hoy se descartaría en silencio) ni cómo se registran las exclusiones
 - **Por qué:** §9 especifica el cálculo, no la interpretación
-- **Qué lo cierra:** §9 ya fija cómo se lee la sonda (`passed` → cumple, `failed` → no cumple, `invalid` → error, `not_run` → pendiente) y el estado del test (D68). Falta que la sonda de servidores escriba `evaluations`, las filas de `findings` y los activos descubiertos, y fijar con el comité el `error` de un test automatizado (hoy `pending`)
+- **Qué lo cierra:** §9 ya fija cómo se lee la sonda (`passed` → cumple, `failed` → no cumple, `invalid` → error, `not_run` → pendiente) y el estado del test (D68). La sonda de servidores ya escribe `evaluations` (D113, 2026-11-12). Falta fijar con el comité el `error` de un test automatizado (hoy `pending`)
 
 ### DT-78 · La guía de corrección de una prueba técnica es una traducción automática sin revisar, y el filtro del proveedor es una red de seguridad
 

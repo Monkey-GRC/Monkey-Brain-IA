@@ -25,8 +25,8 @@ Lo decide `viewModeOf` en la capa de aplicación, no el motor.
 
 ## Quién ve qué
 
-El `funcional` recibe **solo lo de sus especialidades**; sin especialidad que coincida, la lista llega vacía (no
-falla). El `auditor` ve todo en solo lectura. El `admin_empresa` ve todo y además crea, edita y da de baja
+El `responsable` y el `delegado` reciben **solo los controles de los que son dueño o ejecutor** (D102); sin ninguno, la
+lista llega vacía (no falla) y un control ajeno de su empresa responde `403`. El `auditor` ve todo en solo lectura. El `admin_empresa` ve todo y además crea, edita y da de baja
 controles propios directamente (D96).
 
 ## Dónde está cada dato

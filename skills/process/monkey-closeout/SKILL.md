@@ -49,7 +49,15 @@ cambiada no está en el mapa.
 python3 skills/process/monkey-closeout/scripts/check-brain.py
 ```
 
-Comprueba enlaces y anclajes, bloques de código sin cerrar, tablas partidas, `manifest.json` e IDs duplicados. Un `FALLO` se corrige
+Comprueba enlaces y anclajes, bloques de código sin cerrar, tablas partidas, `manifest.json` e IDs duplicados. Después:
+
+```bash
+python3 skills/process/monkey-closeout/scripts/check-doc-drift.py
+```
+
+Comprueba la deriva frente al código y a la convención (MD-217): rutas citadas que ya no existen, `archivo:línea` fuera del
+archivo, IDs cerrados que se siguen citando, la numeración fija de los módulos (`01`–`07`; nada de `08` ni números en la raíz
+de `arquitectura/`) y el índice. Sus `AVISO` los resuelve el subagente **`docs-guardian`**, que se lanza en todo cierre. Un `FALLO` se corrige
 antes de terminar; un `AVISO` (archivo >25 KB) se evalúa. El hook `Stop` corre esta misma comprobación y **no te deja terminar** si
 el cerebro quedó roto.
 

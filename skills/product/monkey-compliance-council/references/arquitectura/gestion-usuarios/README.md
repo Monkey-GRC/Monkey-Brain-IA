@@ -36,8 +36,8 @@ empresa. `admin_monkey` fija el cupo de usuarios (`companies.max_users`, D103) y
 | Requisitos de seguridad | [`seguridad/gestion-usuarios.md`](../../seguridad/gestion-usuarios.md): `SEG-23`, `SEG-72` a `SEG-77`, `SEG-79` a `SEG-82` |
 | Plan del sprint 3 | [`producto/sprint-usuarios.md`](../../producto/sprint-usuarios.md) |
 | Código | `Backend/src/features/team`; los administradores de Monkey, `Backend/src/features/admin-users` (por construir, MD-215) |
-| Deuda vigente | [`deuda-tecnica/gestion-usuarios.md`](../../deuda-tecnica/gestion-usuarios.md): `DT-90` |
+| Deuda vigente | [`deuda-tecnica/gestion-usuarios.md`](../../deuda-tecnica/gestion-usuarios.md): `DT-90` · `DT-107` · `DT-108` |
 
 ## Contenido
 
-[`01-c4.md`](01-c4.md) · [`02-modelo.md`](02-modelo.md) · [`03-flujos.md`](03-flujos.md) · [`06-mejoras.md`](06-mejoras.md)
+[`01-c4.md`](01-c4.md) · [`02-modelo.md`](02-modelo.md) · [`03-flujos.md`](03-flujos.md) · [`04-historias.md`](04-historias.md) · [`05-casos-de-uso.md`](05-casos-de-uso.md) · [`06-mejoras.md`](06-mejoras.md)

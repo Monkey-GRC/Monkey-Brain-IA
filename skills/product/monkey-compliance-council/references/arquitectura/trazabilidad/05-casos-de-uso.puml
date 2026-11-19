@@ -1,0 +1,47 @@
+@startuml
+' Diagrama UML de casos de uso de Trazabilidad. Fuente: 05-casos-de-uso.md (cada óvalo es un CU-TRZ-nn).
+' Se genera con skills/process/monkey-docs/scripts/render-uml.sh → 05-casos-de-uso.svg. No editar el SVG a mano.
+!pragma layout smetana
+top to bottom direction
+skinparam shadowing false
+skinparam defaultFontName Helvetica
+skinparam packageStyle rectangle
+skinparam ArrowColor #4A5568
+skinparam usecase {
+  BackgroundColor #EEF4FB
+  BorderColor #013362
+}
+skinparam actor {
+  BorderColor #013362
+}
+
+actor "Persona sin sesión" as SinSesion
+actor "Persona" as Persona
+actor "auditor" as Auditor
+actor "admin_empresa" as AdminEmpresa
+actor "admin_monkey" as AdminMonkey
+actor "Sonda" as Sonda <<sistema>>
+actor "Tarea programada" as Tarea <<sistema>>
+
+Auditor -up-|> Persona
+AdminEmpresa -up-|> Persona
+AdminMonkey -up-|> Persona
+
+rectangle "Monkey · Trazabilidad" {
+  usecase "CU-TRZ-01\nRegistrar una acción" as CU1
+  usecase "CU-TRZ-02\nRegistrar un\nintento rechazado" as CU2
+  usecase "CU-TRZ-03\nRegistrar un cambio de\nestado de un control" as CU3
+  usecase "CU-TRZ-04\nConservar y purgar\nel rastro" as CU4
+  usecase "CU-TRZ-05\nConsultar el rastro y el\nhistorial de un control\n(por construir)" as CU5
+}
+
+Persona --> CU1
+SinSesion --> CU2
+Sonda --> CU3
+Tarea --> CU4
+Auditor --> CU5
+AdminEmpresa --> CU5
+AdminMonkey --> CU5
+
+CU3 ..> CU1 : <<extend>>\nsi mueve el estado\nde un control
+@enduml

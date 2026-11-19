@@ -23,7 +23,8 @@ cada servicio ([Conexión de activos](../onboarding/conexion-activos/README.md))
 | Catálogo | `catalog.integrations` (§6.3) | Una fila por integración. Si apunta a una plataforma de conexión (D67), toma de ella nombre, logo y disponibilidad |
 | `GET /v1/integrations/catalog` | `Backend/src/features/integrations` | El catálogo para agregar; dice si la empresa ya la tiene conectada |
 | `GET /v1/integrations` | ídem | Lo que la empresa conectó, **derivado** de `assets` y `asset_provisionings`, con su estado |
-| Sección «Integraciones» | `Frontend-Platform/src/app/features/integrations` | La lista (admin y auditor) y «Agregar integración» (admin). Conectar lleva al flujo del servicio |
+| `GET /v1/integrations/{code}` | ídem | El detalle de una integración (qué hace, permisos, cobertura, seguridad y sus conexiones) |
+| Sección «Integraciones» | `Frontend-Platform/src/app/features/integrations` | La lista (admin y auditor), «Agregar integración» (admin) y el detalle (`/integraciones/:code`). Conectar lleva al flujo del servicio |
 
 Nada se guarda por tenant en este módulo todavía: la lista se deriva. La primera integración que conecte por fuera del
 flujo de servicio (GitHub o Jira) traerá su tabla de conexiones por tenant.
@@ -65,3 +66,7 @@ instalación por cliente y por corrida, igual que STS en AWS.
 - [P44](../../datos/pendientes/integraciones.md#p44--qué-checks-de-github-cuentan-y-a-qué-pruebas-y-controles-van): qué checks de GitHub cuentan y a qué controles van.
 - [P45](../../datos/pendientes/integraciones.md#p45--en-qué-categoría-de-activo-entra-github): la categoría de activo de GitHub.
 - [P46](../../datos/pendientes/integraciones.md#p46--qué-hace-la-integración-con-jira): qué hace Jira (remediación, evidencia o ambas).
+
+## Contenido
+
+[`04-historias.md`](04-historias.md) · [`05-casos-de-uso.md`](05-casos-de-uso.md)

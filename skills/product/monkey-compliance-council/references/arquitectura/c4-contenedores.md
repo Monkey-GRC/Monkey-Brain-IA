@@ -61,10 +61,9 @@ flowchart TB
 - **Cola de eventos, índice vectorial, base de grafos, motor de IA:** están en el diseño objetivo
   (`architecture.md`), pero hoy no existen como contenedores. Dibujarlos aquí sería mentir.
 - **La sonda de servidores y bases:** el puerto `ConnectionProbe` existe con adaptadores `simulated`,
-  `unavailable` y `runner`; la integración real para servidores y bases es provisional (`DT-32…36`).
-- **Proxy inverso y despliegue (VPS, `proxy_net`, CI/CD):** van en un diagrama de despliegue aparte, aún
-  no escrito. Base para escribirlo: `Diagramas/03-arquitectura-docker-y-variables.drawio` y
-  `Backend/deploy/docker-compose.dev.yml`.
+  `unavailable` y `runner`; la lectura de la sonda para servidores Linux y Windows on-premise ya existe (D113); bases y equipos siguen bloqueados (D67).
+- **Proxy inverso y despliegue (VPS, `proxy_net`, CI/CD):** en
+  [`plataforma/infraestructura/`](plataforma/infraestructura/README.md) (estado real del servidor, MD-217).
 
 ## Cómo verificarlo
 

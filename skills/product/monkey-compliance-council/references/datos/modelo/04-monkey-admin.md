@@ -142,7 +142,7 @@ de conexión, para que no se filtren a otra petición del pool):
 cerrado). Cada una tiene una función `SECURITY DEFINER` angosta, que devuelve solo las
 columnas que necesita y se ejecuta con `search_path` fijo (D29): `find_login_candidates`
 (email → usuario), `find_access_key` (hash → clave), `find_session_by_token` (hash del refresh →
-sesión) y `find_api_key` (hash → API key). Con el `company_id` que devuelven, la app fija
+sesión), `find_mfa_challenge`, `find_activation_code`, `find_trusted_device` y `find_password_reset_token` (hash → su fila) y `find_api_key` (hash → API key; la función existe, pero ningún endpoint autentica aún con API key). Con el `company_id` que devuelven, la app fija
 `app.tenant_id` y sigue con RLS normal. **Por eso `code_hash`, `refresh_token_hash` y `key_hash`
 son únicos.**
 

@@ -59,8 +59,8 @@ Todas las que había quedaron **cubiertas por desarrollo en D46**; lo que sigue 
 | **Valores de `assets.type`, `criticality`, `origin` y `status`** | ✅ Cerrados en `enums.md` (D34). El tipo ahora se **deduce de la conexión** (D46) |
 | **¿Qué es «híbrido»?** | ✅ Las seis conexiones (D46, DT-7) |
 | **Dónde guardar la frecuencia de `schedule`** | ✅ `asset_provisionings.schedule_frequency` (D46) |
-| **Qué pide cada conexión** | ✅ Nube: rol de solo lectura o llaves (D53, D58). ❌ Servidores y bases: canal de agente, solo diseño (D71, `DT-57`) |
-| **Azure y GCP** | ❌ Sin cuentas de prueba; el comité debe entregarlas. Se muestran **bloqueadas** (D67) |
+| **Qué pide cada conexión** | ✅ Nube: rol de solo lectura o llaves (D53, D58). ✅ Servidores Linux y Windows on-premise: agente que el cliente instala con un comando (D113, [`control-tecnico.md`](../../control-tecnico.md)). ❌ Bases, equipos y servidores en la nube: sin canal, bloqueados (D67) |
+| **Azure, Microsoft 365 y Google Workspace** | ❌ Sin cuentas de prueba ni canal; el comité debe entregarlas. Se muestran **bloqueadas** (D67). GCP ✅ construido (D112, MD-214) |
 | **Logos de las plataformas** | ❌ Falta confirmar el uso de marcas de terceros y quién entrega los SVG oficiales (`P21`) |
 | **Las 18 capacidades de `technical_coverage`** | ❌ Sin definir (DT-2): hoy es una constante |
 
@@ -75,11 +75,11 @@ El marketplace y el catálogo de conexiones en la base están implementados en `
 | Tablas `capability_platforms`, `platform_connection_methods`, `platform_regions`, `capability_frequencies`, `deployment_scenario_capabilities`; `automated_capabilities.asset_type`; `assets.platform_id` | ✅ Migraciones `20261010150000` y `…150100` (RLS del catálogo). Siembra en la propia migración y en `reference:load` (verificados idénticos) |
 | Constantes de `technical-catalogs.ts` y `onboarding-catalogs.ts` (frecuencias, tipo, canales, regiones) | ✅ Retiradas; se leen de la base. Una prueba lo demuestra: agregar una región en la base cambia lo que la API ofrece y acepta. Qué conexiones ofrecía cada escenario dejó de ser una regla (D92) |
 | `platforms` en `GET /v1/catalogs/automated-capabilities` y en `applicable_capabilities` | ✅ Reemplaza a `supported_platforms` |
-| `platform` obligatorio en `POST /v1/assets`, con `connection.provider_not_supported` y `platform.not_in_category` | ✅ Servidores, bases y equipos quedan bloqueados: no se pueden registrar |
+| `platform` obligatorio en `POST /v1/assets`, con `connection.provider_not_supported` y `platform.not_in_category` | ✅ Servidores, bases y equipos quedan bloqueados: no se pueden registrar (hasta D113, que abrió Linux y Windows en servidores on-premise) |
 | `GET /v1/catalogs/aws_region` | ✅ Sale de `platform_regions`; la etiqueta, de i18n si existe |
 | Marketplace (`/services/{id}/connections/new`) y paso a paso por plataforma (`…/new/{catalog}/{platform}`) | ✅ Verificado contra la API real, en tema claro y oscuro |
 | Logos | ✅ 16 iconos con su variante oscura en `Frontend-Platform/public/providers/`, mostrados con `<img>`. **No son de los kits de marca**: `DT-68`, `P21` |
-| Retirar el formulario provisional de servidores y bases | ✅ Cerrados `DT-31` y `DT-56` |
+| Retirar el formulario provisional de servidores y bases | ✅ Retirado; su deuda se cerró con D67 |
 
 ## Estado de implementación (2026-10-09)
 
@@ -95,7 +95,7 @@ Implementado en `Backend/src/features/technical-control` (más `catalogs` y el p
 | `GET /v1/assets/{id}/resources` (activos de la conexión, con `service_id`) y `PUT /v1/services/{id}/connections/{id}/assets` | ✅ Construidos y probados contra AWS real (D59, D61) |
 | `PATCH /v1/assets/{id}` (editar) y `DELETE /v1/assets/{id}` (baja) | ✅ Construidos y probados (2026-10-09) |
 | `PATCH /v1/assets/{id}/connection`, `GET /v1/connection-templates/aws-readonly-role`, `GET /v1/catalogs/connection_method`, `GET /v1/catalogs/aws_region` | ✅ Nube (D58) |
-| `POST /v1/assets/{id}/validate` | ✅ Nube: **real** vía trabajador (`PROBE_MODE=runner`), verificada contra AWS real. Otros modos: `simulated` → `200` con `mode: demo`; `unavailable` (por defecto) → `503`. Canal `agent`: `503` (`DT-57`) |
+| `POST /v1/assets/{id}/validate` | ✅ Nube: **real** vía trabajador (`PROBE_MODE=runner`), verificada contra AWS real. Otros modos: `simulated` → `200` con `mode: demo`; `unavailable` (por defecto) → `503`. Canal `agent`: `503` (un servidor no se «valida»: su instalación y su lectura van por [`control-tecnico.md`](../../control-tecnico.md), D113) |
 | `POST /v1/assets/{id}/activate` | ✅ Con la sonda simulada deja `operational_status = warning`, **no** `operational` («Automatizado ≠ Operativo») |
 | `PUT /v1/assets/{id}/schedule` | ✅ Valida la frecuencia por conexión; `409 ASSET_NOT_ACTIVE` si no está activo |
 

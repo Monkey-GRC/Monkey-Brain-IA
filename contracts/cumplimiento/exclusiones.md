@@ -146,4 +146,4 @@ Los errores comunes (`FORBIDDEN`, `NOT_FOUND`, `VALIDATION_FAILED`) están en [`
 
 Lo que no cambia y el código ya hace: la vigencia llega al `period_end` del servicio (D87); «vencida» se deriva al leer (`is_expired`, `DT-72`, `MD-171`); solo se excluye el activo de un test (la de un check, `excluded_check_id`, es `MD-170`, `DT-74`); y `ai_suggestion` no se guarda ni se devuelve: la IA no escribe aquí.
 
-La pantalla de exclusiones solo crea y lista: la decisión es el mismo acto (sin aviso de espera ni casilla de contacto: MD-169, `P28`).
+La pantalla de exclusiones (Monkey Platform) hoy solo lista (el `POST` existe en la API, pero la pantalla no lo usa todavía; `exclusion.service.ts` solo hace `GET`): la decisión es el mismo acto (sin aviso de espera ni casilla de contacto: MD-169, `P28`).

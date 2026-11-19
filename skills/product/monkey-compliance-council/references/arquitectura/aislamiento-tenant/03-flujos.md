@@ -36,11 +36,17 @@ El tercero es el único peligroso, y por eso hay una regla de aplicación: **ant
 otra tabla de tenant, se lee el padre con el cliente ya sujeto a RLS**. Si no lo ve, no es suyo. La lista completa
 de reglas que RLS no puede imponer está en `datos/modelo/04-monkey-admin.md` §4.4.
 
+En esa lectura, un padre que el cliente no ve **no responde `404`**: la escritura se rechaza con `422 VALIDATION_FAILED` sobre el
+campo (p. ej. `service_ids` o `responsible_id` al crear una conexión; `technical-control.prisma.repository.ts`).
+
 ## 3 · `404` y no `403`
 
 Un recurso de **otra empresa** responde `404`: decir `403` revelaría que existe. Un recurso **de la propia empresa**
 que no le corresponde a ese usuario sí responde `403` (`contracts/conventions.md`). La diferencia es deliberada y la
 aplican los dos módulos de permisos: este y [Roles y permisos](../roles-permisos/README.md).
+
+El `404` vale para el recurso que **va en la ruta**. Un id ajeno que llega **en el cuerpo** (un padre al escribir) responde
+`422 VALIDATION_FAILED` con el campo, no `404`.
 
 ## 4 · El rastro también está aislado
 

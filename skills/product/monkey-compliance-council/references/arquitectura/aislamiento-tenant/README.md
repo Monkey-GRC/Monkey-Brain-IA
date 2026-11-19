@@ -31,9 +31,11 @@ sesión (`app.tenant_id`, `app.user_id`, `app.user_role`), las políticas RLS de
 | Decisiones (`D-n`) | [`datos/decisiones/aislamiento-tenant.md`](../../datos/decisiones/aislamiento-tenant.md): `D25` · `D29` · `D31` |
 | Pendientes del comité (`P-n`) | ninguno propio |
 | Código | `Backend/src/common/tenancy/`, `Backend/src/infrastructure/database/prisma.service.ts` |
-| Deuda vigente | ninguna: `deuda-tecnica/` no tiene archivo de este módulo |
+| Deuda vigente | ninguna propia; `SEG-09` depende de [`DT-22`](../../deuda-tecnica/empresas.md#dt-22--base-de-datos-dedicada--no-disponible) (base dedicada, módulo Empresas) |
 
 ## Contenido
 
-[`01-c4.md`](01-c4.md) · [`03-flujos.md`](03-flujos.md) · [`06-mejoras.md`](06-mejoras.md). No tiene `02-modelo.md`:
+[`01-c4.md`](01-c4.md) · [`03-flujos.md`](03-flujos.md) · [`04-historias.md`](04-historias.md) (historias de usuario,
+`HU-TEN-nn`) · [`05-casos-de-uso.md`](05-casos-de-uso.md) (casos de uso, `CU-TEN-nn`, con su diagrama UML
+[`05-casos-de-uso.puml`](05-casos-de-uso.puml)) · [`06-mejoras.md`](06-mejoras.md). No tiene `02-modelo.md`:
 sus tablas son las de los demás módulos.

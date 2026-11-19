@@ -35,7 +35,7 @@ Rutas: `GET` y `POST /v1/services/:serviceId/exclusions`.
 |---|---|
 | Rutas y errores | `contracts/cumplimiento/exclusiones.md` |
 | La tabla y sus columnas | `datos/modelo/07-cumplimiento.md` §7.3 |
-| Cómo afecta al cálculo | `datos/modelo/09-calculo-cumplimiento.md` · [`../motor/01-reglas.md`](../motor/01-reglas.md) |
+| Cómo afecta al cálculo | `datos/modelo/09-calculo-cumplimiento.md` · [`../motor/reglas.md`](../motor/reglas.md) |
 | Decisiones | D78, D79, D83, D96 · MD-144 |
 | Requisitos | [`seguridad/roles-permisos.md`](../../../seguridad/roles-permisos.md): `SEG-67` |
 

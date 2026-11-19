@@ -1,0 +1,50 @@
+@startuml
+' Diagrama UML de casos de uso del Catálogo maestro. Fuente: 05-casos-de-uso.md (cada óvalo es un CU-CAT-nn).
+' Se genera con skills/process/monkey-docs/scripts/render-uml.sh → 05-casos-de-uso.svg. No editar el SVG a mano.
+!pragma layout smetana
+top to bottom direction
+skinparam shadowing false
+skinparam defaultFontName Helvetica
+skinparam packageStyle rectangle
+skinparam ArrowColor #4A5568
+skinparam usecase {
+  BackgroundColor #EEF4FB
+  BorderColor #013362
+}
+skinparam actor {
+  BorderColor #013362
+}
+
+actor "Persona\n(cualquier usuario con sesión)" as Persona
+actor "admin_empresa" as AdminEmpresa
+actor "admin_monkey" as AdminMonkey
+actor "Equipo de Monkey\n(script de carga)" as Equipo <<sistema>>
+
+AdminEmpresa -up-|> Persona
+AdminMonkey -up-|> Persona
+
+rectangle "Monkey · Catálogo maestro" {
+  usecase "CU-CAT-01\nObtener las opciones\nde un formulario" as CU1
+  usecase "CU-CAT-02\nConsultar los marcos\nofrecidos y contratados" as CU2
+  usecase "CU-CAT-08\nPublicar una versión\ny propagarla (por construir)" as CU8
+  usecase "CU-CAT-03\nConsultar el catálogo maestro" as CU3
+  usecase "CU-CAT-04\nCrear o editar una pieza" as CU4
+  usecase "CU-CAT-05\nDar de baja o reactivar\nuna pieza" as CU5
+  usecase "CU-CAT-06\nVincular o desvincular piezas" as CU6
+  usecase "CU-CAT-09\nActivar un marco nuevo\n(por construir)" as CU9
+  usecase "CU-CAT-07\nCargar y verificar el\ncatálogo del comité" as CU7
+}
+
+Persona --> CU1
+AdminEmpresa --> CU2
+AdminEmpresa --> CU8
+AdminMonkey --> CU3
+AdminMonkey --> CU6
+AdminMonkey --> CU4
+AdminMonkey --> CU5
+AdminMonkey --> CU8
+AdminMonkey --> CU9
+Equipo --> CU7
+
+CU9 ..> CU7 : <<include>>\nsus requisitos
+@enduml

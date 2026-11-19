@@ -9,16 +9,16 @@ applies_to: backend
 # Skill: Integrar el backend con la sonda (Wazuh)
 
 > **Antes de escribir una línea, lee `D48` y `D71`** (`../product/monkey-compliance-council/references/datos/`) y
-> la deuda de la sonda (**DT-32, DT-33 y DT-34** en `deuda-tecnica/control-tecnico.md`; **DT-35** en `onboarding.md`; **DT-36** en `entrega.md`). Quién instala los agentes, cómo se asigna cada empresa a su grupo y cómo
-> lee Monkey los resultados **siguen sin decidirse**: si lo que vas a construir depende de una de esas respuestas, no la resuelvas
-> por tu cuenta, pregunta. El paso 3 del onboarding (conectar un activo) es **provisional** porque se construyó antes de verificar la
-> sonda real.
+> la deuda de la sonda (**DT-36** en `entrega.md`). Quién instala los agentes, cómo se asigna cada empresa a su grupo y cómo
+> lee Monkey los resultados **ya está decidido y construido para servidores Linux y Windows** (D113, aprobada el 2026-11-18; el código vive en
+> `Backend/src/features/technical-control` y `Backend/src/runner`). Si lo que vas a construir depende de una pregunta abierta
+> (bases de datos, equipos, servidores sin salida a internet), no la resuelvas por tu cuenta, pregunta.
 
 > La nube la mide otro motor (Prowler): ver `add-cloud-engine.md`. La sonda cubre servidores, BD y endpoints.
 
 Esto **no** es una feature nueva con endpoints propios. La integración real es **un tercer adaptador del puerto `ConnectionProbe`**
-(`src/features/technical-control/domain/ports/connection-probe.ts`): hoy existen `simulated` y `unavailable`, elegidos por
-`PROBE_MODE` en `infrastructure/probes/connection-probe.factory.ts`. Los casos de uso **no se tocan** (DT-1). Sigue la receta de
+(`src/features/technical-control/domain/ports/connection-probe.ts`): hoy existen `simulated`, `unavailable` y `runner` (la nube, D58), elegidos por
+`PROBE_MODE` en `infrastructure/probes/connection-probe.factory.ts`. Los casos de uso **no se tocan**. Sigue la receta de
 `add-feature.md`, con lo que cambia al hablar con un sistema externo.
 
 Consulta al agente `wazuh-integration-expert` (`../../agents/wazuh-integration-expert.md`) para el endpoint exacto de la API, la forma
@@ -59,9 +59,9 @@ pruebas del comité sí lo nombran (D70) y **no deben salir a la UI**.
 
 ## Multi-tenancy y seguridad
 
-- **Hoy nada impide que un agente caiga en otra empresa** (DT-33): la clave de inscripción es global y el grupo lo declara el agente.
-  Mientras el canal de agente no esté construido (D71, DT-57), el adaptador **debe validar la pertenencia del agente a la empresa al sincronizar**, y nunca traer
-  agentes de todas las empresas para filtrar después en el backend.
+- **La sonda no aísla a las empresas entre sí**: la clave de inscripción es global y el grupo lo declara el agente. Lo impone Monkey (SEG-45, D113):
+  el agente se crea en el grupo de la empresa, y al sincronizar se **valida la pertenencia del agente a la empresa** (`checkAgentIsolation`), tanto en el trabajador
+  como en el backend. Nunca traer agentes de todas las empresas para filtrar después en el backend.
 - No asumas la convención `cliente_<nombre>` para los grupos: no es una regla de Monkey.
 - Toda lectura de datos de Monkey pasa por `prisma.withScope` (RLS). Credenciales de la API cifradas, nunca en el repo.
 - Cambios de firewall o puertos en el servidor de la sonda son decisión crítica (`../../agents/tech-lead.md`).
@@ -75,6 +75,6 @@ refrescan por trabajo programado (`schedule_rules`), no en cada petición del us
 ## Después de terminar
 
 - Confirmar con `wazuh-integration-expert` que la lectura de la API quedó correcta antes de pasar a QA.
-- Retirar las etiquetas de «modo demostración» del frontend **solo** cuando la sonda real sea la que corre (DT-1).
+- Retirar las etiquetas de «modo demostración» del frontend **solo** cuando la sonda real sea la que corre (el frontend ya las muestra solo con `probe_mode: simulated`).
 - QA prueba con un agente real (o su simulación) el recorrido completo: sincronizar → resultado crudo → evaluación → pantalla.
-- Cerrar o actualizar las filas de `deuda-tecnica/` que correspondan (DT-1, DT-32 a DT-36) y D71 y D70.
+- Cerrar o actualizar las filas de `deuda-tecnica/` que correspondan (DT-36) y D71 y D70.

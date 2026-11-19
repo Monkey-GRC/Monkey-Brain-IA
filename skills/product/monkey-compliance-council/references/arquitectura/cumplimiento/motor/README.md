@@ -4,7 +4,7 @@ Responde: **¿qué pieza convierte los hechos en «cumple» o «no cumple»?** E
 fácil de probar: `Backend/src/features/compliance/domain/engine/` y `domain/controls/control-readout.ts`.
 
 La definición funcional es del comité (`datos/modelo/09-calculo-cumplimiento.md` y `contracts/enums.md`); aquí se
-explica cómo la implementa el código. Las reglas, nivel por nivel, en [`01-reglas.md`](01-reglas.md).
+explica cómo la implementa el código. Las reglas, nivel por nivel, en [`reglas.md`](reglas.md).
 
 ## La cadena de cálculo
 

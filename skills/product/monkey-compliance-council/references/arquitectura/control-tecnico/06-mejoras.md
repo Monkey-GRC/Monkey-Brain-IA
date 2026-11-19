@@ -11,11 +11,9 @@ Propuestas; lo aprobado pasa a `DT-n` o a una `D-n`. La deuda ya registrada est�
 
 ## M1 · Nadie dispara lo programado
 
-`schedule_rules` existe y hay endpoint para guardarlas, pero en `Backend/src/` no aparece un componente que cree
-ejecuciones a partir de ellas. Hay que confirmar si lo hace algo externo (un cron del sistema); si no, falta un
-planificador, y con más de una instancia necesita un bloqueo para que no lo corran dos a la vez.
-
-El mismo hueco afecta a la purga de empresas vencidas (`PurgeExpiredCompanies`).
+La frecuencia que el cliente programa en un activo de nube (`PUT /v1/assets/{id}/schedule`) se guarda, pero en `Backend/src/` ningún componente crea
+ejecuciones a partir de ella: falta un planificador para la nube. Para los servidores con agente sí existe (`AgentReadingScheduler`, cada minuto,
+solo encola; dos instancias a la vez son seguras por un índice único), y la purga de empresas vencidas también tiene el suyo.
 
 ## M2 · Un fallo de la sonda se ve como «pendiente»
 
