@@ -85,8 +85,8 @@ citas dependen de ellos.
 
 ## 5. Cierre de una tarea
 
-Un cambio no termina hasta que actualiza todo lo que toca, en el mismo PR. La lista está en
-`.github/pull_request_template.md`.
+Un cambio no termina hasta que actualiza todo lo que toca, en el mismo PR. La lista está en la skill
+`monkey-closeout` (§2), que la hace ejecutable.
 
 ## 6. Lo que no entra
 
