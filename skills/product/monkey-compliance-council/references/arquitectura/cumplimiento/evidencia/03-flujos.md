@@ -50,7 +50,7 @@ sequenceDiagram
 
 ## 2 · Revisar una evidencia
 
-`PUT /v1/evidence-submissions/:submissionId/review` · **solo `admin_empresa`**.
+`PUT /v1/evidence-submissions/:submissionId/review` · `admin_empresa` (cualquiera) o el `responsable` dueño (lo que no subió él) (D102).
 
 ```mermaid
 sequenceDiagram
@@ -61,7 +61,7 @@ sequenceDiagram
     participant DB as PostgreSQL
 
     FE->>UC: seis atributos (tipo, período, vigencia, aprobación, firma, contenido) + revisión + nota
-    UC->>UC: si algún atributo es «no» exige nota (el funcional necesita saber qué corregir)
+    UC->>UC: si algún atributo es «no» exige nota (quien subió necesita saber qué corregir)
     UC->>R: saveReview(scope, submissionId, ...)
     R->>DB: abre transacción con withScope
     R->>DB: captureControlStates (foto ANTES)
@@ -76,7 +76,7 @@ sequenceDiagram
 
 - **Aquí se decide `compliant`.** El estado de la evidencia lo calcula `evidenceStateOf` a partir de esta revisión
   humana. La IA puede dejarla `in_review`, nunca `compliant` (RN-03).
-- **Hay una sola revisión por entrega** (única por entrega y rol). Revisar de nuevo la **reemplaza**; lo que
+- **Hay una revisión por entrega y por rol** (el dueño y el `admin_empresa`); el estado combina las dos y un rechazo gana (D102). Revisar de nuevo con el mismo rol la **reemplaza**; lo que
   conserva el historial es el rastro de auditoría ([`../06-mejoras.md`](../06-mejoras.md), M4).
 
 **Cómo verificarlo**: `ReviewEvidenceUseCase` y `EvidencePrismaRepository.saveReview`.

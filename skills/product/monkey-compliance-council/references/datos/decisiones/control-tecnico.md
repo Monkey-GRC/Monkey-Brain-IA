@@ -57,7 +57,7 @@ abierto) ni D13; fija lo que desarrollo puede construir y probar sin esperar esa
 ## D54 · La sonda de servidores: un manager, un grupo por cliente, agente pre-registrado por Monkey (responde P12.2; 2026-10-07)
 
 **Decisión** (Héctor, 2026-10-07; **pendiente de ratificar con el comité**; no cambia el modelo). El aislamiento entre clientes
-(`DT-33`, `SEG-45`) se logra con **un solo manager y un grupo por cliente**, no con un manager por cliente (costoso en recursos).
+(`SEG-45`) se logra con **un solo manager y un grupo por cliente**, no con un manager por cliente (costoso en recursos).
 Monkey **pre-registra** cada agente por la API del manager, le asigna el grupo del cliente y entrega la clave en el comando de
 instalación; el agente no se inscribe por su cuenta ni declara su grupo. Al sincronizar, Monkey solo acepta resultados de agentes cuyo
 grupo corresponda al `tenant_id`. **A verificar contra la documentación de la versión vigente** que la API soporta ese flujo.
@@ -202,7 +202,7 @@ evaluación (429 filas, ~3 min) → «Evaluación completada»; y el canal de ll
 3. **Qué se promete:** **solo lo que tiene prueba**. Hoy hay pruebas para Ubuntu 22.04, Ubuntu 14.04 y Windows 11; cualquier otro sistema operativo, motor de base de datos o plataforma sin prueba no se ofrece como conectable (se muestra bloqueado, D67) hasta tener la suya.
 4. **La IP de desarrollo en la API de la sonda:** se autoriza cuando se vaya a probar un adaptador real. Es una **acción de infraestructura** (cambia el firewall o las credenciales de la API): la ejecuta quien administre el VPS y, como todo cambio de firewall, pasa por el usuario antes.
 
-**Qué sigue siendo trabajo, no pregunta:** el instalador de Monkey y el comando de instalación del agente (`DT-57`), el vínculo activo ↔ agente (`DT-32`) y el aislamiento por grupo (`DT-33`).
+**Qué sigue siendo trabajo, no pregunta:** el instalador de Monkey y el comando de instalación del agente, el vínculo activo ↔ agente y el aislamiento por grupo (los tres construidos con D113; sus deudas `DT-57`, `DT-32` y `DT-33` están cerradas).
 
 **Cierra** `P12`.
 
@@ -279,11 +279,11 @@ exige permiso para crear proyectos y facturación propia para los checks de moni
 **Fuente:** Rod, en la sesión de MD-214 del 2026-11-12 (eligió el rol de AWS de Monkey y la identidad en el proyecto evaluado).
 ---
 
-## D113 · La sonda de servidores en el Backend: la lee el trabajador, cada servidor es un agente de su empresa y el volumen se conserva (BORRADOR, 2026-11-11; ajusta D54 y D71)
+## D113 · La sonda de servidores en el Backend: la lee el trabajador, cada servidor es un agente de su empresa y el volumen se conserva (2026-11-11, aprobada el 2026-11-18; ajusta D54 y D71)
 
-**Estado: borrador para aprobar por Carlos; después, pendiente de ratificar con el comité.** Hasta entonces nada se construye sobre él salvo lo ya autorizado en la rama `feat/sonda-sca-sync` del Backend.
+**Estado: aprobada por Rod el 2026-11-18**, con lo ya construido en el Backend y el trabajador (declarar el servidor, instalar la sonda, leerla, la lectura automática y el aislamiento por empresa). Lo que sigue abierto está en cada punto como «falta» o «por definir».
 
-**Por qué ahora.** Se verificó el 2026-11-11 que el Backend **no lee la sonda de servidores todavía**: `WAZUH_API_URL` y `WAZUH_DATABASE_URL` del `.env` no las usa ningún código (son de un prototipo) y `Asset` no tiene vínculo con el agente (`DT-32`). Solo existe el camino de la nube (D57). Una prueba real ya funcionó con un servidor sin interfaz: el agente envió eventos del sistema, aunque no se confirmó su evaluación de configuración.
+**Por qué ahora.** Se verificó el 2026-11-11 que el Backend **no lee la sonda de servidores todavía**: `WAZUH_API_URL` y `WAZUH_DATABASE_URL` del `.env` no las usa ningún código (son de un prototipo) y `Asset` no tenía vínculo con el agente. Solo existe el camino de la nube (D57). Una prueba real ya funcionó con un servidor sin interfaz: el agente envió eventos del sistema, aunque no se confirmó su evaluación de configuración.
 
 **Decisión.**
 1. **Quién la lee: el trabajador aislado (D57)**, no un adaptador dentro del Backend. *Ajusta D71 y la nota de `contracts/control-tecnico.md` («en `agent` no hay corrida del trabajador»).* La credencial de la sonda vive **solo** en el trabajador, y es un usuario de la API de **solo lectura**. *Porqué:* esa clave alcanza a todos los clientes; no debe vivir en el proceso que atiende a los usuarios.
@@ -304,9 +304,9 @@ exige permiso para crear proyectos y facturación propia para los checks de moni
 
 **Qué NO se decide aquí.** El mapeo de checks a pruebas y la partición de `T-SRV-001` (concentra 10.909 de 11.352 checks, §9): es del comité y va en su propia decisión. Tampoco cuál es el manager de producción (hoy 15.204.248.111, mientras el `.env` de desarrollo apunta a otro servidor), ni la retención del indexador ni el cierre de puertos (1515, 55000, 22 abiertos a internet): son de infraestructura.
 
-**Qué cambia.** `contracts/control-tecnico.md` (sección de la sonda), `datos/modelo/08-control-tecnico.md` (`asset_agents`), `deuda-tecnica/control-tecnico.md` (`DT-32`, `DT-33` y `DT-57` se cierran al construirse), `seguridad/control-tecnico.md` (`SEG-45` pasa a construido), `motores/wazuh-operacion.md` (el manager de hoy no corre en contenedor y trae indexador y panel).
+**Qué cambia.** `contracts/control-tecnico.md` (sección de la sonda), `datos/modelo/08-control-tecnico.md` (`asset_agents`), `deuda-tecnica/control-tecnico.md` (`DT-32`, `DT-33` y `DT-57` cerradas el 2026-11-18 al verificarlas construidas), `seguridad/control-tecnico.md` (`SEG-45` construido, con prueba), `motores/wazuh-operacion.md` (el manager de hoy no corre en contenedor y trae indexador y panel).
 
-**Fuente:** Carlos Castaño, 2026-11-11 (trabajador, volumen y aislamiento por empresa), con la autorización de Héctor para tocar el Backend. Hechos verificados el 2026-11-11 contra el manager vigente, el esquema público de la sonda (v4.14.1) y el código del Backend.
+**Fuente:** Carlos Castaño, 2026-11-11 (trabajador, volumen y aislamiento por empresa), con la autorización de Héctor para tocar el Backend; **aprobada por Rod el 2026-11-18**. Hechos verificados el 2026-11-11 contra el manager vigente, el esquema público de la sonda (v4.14.1) y el código del Backend.
 
 ## D114 · Las opciones de conexión de GCP las sirve el Backend, con su disponibilidad y sus etiquetas (2026-11-13)
 

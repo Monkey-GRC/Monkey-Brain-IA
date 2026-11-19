@@ -25,4 +25,4 @@ las vivas. El mismo problema con `evaluations` y `check_results` está en
 
 ## M4 · El rastro no tiene interfaz
 Existe en la base y se consulta por SQL. La matriz de permisos (§5.5) ya dice quién puede ver el rastro, pero no
-hay endpoint ni pantalla. Un auditor lo va a pedir exportable (pregunta 7 de `P40`).
+hay endpoint ni pantalla. Un auditor lo va a pedir exportable.

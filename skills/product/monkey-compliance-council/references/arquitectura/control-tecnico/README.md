@@ -21,7 +21,7 @@ Entrega sus resultados a Cumplimiento como `evaluations` (inmutables); no los in
 | Entidades | `datos/modelo/08-control-tecnico.md` §8 |
 | Decisiones (`D-n`) | [`datos/decisiones/control-tecnico.md`](../../datos/decisiones/control-tecnico.md): `D48` · `D53` · `D54` · `D56` · `D57` · `D58` · `D70` · `D71` · `D90` · `D100` |
 | Pendientes del comité (`P-n`) | [`datos/pendientes/control-tecnico.md`](../../datos/pendientes/control-tecnico.md): `P14` · `P15` — **si sigue abierto, se pregunta** |
-| Deuda vigente (22 `DT-n`) | [`deuda-tecnica/control-tecnico.md`](../../deuda-tecnica/control-tecnico.md) |
+| Deuda vigente (20 `DT-n`) | [`deuda-tecnica/control-tecnico.md`](../../deuda-tecnica/control-tecnico.md) |
 | Requisitos de seguridad | [`seguridad/control-tecnico.md`](../../seguridad/control-tecnico.md): `SEG-26` · `SEG-29` · `SEG-39` · `SEG-45` · `SEG-46` · `SEG-47` · `SEG-48` · `SEG-49` · `SEG-50` · `SEG-51` |
 
 ## Índice del módulo
@@ -33,4 +33,6 @@ Entrega sus resultados a Cumplimiento como `evaluations` (inmutables); no los in
 | **3** | [`02-modelo.md`](02-modelo.md) | Las tablas de una corrida y por qué `executions` ≠ `evaluations` |
 | **4** | [`03-flujos.md`](03-flujos.md) | La corrida completa, de la cola al cumplimiento |
 | **4.1** | ↳ [**Motores**](motores/README.md) | La sonda y el motor de nube. **Confidencial frente al cliente** |
-| **5** | [`06-mejoras.md`](06-mejoras.md) | Lo que conviene revisar del módulo |
+| **5** | [`04-historias.md`](04-historias.md) | Las historias de usuario y sus criterios de aceptación |
+| **6** | [`05-casos-de-uso.md`](05-casos-de-uso.md) | Los casos de uso, sus flujos y el diagrama UML |
+| **7** | [`06-mejoras.md`](06-mejoras.md) | Lo que conviene revisar del módulo |

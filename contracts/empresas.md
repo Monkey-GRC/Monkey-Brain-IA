@@ -351,7 +351,7 @@ No es un endpoint de borrado: lo ejecuta una tarea programada al vencer `archive
 
 **Claves i18n:** `company.created`, `company.list`, `company.updated`, `company.max_users_updated`, `company.name_taken`, `company.admin_email_taken`, `company.already_onboarded`, `access_key.regenerated`, `access_key.not_pending`, `validation.failed`.
 
-El texto del correo no está definido aquí: vive en el Backend y es solo español por ahora.
+El texto del correo no está definido aquí: vive en el Backend (`access-key-email.ts`) y sale en español o inglés, según el `Accept-Language` de quien registra o reenvía (D111).
 
 ## Notas
 

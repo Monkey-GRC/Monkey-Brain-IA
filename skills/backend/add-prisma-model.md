@@ -24,7 +24,7 @@ prisma/schema/
 └── audit/            # audit_logs, compliance_events (append-only)
 ```
 
-Los antiguos `prisma/central/` y `prisma/tenant/` (una base por cliente) **ya no existen**.
+Las antiguas carpetas prisma/central y prisma/tenant (una base por cliente) **ya no existen**.
 
 ## Pasos
 

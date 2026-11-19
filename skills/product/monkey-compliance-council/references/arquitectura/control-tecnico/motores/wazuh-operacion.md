@@ -30,13 +30,12 @@ Monkey. Flujo verificado contra la API real (2026-10-08):
 4. El cliente recibe un comando de instalación que lleva esa clave; el agente no se inscribe por su cuenta ni elige su grupo.
 5. Al sincronizar, Monkey solo acepta resultados de agentes cuyo grupo corresponde al `tenant_id` (`SEG-45`).
 
-Cada grupo tiene su `agent.conf` en `/var/ossec/etc/shared/<grupo>/agent.conf`. **Pendiente (DT-57):** el comando de instalación exacto, la
-expiración de la clave y qué se promete para sistemas sin evaluación real (`DT-34`).
+Cada grupo tiene su `agent.conf` en `/var/ossec/etc/shared/<grupo>/agent.conf`. El comando de instalación lo genera Monkey (D113; la clave caduca si no se lee y se muestra una sola vez). Los sistemas sin evaluación real se ofrecen como `coming_soon` (D67).
 
 ## Qué puede ser un agente
 
 Servidores y estaciones con SO soportado (Windows, Linux, macOS), VMs y VPS en la nube. **Cobertura real de configuración hoy:** Ubuntu
-22.04, Ubuntu 14.04 y Windows 11 (`DT-34`); el catálogo trae 18 plataformas, pero solo esas tienen pruebas.
+22.04, Ubuntu 14.04 y Windows 11; el catálogo trae más plataformas, pero solo las que tienen pruebas se ofrecen como conectables (`availability: available`; el resto, `coming_soon`).
 
 ## Instalación por escenario
 

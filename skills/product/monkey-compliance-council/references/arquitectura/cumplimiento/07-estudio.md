@@ -6,7 +6,7 @@ media hora. Lo que conviene revisar (cosas raras del código) está en [`06-mejo
 ## Ejercicios
 
 1. **Dibuja de memoria** la cadena activo → prueba → control → categoría → marco, y al lado qué archivo del motor
-   hace cada paso. Compara con [`motor/01-reglas.md`](motor/01-reglas.md).
+   hace cada paso. Compara con [`motor/reglas.md`](motor/reglas.md).
 2. **Predice, después comprueba.** Escribe en papel el estado de un control con 3 pruebas (una `compliant`, una
    `evaluating`, una `expired`). Luego abre `domain/engine/control.spec.ts` y busca el caso. ¿Acertaste el orden de
    prioridad?

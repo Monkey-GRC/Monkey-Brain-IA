@@ -66,15 +66,15 @@ Las de HTTP de aislamiento ya están en `develop` (PR #18 y #19). **Las de `test
 |---|--:|--:|--:|--:|--:|--:|
 | [Aislamiento multi-tenant](aislamiento-tenant.md) | 6 | 1 | 1 | 1 | 0 | **9** |
 | [Autenticación](autenticacion.md) | 11 | 0 | 0 | 0 | 0 | **11** |
-| [Roles y permisos](roles-permisos.md) | 5 | 0 | 2 | 0 | 4 | **11** |
+| [Roles y permisos](roles-permisos.md) | 6 | 0 | 1 | 0 | 4 | **11** |
 | [Gestión de usuarios](gestion-usuarios.md) | 10 | 0 | 1 | 0 | 0 | **11** |
-| [Empresas](empresas.md) | 1 | 1 | 0 | 0 | 1 | **3** |
+| [Empresas](empresas.md) | 2 | 0 | 0 | 0 | 1 | **3** |
 | [Onboarding](onboarding.md) | 2 | 0 | 0 | 0 | 0 | **2** |
-| [Control técnico](control-tecnico.md) | 3 | 2 | 4 | 2 | 0 | **11** |
+| [Control técnico](control-tecnico.md) | 4 | 2 | 4 | 1 | 0 | **11** |
 | [Trazabilidad](trazabilidad.md) | 7 | 0 | 2 | 0 | 0 | **9** |
-| [Plataforma](plataforma.md) | 4 | 2 | 0 | 1 | 2 | **9** |
+| [Plataforma](plataforma.md) | 4 | 1 | 1 | 1 | 2 | **9** |
 | [Entrega](entrega.md) | 1 | 2 | 0 | 3 | 1 | **7** |
-| **Total** | **50** | **8** | **10** | **7** | **8** | **83** |
+| **Total** | **53** | **6** | **10** | **6** | **8** | **83** |
 
 ---
 
@@ -82,28 +82,28 @@ Las de HTTP de aislamiento ya están en `develop` (PR #18 y #19). **Las de `test
 
 El tablero: todo lo que **no** está ✅, por estado y por módulo. Cada ID se busca dentro del archivo de su módulo.
 
-**🔴 No implementado** (7)
+**🔴 No implementado** (6)
 
 - [Aislamiento multi-tenant](aislamiento-tenant.md): `SEG-09`
-- [Control técnico](control-tecnico.md): `SEG-26` · `SEG-45`
+- [Control técnico](control-tecnico.md): `SEG-26`
 - [Plataforma](plataforma.md): `SEG-25`
 - [Entrega](entrega.md): `SEG-28` · `SEG-31` · `SEG-41`
 
 **🟠 Parcial** (10)
 
 - [Aislamiento multi-tenant](aislamiento-tenant.md): `SEG-07`
-- [Roles y permisos](roles-permisos.md): `SEG-21` · `SEG-54`
+- [Roles y permisos](roles-permisos.md): `SEG-21`
 - [Gestión de usuarios](gestion-usuarios.md): `SEG-23`
 - [Control técnico](control-tecnico.md): `SEG-39` · `SEG-46` · `SEG-47` · `SEG-78`
 - [Trazabilidad](trazabilidad.md): `SEG-35` · `SEG-37`
+- [Plataforma](plataforma.md): `SEG-59` (puertos de MinIO abiertos, I1)
 
-**🟡 Sin prueba automática** (8)
+**🟡 Sin prueba automática** (6)
 
 - [Aislamiento multi-tenant](aislamiento-tenant.md): `SEG-08`
 - [Control técnico](control-tecnico.md): `SEG-29` · `SEG-49`
-- [Plataforma](plataforma.md): `SEG-19` · `SEG-60`
+- [Plataforma](plataforma.md): `SEG-19`
 - [Entrega](entrega.md): `SEG-30` · `SEG-42`
-- [Empresas](empresas.md): `SEG-71`
 
 **⚪ No verificable desde el repo, o retirado** (8)
 
@@ -123,7 +123,7 @@ la decisión, la implementación) vive en su dueño. Primera parada: el archivo 
 |---|---|
 | **Aislamiento entre empresas** (RLS, variables de sesión, funciones previas al tenant) | [`arquitectura/aislamiento-tenant/`](../arquitectura/aislamiento-tenant/README.md) (cómo funciona) · [`datos/modelo/04-monkey-admin.md`](../datos/modelo/04-monkey-admin.md) §4.3 y §4.4 (el porqué) · `datos/schema-implementacion.md` §5 (las políticas) |
 | **Identidad, sesión, contraseñas, MFA** | [`arquitectura/autenticacion/`](../arquitectura/autenticacion/README.md) (los flujos) · `datos/modelo/05-usuarios.md` §5.3 (la política del comité) · `contracts/autenticacion.md` |
-| **Roles y permisos** | [`arquitectura/roles-permisos/`](../arquitectura/roles-permisos/README.md) (dónde se hace cumplir) · `datos/modelo/05-usuarios.md` §5.1 y §5.5 (los roles y la matriz) · `P3` en [`datos/pendientes/roles-permisos.md`](../datos/pendientes/roles-permisos.md) |
+| **Roles y permisos** | [`arquitectura/roles-permisos/`](../arquitectura/roles-permisos/README.md) (dónde se hace cumplir) · `datos/modelo/05-usuarios.md` §5.1 y §5.5 (los roles y la matriz) · `P3` cerrada por D102 ([`datos/pendientes/README.md`](../datos/pendientes/README.md)) |
 | **Cómo el modelo de usuarios sostiene SOC 2** | `datos/modelo/05-usuarios.md` §5.6 |
 | **Secretos y cifrado de credenciales** | [`arquitectura/plataforma/`](../arquitectura/plataforma/README.md) · `datos/schema-implementacion.md` §4 · D46 · [`deuda-tecnica/`](../deuda-tecnica/README.md) DT-5 |
 | **Auditoría, inmutabilidad y retención** | [`arquitectura/trazabilidad/`](../arquitectura/trazabilidad/README.md) · D41 · `datos/modelo/07-cumplimiento.md` §7.4 · D72 |

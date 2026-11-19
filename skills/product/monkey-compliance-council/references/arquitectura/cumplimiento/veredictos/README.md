@@ -26,12 +26,11 @@ Pedir un veredicto sobre una prueba documental o automática se rechaza con `409
 ## La regla que define este componente
 
 **Un veredicto es del test en el servicio, no del control** (D85). Si dos controles comparten la misma prueba, un
-solo veredicto cuenta en ambos: se escribe una evaluación por cada control × activo de esa dimensión, todas con la
-misma hora.
+solo veredicto cuenta en ambos: vale en todos los controles que llevan la prueba, sobre los activos de su dimensión, una vez aprobado (D121).
 
 ## Quién puede
 
-Solo el `admin_empresa` (D96, SEG-67). Si el control tiene observaciones abiertas del auditor, el veredicto se
+Registran el `admin_empresa`, el dueño (`responsable`) y el ejecutor (`delegado`); revisan el dueño (si no lo registró él) y el `admin_empresa` (D96, D121, SEG-67). Si el control tiene observaciones abiertas del auditor, el veredicto se
 permite pero **exige explicar por qué** (MD-154).
 
 ## Dónde está cada dato

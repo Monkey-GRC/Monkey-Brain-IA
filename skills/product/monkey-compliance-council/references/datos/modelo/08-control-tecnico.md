@@ -140,7 +140,7 @@ cumplimiento por marco.
 
 **Dos motores con roles distintos (D100, cierra P14 A1; acota el «validador único» del comité):** Prowler maneja todo lo de la nube (AWS, Azure, GCP y demás; D53–D58, `arquitectura/control-tecnico/motores/prowler.md`) y Wazuh sigue con servidores, BD y endpoints: configuración (SCA), monitoreo de amenazas en tiempo real y respuesta ante incidentes (`arquitectura/control-tecnico/motores/wazuh.md`). La verificación de D48 (la sonda solo ingiere registros de la nube) ya lo anticipaba. `automated_capabilities.provider` los distingue.
 
-**Vínculo activo ↔ agente (D113, borrador; cierra `DT-32` al construirse).** Hoy `assets` no sabe qué agente de la sonda es. La tabla `asset_agents` (`tenant`, con RLS) lo enlaza:
+**Vínculo activo ↔ agente (D113, aprobada el 2026-11-18; construido).** Antes `assets` no sabía qué agente de la sonda era. La tabla `asset_agents` (`tenant`, con RLS) lo enlaza:
 
 | Campo | Qué guarda |
 |---|---|

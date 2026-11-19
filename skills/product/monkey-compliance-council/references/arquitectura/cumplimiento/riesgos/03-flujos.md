@@ -60,7 +60,7 @@ riesgos y la ataca más de un control; esas dos relaciones son tablas puente
 ## Lo que este flujo NO hace
 
 No mueve el porcentaje de cumplimiento. Riesgos y cumplimiento comparten los controles, pero se calculan aparte: el
-cumplimiento cuenta controles efectivos ([`../motor/01-reglas.md`](../motor/01-reglas.md)) y el riesgo mide
+cumplimiento cuenta controles efectivos ([`../motor/reglas.md`](../motor/reglas.md)) y el riesgo mide
 exposición.
 
 ## Cómo verificarlo

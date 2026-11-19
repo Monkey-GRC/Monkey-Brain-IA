@@ -38,7 +38,7 @@ puede modificarla. Nunca se borra (SEG-69).
 | Acción | Quién |
 |---|---|
 | Escribir, editar, devolver a `open` y cerrar | **Solo el `auditor`** que la escribió (SEG-70) |
-| Responder | El `admin_empresa`, o el `funcional` responsable de ese control |
+| Responder | El `admin_empresa`, el dueño (`responsable`) o el ejecutor (`delegado`) de ese control (D102) |
 
 ## El efecto que sí tiene
 

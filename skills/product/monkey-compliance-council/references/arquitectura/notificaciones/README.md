@@ -1,11 +1,11 @@
 # Notificaciones
 
-Responde: **¿cómo se entera alguien de que tiene algo que hacer?** Hoy, **casi nunca**: no existe un sistema de
-notificaciones. Este directorio documenta lo poco que hay, lo que falta y qué lo bloquea, para que nadie lo
-construya a medias por su cuenta.
+Responde: **¿cómo se entera alguien de que tiene algo que hacer?** Hoy solo por **correos transaccionales** (cinco, los de
+la tabla de abajo): no existe un sistema de notificaciones. Este directorio documenta lo que hay, lo que falta y qué lo
+bloquea, para que nadie lo construya a medias por su cuenta.
 
-> **Nada de esto está construido.** Es `MD-69`, aplazado, y las preguntas abiertas de `P39`. Mientras `P39` siga
-> abierta **se pregunta, no se resuelve** (`CLAUDE.md`).
+> **El sistema de notificaciones no está construido.** Es `MD-69`, aplazado, y las preguntas abiertas de `P39`. Mientras
+> `P39` siga abierta **se pregunta, no se resuelve** (`CLAUDE.md`).
 
 ## Lo único que sale hoy
 
@@ -14,20 +14,21 @@ construya a medias por su cuenta.
 | Clave de acceso de una empresa nueva | `admin_monkey` registra la empresa, o reenvía la clave | D99 |
 | Enlace de recuperación de contraseña | La persona lo pide | D101 |
 | Aviso de contraseña cambiada | Después de cambiarla | D101 |
+| Invitación con el código de activación de una cuenta de empresa | Alguien crea o reenvía la invitación de un `responsable`, `delegado`, `auditor` o `admin_empresa` | D102 punto 14, SEG-75 |
+| Invitación a Monkey Admin | Un `admin_monkey` invita a otro | D117 |
 
-Los tres los manda el puerto `Mailer` ([Plataforma](../plataforma/README.md)). No hay centro de notificaciones en
-la aplicación, ni campana, ni preferencias.
+Los cinco los manda el puerto `Mailer` ([Plataforma](../plataforma/README.md)); en producción el servidor no arranca sin
+un servicio de correo real (`MAIL_PROVIDER`, SEG-71). No hay centro de notificaciones en la aplicación, ni campana, ni
+preferencias.
 
-## Lo que se entrega a mano por no existir
+## Lo que no avisa nadie
 
-- **El código de activación** de una cuenta nueva: viaja en claro en la respuesta de la API y el `admin_empresa`
-  se lo pasa a la persona por otro canal ([Gestión de usuarios](../gestion-usuarios/README.md), M4).
 - **Que un control pasó a no cumplir**, que la sonda falló, que una evidencia fue rechazada, que el auditor
   escribió una observación, que algo vence: nadie avisa. Se ve entrando a mirar.
 
 ## Lo que hay que decidir antes de construir
 
-Está en `P39`, con ocho preguntas. Las que más condicionan el diseño:
+Está en `P39`, con ocho preguntas (la 8, la invitación por correo, ya la decidió D102 punto 14 y está construida). Las que más condicionan el diseño:
 
 | Pregunta | Por qué bloquea |
 |---|---|
@@ -54,13 +55,17 @@ solo mecanismo.
 
 ## Dónde está cada dato
 
-`P39` en `datos/pendientes/notificaciones.md` · `MD-69` · D99 y D101 · `producto/philosophy.md` (cómo se redacta).
+`P39` en `datos/pendientes/notificaciones.md` · `MD-69` · D99, D101, D102 y D117 · `producto/philosophy.md` (cómo se redacta).
 
 Registros de este módulo:
 
 | Registro | Dónde |
 |---|---|
-| Decisiones (`D-n`) | ninguna propia: lo poco que sale hoy lo deciden D99 y D101 ([`empresas`](../../datos/decisiones/empresas.md), [`autenticacion`](../../datos/decisiones/autenticacion.md)) |
+| Decisiones (`D-n`) | ninguna propia: lo que sale hoy lo deciden D99, D101, D102 y D117 ([`empresas`](../../datos/decisiones/empresas.md), [`autenticacion`](../../datos/decisiones/autenticacion.md), [`gestion-usuarios`](../../datos/decisiones/gestion-usuarios.md)) |
 | Pendientes del comité (`P-n`) | [`datos/pendientes/notificaciones.md`](../../datos/pendientes/notificaciones.md): `P39` — **si sigue abierto, se pregunta** |
-| Deuda vigente (`DT-n`) | [`deuda-tecnica/notificaciones.md`](../../deuda-tecnica/notificaciones.md): 2 fichas |
+| Deuda vigente (`DT-n`) | [`deuda-tecnica/notificaciones.md`](../../deuda-tecnica/notificaciones.md): 1 ficha (`DT-83`) |
 | Requisitos de seguridad (`SEG-n`) | ninguno propio. Un aviso que vea un usuario cumple los de [`plataforma.md`](../../seguridad/plataforma.md) |
+
+## Contenido
+
+[`04-historias.md`](04-historias.md) · [`05-casos-de-uso.md`](05-casos-de-uso.md)

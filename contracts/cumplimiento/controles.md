@@ -39,7 +39,7 @@ type: contract
 | Editar la interpretación o las dimensiones | ✓ | `403` | `403` |
 | Dar de baja | ✓ | `403` | `403` |
 
-> Vigente con la matriz de `modelo/05-usuarios.md` §5.5 (D102: el comité no entregará el Excel por pantalla). El Excel marcaba «editar control» como ⊗ para el `funcional`; el `responsable` y el `delegado` **no editan**.
+> Vigente con la matriz de `modelo/05-usuarios.md` §5.5 (D102: el comité no entregará el Excel por pantalla). El Excel marcaba «editar control» como ⊗ para el `funcional` (rol que D96 y D102 reemplazaron); el `responsable` y el `delegado` **no editan**.
 
 ---
 
@@ -296,7 +296,7 @@ Cambia la interpretación o las dimensiones **al instante**; las dos cosas puede
 | **Éxito** | `204` (sin cuerpo) |
 | **Errores** | `403` · `404` · `409 CONTROL_RETIRED` (darlo de baja dos veces) |
 
-**Es una baja, no un borrado** (`conventions.md`): `is_active = false`, el control **deja de contar** y de verse en las listas (salvo `?include_inactive=true`), y el histórico —evaluaciones inmutables, evidencias, auditoría— se conserva. Si tenía dueño y ejecutor, su asignación se retira.
+**Es una baja, no un borrado** (`conventions.md`): `is_active = false`, el control **deja de contar** y de verse en las listas y en el detalle (`404`; no existe `?include_inactive` para controles), y el histórico —evaluaciones inmutables, evidencias, auditoría— se conserva. Si tenía dueño y ejecutor, su asignación se retira.
 
 > Qué advierte la pantalla antes de confirmar (pruebas que dejan de contar, riesgos y causas que quedan sin ese control, cómo se mueve el avance) es `P33`; la API no pide confirmación: el `DELETE` es el acto confirmado.
 
@@ -365,7 +365,7 @@ Crear, editar dimensiones o dar de baja altera lo que se mide y deja además un 
 - **Retirado:** `POST` y `GET /v1/controls/{id}/changes`, `has_pending_change` y el filtro `approval`. También el filtro `assigned_to`. La tabla `client_control_changes` y sus enums quedan sin uso.
 - Pruebas: `Backend/test/cumplimiento/cambios.e2e-spec.ts` (crear, editar, baja) y `controles.e2e-spec.ts`.
 - `display_name` de una prueba es el nombre neutro que escribe Monkey (D70); mientras una prueba no lo tenga, sale un texto genérico de su dimensión («Prueba de nube», «Revisión documental»…). **Nunca** el nombre del comité. `display_description` sigue la misma regla (D82): el objetivo del comité o su reescritura neutra, nunca el texto que nombra al proveedor.
-- **Sin resultados guardados todo sale «Sin medir».** El motor de nube lo escribe desde 2026-10-22 al cerrar cada corrida (`DT-50`); la sonda de servidores, todavía no. Un control sube de «Sin medir» en cuanto existan evaluaciones de su test sobre los activos del servicio, y solo cuentan los checks que el comité ratificó (con `READINESS_INCLUDE_PROPOSED=true`, también los propuestos).
+- **Sin resultados guardados todo sale «Sin medir».** El motor de nube lo escribe desde 2026-10-22 al cerrar cada corrida (`DT-50`); la sonda de servidores desde D113 (lectura con agente, `evaluations` con origen `sca`). Un control sube de «Sin medir» en cuanto existan evaluaciones de su test sobre los activos del servicio, y solo cuentan los checks que el comité ratificó (con `READINESS_INCLUDE_PROPOSED=true`, también los propuestos).
 - Un test de la dimensión documental sale de la revisión de lo que se entregó **para esa prueba en este control** (D88): sin evidencias o sin revisar, `pending`; nunca cumple por sí solo.
 
 **Construido (MD-193, 2026-11-17): cada persona ve solo lo suyo (D102).** La lista y el detalle devuelven al `responsable` y al `delegado` solo los controles de los que son dueño o ejecutor activo; un control ajeno de su empresa es `403`. `owner` y `executor` sustituyen a `assigned_to`, que se retiró. El filtro `responsible` está construido. Pruebas: `test/cumplimiento/controles.e2e-spec.ts` y la matriz de `test/equipo/equipo.e2e-spec.ts`.

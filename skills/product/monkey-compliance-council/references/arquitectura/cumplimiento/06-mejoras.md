@@ -88,7 +88,7 @@ con `AssetResult`, que además incluye `error` y `excluded`:
 
 Consecuencia: el camino `error` de `automated-test.ts` y `control.ts` está escrito y probado, pero **no es
 alcanzable con datos reales** mientras `DT-50` siga abierta. Para el usuario, un fallo de la sonda se ve como
-«pendiente». Es coherente con el principio 5 de [`motor/01-reglas.md`](motor/01-reglas.md), pero la pantalla no
+«pendiente». Es coherente con el principio 5 de [`motor/reglas.md`](motor/reglas.md), pero la pantalla no
 puede distinguir «no se ha medido» de «se intentó y falló».
 
 ## Cómo verificarlo

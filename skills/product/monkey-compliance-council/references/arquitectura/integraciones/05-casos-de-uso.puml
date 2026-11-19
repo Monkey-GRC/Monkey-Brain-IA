@@ -1,0 +1,46 @@
+@startuml
+' Diagrama UML de casos de uso de Integraciones. Fuente: 05-casos-de-uso.md (cada óvalo es un CU-INT-nn).
+' Se genera con skills/process/monkey-docs/scripts/render-uml.sh → 05-casos-de-uso.svg. No editar el SVG a mano.
+!pragma layout smetana
+top to bottom direction
+skinparam shadowing false
+skinparam defaultFontName Helvetica
+skinparam packageStyle rectangle
+skinparam ArrowColor #4A5568
+skinparam usecase {
+  BackgroundColor #EEF4FB
+  BorderColor #013362
+}
+skinparam actor {
+  BorderColor #013362
+}
+
+actor "Lector de integraciones" as Lector
+actor "auditor" as Auditor
+actor "admin_empresa" as AdminEmpresa
+actor "Conexión de activos\n(flujo del servicio)" as Conexion <<sistema>>
+
+Auditor -up-|> Lector
+AdminEmpresa -up-|> Lector
+
+rectangle "Monkey · Integraciones" {
+  usecase "CU-INT-01\nConsultar las integraciones\nde la empresa" as CU1
+  usecase "CU-INT-03\nVer el detalle\nde una integración" as CU3
+  usecase "CU-INT-02\nExplorar el catálogo\npara agregar" as CU2
+  usecase "CU-INT-04\nConectar una integración\na un servicio" as CU4
+  usecase "CU-INT-05\nConectar GitHub\n(por construir: P44, P45)" as CU5
+  usecase "CU-INT-06\nLlevar el trabajo a Jira\n(por construir: P46)" as CU6
+}
+
+Lector --> CU1
+Lector --> CU3
+AdminEmpresa --> CU2
+AdminEmpresa --> CU4
+AdminEmpresa --> CU5
+CU4 --> Conexion
+
+CU3 ..> CU1 : <<extend>>\nal abrir una fila
+CU3 ..> CU2 : <<extend>>\nal abrir una tarjeta
+CU4 ..> CU2 : <<extend>>\nsi está disponible
+CU4 ..> CU3 : <<extend>>\nsi está disponible
+@enduml

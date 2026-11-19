@@ -1,0 +1,58 @@
+@startuml
+' Diagrama UML de casos de uso de Onboarding. Fuente: 05-casos-de-uso.md (cada óvalo es un CU-ONB-nn).
+' La puerta de D89 (CU-ONB-08 cerrado hasta evaluar los riesgos, CU-ONB-07) se cuenta en la precondición de CU-ONB-08.
+' Se genera con skills/process/monkey-docs/scripts/render-uml.sh → 05-casos-de-uso.svg. No editar el SVG a mano.
+!pragma layout smetana
+top to bottom direction
+skinparam shadowing false
+skinparam defaultFontName Helvetica
+skinparam packageStyle rectangle
+skinparam ArrowColor #4A5568
+skinparam usecase {
+  BackgroundColor #EEF4FB
+  BorderColor #013362
+}
+skinparam actor {
+  BorderColor #013362
+}
+
+actor "Persona de Platform\n(responsable · delegado · auditor)" as Persona
+actor "admin_empresa" as AdminEmpresa
+actor "Trabajador" as Trabajador <<sistema>>
+actor "Almacenamiento" as Almacen <<sistema>>
+
+AdminEmpresa -up-|> Persona
+
+rectangle "Monkey · Onboarding" {
+  usecase "CU-ONB-02\nGestionar los cargos\nde la organización" as CU2
+  usecase "CU-ONB-06\nConsultar los servicios" as CU6
+  usecase "CU-ONB-01\nDeclarar el contexto\nde la empresa" as CU1
+  usecase "CU-ONB-03\nDeclarar un servicio" as CU3
+  usecase "CU-ONB-04\nEntregar la descripción\ndel sistema" as CU4
+  usecase "CU-ONB-05\nEditar o eliminar\nun servicio" as CU5
+  usecase "CU-ONB-07\nEvaluar los riesgos\ndel servicio" as CU7
+  usecase "CU-ONB-08\nDeclarar una conexión" as CU8
+  usecase "CU-ONB-09\nComprobar la conexión\ny descubrir activos" as CU9
+  usecase "CU-ONB-10\nElegir los activos\ndel servicio" as CU10
+  usecase "CU-ONB-11\nActivar y programar\nla conexión" as CU11
+  usecase "CU-ONB-12\nGestionar las conexiones" as CU12
+}
+
+Persona --> CU2
+Persona --> CU6
+AdminEmpresa --> CU1
+AdminEmpresa --> CU3
+AdminEmpresa --> CU5
+AdminEmpresa --> CU8
+AdminEmpresa --> CU11
+AdminEmpresa --> CU12
+
+CU4 --> Almacen
+CU9 --> Trabajador
+
+CU4 .up.> CU3 : <<extend>>\ncon descripción del sistema
+CU7 .up.> CU3 : <<extend>>\nal guardar el servicio
+CU9 .up.> CU8 : <<extend>>\nal pulsar «Comprobar conexión»
+CU10 .up.> CU9 : <<extend>>\nsi encontró activos
+
+@enduml

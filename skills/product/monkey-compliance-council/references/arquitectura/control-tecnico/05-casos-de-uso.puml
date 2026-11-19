@@ -1,0 +1,74 @@
+@startuml
+' Diagrama UML de casos de uso de Control técnico. Fuente: 05-casos-de-uso.md (cada óvalo es un CU-CT-nn).
+' Se genera con skills/process/monkey-docs/scripts/render-uml.sh → 05-casos-de-uso.svg. No editar el SVG a mano.
+' Confidencial (regla 1 de CLAUDE.md): los motores se nombran «sonda» y «motor de nube», nunca por su proveedor.
+!pragma layout smetana
+top to bottom direction
+skinparam shadowing false
+skinparam defaultFontName Helvetica
+skinparam packageStyle rectangle
+skinparam ArrowColor #4A5568
+skinparam usecase {
+  BackgroundColor #EEF4FB
+  BorderColor #013362
+}
+skinparam actor {
+  BorderColor #013362
+}
+
+actor "Persona que revisa el control\n(responsable · delegado del suyo)" as Revisor
+actor "Vista técnica\n(admin_empresa · auditor)" as Tecnico
+actor "admin_empresa" as AdminEmpresa
+actor "auditor" as Auditor
+actor "Tarea programada" as Tarea <<sistema>>
+actor "Trabajador" as Trabajador <<sistema>>
+actor "docker-proxy" as DockerProxy <<sistema>>
+actor "Motor de nube" as Motor <<sistema>>
+actor "Sonda" as Sonda <<sistema>>
+actor "Nube del cliente" as Nube <<sistema>>
+
+Tecnico -up-|> Revisor
+AdminEmpresa -up-|> Tecnico
+Auditor -up-|> Tecnico
+
+rectangle "Monkey · Control técnico" {
+  usecase "CU-CT-03\nEvaluar la nube según\nla programación (sin disparador)" as CU3
+  usecase "CU-CT-01\nEvaluar ahora una\ncuenta de nube" as CU1
+  usecase "CU-CT-02\nConsultar el historial\nde evaluaciones" as CU2
+  usecase "CU-CT-04\nConsultar la preparación\nde un activo" as CU4
+  usecase "CU-CT-06\nConsultar los hallazgos\n(P14 E2 abierta)" as CU6
+  usecase "CU-CT-07\nConsultar la vista técnica\n(P14 E2 abierta)" as CU7
+  usecase "CU-CT-05\nVer qué falló y\ncómo corregirlo" as CU5
+  usecase "CU-CT-08\nInstalar la sonda\nen un servidor" as CU8
+  usecase "CU-CT-10\nComprobar ahora\nun servidor" as CU10
+  usecase "CU-CT-09\nLeer la sonda\nautomáticamente" as CU9
+  usecase "CU-CT-11\nEntregar e interpretar\nel resultado de una corrida" as CU11
+  usecase "CU-CT-12\nRetirar el agente de un\nservidor dado de baja" as CU12
+}
+
+Revisor --> CU5
+Tecnico --> CU7
+AdminEmpresa --> CU1
+AdminEmpresa --> CU2
+AdminEmpresa --> CU4
+AdminEmpresa --> CU6
+AdminEmpresa --> CU8
+AdminEmpresa --> CU10
+Tarea --> CU3
+Tarea --> CU9
+
+CU1 ..> CU11 : <<include>>
+CU3 ..> CU11 : <<include>>
+CU9 ..> CU11 : <<include>>
+CU10 ..> CU11 : <<include>>
+CU10 .> CU9 : <<extend>>\nsi Monkey dejó de buscarlo
+
+CU1 --> Motor
+CU1 --> Nube
+CU1 --> DockerProxy
+CU11 --> Trabajador
+CU12 --> Trabajador
+CU8 --> Sonda
+CU9 --> Sonda
+CU12 --> Sonda
+@enduml

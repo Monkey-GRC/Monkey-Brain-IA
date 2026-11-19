@@ -9,7 +9,7 @@ type: contract
 
 | | |
 |---|---|
-| **Estado** | **ACORDADO**, reescrito por D96 (2026-10-27) y ajustado por D102 (2026-11-03: quién sube, quién revisa y cómo se combinan las revisiones; **por construir en el sprint 3, MD-194**). Construido: listar, subir, versiones y descargar (MD-126), la revisión del `admin_empresa` (MD-127, 2026-10-28) y agregar una evidencia propia (D88) |
+| **Estado** | **ACORDADO**, reescrito por D96 (2026-10-27) y ajustado por D102 (2026-11-03: quién sube, quién revisa y cómo se combinan las revisiones; construido en MD-194). Construido: listar, subir, versiones y descargar (MD-126), la revisión del `admin_empresa` (MD-127, 2026-10-28), la combinación de revisiones del dueño y del `admin_empresa` (MD-194, ver «Estado de implementación») y agregar una evidencia propia (D88) |
 | **App** | Monkey Platform |
 | **Entidades** | `evidence_requirements`, `evidence_submissions`, `evidence_reviews` (`modelo-datos.md` §7.3) |
 | **Tickets** | MD-126, MD-127 · sprint 3: MD-194 (revisión en dos niveles) · MD-208 (la evidencia de un servicio en una petición) |
@@ -343,7 +343,7 @@ La persona lee lo que pide la prueba y sube su documento **bajo ella**, en un so
 |---|---|
 | **Quién** | El `responsable` dueño del control (lo que no subió él) · el `admin_empresa` (cualquiera). `delegado`, `auditor` y `admin_monkey`, `403`; un `responsable` sobre una entrega de un control que no es suyo, `403` |
 | **Éxito** | `200` con la revisión y el `evidence_state` calculado |
-| **Errores** | `403` · `404` · `422 note.required` · `422 enum.invalid` |
+| **Errores** | `403 FORBIDDEN` (rol que no revisa, control que no es suyo, o revisar lo que subió uno mismo; el `admin_empresa` sí puede revisar lo suyo, `P34`) · `404` (la entrega no existe para esta empresa) · `422 note.required` · `422 enum.invalid` |
 
 Los seis atributos de una evidencia y la revisión por una persona (RN-01 a RN-03). **De estas revisiones sale el estado de las pruebas documentales a las que sirve la evidencia, en su control (D88): no hay un segundo paso de veredicto.** El rol de la revisión lo pone el servidor desde quien llama (`reviewer_role = responsable` o `admin_empresa`); el cuerpo no lo lleva. Cada entrega tiene a lo sumo **una revisión por rol** y `PUT` la crea o la reemplaza (queda en el rastro).
 

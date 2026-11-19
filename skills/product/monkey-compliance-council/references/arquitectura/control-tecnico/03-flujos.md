@@ -47,21 +47,23 @@ sequenceDiagram
 
 ```mermaid
 flowchart LR
-    a["«Evaluar ahora»<br/>POST /executions"] --> q[["queued"]]
-    b["Regla programada<br/>PUT /assets/:id/schedule"] -. "aún sin planificador<br/>(06-mejoras, M1)" .-> q
+    a["«Evaluar ahora»<br/>POST /v1/assets/{id}/executions"] --> q[["queued"]]
+    b["Regla programada de la nube<br/>PUT /v1/assets/{id}/schedule"] -. "aún sin planificador<br/>(06-mejoras, M1)" .-> q
+    d["Tarea del Backend (cada minuto)<br/>solo servidores con agente"] --> q
     q --> c["El trabajador la reclama<br/>claim_next_execution()"]
 ```
 
 `claim_next_execution()` es una función SQL angosta que busca entre empresas y pasa la ejecución a `running` con
-`FOR UPDATE SKIP LOCKED`: dos trabajadores nunca toman el mismo trabajo.
+`FOR UPDATE SKIP LOCKED`: dos trabajadores nunca toman el mismo trabajo. La tarea de los servidores con agente (`AgentReadingScheduler`) solo
+**encola** lecturas; no lee la sonda ([`contracts/control-tecnico.md`](../../../../../../contracts/control-tecnico.md), «Lectura automática»).
 
 ## Lo que el cliente ve del resultado
 
 | Pantalla | De dónde sale |
 |---|---|
-| Historial de evaluaciones | `GET /executions` (solo las `assessment`) |
-| Preparación de un activo o servicio | `GET /executions/readiness` |
-| Qué falló y cómo corregirlo | `GET /findings` sobre los `check_results` fallidos, con la guía del catálogo traducida (D90) |
+| Historial de evaluaciones | `GET /v1/assets/{id}/executions` (solo las `assessment`; no lista las esperas de un servidor que aún no se conecta) |
+| Preparación de un activo | `GET /v1/assets/{id}/readiness` |
+| Qué falló y cómo corregirlo | `GET /v1/controls/{control_id}/tests/{test_id}/findings` sobre los `check_results` fallidos, con la guía del catálogo traducida (D90) |
 
 **Nada nombra al motor** (D70): ni el código del check, ni el tipo de recurso, ni el mensaje crudo del proveedor.
 

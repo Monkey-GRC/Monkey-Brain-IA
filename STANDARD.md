@@ -126,3 +126,21 @@ La automatización es contexto más mecanismos, y se comprueba como cualquier ot
 **Cuándo revisarlo:** al cerrar un `P-n` que cambie una regla, al añadir un módulo, al cambiar de versión de Claude Code y
 cada vez que una tarea real se salte un paso. Si una regla del `CLAUDE.md` no la comprueba ninguna prueba ni mecanismo, es candidata a
 borrarse (señal sobre ruido).
+
+## 10. Formato y carga en Claude Code
+
+| Pieza | Dónde vive | Cómo se registra |
+|---|---|---|
+| Reglas permanentes | `CLAUDE.md` | Se carga al arrancar |
+| Permisos y hooks | `.claude/settings.json` + `.claude/hooks/` | Claude Code los lee y recarga solos |
+| Skills | `skills/process/`, `skills/backend/senior-*`, `skills/frontend/senior-*`, `skills/product/` | Symlink en `.claude/skills/` |
+| Subagentes | `agents/*.md` (frontmatter: `name`, `description`, `tools`, `model`) | Symlink en `.claude/agents/`; se leen al arrancar la sesión |
+
+- Cada archivo de `agents/` y `skills/` lleva front-matter YAML (`id` o `name`, `description`, `type`) y Markdown plano; una skill o
+  un agente nuevo también va en `manifest.json`.
+- Una skill nueva va en su categoría (`process/`, `backend/`, `frontend/`, `product/`), nunca suelta en la raíz de `skills/`.
+  Excepción: `skills/product/monkey-compliance-council/` conserva su formato original (`SKILL.md` + `references/`).
+- El contenido de `skills/`, `agents/`, `references/` y `contracts/` es portable; **`.claude/` es específico de Claude Code**.
+  Los `path` de `manifest.json` son relativos a la raíz del cerebro.
+- **Diagramas:** Mermaid para C4, flujos y secuencias; **PlantUML** para el UML de casos de uso (`05-casos-de-uso.puml` con su
+  `.svg` al lado, skill `monkey-docs`). Lo generado (`exports/`, `tools/`) no se versiona.

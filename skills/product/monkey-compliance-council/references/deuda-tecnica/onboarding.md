@@ -36,14 +36,6 @@ Parches vigentes de [Onboarding](../arquitectura/onboarding/README.md). Tablero 
 - **Por qué:** Evita preguntar dos veces
 - **Qué lo cierra:** Decidir cómo se inventarían esos tipos
 
-### DT-9 · `responsible_id` se acepta en la API pero no hay forma de crear cargos
-
-🟠 Importante
-
-- **Qué está parchado:** (`organization_responsibles`): ni endpoint ni pantalla. La UI lo oculta
-- **Por qué:** El Módulo de Usuarios no existe
-- **Qué lo cierra:** Módulo de Usuarios / Cumplimiento
-
 ### DT-11 · Un activo dado de baja no se puede ver ni restaurar
 
 🟡 Mejora
@@ -51,16 +43,6 @@ Parches vigentes de [Onboarding](../arquitectura/onboarding/README.md). Tablero 
 - **Qué está parchado:** *2026-10-09: editar (`PATCH`) y dar de baja (`DELETE`) ya existen para los activos; `GET /v1/assets/{id}` se añadió fuera del contrato.* **La baja no borra** (conserva el historial) y **no hay forma de restaurar** un sistema dado de baja ni de verlos
 - **Por qué:** Hasta ahora nadie lo pedía
 - **Qué lo cierra:** Pantalla de sistemas dados de baja, cuando el comité diga si se restauran
-
-## Paso 3 del control técnico: el modelo de conexión (D48)
-
-### DT-35 · Conexión a la nube diferida
-
-🟠 Importante
-
-- **Qué está parchado:** El modelo de rol entre cuentas / federación de identidad sin contraseñas (como en AWS, GCP, Azure) no está decidido y las integraciones de la sonda son solo de registros. **2026-10-07:** una prueba con el motor de nube (Prowler, D100) y un usuario con llaves estáticas funcionó, pero no es el modelo definitivo (ver DT-43 a DT-45 y P14 C)
-- **Por qué:** Decisión de arquitectura
-- **Qué lo cierra:** Decidir el modelo de credenciales (P14 C; el rol de cada motor ya lo cerró D100); mientras tanto `ac_01` queda «próximamente»
 
 ## Flujo de conexión de la nube (D58)
 

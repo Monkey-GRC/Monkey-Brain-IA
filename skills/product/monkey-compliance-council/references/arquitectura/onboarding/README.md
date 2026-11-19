@@ -38,6 +38,11 @@ La evaluación de riesgos (paso 3) ocurre dentro de la pantalla del servicio, pe
 de Cumplimiento (por documentar): aquí solo se registra que es un paso del flujo y que bloquea el paso 4.
 Lo que viene después de conectar —ejecutar, medir, programar— es el módulo [`control-tecnico/`](../control-tecnico/README.md).
 
+## Contenido
+
+[`01-c4.md`](01-c4.md) · [`03-flujos.md`](03-flujos.md) · [`04-historias.md`](04-historias.md) ·
+[`05-casos-de-uso.md`](05-casos-de-uso.md). Los modelos y flujos de cada componente están en su subdirectorio.
+
 ## Dónde está cada dato
 
 | Dato | Dueño |
@@ -48,5 +53,5 @@ Lo que viene después de conectar —ejecutar, medir, programar— es el módulo
 | Decisiones (`D-n`) | [`datos/decisiones/onboarding/README.md`](../../datos/decisiones/onboarding/README.md): `D23` · `D30` · `D44` · `D45` · `D46` · `D51` · `D59` · `D60` · `D61` · `D67` · `D69` · `D73` · `D89` · `D92` · `D93` |
 | Pendientes del comité (`P-n`) | ninguno propio |
 | Código | `Backend/src/features/onboarding`, `services`, `technical-control`; `Frontend-Platform` en las mismas features |
-| Deuda vigente (18 `DT-n`) | [`deuda-tecnica/onboarding.md`](../../deuda-tecnica/onboarding.md) |
+| Deuda vigente (15 `DT-n`) | [`deuda-tecnica/onboarding.md`](../../deuda-tecnica/onboarding.md) |
 | Requisitos de seguridad | [`seguridad/onboarding.md`](../../seguridad/onboarding.md): `SEG-52` · `SEG-53`. Los de **subida de archivos** son de [`plataforma.md`](../../seguridad/plataforma.md) |

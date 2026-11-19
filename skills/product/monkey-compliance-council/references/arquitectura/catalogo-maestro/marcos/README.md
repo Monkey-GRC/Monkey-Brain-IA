@@ -68,6 +68,6 @@ nombre (D70, SEG-39). Estos archivos sí los nombran porque son documentación i
 | Pregunta | Dónde |
 |---|---|
 | Cómo se modela un marco (requisito → punto de enfoque → control) | [`../02-modelo.md`](../02-modelo.md) · `datos/modelo/03-catalogo-maestro.md` §3.1 y §3.2 |
-| Cómo se calcula el cumplimiento de un marco | [`../../cumplimiento/motor/01-reglas.md`](../../cumplimiento/motor/01-reglas.md) · `datos/modelo/09-calculo-cumplimiento.md` |
+| Cómo se calcula el cumplimiento de un marco | [`../../cumplimiento/motor/reglas.md`](../../cumplimiento/motor/reglas.md) · `datos/modelo/09-calculo-cumplimiento.md` |
 | Cómo se le muestra al usuario final | [`philosophy.md`](../../../producto/philosophy.md) |
 | Qué se clona al contratar un marco | [`../../onboarding/contexto-servicio/02-modelo.md`](../../onboarding/contexto-servicio/02-modelo.md) |

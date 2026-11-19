@@ -14,7 +14,7 @@ No tiene pantallas ni tablas. Tiene **contratos de forma** que todo el producto 
 | Idiomas | `common/text`, `nestjs-i18n` (`/i18n/{en,es}`) | El mensaje se traduce en el servidor según `Accept-Language` |
 | Paginación | `common/pagination` | Una sola forma de pedir y devolver páginas |
 | Límite de peticiones | `common/rate-limit` | 100/min por usuario, 1000/min por empresa (SEG-19) |
-| Correo | `infrastructure/mail` (Resend o log) | Puerto `Mailer` con plantilla de marca; hoy solo lo usan la clave de acceso y la contraseña |
+| Correo | `infrastructure/mail` (Resend o log) | Puerto `Mailer` con plantilla de marca; lo usan la clave de acceso, las invitaciones (D102, D117) y la contraseña |
 | Archivos | `infrastructure/storage` (S3, minio o `unavailable`) | Subida y descarga por enlace firmado, bucket no público |
 | Cifrado y huellas | `infrastructure/security` | AES-256-GCM para credenciales, HMAC con *pepper* para tokens |
 | Documentación de la API | `swagger.config.ts` | `/v1/docs`, **solo en local** con `API_DOCS_ENABLED=true` (SEG-62) |
@@ -36,5 +36,9 @@ Las guardas y el `TenantScope` también son transversales, pero tienen dueño pr
 
 ## Contenido
 
-[`01-c4.md`](01-c4.md) · [`03-flujos.md`](03-flujos.md) · [`06-mejoras.md`](06-mejoras.md) ·
-[`07-estudio.md`](07-estudio.md) (cómo aguantaría la API a 500 usuarios). Sin `02-modelo.md`: no tiene tablas.
+[`01-c4.md`](01-c4.md) · [`03-flujos.md`](03-flujos.md) · [`04-historias.md`](04-historias.md) (historias de usuario) ·
+[`05-casos-de-uso.md`](05-casos-de-uso.md) (casos de uso y su diagrama UML) · [`06-mejoras.md`](06-mejoras.md) ·
+[`07-estudio.md`](07-estudio.md) (cómo aguantaría la API a 500 usuarios).
+
+**Componentes:** [`infraestructura/`](infraestructura/README.md) (15.1): la VPS de desarrollo, sus contenedores, la red, el
+despliegue, las métricas y las mejoras propuestas. Sin `02-modelo.md`: no tiene tablas.

@@ -353,15 +353,15 @@ La usa **solo** el trabajador que ejecuta el motor (D57). **No está publicada**
 
 ---
 
-## Sonda de servidores: sincronización por agente (D113, borrador)
+## Sonda de servidores: sincronización por agente (D113)
 
-**Estado: D113 sigue en borrador (lo aprueba Carlos y luego el comité); lo construido en el Backend está marcado en «Estado de implementación», sin commitear.** Aplica a los activos con `connection_method = agent` (servidores, bases de datos y equipos). Lo que hoy dice [`conectar.md`](onboarding/conexion-activos/conectar.md) (variante C, `validate` responde `503`) sigue vigente: instalar el programa y conectarlo no pasa por `validate`.
+**Estado: D113 aprobada por Rod el 2026-11-18; lo construido en el Backend está marcado en «Estado de implementación».** Aplica a los activos con `connection_method = agent` (servidores, bases de datos y equipos). Lo que hoy dice [`conectar.md`](onboarding/conexion-activos/conectar.md) (variante C, `validate` responde `503`) sigue vigente: instalar el programa y conectarlo no pasa por `validate`.
 
 **Cómo se enlaza.** Cada servidor del cliente es un agente de la sonda: su **grupo** es el `tenant_id` de la empresa y su **nombre** es el `asset_id` (no el del servidor, que la sonda exige único en todo el manager). El vínculo vive en `asset_agents` (`datos/modelo/08-control-tecnico.md`). El cliente **nunca** ve el nombre del proveedor de la sonda en pantalla, correo ni informe (D70).
 
 ### Instalar la sonda en un servidor — estado, empezar, mostrar, generar de nuevo
 
-**Estado: construido en el Backend (2026-11-12), sin commitear.** Cuatro operaciones del `admin_empresa` sobre un activo con agente. El **sistema** (y con él el comando) sale de la **versión que el cliente declaró** al crear el activo (`os_version`, un valor de `GET /v1/catalogs/<sistema>_version`): no se pregunta de nuevo.
+**Estado: construido en el Backend (2026-11-12).** Cuatro operaciones del `admin_empresa` sobre un activo con agente. El **sistema** (y con él el comando) sale de la **versión que el cliente declaró** al crear el activo (`os_version`, un valor de `GET /v1/catalogs/<sistema>_version`): no se pregunta de nuevo.
 
 | Método y ruta | Qué hace |
 |---|---|

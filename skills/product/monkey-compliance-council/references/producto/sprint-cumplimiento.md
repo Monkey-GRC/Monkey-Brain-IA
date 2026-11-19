@@ -7,7 +7,7 @@ type: reference
 
 # Sprint de Cumplimiento — alcance
 
-> **Histórico, ajustado por D96 (2026-10-27).** El `admin_empresa` valida la evidencia, da el veredicto, decide las exclusiones y edita directamente; el `funcional` ejecuta lo de su dimensión (`contracts/gestion-usuarios.md`). La evaluación del auditor (MD-155) está en pausa (`P35`). Los tickets de aprobación de cambios, de asignación de personal externo, de elegir empresa de trabajo y del aviso de espera de una exclusión se cerraron sin objeto. Ver `D96` en `datos/decisiones/06-cumplimiento-y-roles.md`.
+> **Estado verificado contra el código el 2026-11-18** (Backend, Frontend-Platform y los contratos de `contracts/cumplimiento/`); el alcance y las prioridades no cambian. **Histórico, ajustado por D96 (2026-10-27).** El `admin_empresa` valida la evidencia, da el veredicto, decide las exclusiones y edita directamente; el `funcional` ejecuta lo de su dimensión (`contracts/gestion-usuarios.md`). La evaluación del auditor (MD-155) está en pausa (`P35`). Los tickets de aprobación de cambios, de asignación de personal externo, de elegir empresa de trabajo y del aviso de espera de una exclusión se cerraron sin objeto. Ver `D96` en `datos/decisiones/06-cumplimiento-y-roles.md`.
 
 **Segundo entregable del MVP.** Jira, proyecto `MD`, sprint «MD Sprint 2» (2026-10-09 a 2026-10-23). Es **solo de Cumplimiento**:
 la gestión de usuarios, Monkey Admin y la infraestructura que no sirve a Cumplimiento van a otro sprint.
@@ -17,60 +17,53 @@ cambios con aprobación), §7.5 (el veredicto) y §7.6 (las observaciones).
 
 ## Qué entra
 
+**Construido** = existe en el Backend y su contrato lo dice; si lleva pantalla, está en Monkey Platform. Lo que no se pudo comprobar en el código (tickets de proceso) se deja sin marca.
+
 | Épico | Tickets |
 |---|---|
-| Fundación (MD-101) | MD-108 contratos (escritos en `contracts/cumplimiento/`) · MD-109 glosario · MD-110 almacenamiento de evidencias · MD-113 rastro de auditoría (listo) · MD-114 idiomas en Platform · MD-115 componentes compartidos |
-| Controles (MD-102) | MD-117 listar y ver (**construido**) · MD-118 proponer edición o baja (**construido**) · MD-150 proponer un control propio (**construido**) |
-| Riesgos y causas (MD-103) | MD-122 riesgos y causas (**construido**) · MD-123 evaluación 5×5 y tratamiento (**construido**) |
-| Evidencias (MD-104) | MD-126 subir (**construido**) · MD-127 validación de la evidencia por el `admin_empresa` (D96; **construido**, D88) · MD-128 Descripción del Sistema como archivo (listo) |
-| Responsables de la organización (MD-105) | MD-133 cargos en la API (**construido**) · MD-135 cargos en pantalla |
-| Medición y resumen (MD-106) | MD-137 resumen del servicio · MD-138 motor de cálculo · MD-139 estado del activo |
-| Exclusiones y cierre (MD-107) | MD-144 exclusiones (**construido**; para usarlo de verdad faltan MD-168 —el período, `P26`; **API construida 2026-10-20 (D87)**, falta su pantalla— ; MD-170 exclusión de un check; MD-171 deuda) · MD-145 evaluaciones inmutables · MD-147 verificación del backend · MD-149 revisión de pantallas y demo |
-| Auditoría (MD-152) | MD-154 observaciones del auditor (**API construida**; las pantallas esperan `P3`) · MD-155 veredicto manual del `admin_empresa` (**construido**) |
-| Acceso (MD-153), prerrequisito | MD-157 rol auditor en el backend: **construido**. Desbloqueó MD-154 |
+| Fundación (MD-101) | MD-108 contratos (**escritos**, `contracts/cumplimiento/`) · MD-109 glosario (**listo**, `datos/modelo/01-glosario.md`) · MD-110 almacenamiento de evidencias (listo) · MD-113 rastro de auditoría (listo) · MD-114 idiomas en Platform (**construido**, es/en) · MD-115 componentes compartidos |
+| Controles (MD-102) | MD-117 listar y ver · MD-118 editar o dar de baja · MD-150 control propio: **construidos** |
+| Riesgos y causas (MD-103) | MD-122 riesgos y causas · MD-123 evaluación 5×5 y tratamiento: **construidos** |
+| Evidencias (MD-104) | MD-126 subir · MD-127 validación de la evidencia (D96, D88; en dos niveles desde MD-194) · MD-128 Descripción del Sistema como archivo: **construidos** |
+| Responsables de la organización (MD-105) | MD-133 cargos en la API · MD-135 cargos en pantalla (`/responsables` en Platform): **construidos** |
+| Medición y resumen (MD-106) | MD-137 resumen del servicio · MD-138 motor de cálculo (`domain/engine/`) · MD-139 estado del activo: **construidos** |
+| Exclusiones y cierre (MD-107) | MD-144 exclusiones · MD-168 período y fecha de corte (API y pantalla) · MD-171 vencimiento derivado al leer · MD-145 evaluaciones inmutables: **construidos**. **Falta:** MD-170 exclusión de un check (`DT-74`). MD-147 verificación del backend y MD-149 revisión de pantallas y demo: sin comprobar |
+| Auditoría (MD-152) | MD-155 veredicto manual (en dos niveles desde MD-194) y MD-157 rol auditor: **construidos**. MD-154 observaciones del auditor: **API construida; faltan las pantallas** (y el aviso a la empresa, `P39`) |
 
-## Lo que cambia con el motor del comité (D68, 2026-10-10)
+## Lo que sigue pendiente del motor del comité (D68)
 
-El comité entregó la VF2 con el motor de evaluación completo. **Reemplaza la agregación de D62** y cambia el alcance de estos tickets (Jira se reescribe a mano; aquí queda el qué):
+El motor y sus reglas (los 8 casos C1 a C8, las simulaciones y las validaciones V01 a V15 como pruebas de aceptación, `modelo-datos.md` §9) están construidos y reemplazaron la agregación de D62. Queda:
 
-| Ticket | Qué cambia |
+| Ticket | Qué falta |
 |---|---|
-| **MD-138** motor de cálculo | Se construye contra `modelo-datos.md` §9 (una comprobación automática se reintenta **tres veces** antes de quedar en `ERROR` con aviso, D76): funciones puras para activo, test, control, categoría y marco, con **los 8 casos del comité** (C1 a C8), las simulaciones 1 a 6 y las validaciones V01 a V15 como pruebas de aceptación. Lo pendiente bloquea; el marco se evalúa sobre controles únicos. Reemplaza al calculador anterior, que ya no existe |
-| **MD-139** estado del activo | El resultado de un activo en un test tiene 5 estados (cumple, no cumple, pendiente, error, excluido). El semáforo del activo sigue la lectura de D62 (`DT-66`) |
-| **MD-137** resumen del servicio | Muestra avance, cobertura y estado por separado (REQ-032); el cliente ve el semáforo y en qué falla, y el `admin_empresa` y el auditor ven los estados técnicos (REQ-049) |
-| **MD-144** exclusiones | Incluye **excluir un activo** de un test con justificación, aprobador y vigencia (REQ-008). La propone y la decide el `admin_empresa` en un solo acto y vence con el período: **cerrada en D74 y D96** |
-| **MD-145** evaluaciones inmutables | **Construida** (`SEG-38`): la base impide editar o borrar una evaluación a todos los roles, también al dueño de la tabla; el período y la fecha de corte (REQ-004) los puso MD-168 y todo cambio de estado de un control deja un evento (REQ-044, D91) |
-| **MD-155** veredicto manual | **Construida**: el veredicto de un test manual que no es documental, del `admin_empresa` (D85, D96). La evaluación del auditor (`framework_assessments`, D77) quedó en pausa (`P35`) |
-| **MD-151** mitigación y riesgo residual | **Sigue fuera.** El comité trae los estados de mitigación (RN-20, RN-21) y la fórmula del residual está adoptada (D75), pero falta el efecto (probabilidad o impacto) y la obligatoriedad de las 209 relaciones causa–control, y el comité entregará el detalle de la fórmula entre el 14 y el 15 de octubre: `P22`, D76 |
+| **MD-151** mitigación y riesgo residual | **Sigue fuera.** El comité trae los estados de mitigación (RN-20, RN-21) y la fórmula del residual está adoptada (D75), pero falta el efecto (probabilidad o impacto) y la obligatoriedad de las 209 relaciones causa–control, y el detalle de la fórmula: `P22`, D76 |
+| Evaluación del auditor (D77, `framework_assessments`) | En pausa (`P35`); se retiró del Backend el 2026-10-28 (D96) |
+| Cargar `control_dimensions` desde la hoja del comité | `DT-69` |
 
-**Tickets nuevos que el motor pide y aún no se crean** (siguen la prioridad MUST, SHOULD o LATER de la hoja `REQUISITOS EVALUACIÓN MONKEY`): desactivación controlada de tests con justificación (REQ-019 a REQ-021),
-evidencias validadas por atributo y por una persona (REQ-014 a REQ-018), dimensión requerida sin test ⇒ control incompleto (REQ-022, REQ-023), vigencia y vencimiento automático (REQ-046, depende de `P22`),
-reutilización de resultados entre marcos (REQ-013, REQ-033) y la evaluación del auditor (D77; falta crear su ticket). **Falta también el ticket de guardar los resultados de la sonda como `evaluations` por test, activo y control (`DT-50`)**: sin él, todo lo que MD-117, MD-137 y MD-139 muestran sale «Sin medir». Aparte, cargar `control_dimensions` desde la hoja del comité (`DT-69`).
+**Tickets nuevos que el motor pide y aún no se crean** (siguen la prioridad MUST, SHOULD o LATER de la hoja `REQUISITOS EVALUACIÓN MONKEY`; no se comprobó cuáles ya cubre el código): desactivación controlada de tests con justificación (REQ-019 a REQ-021), evidencias validadas por atributo y por una persona (REQ-014 a REQ-018), dimensión requerida sin test ⇒ control incompleto (REQ-022, REQ-023), vigencia y vencimiento automático (REQ-046, depende de `P22`) y reutilización de resultados entre marcos (REQ-013, REQ-033).
 
 ## Qué quedó fuera (vuelve al backlog)
 
-- **Acceso y usuarios (MD-153):** invitar (MD-131), desactivar (MD-132), pantalla Equipo (MD-134), Monkey Admin heredado (MD-143), MFA para los 4 roles (MD-94),
-  asignar el trabajo por dimensión (MD-158, construido en `feat/team-module`).
-- **Monkey Admin:** catálogo maestro (MD-141, MD-142) y detalle de empresa (MD-146).
-- **Infraestructura y limpieza:** MD-112 (docker-compose y respaldo), MD-116 (limpieza de Platform), MD-87 (confidencialidad de la sonda).
+- **Acceso y usuarios (MD-153):** se construyó en el sprint de usuarios ([`sprint-usuarios.md`](sprint-usuarios.md), D102 y D103): MD-131, MD-132 y MD-134 los reemplazaron otros tickets; MD-158 quedó sin objeto. MD-94 (MFA) lo cubre el módulo de autenticación (`contracts/autenticacion.md`).
+- **Monkey Admin:** el catálogo maestro (MD-141, MD-142) **está construido** (lectura y escritura, `contracts/catalogo-maestro.md`). Sigue fuera el detalle de empresa de solo lectura (MD-146).
+- **Infraestructura y limpieza:** MD-112 (docker-compose y respaldo), MD-116 (limpieza de Platform), MD-87 (confidencialidad de la sonda; `SEG-39`, sin prueba automática).
 - **Mitigación y riesgo residual** (MD-151).
 
-## Qué espera al documento de permisos por pantalla del comité (P3)
+## Pantallas por rol (P3, cerrada por D102)
 
-Estos tickets **no se reescriben en Jira hasta que el comité entregue su Excel**. Tienen una nota que lo dice. Lo que ya está decidido y no cambia:
+El comité no entregará el Excel de permisos por pantalla: manda la matriz de `modelo/05-usuarios.md` §5.5 (D102), y estas pantallas ya existen en Platform (`/cumplimiento/resumen`, `riesgos`, `causas`, `controles`, `evidencias`, `exclusiones`). Lo decidido para ellas, que sigue vigente:
 
 | Ticket | Pantalla | Lo que ya está decidido |
 |---|---|---|
-| MD-119 | Estructura del módulo dentro del servicio | Cumplimiento vive dentro de cada servicio; no hay toggle de «modo auditor»: el cliente ve la vista de negocio y la técnica es de los roles auditor y administrador de la empresa (D81, D96). **Con más de un servicio, el menú «Cumplimiento» abre «General» (2026-10-22): para cada marco, una fila por servicio con su propio estado, avance y cobertura, y entras al detalle desde ahí; el encabezado del servicio trae un selector con «General» y los servicios. «General» no suma ni promedia servicios (§9, D68), y no hay chip «Vista técnica» en el encabezado: la vista técnica es del rol, no una señal en pantalla** |
+| MD-119 | Estructura del módulo dentro del servicio | Cumplimiento vive dentro de cada servicio; no hay toggle de «modo auditor»: el cliente ve la vista de negocio y la técnica es de los roles auditor y administrador de la empresa (D81, D96). **Con más de un servicio, el menú «Cumplimiento» abre «General»: para cada marco, una fila por servicio con su propio estado, avance y cobertura, y entras al detalle desde ahí; «General» no suma ni promedia servicios (§9, D68)** |
 | MD-120 | Lista de controles | Agrupada por categoría; con el código del control, el estado cualitativo, el porcentaje de avance y la cobertura juntos (D80) |
 | MD-121 | Detalle y edición de una acción | Editar o dar de baja lo hace el `admin_empresa` directo, con advertencia y confirmación (D96, `P33`) |
 | MD-124 · MD-125 | Riesgos, evaluación 5×5 y tratamiento | Evalúa y trata el administrador de la empresa; el auditor lee |
-| MD-129 · MD-130 | Bandeja de evidencias y su aprobación | Solo el administrador de la empresa aprueba o rechaza |
+| MD-129 · MD-130 | Bandeja de evidencias y su aprobación | Revisan el `responsable` dueño y el `admin_empresa` (D102) |
 | MD-140 | Resumen del servicio | Servicio → marco → 5 categorías → acciones que fallan → dimensión → activo o test |
 
-**Tickets nuevos que aún no se crean** (dependen de ese documento o de definiciones que faltan): la pantalla de observaciones del auditor,
-responder una observación desde la empresa, y los reportes en PDF y Excel (contenido por definir).
+**Tickets nuevos que aún no se crean:** la pantalla de observaciones del auditor, responder una observación desde la empresa, y los reportes en PDF y Excel (contenido por definir).
 
 ## Preguntas abiertas que tocan este sprint
 
-`datos/pendientes/README.md`: **P3** (permisos por pantalla), **P22** (lo que falta para calcular el riesgo), **P26** (período y fecha de corte de una evaluación).
+`datos/pendientes/README.md`: **P22** (lo que falta para calcular el riesgo), **P26** (período y fecha de corte: definidos de forma provisional con D87) y **P35** (la evaluación del auditor).

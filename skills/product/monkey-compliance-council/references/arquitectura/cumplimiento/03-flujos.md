@@ -31,10 +31,10 @@ flowchart LR
 
 | Operación | Quién | Dónde está el detalle |
 |---|---|---|
-| Listar y ver controles | `admin_empresa` · `funcional` (lo suyo) · `auditor` | [`controles/03-flujos.md`](controles/03-flujos.md) |
+| Listar y ver controles | `admin_empresa` · `auditor` · `responsable` y `delegado` (solo lo suyo, D102) | [`controles/03-flujos.md`](controles/03-flujos.md) |
 | Resumen por marco y categoría | los tres roles | [`resumen/03-flujos.md`](resumen/03-flujos.md) |
-| Subir y revisar evidencia | sube el responsable, revisa `admin_empresa` | [`evidencia/03-flujos.md`](evidencia/03-flujos.md) |
-| Dar un veredicto | solo `admin_empresa` | [`veredictos/03-flujos.md`](veredictos/03-flujos.md) |
+| Subir y revisar evidencia | suben el `admin_empresa`, el dueño o el ejecutor; revisan el dueño (lo que no subió él) y el `admin_empresa` (D102) | [`evidencia/03-flujos.md`](evidencia/03-flujos.md) |
+| Dar un veredicto | lo registran el `admin_empresa`, el dueño o el ejecutor; lo revisan el dueño y el `admin_empresa` (D121) | [`veredictos/03-flujos.md`](veredictos/03-flujos.md) |
 | Excluir un activo de una prueba | solo `admin_empresa` | [`exclusiones/03-flujos.md`](exclusiones/03-flujos.md) |
 | Escribir y responder una observación | escribe el `auditor`, responde la empresa | [`observaciones/03-flujos.md`](observaciones/03-flujos.md) |
 | Evaluar y tratar un riesgo | `admin_empresa` | [`riesgos/03-flujos.md`](riesgos/03-flujos.md) |

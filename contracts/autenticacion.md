@@ -415,7 +415,7 @@ Una cuenta `pending` no tiene contraseña que recuperar: se activa con su códig
 
 ## Notas
 
-- **Toda autorización se verifica en cada request** (§5.3), con caché de 5 min. No se confía en el frontend.
+- **Toda autorización se verifica en cada request** (§5.3), sin caché: la sesión y el usuario se leen de la base en cada petición (D124). No se confía en el frontend.
 - Las acciones de este módulo (canje, creación de usuario) se registran en `audit_logs` con usuario, IP y user agent (MD-92).
 - El RBAC completo queda fuera del sprint: el onboarding asume un `admin_empresa` autenticado.
 

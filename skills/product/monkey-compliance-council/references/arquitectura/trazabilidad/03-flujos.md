@@ -63,7 +63,7 @@ resultados de la sonda ([`cumplimiento/03-flujos.md`](../cumplimiento/03-flujos.
 |---|---|
 | `auditor` | El rastro de su empresa, completo, en solo lectura |
 | `admin_empresa` | El de su empresa |
-| `funcional` | Limitado |
+| `responsable`, `delegado` | «Limitado» (matriz §5.5 de `datos/modelo/05-usuarios.md`); qué incluye ese límite no está definido todavía |
 | `admin_monkey` | El de plataforma |
 
 Nadie lo edita, y la matriz de §5.5 no tiene una fila para «borrar auditoría»: no existe.

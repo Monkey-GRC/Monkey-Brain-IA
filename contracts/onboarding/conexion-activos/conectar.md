@@ -76,11 +76,11 @@ El cliente no elige una categoría técnica: **elige una plataforma**, y eso lo 
 
 | Qué se conecta | Categoría | Plataforma que elige | Canales (`connection_method`) |
 |---|---|---|---|
-| Cuenta de nube o servicio gestionado | `ac_01` | Amazon Web Services · Azure · GCP · Microsoft 365 · Google Workspace | AWS: `readonly_role` (recomendado) · `access_keys`. Las demás: aún sin canal |
-| Servidor en nube, on-premise o equipo | `ac_02`, `ac_04`, `ac_06` | El **sistema operativo** | `agent` (solo diseño, `DT-57`) |
-| Base de datos | `ac_03`, `ac_05` | El **motor** | `agent` (solo diseño, `DT-57`) |
+| Cuenta de nube o servicio gestionado | `ac_01` | Amazon Web Services · Azure · GCP · Microsoft 365 · Google Workspace | AWS: `readonly_role` (recomendado) · `access_keys`. GCP: `identity_federation` (D112). Las demás: aún sin canal |
+| Servidor en nube, on-premise o equipo | `ac_02`, `ac_04`, `ac_06` | El **sistema operativo** | `agent` (construido solo para Linux y Windows on-premise, D113; el resto, solo diseño) |
+| Base de datos | `ac_03`, `ac_05` | El **motor** | `agent` (solo diseño: bloqueado) |
 
-**Disponibilidad.** `availability = available` solo si el flujo existe: **hoy AWS, y Linux y Windows en servidores on-premise (`ac_04`, D113)**. Las `coming_soon` **se muestran bloqueadas**. Dónde vive un servidor o una base (EC2, RDS, un VPS…) no se pregunta: lo dice la plataforma que el cliente elige (D92).
+**Disponibilidad.** `availability = available` solo si el flujo existe: **hoy AWS, GCP (D112), y Linux y Windows en servidores on-premise (`ac_04`, D113)**. Las `coming_soon` **se muestran bloqueadas**. Dónde vive un servidor o una base (EC2, RDS, un VPS…) no se pregunta: lo dice la plataforma que el cliente elige (D92).
 
 #### Pantalla
 `/services/{id}/connections/new`; las plataformas disponibles llevan a `/services/{id}/connections/new/{catalog_code}/{platform}`.
@@ -186,8 +186,8 @@ Igual que arriba, con `"connection_method": "access_keys"` y:
 
 `credentials` **nunca se devuelve**: se cifra (`SEG-24`). La respuesta lleva `connection_setup.method = "access_keys"` con un `warning` (menos seguro: llaves de larga vida) y los pasos para crear un usuario de solo lectura. La pantalla debe decirlo y ofrecer el rol primero.
 
-#### C. Servidor, base de datos o equipo con agente *(solo diseño)*
-Mismo cuerpo sin `external_account_id` ni `regions`, con `"connection_method": "agent"` y **`"os_version"`: la versión que el cliente declara** («Ubuntu 22.04 LTS»), un `value` de `GET /v1/catalogs/<sistema>_version` (D113). Es obligatoria: de ella salen el sistema (y con él el comando correcto) y qué evaluación se espera. Un valor que no es de ese catálogo, o de otro sistema que el de la plataforma elegida (p. ej. una versión de Windows para Linux), responde `422 VALIDATION_FAILED` en `os_version`. La respuesta (`201`) trae `agent: { status, os, os_version: { value, label } }` (el mismo texto que el catálogo) y `connection_setup` con **cuatro pasos** de instrucciones ya traducidos (entrar como administrador, copiar y ejecutar el comando, permitir la conexión de salida, esperar el estado «Conectado»); en las demás conexiones `agent` es `null`. Un alta rechazada no deja nada a medias: ni activo ni fila de agente. El activo se crea y su fila de agente nace `pending`, **sin agente todavía**: el comando de instalación lo entrega `GET /v1/assets/{id}/agent-install` ([`control-tecnico.md`](../../control-tecnico.md)), que es quien crea el agente en la sonda en el grupo de la empresa (D54). **No está construido:** `validate` responde `503` (`DT-57`; instalador y hospedaje, D71).
+#### C. Servidor, base de datos o equipo con agente *(construido solo para Linux y Windows on-premise, D113)*
+Mismo cuerpo sin `external_account_id` ni `regions`, con `"connection_method": "agent"` y **`"os_version"`: la versión que el cliente declara** («Ubuntu 22.04 LTS»), un `value` de `GET /v1/catalogs/<sistema>_version` (D113). Es obligatoria: de ella salen el sistema (y con él el comando correcto) y qué evaluación se espera. Un valor que no es de ese catálogo, o de otro sistema que el de la plataforma elegida (p. ej. una versión de Windows para Linux), responde `422 VALIDATION_FAILED` en `os_version`. La respuesta (`201`) trae `agent: { status, os, os_version: { value, label } }` (el mismo texto que el catálogo) y `connection_setup` con **cuatro pasos** de instrucciones ya traducidos (entrar como administrador, copiar y ejecutar el comando, permitir la conexión de salida, esperar el estado «Conectado»); en las demás conexiones `agent` es `null`. Un alta rechazada no deja nada a medias: ni activo ni fila de agente. El activo se crea y su fila de agente nace `pending`, **sin agente todavía**: el comando de instalación lo entrega `GET /v1/assets/{id}/agent-install` ([`control-tecnico.md`](../../control-tecnico.md)), que es quien crea el agente en la sonda en el grupo de la empresa (D54). `validate` responde `503` a propósito: un servidor no se «valida», la lectura de la sonda es la prueba (D113).
 
 #### D. Proyecto de GCP con federación de identidad (D112)
 ```json

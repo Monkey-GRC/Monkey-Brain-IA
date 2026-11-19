@@ -52,7 +52,7 @@ sequenceDiagram
   en cambio, tarda minutos y va por el historial.
 - **Cada motivo de fallo se traduce al campo a corregir** (`role_arn`, `credentials`, `platform`, `regions`). Lo que
   es culpa de Monkey (trabajador caído, llaves base vencidas) **no se le achaca al cliente**: es un 503.
-- **Solo la nube se valida así.** Un agente lo verifica la sonda de servidores, que aún no existe (DT-32…36).
+- **Solo la nube se valida así.** Un servidor con agente no pasa por `validate` (responde `503`): su instalación y su lectura son del Control técnico (D113).
 
 ## 4 · Programar
 

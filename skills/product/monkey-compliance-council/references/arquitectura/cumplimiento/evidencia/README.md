@@ -32,7 +32,7 @@ flowchart LR
 | Acción | Quién |
 |---|---|
 | Subir una entrega | El ejecutor (`delegado`), el dueño (`responsable`) o el `admin_empresa` (D102) |
-| Revisar | **Solo el `admin_empresa`**, en una sola revisión por entrega |
+| Revisar | El `responsable` dueño (lo que no subió él) y el `admin_empresa` (cualquiera): una revisión por rol y por entrega; el estado combina las dos (D102, MD-194) |
 | Leer y descargar | Todos los roles (el `responsable` y el `delegado`, solo lo de sus controles) |
 
 La descarga es un enlace firmado de 5 minutos; el archivo nunca pasa por una URL pública.

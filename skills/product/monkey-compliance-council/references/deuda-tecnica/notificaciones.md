@@ -2,16 +2,6 @@
 
 Parches vigentes de [Notificaciones](../arquitectura/notificaciones/README.md). Tablero y reglas: [`README.md`](README.md).
 
-## Componente 3 — Control Técnico (D46)
-
-### DT-10 · La UI promete «te avisaremos» cuando la evaluación automática esté disponible, y no existe ningún aviso
-
-🟠 Importante
-
-- **Qué está parchado:** (ni correo ni notificación)
-- **Por qué:** Mensaje honesto para el modo `unavailable`
-- **Qué lo cierra:** Construir las notificaciones **o** reescribir el mensaje. No dejar la promesa sin mecanismo
-
 ## Funcionalidad que el brain menciona y aún no tiene contrato
 
 ### DT-83 · Falta el aviso a los `admin_monkey` de que una empresa está por borrarse

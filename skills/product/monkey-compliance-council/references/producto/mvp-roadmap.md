@@ -153,4 +153,4 @@ porcentaje a un cliente real.
 - Que algo no exista aún en el schema no es un pendiente: si está en `modelo-datos.md`, está decidido y listo para construirse. Solo
   queda abierto lo que está en `datos/pendientes/`.
 - **Rediseño visual de Monkey Admin y Monkey Platform** (sistema de diseño en `skills/frontend/design-system/`): hecho en el código, sin commitear. Falta la revisión
-  visual de Rod en claro y oscuro de las dos apps (nunca se miró en un navegador) y las decisiones abiertas; la deuda que dejó es `DT-92` a `DT-99` (las cerradas, borradas). No cambia prioridades ni alcance.
+  visual de Rod en claro y oscuro de las dos apps (nunca se miró en un navegador) y las decisiones abiertas; la deuda que dejó y sigue abierta es `DT-99` (las demás que abrió se cerraron en el mismo rediseño y se borraron). No cambia prioridades ni alcance.

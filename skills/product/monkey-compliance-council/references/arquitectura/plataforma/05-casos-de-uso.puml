@@ -1,0 +1,49 @@
+@startuml
+' Diagrama UML de casos de uso de Plataforma. Fuente: 05-casos-de-uso.md (cada óvalo es un CU-PLT-nn).
+' Se genera con skills/process/monkey-docs/scripts/render-uml.sh → 05-casos-de-uso.svg. No editar el SVG a mano.
+!pragma layout smetana
+top to bottom direction
+skinparam shadowing false
+skinparam defaultFontName Helvetica
+skinparam packageStyle rectangle
+skinparam ArrowColor #4A5568
+skinparam usecase {
+  BackgroundColor #EEF4FB
+  BorderColor #013362
+}
+skinparam actor {
+  BorderColor #013362
+}
+
+actor "Cliente HTTP\n(Platform · Admin)" as Cliente
+actor "Módulo de Monkey" as Modulo <<sistema>>
+actor "Equipo de Monkey" as Equipo
+actor "Planificador\n(cron · GitHub Actions)" as Planificador <<sistema>>
+actor "Servicio de correo" as Correo <<sistema>>
+actor "Almacenamiento" as Almacen <<sistema>>
+
+rectangle "Monkey · Plataforma" {
+  usecase "CU-PLT-01\nAtender una petición" as CU1
+  usecase "CU-PLT-02\nAplicar el límite\nde peticiones" as CU2
+  usecase "CU-PLT-03\nSubir y descargar\nun archivo" as CU3
+  usecase "CU-PLT-04\nEnviar un correo\nde marca" as CU4
+  usecase "CU-PLT-05\nGuardar una\ncredencial cifrada" as CU5
+  usecase "CU-PLT-06\nVerificar y desplegar\nun cambio" as CU6
+  usecase "CU-PLT-07\nRespaldar la base" as CU7
+  usecase "CU-PLT-08\nActualizar la base\nde ubicación" as CU8
+}
+
+Cliente --> CU1
+Modulo --> CU4
+Modulo --> CU5
+Equipo --> CU6
+Planificador --> CU7
+Planificador --> CU8
+CU4 --> Correo
+CU3 --> Almacen
+CU7 --> Almacen
+
+CU1 ..> CU2 : <<include>>
+CU3 ..> CU1 : <<extend>>\nla petición lleva\no pide un archivo
+CU6 ..> CU7 : <<include>>\nrespaldo antes\nde migrar
+@enduml

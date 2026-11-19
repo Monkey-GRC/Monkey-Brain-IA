@@ -212,7 +212,7 @@ El veredicto de una prueba manual **no documental** sigue el mismo flujo que la 
 |---|---|
 | **Quién** | El dueño del control de origen (si no registró el veredicto él mismo) y el `admin_empresa` (siempre, también lo que registró él). `delegado`, `auditor`, `admin_monkey` y un `responsable` que no es el dueño, `403`; el que lo registró sin ser `admin_empresa`, `403` |
 | **Éxito** | `200` con el veredicto y su estado combinado |
-| **Errores** | `403` · `404` (no existe para esta empresa) · `409 VERDICT_SUPERSEDED` (ya hay un veredicto más nuevo del mismo test en el servicio) · `422 note.required` (rechazar sin nota) |
+| **Errores** | `403 FORBIDDEN` (incluye revisar el veredicto que registró uno mismo, salvo el `admin_empresa`) · `404` (no existe para esta empresa) · `409 VERDICT_SUPERSEDED` (ya hay un veredicto más nuevo del mismo test en el servicio) · `422 note.required` (rechazar sin nota) |
 
 El `reviewer_role` lo pone el servidor desde quien llama (`responsable` · `admin_empresa`).
 
@@ -296,7 +296,7 @@ Recursos del rastro: `test_verdict` (el veredicto) y `test_verdict_review` (la r
 **Control dado de baja (D119).** Ya no admite veredictos nuevos, pero los que tenía se siguen leyendo, con la misma regla de alcance.
 
 **Construido (2026-10-28, B66):**
-- **Veredicto.** `POST` solo `admin_empresa`, `GET` del historial `admin_empresa` y `auditor`.
+- **Veredicto.** `POST` lo registran el `admin_empresa`, el dueño y el ejecutor del control (D121); `PUT …/review`, el dueño (si no lo registró él) y el `admin_empresa`; `GET` del historial, `admin_empresa`, `auditor`, el dueño y el ejecutor.
 - **Pruebas documentales por control (D88).** El estado sale de la revisión del `admin_empresa` (D102 lo cambia por la combinación de revisiones, MD-194).
 
-**Construido (MD-177, 2026-10-29): `GET /v1/controls/{id}/tests`.** Todas las pruebas del control ordenadas por código y paginadas (`page`, `page_size`, máx. 100), con `state` (el del motor), `type`, `is_mandatory`, `is_active` y `display_name` neutro. `shared_with` son los otros controles **vigentes** del servicio que llevan la prueba (D85, ordenados por código), siempre vacío en una documental (D88). `last_verdict` es `{ result, evaluated_at, confirmed_by }` del último veredicto del `admin_empresa` o `null`; `ai_suggestion` es siempre `null` porque la IA no escribe aquí. Solo `admin_empresa` y `auditor`; el `funcional` (hoy) y `admin_monkey` reciben `403`. Pruebas: `test/cumplimiento/evidencia-por-test.e2e-spec.ts`. La evidencia de cada test está en `evidencia.md`.
+**Construido (MD-177, 2026-10-29): `GET /v1/controls/{id}/tests`.** Todas las pruebas del control ordenadas por código y paginadas (`page`, `page_size`, máx. 100), con `state` (el del motor), `type`, `is_mandatory`, `is_active` y `display_name` neutro. `shared_with` son los otros controles **vigentes** del servicio que llevan la prueba (D85, ordenados por código), siempre vacío en una documental (D88). `last_verdict` es `{ result, evaluated_at, confirmed_by }` del último veredicto **aprobado** (D121) o `null`; `ai_suggestion` es siempre `null` porque la IA no escribe aquí. Solo `admin_empresa` y `auditor`; `responsable`, `delegado` y `admin_monkey` reciben `403`. Pruebas: `test/cumplimiento/evidencia-por-test.e2e-spec.ts`. La evidencia de cada test está en `evidencia.md`.

@@ -10,7 +10,7 @@ sequenceDiagram
     participant AU as auditor
     participant API as Backend
     participant DB as PostgreSQL
-    participant E as admin_empresa o funcional responsable
+    participant E as admin_empresa, responsable o delegado del control
     AU->>API: escribe una observación sobre un control o una evidencia
     API->>DB: inserta open + insertAuditLog (misma transacción)
     Note over E: hoy se entera entrando a mirar: no hay aviso (P39)

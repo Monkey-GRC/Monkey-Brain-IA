@@ -1,0 +1,81 @@
+@startuml
+' Diagrama UML de casos de uso de Cumplimiento. Fuente: 05-casos-de-uso.md (cada óvalo es un CU-CUM-nn).
+' Se genera con skills/process/monkey-docs/scripts/render-uml.sh → 05-casos-de-uso.svg. No editar el SVG a mano.
+' Confidencial (regla 1 de CLAUDE.md): los motores se nombran «evaluación automática», nunca por su proveedor.
+!pragma layout smetana
+top to bottom direction
+skinparam shadowing false
+skinparam defaultFontName Helvetica
+skinparam packageStyle rectangle
+skinparam ArrowColor #4A5568
+skinparam usecase {
+  BackgroundColor #EEF4FB
+  BorderColor #013362
+}
+skinparam actor {
+  BorderColor #013362
+}
+
+actor "Persona de empresa\n(lee lo suyo)" as Persona
+actor "Quien trabaja el control\n(responsable · delegado)" as Trabaja
+actor "responsable\n(dueño del control)" as Responsable
+actor "admin_empresa" as AdminEmpresa
+actor "auditor" as Auditor
+actor "Almacenamiento privado" as Storage <<sistema>>
+actor "Evaluación automática" as Auto <<sistema>>
+
+Trabaja -up-|> Persona
+Responsable -up-|> Trabaja
+AdminEmpresa -up-|> Persona
+Auditor -up-|> Persona
+
+rectangle "Monkey · Cumplimiento" {
+  usecase "CU-CUM-01\nConsultar el resumen\ndel servicio" as CU1
+  usecase "CU-CUM-02\nDeclarar el período\nauditado" as CU2
+  usecase "CU-CUM-03\nConsultar los controles\ny su detalle" as CU3
+  usecase "CU-CUM-06\nVer o descargar\nuna evidencia" as CU6
+  usecase "CU-CUM-12\nGestionar riesgos\ny causas" as CU12
+  usecase "CU-CUM-04\nGestionar un control" as CU4
+  usecase "CU-CUM-05\nEntregar una evidencia" as CU5
+  usecase "CU-CUM-07\nRevisar una evidencia" as CU7
+  usecase "CU-CUM-08\nRegistrar un veredicto" as CU8
+  usecase "CU-CUM-09\nRevisar un veredicto" as CU9
+  usecase "CU-CUM-10\nExcluir un activo\nde una prueba" as CU10
+  usecase "CU-CUM-11\nAtender una observación\ndel auditor" as CU11
+  usecase "CU-CUM-13\nEvaluar y tratar\nun riesgo" as CU13
+  usecase "CU-CUM-14\nRecalcular el cumplimiento\nal escribir un hecho" as CU14
+}
+
+Persona --> CU1
+Persona --> CU3
+Persona --> CU6
+Persona --> CU12
+Trabaja --> CU5
+Trabaja --> CU8
+Trabaja --> CU11
+Responsable --> CU7
+Responsable --> CU9
+AdminEmpresa --> CU2
+AdminEmpresa --> CU4
+AdminEmpresa --> CU5
+AdminEmpresa --> CU7
+AdminEmpresa --> CU8
+AdminEmpresa --> CU9
+AdminEmpresa --> CU10
+AdminEmpresa --> CU11
+AdminEmpresa --> CU13
+Auditor --> CU11
+
+CU4 ..> CU14 : <<include>>
+CU5 ..> CU14 : <<include>>
+CU7 ..> CU14 : <<include>>
+CU8 ..> CU14 : <<include>>
+CU9 ..> CU14 : <<include>>
+CU10 ..> CU14 : <<include>>
+CU2 ..> CU1 : <<extend>>\nmarco sin período
+CU9 ..> CU8 : <<extend>>\nsi no lo registró\nel admin_empresa
+
+CU5 --> Storage
+CU6 --> Storage
+Auto --> CU14
+@enduml

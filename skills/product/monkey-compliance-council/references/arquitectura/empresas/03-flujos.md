@@ -44,10 +44,11 @@ stateDiagram-v2
 Al desactivar se toma una **copia cifrada** y se guarda dónde quedó (`archive_snapshot_key`). `GET /v1/companies/pending-purge`
 lista las que ya cumplieron su plazo y `PurgeExpiredCompanies` las elimina dejando `company_purge_log`.
 
-## 3 · Lo que no dispara nadie
+## 3 · Quién dispara la purga
 
-El barrido de purga no tiene quien lo invoque dentro de `Backend/src/`: hay que llamarlo desde fuera. Mismo hueco
-que lo programado del control técnico ([`06-mejoras.md`](06-mejoras.md), M1).
+`CompanyPurgeScheduler` (`Backend/src/features/companies/infrastructure/company-purge.scheduler.ts`) la corre sola cada
+`COMPANY_PURGE_INTERVAL_MINUTES` (60 por defecto; `0` la apaga, como en las pruebas) y evita dos barridos a la vez en la
+misma instancia. Con varias instancias, cada empresa se borra con su propio candado: la réplica que llega tarde la salta.
 
 ## Qué se audita
 

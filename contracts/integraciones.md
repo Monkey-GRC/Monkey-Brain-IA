@@ -174,7 +174,7 @@ Orden: `needs_attention` primero, luego `active`, luego `pending`; dentro, por `
 | **Éxito** | `200` |
 | **Errores** | `401` · `403` (`responsable`, `delegado`, `admin_monkey`) · `404 INTEGRATION_NOT_FOUND` (el código no existe o, para el auditor, la empresa no la tiene) |
 
-Es la página de detalle (MD-211): se abre desde una tarjeta del catálogo o desde una fila de la lista. Vale igual para una
+Es la página de detalle (MD-211, `/integraciones/:code` en Frontend-Platform): se abre desde una tarjeta del catálogo o desde una fila de la lista. Con `?service=<uuid>` en la URL de la pantalla (no en la API) llega desde «Nueva conexión» de un servicio (`/services/:id/connections/new`, que reutiliza este mismo catálogo): «Conectar» no vuelve a preguntar el servicio y «Volver» regresa a ese servicio. Vale igual para una
 integración disponible, conectada o `coming_soon`; lo que no aplica llega vacío y la pantalla lo explica.
 
 #### Response `200`

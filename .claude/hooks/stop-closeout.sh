@@ -13,4 +13,11 @@ if [ $? -ne 0 ]; then
   echo "$OUT" | head -20 >&2
   exit 2
 fi
+# Deriva (MD-217): numeración de módulos e índice de arquitectura. Solo bloquea por FALLO; los AVISOS los resuelve docs-guardian.
+OUT=$(CLAUDE_PROJECT_DIR="$ROOT" python3 "$ROOT/skills/process/monkey-closeout/scripts/check-doc-drift.py" 2>&1)
+if [ $? -ne 0 ]; then
+  echo "La documentación rompe su propia convención; corrígelo antes de terminar (o lanza docs-guardian):" >&2
+  echo "$OUT" | grep FALLO | head -20 >&2
+  exit 2
+fi
 exit 0

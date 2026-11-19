@@ -55,7 +55,7 @@ operativas**, no su arquitectura:
 - Una consulta SCA de ~500 checks tarda segundos → **cachear siempre**, nunca consultarla en cada petición del usuario.
 - Las credenciales de la API de Wazuh van cifradas o en variables de entorno, nunca en código ni en repos.
 - El prototipo agrupaba por cliente con un grupo de agentes; **cómo se asigna cada empresa a su grupo ya está decidido**
-  (D54: un grupo por cliente y agente pre-registrado por Monkey; D71 y DT-33).
+  (D54: un grupo por cliente y agente pre-registrado por Monkey; D71, D113 y SEG-45).
 
 El stack real del proyecto es NestJS 11 + Prisma 7 en el backend y dos apps Angular (ver `context/backend.md` y `context/frontend.md`).
 

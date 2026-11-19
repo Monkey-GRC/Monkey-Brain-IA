@@ -1,0 +1,49 @@
+@startuml
+' Diagrama UML de casos de uso de Empresas. Fuente: 05-casos-de-uso.md (cada óvalo es un CU-EMP-nn).
+' Se genera con skills/process/monkey-docs/scripts/render-uml.sh → 05-casos-de-uso.svg. No editar el SVG a mano.
+!pragma layout smetana
+left to right direction
+skinparam shadowing false
+skinparam defaultFontName Helvetica
+skinparam packageStyle rectangle
+skinparam ArrowColor #4A5568
+skinparam usecase {
+  BackgroundColor #EEF4FB
+  BorderColor #013362
+}
+skinparam actor {
+  BorderColor #013362
+}
+
+actor "admin_monkey" as AdminMonkey
+actor "Tarea programada" as Tarea <<sistema>>
+actor "Correo" as Correo <<sistema>>
+actor "Almacenamiento" as Almacen <<sistema>>
+
+rectangle "Monkey · Empresas" {
+  usecase "CU-EMP-01\nRegistrar una empresa" as CU1
+  usecase "CU-EMP-02\nReenviar la clave de acceso" as CU2
+  usecase "CU-EMP-03\nConsultar las empresas" as CU3
+  usecase "CU-EMP-04\nCambiar el cupo de usuarios" as CU4
+  usecase "CU-EMP-05\nCorregir nombre o correo\nantes del canje (P2c abierta)" as CU5
+  usecase "CU-EMP-06\nArchivar una empresa" as CU6
+  usecase "CU-EMP-07\nReactivar una empresa" as CU7
+  usecase "CU-EMP-08\nBorrar definitivamente\nuna empresa" as CU8
+}
+
+AdminMonkey --> CU1
+AdminMonkey --> CU2
+AdminMonkey --> CU3
+AdminMonkey --> CU4
+AdminMonkey --> CU5
+AdminMonkey --> CU6
+AdminMonkey --> CU7
+Tarea --> CU8
+
+CU1 --> Correo
+CU2 --> Correo
+CU6 --> Almacen
+CU8 --> Almacen
+
+CU2 .up.> CU1 : <<extend>>\nsi el correo no salió
+@enduml
