@@ -65,7 +65,7 @@ const MARGIN = 8;
       [attr.aria-label]="ariaLabelKey() ? (ariaLabelKey() | translate) : null"
       [attr.aria-invalid]="invalid() ? 'true' : null"
       class="flex w-full items-center gap-2 rounded-control border bg-surface pl-3 pr-3 text-left text-sm text-ink transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-action/20 disabled:cursor-not-allowed disabled:bg-tint disabled:text-ink-faint"
-      [class]="(size() === 'sm' ? 'h-9 ' : 'h-10 ') + (invalid() ? 'border-bad' : open() ? 'border-action ring-2 ring-action/20' : 'border-gray-300 hover:border-gray-400 focus-visible:border-action dark:border-gray-700 dark:hover:border-gray-600')"
+      [class]="(size() === 'sm' ? 'h-9 ' : 'h-10 ') + (invalid() ? 'border-bad' : open() ? 'border-action ring-2 ring-action/20' : 'border-line-control hover:border-ink-faint focus-visible:border-action')"
       (click)="toggle()"
       (keydown)="onKeydown($event)"
       (keyup.space)="$event.preventDefault()"
@@ -137,8 +137,8 @@ const MARGIN = 8;
               <span
                 data-select-box
                 aria-hidden="true"
-                class="flex size-[1.125rem] shrink-0 items-center justify-center rounded-[0.3rem] border-2 text-white"
-                [class]="isSelected(o) ? 'border-action bg-action' : 'border-gray-400'"
+                class="flex size-[1.125rem] shrink-0 items-center justify-center rounded-[0.3rem] border-2 text-on-action"
+                [class]="isSelected(o) ? 'border-action bg-action' : 'border-line-control'"
               >
                 @if (isSelected(o)) {
                   <span class="material-symbols-rounded text-[14px] leading-none">check</span>

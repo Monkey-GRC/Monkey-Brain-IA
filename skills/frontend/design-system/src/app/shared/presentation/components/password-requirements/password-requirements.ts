@@ -19,7 +19,7 @@ const ARROW_SIDE = 26; // px from the panel's top to the arrow when it opens bes
 const SIDE_MIN_VIEWPORT = 768; // below this width (mobile) it never opens beside the field
 
 /**
- * The requirements balloon of a new password: a floating card (surface, 1 px border, soft shadow, system radius) with a small uppercase title and one row per requirement; each
+ * The requirements balloon of a new password: a floating card (surface, 1 px border, soft shadow, system radius) with a small title and one row per requirement; each
  * circle fills with a check when its rule is met. An arrow points at the field. It does not know the rules or the screen: it receives the `checks` already computed and the field it hangs from.
  *
  * Placement (decided, MD-217): `position: fixed` and moved to `<body>` (like the panel of `app-select`), so it never moves the form and no modal's transform or overflow clips it.

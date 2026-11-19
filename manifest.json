@@ -280,6 +280,11 @@
       "description": "Punto de partida de los dos frontends: qué leer antes, mapa de cada app, principios de criterio, flujo, anti-patrones y definición de terminado. Enruta a las demás recetas."
     },
     {
+      "id": "monkey-design-audit",
+      "path": "skills/frontend/monkey-design-audit/SKILL.md",
+      "description": "Auditoría y organización visual de las dos apps: diagnostica tipografía, color y modo oscuro, espaciado, estados, movimiento, textos y código de estilos; reporta a Rod y corrige por prioridad con los valores del design system."
+    },
+    {
       "id": "design-system",
       "path": "skills/frontend/design-system/README.md",
       "description": "Sistema de diseño único de los dos frontends (vigente, estilo Vanta + Donezo): principios, qué se permite y qué no, tokens, componentes base (tabla única, tarjetas, donas, panel lateral), menú lateral con grupos que despliegan y sincronía entre apps."

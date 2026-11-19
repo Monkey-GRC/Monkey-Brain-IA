@@ -62,4 +62,21 @@ echo "$out" | grep -q 'MISSING OK.KEY' && fail "an existing key was reported"
 # (5) D116 allowlist: a spinner marked data-long-process is not counted; an unmarked one is
 echo "$out" | grep -Eq 'app-loading-spinner[[:space:]]+0[[:space:]]+1' || fail "unmarked app-loading-spinner not counted, or the marked one was"
 echo "$out" | grep -Eq 'animate-spin by hand[[:space:]]+0[[:space:]]+1' || fail "unmarked animate-spin not counted, or the marked one was"
+# (6) MD-483 contrast pairs: the old ink-faint (light) and white on the dark action must be seen in red (proof that it measures)
+bad="$t/bad"; mkdir -p "$bad"
+sed 's/--color-ink-faint: #596579;/--color-ink-faint: #667085;/; s/--color-on-action: #05080f;/--color-on-action: #ffffff;/' "$here/../src/styles.css" > "$bad/styles.css"
+out=$(DS_CANON="$bad" DS_MONKEY="$c/m" python3 -I "$here/ds.py" check 2>&1) && fail "the old contrast was accepted"
+echo "$out" | grep -q 'FAIL: ink-faint on canvas (light)' || fail "ink-faint on canvas not measured"
+echo "$out" | grep -q 'FAIL: ink-faint on tint (light)' || fail "ink-faint on tint not measured"
+echo "$out" | grep -q 'FAIL: on-action on action (dark)' || fail "on-action on action (dark) not measured"
+# (7) MD-483 visual rules at 0 fail the check even without --strict: italic, weight 900, a loose hex, dark: with colour, text-[11px], a status colour as text, a CDN font
+cat > "$c/m/Frontend-Platform/src/app/b.html" <<'H'
+<p class="italic font-black text-[11px] text-bad dark:bg-gray-900" style="color:#ff0000">x</p>
+<link href="https://fonts.googleapis.com/css2?family=X">
+H
+out=$(DS_CANON="$c/canon" DS_MONKEY="$c/m" python3 -I "$here/ds.py" check 2>&1) && fail "visual rules at 0 did not fail the check"
+for r in 'italic' 'weight 800/900/100/200' 'loose hex' 'dark: with colour in a view' 'text-\[10\|11px\]' 'status colour as text' 'remote font or CDN'; do
+  echo "$out" | grep -Eq "^  $r.*FAIL[[:space:]]+0[[:space:]]+[1-9]" || fail "rule not counted: $r"
+done
+rm "$c/m/Frontend-Platform/src/app/b.html"
 echo "SELFTEST OK"

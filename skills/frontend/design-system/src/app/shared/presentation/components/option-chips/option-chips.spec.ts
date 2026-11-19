@@ -47,10 +47,10 @@ describe('OptionChips', () => {
   });
 
   it('draws the optional title before the chips and uses it as the group label', () => {
-    expect(el().querySelector('span.uppercase')).toBeNull();
+    expect(el().querySelector('span.text-xs.font-medium.text-ink-muted')).toBeNull();
     fixture.componentRef.setInput('labelKey', 'COMPLIANCE.CONTROLS.FILTER_TOPIC');
     fixture.detectChanges();
-    expect(el().querySelector('span.uppercase')!.textContent).toContain('COMPLIANCE.CONTROLS.FILTER_TOPIC');
+    expect(el().querySelector('span.text-xs.font-medium.text-ink-muted')!.textContent).toContain('COMPLIANCE.CONTROLS.FILTER_TOPIC');
     expect(el().querySelector('[role="group"]')!.getAttribute('aria-label')).toBe('COMPLIANCE.CONTROLS.FILTER_TOPIC');
   });
 });

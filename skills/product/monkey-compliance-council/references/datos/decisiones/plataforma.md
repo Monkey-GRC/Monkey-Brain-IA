@@ -132,3 +132,83 @@ y `test/cumplimiento/transacciones-ruta.e2e-spec.ts`. Convención para quien esc
 La propuso desarrollo y la aprobó el responsable de producto; **no es una decisión del comité**.
 
 **Fuente:** Rod (Hector Rios), sesión de MD-230, 2026-11-19.
+
+## D126 · Geist como fuente, modo oscuro azul marino y contraste AA en gris tenue y bordes de controles (2026-11-19)
+
+**Decisión.**
+
+1. **Fuente.** Las dos apps usan **Geist**, con **Geist Mono** para los códigos (`CC6.1`, `AST-1`), en lugar de Outfit.
+   Se cargan desde npm (`@fontsource-variable/geist`, `@fontsource-variable/geist-mono`), sin CDN. Se quitan Google Fonts
+   y `animate.css`, que no tenía uso.
+2. **Modo oscuro negro azulado:**
+   - lienzo `#05080f`;
+   - paneles y cards `#0a0f1a`;
+   - líneas `#182133`;
+   - texto `#e8edf5`;
+   - texto tenue `#8e9bb3`.
+
+   El resto de tokens oscuros se recalcula para seguir en AA. Antes era grafito neutro. Se probó primero un marino
+   (`#0b1527`/`#101e36`) y Rod lo descartó al verlo en su app: quería un azul casi negro.
+3. **Botón primario en oscuro.** Token propio `--color-on-action`: texto `#05080f` sobre el azul claro de marca
+   `#4a9be0` (6,7:1). El texto blanco solo daba 2,98:1. Queda aislado en ese token porque Rod puede cambiarlo.
+4. **Contraste que hoy fallaba:**
+   - el gris tenue (`ink-faint`) en claro pasa de `#667085` a `#596579`, para dar AA sobre el lienzo y los tintes;
+   - los bordes de campos y del botón secundario suben a ≥ 3:1 (WCAG 1.4.11), en claro y en oscuro.
+
+   `check-design-system.sh` mide estos pares.
+
+**Por qué.** La auditoría visual de MD-483 (skill `monkey-design-audit`) encontró tres problemas:
+
+- **Outfit y `font-mono`.** Outfit no tenía pareja mono, y `font-mono` se pintaba en Outfit.
+- **El modo oscuro.** Era grafito neutro, sin la identidad azul de Monkey.
+- **El contraste.** Dos pares fallaban AA en 309 sitios, y los controles quedaban por debajo de 3:1.
+
+Rod eligió Geist y el negro azulado entre las opciones propuestas, después de ver el marino en su app.
+
+**Qué cambia.**
+
+- **Tokens:** los de `styles.css`, en el canónico del design system y sincronizados a las dos apps.
+- **Paquetes:** `index.html` y `package.json` de las dos apps.
+- **Lockfile:** se borra `pnpm-lock.yaml` de Platform; manda `package-lock.json`.
+- **Documentación:** `design-system/README.md` y `components.md`.
+
+La propuso desarrollo y la aprobó el responsable de producto; **no es una decisión del comité**.
+
+**Fuente:** Rod (Hector Rios), sesión de MD-483, 2026-11-19.
+
+## D127 · Badges con más cuerpo y tarjetas de métrica con icono en círculo de color (2026-11-19)
+
+**Decisión.**
+
+1. **Badges** (`app-badge`, *ajusta D115*). Se mantiene la forma: rectángulo redondeado, borde de 1 px, texto en el tono
+   fuerte y punto en el estado. El relleno y el borde suben de intensidad: el relleno pasa de ~8 % a ~16-20 % y el borde
+   de ~28 % a ~40-45 %. Así se leen con cuerpo en claro y en oscuro, sin pasar a colores sólidos. El texto sigue en AA
+   sobre el relleno nuevo.
+2. **Tarjetas de métrica**, en las dos apps (Inicio de Admin y de Platform, resumen de Cumplimiento y toda fila de
+   métricas). Siguen el estilo de la referencia que trajo Rod:
+   - Card sobre `surface`, con borde de 1 px.
+   - **Formato horizontal:**
+     - a la izquierda, un **icono lineal dentro de un círculo de color**, con el color tan vivo como el del badge y el
+       icono en su tono fuerte;
+     - a su derecha, el título y la cifra (con `tabular-nums`);
+     - si la métrica tiene porcentaje, la dona va en el lado derecho, más grande y centrada verticalmente.
+   - **Sin línea descriptiva auxiliar.**
+   - **Inicio de Platform:** las 6 métricas van en una sola fila en escritorio, con un divisor entre «tu estructura»
+     (servicios, activos, marcos) y «tu contenido» (controles, riesgos, causas).
+   - Lo fue ajustando Rod al revisarlo en su app.
+   - Cada métrica tiene un color fijo: de la paleta de datos o, si la métrica es un estado, del estado.
+   - Todas las tarjetas de una fila son iguales: la «card destacada» azul con degradado sale de esas filas.
+
+**Por qué.** Al ver el modo oscuro nuevo, Rod dijo que los badges se veían apagados en los dos modos. También pidió que
+las métricas se parezcan a la referencia, que da más identidad a cada cifra.
+
+**Qué cambia.**
+
+- Es una excepción a la regla «icono dentro de un cuadro o círculo de color» del design system. Antes solo existía la de
+  `device-icon` (MD-217); ahora también la tienen las tarjetas de métrica.
+- Se crea el componente base de tarjeta de métrica y sus clases por color, en el canónico, sincronizado a las dos apps.
+
+La propuso Rod y no es una decisión del comité.
+
+**Fuente:** Rod (Hector Rios), sesión de MD-483, 2026-11-19 (dos capturas de referencia: badges en la ficha de una
+integración y una fila de tarjetas con icono en círculo de color).

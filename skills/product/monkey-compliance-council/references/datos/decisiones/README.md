@@ -205,3 +205,5 @@ quedan aquí:
 | D123 | «Recordar este dispositivo» 30 días: la contraseña siempre, el código del segundo factor no; excepto `admin_monkey`; el ingreso con Google queda LATER *(enmienda D94 punto 10)* | [autenticacion](autenticacion.md) |
 | D124 | Límite de peticiones compartido en Redis y tope por dirección en rutas públicas; la sesión se valida con una consulta y sin caché; bcrypt acotado por instancia | [autenticacion](autenticacion.md) |
 | D125 | Una transacción por caso de uso: `TransactionRunner.run` y `withScope` reutiliza la transacción en curso con el mismo scope | [plataforma](plataforma.md) |
+| D126 | Geist (y Geist Mono) en lugar de Outfit; modo oscuro negro azulado; `on-action` propio en oscuro; gris tenue y bordes de controles en AA *(la decidió Rod, no el comité)* | [plataforma](plataforma.md) |
+| D127 | Badges con más relleno y borde (ajusta D115); tarjetas de métrica con icono en círculo de color, todas iguales en la fila *(la decidió Rod, no el comité)* | [plataforma](plataforma.md) |

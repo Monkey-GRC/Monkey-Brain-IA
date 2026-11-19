@@ -53,6 +53,39 @@ INFO = [
     ('app-loading-spinner', r'<app-loading-spinner\b', ('.ts', '.html'), 'app-skeleton (data) or loading in app-data-table; the spinner only for long processes'),
     ('animate-spin by hand', r'\banimate-spin\b', ('.ts', '.html'), 'appBusy on the button (or app-skeleton); not a hand-made spinner'),
 ]
+# Visual rules of the audit (MD-483). severity `fail` = the check fails (0 today, keep it at 0); `warn` = informative, becomes `fail` when its block of the audit is done.
+# name -> (regex, extensions, what to do instead, severity). Scanned in src/app, src/styles.css and src/index.html, never in *.spec.ts or comment lines.
+RULES = [
+    ('remote font or CDN', r'fonts\.googleapis|fonts\.gstatic|cdnjs\.cloudflare', ('.ts', '.html', '.css'), 'fonts come from npm (@fontsource-variable), never a CDN', 'fail'),
+    ('Outfit', r'\bOutfit\b|font-outfit', ('.ts', '.html', '.css'), 'font-sans (Geist)', 'fail'),
+    ('italic', r'(?<![\w.-])italic(?![\w-])|font-style:\s*italic', ('.ts', '.html', '.css'), 'emphasis by weight, size or colour', 'fail'),
+    ('weight 800/900/100/200', r'(?<![\w-])(?:[a-z-]+:)*font-(?:extrabold|black|thin|extralight)\b', ('.ts', '.html', '.css'), '400, 500 or 600', 'fail'),
+    ('loose hex / rgb()', r'(?<![&\w])#[0-9a-fA-F]{6}(?:[0-9a-fA-F]{2})?\b|\brgba?\(', ('.ts', '.html'), 'a token (text-ink, bg-surface, text-bad-ink...)', 'fail'),
+    ('dark: with colour in a view', r'\bdark:(?:[a-z-]+:)*(?:bg|text|border|ring|fill|stroke|from|to|via|divide|shadow|placeholder)-', ('.ts', '.html'), 'tokens redefined under .dark (allowlist: device-icon, MD-217)', 'fail'),
+    ('text-[10|11px]', r'text-\[1[01]px\]', ('.ts', '.html'), 'text-xs (12 px)', 'fail'),
+    ('gray-NNN in a view', r'(?<![\w-])(?:[a-z-]+:)*(?:bg|text|border|ring|divide|outline)-gray-\d', ('.ts', '.html'), 'tokens (line, line-control, surface, ink-*)', 'fail'),
+    ('status colour as text', r'(?<![\w-])(?:[a-z-]+:)*text-(?:bad|ok|warn)(?![\w-])', ('.ts', '.html'), 'text-bad-ink / text-ok-ink / text-warn-ink', 'fail'),
+    ('uppercase in a label', r'(?<![\w-])(?:[a-z-]+:)*uppercase(?![\w-])', ('.ts', '.html'), 'sentence case (code inputs that normalise what is typed are excluded)', 'fail'),
+    ('font-bold (700)', r'(?<![\w-])(?:[a-z-]+:)*font-bold\b', ('.ts', '.html'), 'font-semibold (700 only in the main figure of a card)', 'warn'),
+    ('arbitrary text-[Npx]', r'text-\[\d+(?:\.\d+)?(?:px|rem)\]', ('.ts', '.html'), 'the type scale (text-xs/sm/base, text-kpi); icon sizes are excluded', 'warn'),
+    ('h1 text-3xl / bold', r'<h1\b[^>]*(?:text-3xl|font-bold)', ('.ts', '.html'), 'one title step (Q1 of MD-483)', 'warn'),
+    ('big figure without tabular-nums', r'^(?!.*tabular-nums)(?!.*<h[1-6]\b)(?!.*mk-input).*\btext-(?:3xl|4xl|kpi)\b', ('.ts', '.html'), 'tabular-nums', 'warn'),
+    ('transition-all', r'\btransition-all\b', ('.ts', '.html'), 'transition-colors / transition-opacity / transform', 'warn'),
+    ('ease-in-out / linear / in', r'(?<![\w-])(?:[a-z-]+:)*ease-(?:in-out|linear|in)\b|\[[^\]]*ease-in-out', ('.ts', '.html'), 'the single curve of the system', 'warn'),
+    ('h-screen / 100vh', r'\b(?:min-)?h-screen\b|100vh', ('.ts', '.html'), 'min-h-dvh / h-dvh', 'warn'),
+    ('arbitrary z-[N]', r'(?<![\w-])(?:[a-z-]+:)*-?z-\[', ('.ts', '.html'), 'the --z-* scale of the theme', 'warn'),
+    ('rounded-md/lg/xl', r'\brounded-(?:sm|md|lg|xl|2xl|3xl)\b', ('.ts', '.html'), 'rounded-control / card / panel / badge', 'warn'),
+    ('app-modal in a view', r'<app-modal\b', ('.html',), 'app-form-modal / side-drawer', 'warn'),
+    ('javascript:void / href="#"', r'href="(?:javascript:void\(0\)|#)"', ('.ts', '.html'), 'a real link, or aria-disabled', 'warn'),
+    ('static style=""', r'(?<![\[\w.-])style="', ('.ts', '.html'), 'classes', 'warn'),
+]
+# Files where a rule is allowed on purpose (documented exceptions).
+RULE_ALLOW = {'dark: with colour in a view': ('device-icon.ts',), 'uppercase in a label': ('password-rules.ts',)}
+# A text input that normalises what is typed may keep `uppercase`.
+RULE_LINE_SKIP = {'uppercase in a label': re.compile(r'<input|mk-input|<code\b')}
+ICON_LINE = re.compile(r'material-symbols')
+PROVIDER = re.compile(r'wazuh|prowler', re.I)
+
 # A text field written by hand (not `mk-input`) must set its own text colour, or the browser's black shows on the dark surface.
 INPUT_TAG = re.compile(r'<(?:input|textarea)\b[^>]*>', re.S)
 INPUT_OK = re.compile(r'\bmk-input\b|\bmk-checkbox\b|\btext-(?:ink|ink-muted|white|action|bad|ok|warn)\b|type="(?:checkbox|radio|file|hidden|range|color)"')
@@ -252,6 +285,65 @@ def scan_info(root):
     return hits
 
 
+def _rule_files(root):
+    """-> [(relative path for display, text)]: src/app (without specs), src/styles.css and src/index.html."""
+    src = os.path.join(root, 'src')
+    out = []
+    for rel in walk(os.path.join(src, 'app')):
+        if not rel.endswith('.spec.ts') and os.path.splitext(rel)[1] in ('.ts', '.html'):
+            out.append(('src/app/' + rel, read(os.path.join(src, 'app', rel))))
+    for rel in (CSS, 'index.html'):
+        path = os.path.join(src, rel)
+        if os.path.exists(path):
+            out.append(('src/' + rel, read(path)))
+    return out
+
+
+def scan_rules(root):
+    """-> {rule name: [(file, line_no, line)]} for RULES (+ `font-mono` without `--font-mono`)."""
+    hits = {name: [] for name, *_ in RULES}
+    hits['font-mono without --font-mono'] = []
+    files = _rule_files(root)
+    css_text = next((tx for rel, tx in files if rel == 'src/' + CSS), '')
+    mono_defined = '--font-mono' in css_text
+    for rel, text in files:
+        ext = os.path.splitext(rel)[1]
+        base = os.path.basename(rel)
+        for n, line in enumerate(text.splitlines(), 1):
+            stripped = line.lstrip()
+            if stripped.startswith(('*', '//', '/*', '<!--')):
+                continue
+            if not mono_defined and ext in ('.ts', '.html') and re.search(r'(?<![\w-])font-mono\b', line):
+                hits['font-mono without --font-mono'].append((rel, n, line.strip()))
+            for name, rx, exts, _hint, _sev in RULES:
+                if ext not in exts or base in RULE_ALLOW.get(name, ()):
+                    continue
+                if name in RULE_LINE_SKIP and RULE_LINE_SKIP[name].search(line):
+                    continue
+                if name == 'arbitrary text-[Npx]' and ICON_LINE.search(line):
+                    continue
+                if re.search(rx, line):
+                    hits[name].append((rel, n, line.strip()))
+    return hits
+
+
+def scan_provider(root):
+    """The probe/cloud-engine vendor in what the end client sees (Platform: src/app and public/i18n). -> [(file, line_no, line)]."""
+    out = []
+    for rel, text in _rule_files(root):
+        if rel.startswith('src/app/'):
+            for n, line in enumerate(text.splitlines(), 1):
+                if PROVIDER.search(line):
+                    out.append((rel, n, line.strip()))
+    base = os.path.join(root, 'public', 'i18n')
+    if os.path.isdir(base):
+        for rel in walk(base):
+            for n, line in enumerate(read(os.path.join(base, rel)).splitlines(), 1):
+                if PROVIDER.search(line):
+                    out.append(('public/i18n/' + rel, n, line.strip()))
+    return out
+
+
 def _hex_vars(css_block):
     return {m.group(1): m.group(2) for m in re.finditer(r'--color-([a-z0-9-]+):\s*(#[0-9a-fA-F]{6})\s*;', css_block)}
 
@@ -307,6 +399,76 @@ def _badge_pairs(css, mode):
             bg, ink = ev(decl[name]), ev(decl.get('badge-%s-ink' % x, ''))
             if bg and ink:
                 out.append(('badge-%s ink on its tint (%s)' % (x, mode), contrast(ink, bg)))
+    return out
+
+
+def _decls(css, mode):
+    """`--color-*` declarations of the canonical styles.css for `light` or `dark` (the `.dark` block overrides the light one) and an evaluator of hex, var() and color-mix(in srgb, A p%, B)."""
+    i = css.find('\n.dark {')
+    light_text, dark_text = css[:i], css[i:css.find('\n}', i)]
+    decl = {}
+    for text in ((light_text,) if mode == 'light' else (light_text, dark_text)):
+        for m in re.finditer(r'--color-([a-z0-9-]+):\s*([^;]+);', text):
+            decl[m.group(1)] = m.group(2).strip()
+
+    def ev(v, depth=0):
+        v = v.strip()
+        if re.fullmatch(r'#[0-9a-fA-F]{6}', v):
+            return v
+        m = re.fullmatch(r'var\(--color-([a-z0-9-]+)\)', v)
+        if m:
+            return ev(decl[m.group(1)], depth + 1) if m.group(1) in decl and depth < 12 else None
+        m = re.fullmatch(r'color-mix\(in srgb,\s*(.+?)\s+(\d+)%,\s*(.+)\)', v)
+        if m:
+            a, b = ev(m.group(1), depth + 1), ev(m.group(3), depth + 1)
+            return _mix(a, b, int(m.group(2))) if a and b else None
+        return None
+
+    return decl, lambda name: ev(decl[name]) if name in decl else None
+
+
+def pair_report(css=None):
+    """MD-483 pairs, from the canonical styles.css, light and dark: -> [(label, ratio, minimum, severity)], severity `fail` | `warn`.
+    Text 4.5:1; non-text (control border, status fills) 3:1; `ink` on a state card 12:1. `warn` is informative (ink-faint on tint-strong in dark: only for surface, canvas and tint; the light status fills ok/warn/neutral are dots that always travel with their word)."""
+    css = css if css is not None else read(os.path.join(CANON, CSS))
+    out = []
+    for mode in ('light', 'dark'):
+        _decl, get = _decls(css, mode)
+
+        def add(label, fg, bg, minimum, severity='fail'):
+            a, b = (fg if fg.startswith('#') else get(fg)), (bg if bg.startswith('#') else get(bg))
+            if a and b:
+                out.append(('%s on %s (%s)' % (fg, bg, mode), contrast(a, b), minimum, severity))
+        for fg in ('ink', 'ink-muted', 'ink-faint', 'action', 'tint-ink'):
+            for bg in ('surface', 'canvas', 'tint'):
+                if fg == 'tint-ink' and bg != 'tint':
+                    continue
+                add(label=None, fg=fg, bg=bg, minimum=4.5)
+        add(None, 'ink', 'tint-strong', 4.5)
+        add(None, 'ink-muted', 'tint-strong', 4.5)
+        add(None, 'tint-ink', 'tint-strong', 4.5)
+        add(None, 'ink-faint', 'tint-strong', 4.5, 'fail' if mode == 'light' else 'warn')
+        add(None, 'on-action', 'action', 4.5)
+        add(None, 'on-action', 'action-hover', 4.5)
+        add(None, '#ffffff', 'bad', 4.5)
+        add(None, '#ffffff', 'brand-panel', 4.5)
+        for n in range(1, 6):
+            for bg in ('surface', 'tint'):
+                add(None, 'data-%d' % n, bg, 4.5)
+        for st in ('ok', 'bad', 'warn', 'neutral'):
+            add(None, st, 'surface', 3.0, 'fail' if mode == 'dark' else 'warn')
+        for bg in ('surface', 'canvas', 'tint'):
+            add(None, 'line-control', bg, 3.0)
+        # Icon of a metric card on its circle (D127): a graphic object, not text -> 3:1 (WCAG 1.4.11).
+        for name in sorted(_decl):
+            m = re.fullmatch(r'metric-(.+)-bg', name)
+            if m and get('badge-%s-ink' % m.group(1)):
+                add(None, 'badge-%s-ink' % m.group(1), name, 3.0)
+        surface = get('surface')
+        for st, pct in (('ok', 8), ('warn', 10), ('bad', 8), ('neutral', 10)):
+            base = get(st)
+            if base and surface:
+                out.append(('ink on mk-surface-state-%s (%s)' % (st, mode), contrast(get('ink'), _mix(base, surface, pct)), 12.0, 'fail'))
     return out
 
 
@@ -430,6 +592,42 @@ def cmd_check(args):
             for f in folders:
                 for file, n, line in infos[f][name][:args.limit]:
                     print('    [%s] %s: %s:%d  %s' % (APPS[f], name, file, n, line[:110]))
+    rules = {f: scan_rules(os.path.join(MONKEY, f)) for f in folders}
+    rule_names = [n for n, *_ in RULES] + ['font-mono without --font-mono']
+    sev = {n: s for n, _r, _e, _h, s in RULES}
+    sev['font-mono without --font-mono'] = 'fail'
+    hints = {n: h for n, _r, _e, h, _s in RULES}
+    hints['font-mono without --font-mono'] = 'define --font-mono in styles.css'
+    provider = {f: scan_provider(os.path.join(MONKEY, f)) for f in folders if APPS[f] == 'platform'}
+    rule_fail = 0
+    print('\nVisual rules (MD-483): FAIL rules must stay at 0; WARN rules are informative until their block of the audit is done:')
+    print('  %-34s %-5s' % ('rule', 'level') + ''.join('%12s' % APPS[f] for f in folders))
+    for name in rule_names:
+        counts = [len(rules[f][name]) for f in folders]
+        if sev[name] == 'fail':
+            rule_fail += sum(counts)
+        print('  %-34s %-5s' % (name, sev[name].upper()) + ''.join('%12d' % c for c in counts) + ('   -> ' + hints[name] if sum(counts) else ''))
+    for f, hits in provider.items():
+        rule_fail += len(hits)
+        print('  %-34s %-5s' % ('probe/cloud vendor name', 'FAIL') + ''.join('%12d' % (len(hits) if g == f else 0) for g in folders))
+    if args.verbose:
+        for f in folders:
+            for name in rule_names:
+                for file, n, line in rules[f][name][:args.limit]:
+                    print('    [%s] %s: %s:%d  %s' % (APPS[f], name, file, n, line[:110]))
+            for file, n, line in provider.get(f, [])[:args.limit]:
+                print('    [%s] vendor name: %s:%d  %s' % (APPS[f], file, n, line[:110]))
+    pairs = pair_report()
+    pair_low = [(l, r, m) for l, r, m, s in pairs if r < m and s == 'fail']
+    pair_warn = [(l, r, m) for l, r, m, s in pairs if r < m and s == 'warn']
+    print('\nContrast pairs of the MD-483 tokens (text 4.5:1, control border and status fills 3:1, ink on a state card 12:1): ' + ('%d measured, %d fail, %d warn.' % (len(pairs), len(pair_low), len(pair_warn)) if pairs else 'NOT MEASURED.'))
+    for label, r, m in pair_low:
+        print('  FAIL: %s is %.2f:1 (needs %.1f:1)' % (label, r, m))
+    for label, r, m in pair_warn:
+        print('  WARN: %s is %.2f:1 (needs %.1f:1; informative: do not use that pair for text)' % (label, r, m))
+    if args.verbose:
+        for label, r, m, s in pairs:
+            print('    %-44s %5.2f:1  (min %.1f)%s' % (label, r, m, '' if r >= m else '  <--'))
     ratios = contrast_report()
     low = [(label, r) for label, r in ratios if r < 4.5]
     print('\nContrast of the risk scale and of the status-as-text tokens (WCAG AA, 4.5:1): ' + ('%d measured, lowest %.1f:1.' % (len(ratios), min(r for _, r in ratios)) if ratios else 'NOT MEASURED.'))
@@ -460,7 +658,9 @@ def cmd_check(args):
         print('\nOK: no anti-patterns.')
     if drift:
         print('FAIL: %d file(s) differ from the canonical copy. Edit src/ in the Brain and run sync-design-system.sh --apply.' % drift)
-    return 1 if drift or low or not ratios or (args.strict and (total or i18n_total)) else 0
+    if rule_fail:
+        print('FAIL: %d hit(s) of a visual rule that must stay at 0 (see the table above).' % rule_fail)
+    return 1 if drift or low or not ratios or not pairs or pair_low or rule_fail or (args.strict and (total or i18n_total)) else 0
 
 
 def main():

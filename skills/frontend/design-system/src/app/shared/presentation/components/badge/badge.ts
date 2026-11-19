@@ -57,7 +57,7 @@ export function badgeColorIndex(text: string): BadgeColor {
  * The only badge of the design system (D115): a rounded rectangle (`rounded-badge`, 4 px, never a pill) with a soft tint of its colour, a 1 px line of the same hue and strong text.
  * The content is projected and must already be translated: `<app-badge kind="status" tone="ok">Disponible</app-badge>`.
  *
- * - `code` (`T-CLD-001`, `AST-1`, `CC6.1`): brand tint, tabular figures.
+ * - `code` (`T-CLD-001`, `AST-1`, `CC6.1`): brand tint, Geist Mono, tabular figures.
  * - `attribute` (resource type, capability, "works with", category): a FIXED colour of the data palette per value. It comes from `color` (1..5) if given, else from `value`
  *   (the text that identifies it), else from the projected text. The same text is always the same colour.
  * - `status` (available, ready, needs work, not measured): the tone's tint plus a dot at the left, so colour is not the only signal. `tone` is `ok | warn | bad | neutral | info`
@@ -120,7 +120,7 @@ export class Badge implements AfterContentChecked {
   protected readonly tooltip = computed(() => this.hint() ?? (this.text().length > 24 ? this.text() : null));
 
   protected readonly hostClass = computed(() => {
-    const code = this.kind() === 'code' ? ' tabular-nums' : '';
+    const code = this.kind() === 'code' ? ' font-mono tabular-nums' : '';
     return `inline-flex max-w-full items-center whitespace-nowrap rounded-badge border align-middle font-medium ${SIZE[this.size()]} ${this.look().box}${code}`;
   });
 
