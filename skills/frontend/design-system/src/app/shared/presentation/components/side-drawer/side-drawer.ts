@@ -1,6 +1,7 @@
 import { A11yModule } from '@angular/cdk/a11y';
-import { ChangeDetectionStrategy, Component, effect, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, effect, inject, input, output, signal } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
+import { ConfirmDialog } from '@shared/presentation/components/confirm-dialog/confirm-dialog';
 import { pushOverlay, takeEscape } from '@shared/presentation/components/overlay-stack/overlay-stack';
 
 let nextId = 0;
@@ -15,35 +16,36 @@ let nextId = 0;
  *   </app-side-drawer>
  *
  * `dismissible` false (a call in progress) blocks Esc, the backdrop and the close button.
- * `guarded` true (a form with unsent data) blocks only Esc and the backdrop, so nothing is lost by accident; the close button still closes.
+ * `guarded` true (an editor inside holds data the person wrote and has not sent; see `hasChanges`) never blocks in silence: Esc, the backdrop and the close button open a
+ * confirmation on top (`app-confirm-dialog`, «Seguir editando» / «Descartar cambios», MD-485). «Seguir editando» goes back with what was written; «Descartar cambios» emits `closed`.
  */
 @Component({
   selector: 'app-side-drawer',
-  imports: [A11yModule, TranslatePipe],
+  imports: [A11yModule, TranslatePipe, ConfirmDialog],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { '(document:keydown.escape)': 'onEscape($event)' },
+  host: { '(document:keydown.escape)': 'onEscape($event)', '(focusin)': 'remember($event)' },
   styles: [
     `
       @keyframes mk-drawer-in {
         from { transform: translateX(100%); }
         to { transform: translateX(0); }
       }
-      .mk-drawer { animation: mk-drawer-in 180ms ease-out; }
+      .mk-drawer { animation: mk-drawer-in var(--motion-enter) var(--ease-out); }
       @media (prefers-reduced-motion: reduce) {
-        .mk-drawer { animation: none; }
+        .mk-drawer { animation: mk-fade-in var(--motion-enter) var(--ease-out); }
       }
     `,
   ],
   template: `
     @if (open()) {
-      <div class="fixed inset-0 z-[100000] bg-scrim" (click)="dismissByChance()" aria-hidden="true" data-testid="drawer-backdrop"></div>
+      <div class="mk-backdrop-in fixed inset-0 z-(--z-drawer-scrim) bg-scrim" (click)="requestClose()" aria-hidden="true" data-testid="drawer-backdrop"></div>
       <aside
         cdkTrapFocus
         [cdkTrapFocusAutoCapture]="true"
         role="dialog"
         aria-modal="true"
         [attr.aria-labelledby]="titleId"
-        class="mk-drawer fixed inset-y-0 right-0 z-[100001] flex w-full flex-col border-l border-line bg-surface shadow-float"
+        class="mk-drawer fixed inset-y-0 right-0 z-(--z-drawer) flex w-full flex-col border-l border-line bg-surface shadow-float"
         [class]="size() === 'lg' ? 'max-w-2xl' : 'max-w-md'"
       >
         <header class="flex items-start justify-between gap-3 border-b border-line px-5 py-4">
@@ -56,18 +58,23 @@ let nextId = 0;
           <button
             type="button"
             cdkFocusInitial
-            (click)="dismiss()"
+            (click)="requestClose()"
             [disabled]="!dismissible()"
+            data-drawer-close
             [attr.aria-label]="'COMMON.CLOSE' | translate"
             [title]="'COMMON.CLOSE' | translate"
             class="rounded-control p-1.5 text-ink-muted enabled:hover:bg-canvas focus:outline-none focus-visible:ring-2 focus-visible:ring-action/40 disabled:cursor-not-allowed disabled:text-ink-faint"
           >
-            <span class="material-symbols-rounded text-[22px]" aria-hidden="true">close</span>
+            <span class="material-symbols-rounded text-[24px]" aria-hidden="true">close</span>
           </button>
         </header>
         <div class="flex-1 overflow-y-auto px-5 py-5 text-sm text-ink"><ng-content /></div>
         <footer class="flex items-center justify-end gap-3 border-t border-line px-5 py-4 empty:hidden"><ng-content select="[actions]" /></footer>
       </aside>
+      @if (confirmingDiscard()) {
+        <app-confirm-dialog titleKey="COMMON.DISCARD.TITLE" messageKey="COMMON.DISCARD.MESSAGE" cancelLabelKey="COMMON.DISCARD.KEEP" confirmLabelKey="COMMON.DISCARD.CONFIRM"
+          tone="danger" (cancelled)="keepEditing()" (confirmed)="discard()" />
+      }
     }
   `,
 })
@@ -84,8 +91,15 @@ export class SideDrawer {
   readonly closed = output<void>();
 
   protected readonly titleId = `drawer-title-${nextId++}`;
+  // Se pidió descartar lo escrito: el sub-modal de confirmación está abierto.
+  protected readonly confirmingDiscard = signal(false);
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private lastFocus: HTMLElement | null = null;
 
   constructor() {
+    effect(() => {
+      if (!this.open()) this.confirmingDiscard.set(false);
+    });
     effect((onCleanup) => {
       if (!this.open()) return;
       document.body.classList.add('overflow-hidden');
@@ -97,18 +111,37 @@ export class SideDrawer {
     });
   }
 
-  // Esc cierra solo si el drawer es la capa de arriba y nadie atendió ya el evento; una Esc con `dismissible` en falso se queda en esta capa (no pasa a las de abajo).
+  // Esc cierra solo si el drawer es la capa de arriba y nadie atendió ya el evento (con la confirmación abierta, la Esc es suya); una Esc con `dismissible` en falso se
+  // queda en esta capa (no pasa a las de abajo).
   protected onEscape(event: Event): void {
     if (!this.open() || !takeEscape(this, event)) return;
-    this.dismissByChance();
+    this.requestClose();
   }
 
-  // Esc y el fondo: se ignoran con datos sin enviar (`guarded`).
-  protected dismissByChance(): void {
-    if (!this.guarded()) this.dismiss();
+  // Esc, el fondo y la X: nada mientras se envía; con datos sin enviar (`guarded`), se pregunta antes; si no, se cierra.
+  protected requestClose(): void {
+    if (!this.open() || !this.dismissible() || this.confirmingDiscard()) return;
+    if (this.guarded()) this.confirmingDiscard.set(true);
+    else this.closed.emit();
   }
 
-  protected dismiss(): void {
-    if (this.open() && this.dismissible()) this.closed.emit();
+  protected keepEditing(): void {
+    this.confirmingDiscard.set(false);
+    setTimeout(() => {
+      const panel = this.host.nativeElement.querySelector<HTMLElement>('aside[role="dialog"]');
+      if (!panel || panel.contains(document.activeElement)) return;
+      const target = this.lastFocus && panel.contains(this.lastFocus) ? this.lastFocus : panel.querySelector<HTMLElement>('input, textarea, select, button');
+      (target ?? panel).focus();
+    });
+  }
+
+  protected discard(): void {
+    this.confirmingDiscard.set(false);
+    this.closed.emit();
+  }
+
+  protected remember(event: FocusEvent): void {
+    const target = event.target as HTMLElement | null;
+    if (target?.closest('aside[role="dialog"]')) this.lastFocus = target;
   }
 }

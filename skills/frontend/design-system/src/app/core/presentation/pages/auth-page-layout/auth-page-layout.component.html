@@ -7,26 +7,27 @@
     <img src="/images/logo/logo-dark.svg" alt="Monkey" class="w-80 h-30 hidden dark:block" />
   </div>
 
-  <div class="relative flex flex-col justify-center w-full h-screen pb-44 lg:pb-0 lg:flex-row sm:p-0">
+  <div class="relative flex flex-col justify-center w-full min-h-dvh pb-44 lg:pb-0 lg:flex-row sm:p-0">
 
     <!-- Form (projected content of each auth view) -->
     <ng-content></ng-content>
 
     <!-- Brand panel (desktop) -->
-    <div class="relative items-center hidden w-full h-full lg:w-1/2 lg:grid bg-brand-panel" data-testid="auth-brand-panel">
+    <!-- No `h-full`: the row has a min-height (`min-h-dvh`), which a percentage height cannot resolve against; the flex row stretches the panel to the full height instead. -->
+    <div class="relative items-center hidden w-full lg:w-1/2 lg:grid bg-brand-panel" data-testid="auth-brand-panel">
       <div class="flex items-center justify-center z-1">
-        <div class="absolute right-0 top-0 -z-1 w-full max-w-[250px] xl:max-w-[450px]">
+        <div class="absolute right-0 top-0 -z-1 w-full max-w-64 xl:max-w-md">
           <img src="/images/shape/grid-01.svg" alt="" />
         </div>
         <div class="absolute bottom-0 left-0 -z-1 w-full max-w-[250px] rotate-180 xl:max-w-[450px]">
           <img src="/images/shape/grid-01.svg" alt="" />
         </div>
 
-        <div class="flex flex-col items-center max-w-xs">
+        <div class="flex max-w-md flex-col items-center px-8">
           <a routerLink="/" class="block mb-4">
             <img width="190" height="40" src="/images/logo/logo-blanco.svg" alt="Monkey" />
           </a>
-          <p class="text-center text-white/90" data-testid="auth-tagline">
+          <p class="text-center text-white/90 text-pretty" data-testid="auth-tagline">
             {{ 'AUTH.LAYOUT.TAGLINE' | translate }}
           </p>
         </div>
@@ -37,7 +38,7 @@
 </div>
 
 <!-- Language (above) and theme (below), bottom right, round brand-blue buttons: over the brand panel on desktop, over the form on mobile -->
-<div class="fixed bottom-6 right-6 z-50 flex flex-col gap-3" data-testid="auth-controls">
+<div class="fixed bottom-6 right-6 z-(--z-menu) flex flex-col gap-3" data-testid="auth-controls">
   <button type="button" data-testid="auth-language"
     class="flex size-14 items-center justify-center rounded-full bg-brand-500 text-sm font-semibold text-white transition hover:bg-brand-600 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-white/60 focus-visible:ring-offset-2 focus-visible:ring-offset-brand-900"
     (click)="toggleLanguage()" [title]="'AUTH.LAYOUT.LANGUAGE' | translate" [attr.aria-label]="'AUTH.LAYOUT.LANGUAGE' | translate">

@@ -1,5 +1,5 @@
 <aside
-  class="mk-panel fixed inset-y-3 left-3 z-50 flex flex-col px-3 text-ink transition-all duration-300 ease-in-out"
+  class="mk-panel fixed inset-y-3 left-3 z-(--z-menu) flex flex-col px-3 text-ink transition-transform duration-200 motion-reduce:transition-none"
   [ngClass]="{
     'w-[270px]': showLabels(),
     'w-[84px]': !showLabels(),
@@ -21,14 +21,14 @@
   </div>
 
   <!-- Navigation -->
-  <div class="no-scrollbar flex min-h-0 flex-1 flex-col overflow-y-auto duration-300 ease-linear">
+  <div class="no-scrollbar flex min-h-0 flex-1 flex-col overflow-y-auto">
     <nav class="mb-6" [attr.aria-label]="'SHELL.NAV.LABEL' | translate">
       <div class="flex flex-col">
         @for (section of sections; track section; let first = $first) {
         @let sectionItems = getItemsBySection(section);
 
         @if (sectionItems.length > 0) {
-        <!-- Sections are told apart by a 1 px line (`line`) with 12 px of air on each side, also in the icons-only menu; never before the first one, so there is no double or trailing line. -->
+        <!-- Sections are told apart by a 2 px line (`line-strong`) with 12 px of air on each side, also in the icons-only menu; never before the first one, so there is no double or trailing line. -->
         @if (!first) {
         <div role="separator" data-nav-separator class="mx-2 my-3 border-t-2 border-line-strong"></div>
         }
@@ -46,15 +46,11 @@
                 [attr.data-contains-active]="containsActive(item) ? '' : null"
                 [ngClass]="{ 'menu-item-contains-active': containsActive(item), 'menu-item-inactive': !containsActive(item), 'xl:justify-center': centerIcons() }">
                 <span class="menu-item-icon-size">
-                  <span class="material-symbols-outlined text-xl" [ngClass]="containsActive(item) ? 'menu-item-icon-active' : 'menu-item-icon-inactive'">{{ item.icon }}</span>
+                  <span class="material-symbols-rounded text-[20px]" aria-hidden="true" [ngClass]="containsActive(item) ? 'menu-item-icon-active' : 'menu-item-icon-inactive'">{{ item.icon }}</span>
                 </span>
                 @if (showLabels()) {
                 <span class="menu-item-text truncate">{{ labelOf(item) | translate }}</span>
-                <svg class="menu-chevron-icon" [attr.data-open]="isOpen(item.name)" viewBox="0 0 20 20" fill="none"
-                  xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                  <path d="M4.79175 7.396L10.0001 12.6043L15.2084 7.396" stroke="currentColor" stroke-width="1.5"
-                    stroke-linecap="round" stroke-linejoin="round"></path>
-                </svg>
+                <span class="material-symbols-rounded menu-chevron-icon text-[20px] leading-none" [attr.data-open]="isOpen(item.name)" aria-hidden="true">expand_more</span>
                 }
               </button>
 
@@ -74,7 +70,7 @@
 
               @if (flyout(); as f) {
               @if (f.name === item.name && !showLabels()) {
-              <div class="fixed z-60 pl-2" [style.top.px]="f.top" [style.left.px]="f.left">
+              <div class="fixed z-(--z-flyout) pl-2" [style.top.px]="f.top" [style.left.px]="f.left">
                 <div class="min-w-52 rounded-surface border border-line bg-surface p-2 shadow-float">
                   <p class="px-3 py-1.5 text-xs font-medium text-ink-faint">{{ labelOf(item) | translate }}</p>
                   <ul class="flex flex-col gap-0.5">
@@ -98,7 +94,7 @@
                 [attr.aria-label]="labelOf(item) | translate"
                 [ngClass]="{ 'menu-item-active': isActive(item.path), 'menu-item-inactive': !isActive(item.path), 'xl:justify-center': centerIcons() }">
                 <span class="menu-item-icon-size">
-                  <span class="material-symbols-outlined text-xl" [ngClass]="isActive(item.path) ? 'menu-item-icon-active' : 'menu-item-icon-inactive'">{{ item.icon }}</span>
+                  <span class="material-symbols-rounded text-[20px]" aria-hidden="true" [ngClass]="isActive(item.path) ? 'menu-item-icon-active' : 'menu-item-icon-inactive'">{{ item.icon }}</span>
                 </span>
                 @if (showLabels()) {
                 <span class="menu-item-text">{{ labelOf(item) | translate }}</span>

@@ -12,11 +12,11 @@
     } @else if (option.symbol) {
     <span class="material-symbols-rounded text-[20px] leading-none text-ink-faint" aria-hidden="true">{{ option.symbol }}</span>
     } @else if (isSelected(option.value)) {
-    <span class="material-symbols-rounded text-[18px] leading-none">{{ multiple() ? 'check_circle' : 'check' }}</span>
+    <span class="material-symbols-rounded text-[20px] leading-none">{{ multiple() ? 'check_circle' : 'check' }}</span>
     }
     {{ option.label }}
     @if ((option.flag || option.symbol) && isSelected(option.value)) {
-    <span class="material-symbols-rounded text-[18px] leading-none" aria-hidden="true">{{ multiple() ? 'check_circle' : 'check' }}</span>
+    <span class="material-symbols-rounded text-[20px] leading-none" aria-hidden="true">{{ multiple() ? 'check_circle' : 'check' }}</span>
     }
   </button>
   }

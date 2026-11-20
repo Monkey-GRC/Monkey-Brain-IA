@@ -20,18 +20,18 @@ export interface StepperItem { icon?: string; label: string; description?: strin
         @for (step of steps(); track $index; let i = $index; let last = $last) {
           <li class="relative flex gap-3" [attr.aria-current]="i + 1 === current() ? 'step' : null" [attr.data-step]="i">
             <div class="flex flex-col items-center">
-              <span class="flex size-9 shrink-0 items-center justify-center rounded-full border-2 text-sm font-semibold transition-all duration-300 motion-reduce:transition-none" [class]="circle(i + 1)">
+              <span class="flex size-9 shrink-0 items-center justify-center rounded-full border-2 text-sm font-semibold transition-colors duration-200 motion-reduce:transition-none" [class]="circle(i + 1)">
                 @if (i + 1 < current()) {
-                  <span class="material-symbols-rounded text-[18px]" aria-hidden="true">check</span>
+                  <span class="material-symbols-rounded text-[20px]" aria-hidden="true">check</span>
                 } @else if (step.icon) {
-                  <span class="material-symbols-rounded text-[18px]" aria-hidden="true">{{ step.icon }}</span>
+                  <span class="material-symbols-rounded text-[20px]" aria-hidden="true">{{ step.icon }}</span>
                 } @else {
                   <span aria-hidden="true">{{ i + 1 }}</span>
                 }
               </span>
               @if (!last) {
                 <span class="my-1 min-h-4 w-0.5 flex-1 overflow-hidden rounded-full bg-line">
-                  <span class="block w-full bg-action transition-all duration-500 motion-reduce:transition-none" [style.height.%]="i + 1 < current() ? 100 : 0"></span>
+                  <span class="block h-full w-full origin-top bg-action transition-transform duration-200 motion-reduce:transition-none" [style.transform]="i + 1 < current() ? 'scaleY(1)' : 'scaleY(0)'"></span>
                 </span>
               }
             </div>
@@ -54,19 +54,19 @@ export interface StepperItem { icon?: string; label: string; description?: strin
           <li class="relative flex min-w-0 flex-1 flex-col items-center gap-1.5" [attr.aria-current]="i + 1 === current() ? 'step' : null" [attr.data-step]="i">
             <div class="flex w-full items-center">
               <span class="h-0.5 flex-1 overflow-hidden rounded-full" [class]="first ? 'opacity-0' : 'bg-line'">
-                <span class="block h-full bg-action transition-all duration-500 motion-reduce:transition-none" [style.width.%]="i + 1 <= current() ? 100 : 0"></span>
+                <span class="block h-full w-full origin-left bg-action transition-transform duration-200 motion-reduce:transition-none" [style.transform]="i + 1 <= current() ? 'scaleX(1)' : 'scaleX(0)'"></span>
               </span>
-              <span class="flex size-8 shrink-0 items-center justify-center rounded-full border-2 text-xs font-semibold transition-all duration-300 motion-reduce:transition-none sm:size-10 sm:text-sm" [class]="circle(i + 1)">
+              <span class="flex size-8 shrink-0 items-center justify-center rounded-full border-2 text-xs font-semibold transition-colors duration-200 motion-reduce:transition-none sm:size-10 sm:text-sm" [class]="circle(i + 1)">
                 @if (i + 1 < current()) {
-                  <span class="material-symbols-rounded text-[18px] sm:text-[20px]" aria-hidden="true">check</span>
+                  <span class="material-symbols-rounded text-[16px] sm:text-[20px]" aria-hidden="true">check</span>
                 } @else if (step.icon) {
-                  <span class="material-symbols-rounded text-[18px] sm:text-[20px]" aria-hidden="true">{{ step.icon }}</span>
+                  <span class="material-symbols-rounded text-[16px] sm:text-[20px]" aria-hidden="true">{{ step.icon }}</span>
                 } @else {
                   <span aria-hidden="true">{{ i + 1 }}</span>
                 }
               </span>
               <span class="h-0.5 flex-1 overflow-hidden rounded-full" [class]="last ? 'opacity-0' : 'bg-line'">
-                <span class="block h-full bg-action transition-all duration-500 motion-reduce:transition-none" [style.width.%]="i + 1 < current() ? 100 : 0"></span>
+                <span class="block h-full w-full origin-left bg-action transition-transform duration-200 motion-reduce:transition-none" [style.transform]="i + 1 < current() ? 'scaleX(1)' : 'scaleX(0)'"></span>
               </span>
             </div>
             @if (selectable(i)) {

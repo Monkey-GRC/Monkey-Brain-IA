@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Self-test of ds.py in a temp dir: (1) uncommitted file is blocked, (2) duplicate marker is an error, (3) lost lines are listed.
+# Self-test of ds.py in a temp dir: (1) uncommitted file is blocked, (2) duplicate marker is an error, (3) lost lines are listed, (4)-(8) the rules of the check.
 set -euo pipefail
 here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 t="$(mktemp -d)"; trap 'rm -rf "$t"' EXIT
@@ -79,4 +79,19 @@ for r in 'italic' 'weight 800/900/100/200' 'loose hex' 'dark: with colour in a v
   echo "$out" | grep -Eq "^  $r.*FAIL[[:space:]]+0[[:space:]]+[1-9]" || fail "rule not counted: $r"
 done
 rm "$c/m/Frontend-Platform/src/app/b.html"
+# (8) MD-485: transition-all, ease-in-out, h-screen, z-[N], app-modal in a view and javascript:void fail without --strict; a canonical base component (the same file in the
+#     canonical copy) may build on app-modal, a view may not
+cat > "$c/m/Frontend-Platform/src/app/b.html" <<'H'
+<div class="transition-all ease-in-out h-screen z-[60]"><app-modal [open]="x" labelledBy="t"></app-modal><a href="javascript:void(0)">x</a></div>
+<h1 class="text-3xl font-semibold">t</h1><span class="material-symbols-rounded text-[18px]">info</span><span class="material-symbols-rounded text-[20px]">ok</span>
+H
+mkdir -p "$c/canon/app/base"
+echo '<app-modal [open]="open()" labelledBy="t"><ng-content /></app-modal>' > "$c/canon/app/base/base.html"
+for a in Frontend Frontend-Platform; do mkdir -p "$c/m/$a/src/app/base"; cp "$c/canon/app/base/base.html" "$c/m/$a/src/app/base/base.html"; done
+out=$(DS_CANON="$c/canon" DS_MONKEY="$c/m" python3 -I "$here/ds.py" check 2>&1) && fail "the MD-485 rules did not fail the check"
+for r in 'transition-all' 'ease-in-out / linear / in' 'h-screen / 100vh' 'arbitrary z-\[N\]' 'javascript:void' 'h1 text-3xl / bold' 'icon size off the scale'; do
+  echo "$out" | grep -Eq "^  $r.*FAIL[[:space:]]+0[[:space:]]+[1-9]" || fail "MD-485 rule not counted as FAIL: $r"
+done
+echo "$out" | grep -Eq '^  app-modal in a view[[:space:]]+FAIL[[:space:]]+0[[:space:]]+1([[:space:]]|$)' || fail "app-modal: the view must count once and the canonical base component never"
+rm -r "$c/m/Frontend-Platform/src/app/b.html" "$c/canon/app" "$c/m/Frontend/src/app/base" "$c/m/Frontend-Platform/src/app/base"
 echo "SELFTEST OK"

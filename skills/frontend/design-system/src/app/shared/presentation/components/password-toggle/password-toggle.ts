@@ -15,7 +15,7 @@ import { TranslatePipe } from '@ngx-translate/core';
       [attr.aria-label]="(visible() ? 'COMMON.HIDE_PASSWORD' : 'COMMON.SHOW_PASSWORD') | translate"
       class="absolute right-1.5 top-7 md:top-[30px] inline-flex h-9 w-9 items-center justify-center rounded-control text-ink-muted transition-colors hover:text-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-action/50"
     >
-      <span class="material-symbols-rounded text-[20px] md:text-[22px] leading-none">{{ visible() ? 'visibility_off' : 'visibility' }}</span>
+      <span class="material-symbols-rounded text-[20px] md:text-[24px] leading-none">{{ visible() ? 'visibility_off' : 'visibility' }}</span>
     </button>
   `,
 })

@@ -24,7 +24,7 @@ import { targetValue } from '@shared/presentation/utils/event-target';
       (input)="valueChange.emit(targetValue($event))"
       class="mk-input pr-11 [&::-webkit-search-cancel-button]:appearance-none [&::-webkit-search-decoration]:appearance-none"
     />
-    <span class="material-symbols-rounded pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-[18px] text-ink-faint" aria-hidden="true">search</span>
+    <span class="material-symbols-rounded pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-[20px] text-ink-faint" aria-hidden="true">search</span>
   `,
 })
 export class SearchField {

@@ -308,7 +308,7 @@ venzan los 30 días.
 el dispositivo; si no los reconoce, vienen `null` y la UI muestra un texto genérico. Límite conocido: un iPad con iPadOS 13 o posterior se anuncia como un Mac, así que sale `computer` · `macOS`. La UI **agrupa** los dispositivos por
 `device_type` + `os` (p. ej. «Computador · Linux», «Celular · Android»), cada grupo con su icono, y dentro de cada grupo
 lista los navegadores. `ip_address`, `country` y `city` son los del **último ingreso** con ese dispositivo
-(al recordarlo o, después, al entrar sin código). `country` es el código ISO 3166-1 alfa-2 (la UI muestra el nombre en su
+(al recordarlo o, después, al entrar sin código). `ip_address` es la IP real del cliente en IPv4 o IPv6 sin el prefijo `::ffff:` (MD-485; detrás del proxy depende de `TRUST_PROXY`). `country` es el código ISO 3166-1 alfa-2 (la UI muestra el nombre en su
 idioma) y `city` viene en el idioma de la petición (`Accept-Language`); los dos son aproximados y pueden venir `null` (IP
 privada o no encontrada). La ubicación sale de una **base GeoIP local** en el Backend: la IP no se manda a ningún tercero.
 `last_used_at` es el último ingreso sin código (`null` si nunca se usó). `is_current` es `true` para el de la cookie de esta

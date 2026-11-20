@@ -38,7 +38,7 @@ Los textos siguen `monkey-ui-copy`; este documento solo cubre la capa visual.
 | `<select>` nativo, un `<input type="search">` con lupa a mano | `app-select` (disparador + panel propio, simple o `multiple`, formularios reactivos) y `app-search-field` (lupa **a la derecha**); `table-filter` y `table-toolbar` ya los usan; contrato en `components.md` |
 | Tabla con markup propio (`<table>`, una card con filas, `divide-y`), también la lista corta de un panel lateral | `data-table` y sus celdas (`person-cell`, `status-indicator`, `tag`, `badge`) con `table-toolbar` y `table-filter`; contrato en `components.md`, «Tabla única» |
 | Borde lateral o superior de color en una tarjeta; barra de color junto a un título | Línea fina neutra; el estado va en `status-indicator` (badge de estado). (El indicador lateral del ítem activo del menú sí se permite.) |
-| Banner con degradado o círculos decorativos | `page-header` sin fondo. **Única excepción** (decisión de Rod): el banner `app-compliance-banner` del shell de Cumplimiento (ver abajo); ninguna otra vista lo usa |
+| Banner con degradado o círculos decorativos | `page-header` sin fondo. **Excepciones** (decisiones de Rod): (1) el banner `app-compliance-banner` del shell de Cumplimiento (ver abajo), y ninguna otra vista lo usa; (2) el **lavado del toast** (MD-485): el token de estado al 12 % sobre `surface` en el borde izquierdo del aviso, que se desvanece hacia `surface` en el 60 % del ancho (`mk-toast-*`, `--color-toast-*-wash`); es un estado, no decoración, y no se usa en ninguna otra superficie |
 | Cabecera de tarjeta con fondo pastel | Título de `section` con línea inferior de 1 px |
 | Tarjeta dentro de tarjeta | Una sola capa; lo interno se separa con líneas y espacio |
 | Icono dentro de un cuadro o círculo de color | Icono lineal monocromo, sin fondo. **Excepciones**: (1) la tarjeta de métrica `app-metric-card` lleva su icono lineal dentro de un círculo del color de la métrica (`mk-metric-icon-<data-1..5|ok|warn|bad|neutral>`; decisión de Rod, MD-483: tarjetas tipo Vanta, todas iguales en la fila, sin card destacada); (2) (decisión de Rod, MD-217): el avatar `app-device-icon` de «Dispositivos recordados» (círculo oscuro con el dispositivo y el logo de su sistema), junto al texto que lo nombra |
@@ -120,7 +120,7 @@ Reglas de uso medidas: `ink-faint` pasa AA sobre `surface`, `canvas`, `tint` y `
 
 **Entrada de pantalla**: utilidad `mk-enter` (fundido de opacidad de 150 ms; con `prefers-reduced-motion` se conserva, porque un fundido no es movimiento). Companies y Catalog de Admin la usan. Los modales entran con `mk-backdrop-in` (fundido del fondo) y `mk-modal-in` (fundido con escala de 0,96 a 1 en 180 ms; con `prefers-reduced-motion`, solo fundido).
 
-**Sombra**: `--shadow-soft` (mínima, en cards) y `--shadow-float` (menús, modal, drawer, sidebar en móvil, avisos `toast`). Los avisos (`toast`) flotan en la esquina superior derecha por encima de todo (`--z-toast`, 100004: drawer 100001, confirm-dialog 100002) y llevan `mk-surface-state-*` con punto y palabra; ver `components.md`. Las sombras antiguas de contenedor (`shadow-card`, `shadow-theme-*`) ya no existen en `styles.css`; el chequeo rechaza que vuelvan.
+**Sombra**: `--shadow-soft` (mínima, en cards) y `--shadow-float` (menús, modal, drawer, sidebar en móvil, avisos `toast`). Los avisos (`toast`) flotan arriba a la derecha, bajo el header del shell, por encima de todo (`--z-toast`); son `mk-toast` con el lavado de su estado, un icono lineal y la palabra del estado para lectores de pantalla; ver `components.md`. Las sombras antiguas de contenedor (`shadow-card`, `shadow-theme-*`) ya no existen en `styles.css`; el chequeo rechaza que vuelvan.
 
 **Superficies** (utilidades): `mk-panel` (panel del shell), `mk-panel-content` (área de contenido, blanca como `mk-panel`), `mk-surface` (card), `mk-surface-tinted` (card de apoyo con tinte de marca) y `mk-surface-featured`
 (card destacada: azul de marca `brand-500 → brand-600`, degradado sutil, texto blanco; ya **no se usa en las filas de métricas** (MD-483): quedan todas iguales con `app-metric-card`). y `mk-surface-state-ok|warn|bad|neutral` (card de estado, paso 5: tinte tenue del token de estado sobre `surface` y borde completo de 1 px del mismo tono, texto `ink`; solo para un veredicto o aviso que **es** un estado, nunca decoración; contraste de `ink` sobre el tinte ≥ 12:1 en claro y oscuro).
@@ -168,6 +168,10 @@ Reglas: los tintes de marca siguen siendo el fondo de las cards de apoyo (el col
 | Etiqueta de campo, encabezado de tabla | 12 px / 500, `ink-faint` (sin mayúsculas forzadas; nada de 10 u 11 px: es `text-xs`) |
 | Cifra de KPI | 28 px / 600, `text-kpi` (`--text-kpi`, línea de 32 px) y `tabular-nums` |
 | Código (`CC6.1`, hash) | Geist Mono, 12 px / 500 en el badge |
+
+**Un solo paso de título (MD-485, decisión 6.1 A).** Todo `h1` es de 24 px / 600 (`text-2xl`), el de `page-header`: también el acceso, Ajustes, el banner de Cumplimiento, la pantalla final de un servicio y la 404. Nada de `text-3xl` ni `md:text-3xl` en un `h1`; `check-design-system.sh` lo hace fallar.
+
+**Escala de iconos (MD-485, decisión 6.13 A).** Material Symbols Rounded en **16 px** (dentro de texto pequeño, badges, enlaces de tabla), **20 px** (botones, menús, filas; el más usado) y **24 px** (botones de icono de la cabecera, cerrar un panel). Excepciones escritas: **28 px** el icono de `app-metric-card` y el de `form-modal [icon]`, **32 px** el de `app-empty-state`, **44 px** el check de una pantalla final (alta de servicio, resultado de una conexión). Un tamaño fuera de la lista se lleva al más cercano; el chequeo lo hace fallar (`icon size off the scale`).
 
 ## 4. Archivos de este directorio
 

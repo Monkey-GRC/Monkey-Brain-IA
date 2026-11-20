@@ -51,7 +51,7 @@ const GLYPHS: Record<DeviceKind, string> = { computer: 'laptop_chromebook', mobi
   host: { class: 'relative inline-flex size-12 shrink-0', 'aria-hidden': 'true' },
   template: `
     <span class="flex size-12 items-center justify-center rounded-full bg-primary-500 text-white dark:bg-tint-strong dark:text-ink" data-device-circle>
-      <span class="material-symbols-rounded text-[26px] leading-none" data-device-glyph>{{ glyph() }}</span>
+      <span class="material-symbols-rounded text-[24px] leading-none" data-device-glyph>{{ glyph() }}</span>
     </span>
     @if (logoPath(); as path) {
       <span class="absolute -right-1 -bottom-1 flex size-6 items-center justify-center rounded-full border border-line bg-surface text-ink" data-os-logo>

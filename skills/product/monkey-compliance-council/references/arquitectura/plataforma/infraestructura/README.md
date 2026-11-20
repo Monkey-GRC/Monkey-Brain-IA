@@ -192,7 +192,7 @@ Propuestas, no decisiones; cada una tiene su ticket en Jira (2026-11-18). Priori
 | I6 | **Reinicio y parches pendientes** (kernel y 76 paquetes). Programar una ventana de reinicio | A | S | MD-237 |
 | I7 | **Sin límites de memoria y sin swap**: poner `mem_limit` a backend, Postgres, n8n, MinIO y el proxy, y añadir 2–4 GB de swap como colchón | B | S | MD-238 |
 | I8 | **Cabeceras de seguridad**: HSTS, CSP, `X-Frame-Options: DENY`, `nosniff` en Platform y Admin (en el nginx de cada imagen o en el proxy) y `helmet` en la API (quita `x-powered-by`) | B | S | MD-239 |
-| I9 | **IP real del cliente** (va con MD-218): el tráfico pasa por Cloudflare y por Nginx Proxy Manager. El backend debe confiar en esos dos saltos y leer `CF-Connecting-IP` (o `X-Forwarded-For` limpio); si no, el límite por dirección y la ubicación de los dispositivos recordados ven la IP del proxy | B | S | MD-218 |
+| I9 | ✅ **IP real del cliente** (MD-485, backend): el backend resuelve `req.ip` con `trust proxy` (`TRUST_PROXY`, apagado por defecto) y normaliza `::ffff:`. **Falta en el despliegue: `TRUST_PROXY=2`** (Cloudflare + NPM; `X-Forwarded-For` limpio, no se lee `CF-Connecting-IP`). Confiar en más saltos permite falsificar la IP; la protección completa es I2 (origen solo para Cloudflare) | B | S | MD-485 |
 | I10 | **Postgres comparte red con todo**: n8n, MinIO y el proxy pueden hablar con la base. Una red interna solo backend ↔ Postgres | B | S | MD-240 |
 | I11 | **`n8n.monkey360.io` da 502**: revisar el host en el proxy o apagar n8n si no se usa (libera ~320 MB de RAM y 2,5 GB de disco) | B | S | MD-241 |
 | I12 | **Imágenes `:latest`** (MinIO, n8n): fijar versiones para que un `pull` no cambie nada sin querer | B | S | MD-242 |

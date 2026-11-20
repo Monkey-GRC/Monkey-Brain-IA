@@ -109,7 +109,7 @@ const MARGIN = 8;
         [id]="listId"
         [attr.aria-multiselectable]="multiple() ? 'true' : null"
         [attr.aria-label]="ariaLabelKey() ? (ariaLabelKey() | translate) : (summaryKey() ? (summaryKey() | translate) : null)"
-        class="mk-enter fixed z-[100003] overflow-y-auto rounded-card border border-line bg-surface p-1 text-sm text-ink shadow-float"
+        class="mk-enter fixed z-(--z-popover) overflow-y-auto rounded-card border border-line bg-surface p-1 text-sm text-ink shadow-float"
         [style.left.px]="p?.left"
         [style.top.px]="p && !p.up ? p.edge : null"
         [style.bottom.px]="p && p.up ? p.edge : null"
@@ -141,13 +141,13 @@ const MARGIN = 8;
                 [class]="isSelected(o) ? 'border-action bg-action' : 'border-line-control'"
               >
                 @if (isSelected(o)) {
-                  <span class="material-symbols-rounded text-[14px] leading-none">check</span>
+                  <span class="material-symbols-rounded text-[16px] leading-none">check</span>
                 }
               </span>
             }
             <span class="min-w-0 flex-1 break-words">{{ o.labelKey ? (o.labelKey | translate: o.labelParams) : o.label }}</span>
             @if (!multiple() && isSelected(o)) {
-              <span class="material-symbols-rounded text-[18px] text-action" aria-hidden="true">check</span>
+              <span class="material-symbols-rounded text-[20px] text-action" aria-hidden="true">check</span>
             }
           </button>
         } @empty {

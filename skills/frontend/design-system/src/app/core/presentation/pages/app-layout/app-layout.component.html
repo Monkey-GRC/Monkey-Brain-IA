@@ -1,12 +1,14 @@
 @let expanded = isExpanded$ | async;
 @let hovered = isHovered$ | async;
-<div class="min-h-screen p-3 xl:flex">
+<!-- Skip link: the first stop of Tab, visible only with the keyboard; it jumps over the menu and the header to the content. -->
+<a href="#contenido" (click)="$event.preventDefault(); content.focus()" class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-(--z-toast) focus:rounded-control focus:bg-surface focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-action focus:shadow-float focus:outline-none focus:ring-2 focus:ring-action/40" data-skip-link>{{ 'SHELL.SKIP_TO_CONTENT' | translate }}</a>
+<div class="min-h-dvh p-3 xl:flex">
   <div>
     <app-sidebar></app-sidebar>
     <app-backdrop></app-backdrop>
   </div>
   <div
-      class="min-w-0 flex-1 transition-all duration-300 ease-in-out"
+      class="min-w-0 flex-1"
       [ngClass]="{
         'xl:ml-[282px]': expanded || hovered,
         'xl:ml-[96px]': !expanded && !hovered,
@@ -15,7 +17,7 @@
   >
     <app-header/>
     <!-- Content panel: floats on the canvas under the header; the same padding and maximum width in both apps -->
-    <main class="mk-panel-content mt-3 min-h-[calc(100vh-6.5rem)] p-4 md:p-6">
+    <main #content id="contenido" tabindex="-1" class="mk-panel-content mt-3 min-h-[calc(100dvh-6.5rem)] p-4 focus:outline-none md:p-6">
       <div class="mx-auto max-w-(--breakpoint-2xl)">
         <router-outlet></router-outlet>
       </div>

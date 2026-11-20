@@ -24,7 +24,7 @@ import { RouterLink } from '@angular/router';
           @if (backLink(); as link) {
             <a [routerLink]="link" [attr.aria-label]="backLabel() || null"
               class="mb-2 inline-flex items-center gap-1 rounded-control text-sm text-ink-muted transition hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-action/40">
-              <span class="material-symbols-rounded text-[18px]" aria-hidden="true">arrow_back</span>
+              <span class="material-symbols-rounded text-[20px]" aria-hidden="true">arrow_back</span>
               @if (backLabel()) {<span>{{ backLabel() }}</span>}
             </a>
           }

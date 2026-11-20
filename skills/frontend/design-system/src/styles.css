@@ -1,5 +1,7 @@
 @import "tailwindcss";
-@import 'material-symbols';
+/* Icons in the base layer (MD-485): unlayered, the package's `font-size: 24px` beat every size utility and all icons were drawn at 24 px. Sizes: 16 / 20 / 24 px
+   (`text-[16px]`, `text-[20px]`, `text-[24px]`, which keep the glyph's `line-height: 1`); exceptions 28 (metric card), 32 (empty state) and 44 (final screen of a service). */
+@import 'material-symbols' layer(base);
 /* Fonts come from npm (same origin, no CDN). `wght.css` has no italic faces: the system has no italics. */
 @import "@fontsource-variable/geist/wght.css";
 @import "@fontsource-variable/geist-mono/wght.css";
@@ -182,8 +184,9 @@
   /* Status only. A status colour is never written as green-600 or amber-500 in a template. */
   --color-ok: var(--color-success-600);
   --color-bad: var(--color-error-600);
-  --color-warn: var(--color-warning-500);
-  --color-neutral: var(--color-gray-400);
+  /* `warn` and `neutral` are fills and dots: >= 3:1 on `surface` in light (6.14 of MD-485: warning-600 3.49:1, #7d8799 3.62:1). `.dark` keeps the lighter ones (warning-500, gray-400). */
+  --color-warn: var(--color-warning-600);
+  --color-neutral: #7d8799;
   /* Status as TEXT: `ok`/`warn`/`bad` are fills and dots (3.7:1 and below on white), so a sentence in a status colour uses these (>= 5.4:1 on `surface` in light, >= 9:1 in dark). `.dark` redefines them. */
   --color-ok-ink: var(--color-success-700);
   --color-warn-ink: var(--color-warning-700);
@@ -272,6 +275,11 @@
   --color-metric-data-4-line: color-mix(in srgb, var(--color-data-4) 42%, var(--color-surface));
   --color-metric-data-5-bg: color-mix(in srgb, var(--color-data-5) 28%, var(--color-surface));
   --color-metric-data-5-line: color-mix(in srgb, var(--color-data-5) 42%, var(--color-surface));
+  /* Toast wash (MD-485): 12 % of the status colour over `surface` at the left edge of the toast, fading into `surface`. The icon is the `-ink` tone (>= 4.5:1 on the wash). */
+  --color-toast-ok-wash: color-mix(in srgb, var(--color-ok) 12%, var(--color-surface));
+  --color-toast-warn-wash: color-mix(in srgb, var(--color-warn) 12%, var(--color-surface));
+  --color-toast-bad-wash: color-mix(in srgb, var(--color-bad) 12%, var(--color-surface));
+  --color-toast-info-wash: color-mix(in srgb, var(--color-action) 12%, var(--color-surface));
   --color-badge-risk-low-bg: var(--color-risk-low-bg);
   --color-badge-risk-low-line: color-mix(in srgb, var(--color-risk-low) 45%, var(--color-risk-low-bg));
   --color-badge-risk-low-ink: var(--color-risk-low-ink);
@@ -301,16 +309,28 @@
 
   --shadow-focus-ring: 0px 0px 0px 4px rgba(4, 108, 196, 0.16);
 
-  --z-index-1: 1;
-  --z-index-9: 9;
-  --z-index-99: 99;
-  --z-index-999: 999;
-  --z-index-9999: 9999;
-  --z-index-99999: 99999;
-  --z-index-999999: 999999;
-
-  /* Toasts: above the side drawers (z-100001) and the confirm dialog (z-100002), or the error of a failed save would be hidden behind the panel. */
+  /* Stacking scale (MD-485). A layer asks for its name (`z-(--z-drawer)`), never a loose `z-[N]`. From the bottom: the scrim and the mobile menu, the menu flyout, the header menus,
+     the side drawer and its scrim, the modal, the confirm dialog (it opens on top of a drawer), the floating panels (select, date picker, password bubble, the navigation bar) and the toasts on top
+     of everything, or the error of a failed save would be hidden behind the panel. The header of each app has its own value in the `app-specific` block (`--z-app-header`). */
+  --z-menu-scrim: 40;
+  --z-menu: 50;
+  --z-flyout: 60;
+  --z-header-menu: 100000;
+  --z-drawer-scrim: 100000;
+  --z-drawer: 100001;
+  --z-modal: 100001;
+  --z-dialog: 100002;
+  --z-popover: 100003;
   --z-toast: 100004;
+
+  /* Motion (MD-485, 6.11): ONE curve, the ease-out the menu already used, and three durations. 150 ms for colour and opacity, 180 ms for a modal or a drawer coming in,
+     200 ms for a size or a turn (menu group, chevron, progress). Only `transform` and `opacity` move; with `prefers-reduced-motion: reduce` a movement becomes a fade. */
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --default-transition-timing-function: var(--ease-out);
+  --default-transition-duration: 150ms;
+  --motion-fast: 150ms;
+  --motion-enter: 180ms;
+  --motion-move: 200ms;
 }
 
 @layer base {
@@ -344,18 +364,35 @@
 
 /* Buttons. The primary one is Monkey blue and filled; the secondary one has a border. One primary action per view. */
 @utility mk-btn {
-  @apply inline-flex items-center justify-center gap-2 rounded-control bg-action px-4 py-2.5 text-sm font-semibold text-on-action transition enabled:hover:bg-action-hover focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/25 disabled:cursor-not-allowed disabled:bg-line disabled:text-ink-muted disabled:shadow-none;
+  @apply inline-flex items-center justify-center gap-2 rounded-control bg-action px-4 py-2.5 text-sm font-semibold text-on-action transition enabled:hover:bg-action-hover enabled:active:translate-y-px focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/25 disabled:cursor-not-allowed disabled:bg-line disabled:text-ink-muted disabled:shadow-none;
 }
 @utility mk-btn-secondary {
-  @apply inline-flex items-center justify-center gap-2 rounded-control border border-line-control bg-surface px-4 py-2.5 text-sm font-semibold text-ink transition enabled:hover:bg-tint focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/20 disabled:cursor-not-allowed disabled:border-transparent disabled:bg-line disabled:text-ink-muted disabled:shadow-none;
+  @apply inline-flex items-center justify-center gap-2 rounded-control border border-line-control bg-surface px-4 py-2.5 text-sm font-semibold text-ink transition enabled:hover:bg-tint enabled:active:translate-y-px focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/20 disabled:cursor-not-allowed disabled:border-transparent disabled:bg-line disabled:text-ink-muted disabled:shadow-none;
 }
 @utility mk-btn-danger {
-  @apply inline-flex items-center justify-center gap-2 rounded-control bg-bad px-4 py-2.5 text-sm font-semibold text-white transition enabled:hover:bg-bad/90 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-bad/25 disabled:cursor-not-allowed disabled:bg-line disabled:text-ink-muted disabled:shadow-none;
+  @apply inline-flex items-center justify-center gap-2 rounded-control bg-bad px-4 py-2.5 text-sm font-semibold text-white transition enabled:hover:bg-bad/90 enabled:active:translate-y-px focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-bad/25 disabled:cursor-not-allowed disabled:bg-line disabled:text-ink-muted disabled:shadow-none;
 }
 
-/* Form controls (text input and select) used inside `app-field`. */
+/* Icon-only button (refresh, close, pin, more): 40 px square, no border, `ink-muted` icon, hover `tint`, pressed 1 px down, a visible focus ring. It always carries an `aria-label`. */
+@utility mk-btn-icon {
+  @apply inline-flex size-10 shrink-0 items-center justify-center rounded-control text-ink-muted transition enabled:hover:bg-tint enabled:hover:text-ink enabled:active:translate-y-px enabled:active:bg-tint-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-action/40 disabled:cursor-not-allowed disabled:text-ink-faint;
+}
+
+/* Text link or text button (row actions, «Retry», «Clear filters», inline links). Brand colour, underline on hover, a visible focus ring, pressed colour, tokenised disabled.
+   Inline links inside a sentence add `underline`. `mk-link-danger` is the destructive one (archive, delete). */
+@utility mk-link {
+  @apply rounded-control font-medium text-action underline-offset-2 transition-colors hover:underline active:text-action-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-action/40 disabled:cursor-not-allowed disabled:text-ink-faint disabled:no-underline;
+}
+@utility mk-link-danger {
+  @apply rounded-control font-medium text-bad-ink underline-offset-2 transition-colors hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bad/40 disabled:cursor-not-allowed disabled:text-ink-faint disabled:no-underline;
+}
+
+/* Form controls (text input and select) used inside `app-field`. `mk-textarea` is the same field with free height (it grows with `rows`). */
 @utility mk-input {
   @apply h-10 w-full rounded-control border border-line-control bg-surface px-3 text-sm text-ink placeholder:text-ink-faint focus:border-action focus:outline-none focus:ring-2 focus:ring-action/20 disabled:cursor-not-allowed disabled:bg-tint disabled:text-ink-faint;
+}
+@utility mk-textarea {
+  @apply min-h-24 w-full rounded-control border border-line-control bg-surface px-3 py-2 text-sm text-ink placeholder:text-ink-faint focus:border-action focus:outline-none focus:ring-2 focus:ring-action/20 disabled:cursor-not-allowed disabled:bg-tint disabled:text-ink-faint;
 }
 
 /* Loading (D116). `mk-skeleton` is the block of `app-skeleton`: the `line` token as fill and a soft sweep of `surface` over it (readable on light and dark, no fixed colour).
@@ -373,7 +410,7 @@
   background-image: linear-gradient(90deg, transparent 0%, color-mix(in srgb, var(--color-surface) 65%, transparent) 50%, transparent 100%);
   background-size: 200% 100%;
   background-repeat: no-repeat;
-  animation: mk-shimmer 1.6s ease-in-out infinite;
+  animation: mk-shimmer 1.6s var(--ease-out) infinite;
   @media (prefers-reduced-motion: reduce) {
     animation: none;
   }
@@ -428,6 +465,9 @@ button[aria-busy='true']:hover {
   /* Dark text on the light blue of `action`: 6.13:1 (white would be 2.98:1). Isolated here on purpose: Rod may change the dark primary button. */
   --color-on-action: #05080f;
   --color-brand-panel: #10264a;
+  /* The light mode darkened `warn` and `neutral` to reach 3:1 on white; on the dark surface the lighter ones already give 8.2:1 and 7.4:1. */
+  --color-warn: var(--color-warning-500);
+  --color-neutral: var(--color-gray-400);
   --color-tint: color-mix(in srgb, var(--color-action) 8%, var(--color-surface));
   --color-tint-strong: color-mix(in srgb, var(--color-action) 16%, var(--color-surface));
   --color-tint-ink: var(--color-brand-300);
@@ -503,6 +543,10 @@ button[aria-busy='true']:hover {
   --color-metric-data-4-line: color-mix(in srgb, var(--color-data-4) 42%, var(--color-surface));
   --color-metric-data-5-bg: color-mix(in srgb, var(--color-data-5) 28%, var(--color-surface));
   --color-metric-data-5-line: color-mix(in srgb, var(--color-data-5) 42%, var(--color-surface));
+  --color-toast-ok-wash: color-mix(in srgb, var(--color-ok) 12%, var(--color-surface));
+  --color-toast-warn-wash: color-mix(in srgb, var(--color-warn) 12%, var(--color-surface));
+  --color-toast-bad-wash: color-mix(in srgb, var(--color-bad) 12%, var(--color-surface));
+  --color-toast-info-wash: color-mix(in srgb, var(--color-action) 12%, var(--color-surface));
   --color-badge-risk-low-bg: var(--color-risk-low-bg);
   --color-badge-risk-low-line: color-mix(in srgb, var(--color-risk-low) 45%, var(--color-risk-low-bg));
   --color-badge-risk-low-ink: var(--color-risk-low-ink);
@@ -652,6 +696,40 @@ button[aria-busy='true']:hover {
   background-color: color-mix(in srgb, var(--color-neutral) 10%, var(--color-surface));
 }
 
+/* Toast (`app-toast-container`, MD-485, decision of Rod). A floating card (`surface`, 1 px `line`, radius `card`, `shadow-float`) with a soft wash of its status colour that comes in from
+   the left and fades into `surface` within the first 60 % of the width. It is the second documented exception to «no gradients» (README, section 2): the wash is a status token at 12 %,
+   never a brand gradient. The icon (left) is the status `-ink` tone; title `ink`, message `ink-muted` (contrast measured by check-design-system.sh, light and dark). */
+@utility mk-toast {
+  @apply relative flex items-start gap-3 rounded-card border border-line bg-surface p-4 text-ink shadow-float;
+  background-image: linear-gradient(90deg, var(--mk-toast-wash, var(--color-surface)) 0%, var(--color-surface) 60%);
+  animation: mk-toast-in var(--motion-enter) var(--ease-out) both;
+  @media (prefers-reduced-motion: reduce) {
+    animation: mk-fade-in var(--motion-enter) var(--ease-out) both;
+  }
+}
+@keyframes mk-toast-in {
+  from {
+    opacity: 0;
+    transform: translateX(0.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+@utility mk-toast-success {
+  --mk-toast-wash: var(--color-toast-ok-wash);
+}
+@utility mk-toast-warning {
+  --mk-toast-wash: var(--color-toast-warn-wash);
+}
+@utility mk-toast-error {
+  --mk-toast-wash: var(--color-toast-bad-wash);
+}
+@utility mk-toast-info {
+  --mk-toast-wash: var(--color-toast-info-wash);
+}
+
 /* The Compliance banner (`app-compliance-banner`): the ONLY banner with a background the design system allows (README, section 2). Brand gradient `brand-700` to `brand-500`
    (deeper in dark mode) and two soft circles at very low opacity, all from tokens. White text: >= 5.4:1 on `brand-500`, more on the rest. */
 @utility mk-banner {
@@ -668,7 +746,7 @@ button[aria-busy='true']:hover {
 
 /* Side menu. The active item is a soft gray background with ink text and a thin lateral indicator in the action colour. Children have no icon and no background of their own. */
 @utility menu-item {
-  @apply relative flex w-full items-center gap-3 rounded-control px-3 py-2 text-theme-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-action/40;
+  @apply relative flex w-full items-center gap-3 rounded-control px-3 py-2 text-theme-sm font-medium transition-colors active:bg-tint-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-action/40;
 }
 @utility menu-item-active {
   @apply relative bg-tint text-ink;
@@ -680,10 +758,9 @@ button[aria-busy='true']:hover {
 @utility menu-item-inactive {
   @apply text-ink-muted hover:bg-tint hover:text-ink;
 }
+/* The icon box of a menu row is 24 px (the 20 px glyph centred in it), so the text of a parent starts at 48 px like the text of its children (12 + 24 + 12). */
 @utility menu-item-icon-size {
-  & svg {
-    @apply !size-6;
-  }
+  @apply inline-flex size-6 shrink-0 items-center justify-center;
 }
 @utility menu-item-icon-active {
   @apply text-ink;
@@ -694,7 +771,7 @@ button[aria-busy='true']:hover {
 /* A group row is one button that only opens or closes (it never navigates). It looks like a menu item; when the group holds the active page the title is darker
    (`menu-item-contains-active`, no background and no lateral indicator: that is reserved for the active item itself). */
 @utility menu-group-toggle {
-  @apply relative flex w-full items-center gap-3 rounded-control px-3 py-2 text-left text-theme-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-action/40;
+  @apply relative flex w-full items-center gap-3 rounded-control px-3 py-2 text-left text-theme-sm font-medium transition-colors active:bg-tint-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-action/40;
 }
 @utility menu-item-contains-active {
   @apply font-semibold text-ink hover:bg-tint;
@@ -708,7 +785,7 @@ button[aria-busy='true']:hover {
   grid-template-rows: 0fr;
   opacity: 0;
   visibility: hidden;
-  transition: grid-template-rows 200ms cubic-bezier(0, 0, 0.2, 1), opacity 160ms cubic-bezier(0, 0, 0.2, 1), visibility 0s linear 200ms;
+  transition: grid-template-rows var(--motion-move) var(--ease-out), opacity var(--motion-fast) var(--ease-out), visibility 0s var(--motion-move);
   & > * {
     min-height: 0;
     overflow: hidden;
@@ -720,7 +797,7 @@ button[aria-busy='true']:hover {
     transition-delay: 0s;
   }
   @media (prefers-reduced-motion: reduce) {
-    transition: opacity 120ms linear, visibility 0s linear 120ms;
+    transition: opacity var(--motion-fast) var(--ease-out), visibility 0s var(--motion-fast);
     &[data-open='true'] {
       transition-delay: 0s;
     }
@@ -728,7 +805,7 @@ button[aria-busy='true']:hover {
 }
 @utility menu-chevron-icon {
   @apply ml-auto size-5 shrink-0 text-ink-faint;
-  transition: transform 200ms cubic-bezier(0, 0, 0.2, 1);
+  transition: transform var(--motion-move) var(--ease-out);
   &[data-open='true'] {
     transform: rotate(180deg);
   }
@@ -740,7 +817,7 @@ button[aria-busy='true']:hover {
    needs (40 px). Its text starts where the parent's text starts (48 px: 12 px of padding + 24 px of icon + 12 px of gap); the group's list carries a subtle 1 px guide (`line`) under the
    parent's icon (24 px from the left), so it reads as a hierarchy without spending width. The focus ring is inset because the panel clips overflow. */
 @utility menu-child {
-  @apply flex min-h-10 w-full items-center rounded-control py-2 pl-6 pr-3 text-theme-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-action/50;
+  @apply flex min-h-10 w-full items-center rounded-control py-2 pl-6 pr-3 text-theme-sm transition-colors active:bg-tint-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-action/50;
 }
 @utility menu-child-active {
   @apply bg-tint-strong font-medium text-tint-ink;
@@ -775,12 +852,12 @@ button[aria-busy='true']:hover {
   }
 
   ::-webkit-scrollbar-thumb {
-    background-color: #bbbbbb;
+    background-color: var(--color-line-control);
     border-radius: 4px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background-color: #979797;
+    background-color: var(--color-ink-faint);
   }
 
   ::-webkit-scrollbar-corner {
@@ -800,14 +877,13 @@ button[aria-busy='true']:hover {
   }
 }
 
-input::placeholder {
-  color: gray;
-  opacity: 1;
-}
-
-textarea::placeholder {
-  color: gray;
-  opacity: 1;
+/* Placeholders in `ink-faint` (>= 4.5:1 on `surface`); inside the base layer so `placeholder:` utilities still win. */
+@layer base {
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--color-ink-faint);
+    opacity: 1;
+  }
 }
 
 /* Selection checkbox of the tables: visible in light and dark, with the brand colour when checked. */
@@ -820,23 +896,31 @@ textarea::placeholder {
   height: 1.125rem;
   flex-shrink: 0;
   cursor: pointer;
-  border: 2px solid var(--color-gray-400);
-  border-radius: 0.3rem;
+  border: 2px solid var(--color-line-control);
+  border-radius: var(--radius-badge);
   background-color: transparent;
   background-position: center;
   background-repeat: no-repeat;
   background-size: 100%;
-  transition: background-color 0.15s, border-color 0.15s;
+  transition: background-color var(--motion-fast) var(--ease-out), border-color var(--motion-fast) var(--ease-out);
 }
-.mk-checkbox:hover { border-color: var(--color-primary); }
-.mk-checkbox:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+.mk-checkbox:hover { border-color: var(--color-action); }
+.mk-checkbox:focus-visible { outline: 2px solid var(--color-action); outline-offset: 2px; }
+.mk-checkbox:disabled { cursor: not-allowed; border-color: var(--color-line); background-color: var(--color-tint); }
 .mk-checkbox:checked,
-.mk-checkbox:indeterminate { background-color: var(--color-primary); border-color: var(--color-primary); }
+.mk-checkbox:indeterminate { background-color: var(--color-action); border-color: var(--color-action); }
 .mk-checkbox:checked {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='white' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3.5 8.5l3 3 6-7'/%3E%3C/svg%3E");
 }
 .mk-checkbox:indeterminate {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='white' stroke-width='2.4' stroke-linecap='round'%3E%3Cpath d='M4 8h8'/%3E%3C/svg%3E");
+}
+/* In dark the `action` fill is light blue: the mark is `on-action` (#05080f), as on every brand fill. */
+.dark .mk-checkbox:checked {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%2305080f' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3.5 8.5l3 3 6-7'/%3E%3C/svg%3E");
+}
+.dark .mk-checkbox:indeterminate {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%2305080f' stroke-width='2.4' stroke-linecap='round'%3E%3Cpath d='M4 8h8'/%3E%3C/svg%3E");
 }
 
 /* Soft entrance of a screen (opacity only, 150 ms). With reduced motion it stays: a fade is not movement, so it is the one animation that is kept (and the only way to see that something opened). */
@@ -850,7 +934,7 @@ textarea::placeholder {
   }
 }
 @utility mk-enter {
-  animation: mk-fade-in 0.15s ease-out both;
+  animation: mk-fade-in var(--motion-fast) var(--ease-out) both;
 }
 
 /* Modal: the backdrop fades in and the panel fades in while growing from 0.96 to 1 (180 ms). With reduced motion the panel only fades: no scale, no shift. */
@@ -866,13 +950,13 @@ textarea::placeholder {
   }
 }
 @utility mk-backdrop-in {
-  animation: mk-fade-in 0.18s ease-out both;
+  animation: mk-fade-in var(--motion-enter) var(--ease-out) both;
 }
 @utility mk-modal-in {
-  animation: mk-modal-in 0.18s ease-out both;
+  animation: mk-modal-in var(--motion-enter) var(--ease-out) both;
 
   @media (prefers-reduced-motion: reduce) {
-    animation: mk-fade-in 0.18s ease-out both;
+    animation: mk-fade-in var(--motion-enter) var(--ease-out) both;
   }
 }
 
