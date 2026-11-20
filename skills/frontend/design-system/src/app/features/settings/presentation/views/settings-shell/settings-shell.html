@@ -1,0 +1,32 @@
+<div class="flex min-h-dvh flex-col bg-canvas lg:flex-row">
+  <aside class="flex shrink-0 flex-col border-b border-line bg-surface lg:sticky lg:top-0 lg:h-dvh lg:w-72 lg:border-b-0 lg:border-r">
+    <div class="p-3 lg:p-4">
+      <button type="button" (click)="back()" data-testid="settings-back"
+        class="w-full mk-btn-secondary">
+        <span class="material-symbols-rounded text-[20px]" aria-hidden="true">arrow_back</span>
+        {{ 'SETTINGS.BACK' | translate }}
+      </button>
+    </div>
+
+    <!-- The current page is the menu's active item (tint, ink text and the 3 px action indicator, `aria-current="page"`); hover is only the tint. -->
+    <nav [attr.aria-label]="'SETTINGS.NAV_LABEL' | translate" class="flex flex-wrap gap-1 px-3 pb-3 lg:flex-1 lg:flex-col lg:flex-nowrap lg:gap-0.5 lg:overflow-y-auto lg:px-4 lg:pb-6">
+      @for (group of groups; track group.name) {
+        <p class="hidden px-3 pb-1 pt-4 text-sm font-semibold text-ink-faint lg:block">{{ group.labelKey | translate }}</p>
+        @for (section of group.sections; track section.name) {
+          <a [routerLink]="section.path" routerLinkActive #active="routerLinkActive" ariaCurrentWhenActive="page" [attr.data-testid]="'settings-nav-' + section.name"
+            class="relative flex shrink-0 items-center gap-2.5 rounded-control px-3 py-2.5 text-base font-medium transition-colors active:bg-tint-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-action/40 lg:w-full"
+            [class]="active.isActive ? 'menu-item-active' : 'menu-item-inactive'">
+            <span class="material-symbols-rounded text-[20px]" aria-hidden="true">{{ section.icon }}</span>
+            <span>{{ section.labelKey | translate }}</span>
+          </a>
+        }
+      }
+    </nav>
+  </aside>
+
+  <main class="relative min-w-0 flex-1">
+    <div class="mx-auto w-full max-w-3xl px-6 py-8 md:px-8 md:py-12">
+      <router-outlet />
+    </div>
+  </main>
+</div>

@@ -135,3 +135,5 @@ capacidades automatizadas; idempotente; `reference:verify` solo compara) y `cata
 - No importar el interior de una feature desde otra: lo compartido va a `common/` o `infrastructure/`.
 - No crear un schema Prisma monolítico; usar el archivo del dominio correspondiente.
 - No saltarse capas (p. ej. controller llamando directo al repositorio Prisma).
+
+- **IP del cliente (MD-485, DT-37/I9):** `trust proxy` se fija en `configureApp` (`src/app.setup.ts`) desde `TRUST_PROXY` (`src/common/http/trust-proxy.ts`; apagado por defecto, inválido = no arranca). Los controllers leen la IP solo con `clientIp(req)` (`src/common/http/client-ip.ts`; quita `::ffff:` y pasa `::1` a `127.0.0.1`), nunca `req.ip` directo. Despliegue: `TRUST_PROXY=2` (Cloudflare + NPM).

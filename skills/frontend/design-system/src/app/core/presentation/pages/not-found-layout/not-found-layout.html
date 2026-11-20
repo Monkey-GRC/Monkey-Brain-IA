@@ -1,25 +1,25 @@
-<div class="relative flex flex-col items-center justify-center min-h-screen p-5 overflow-hidden z-1">
-    <div class="absolute right-0 top-0 -z-1 w-full max-w-[250px] xl:max-w-[450px]">
+<div class="relative flex flex-col items-center justify-center min-h-dvh p-5 overflow-hidden z-1">
+    <div class="absolute right-0 top-0 -z-1 w-full max-w-64 xl:max-w-md">
         <img src="/images/shape/grid-01.svg" alt="" />
     </div>
-    <div class="absolute bottom-0 left-0 -z-1 w-full max-w-[250px] rotate-180 xl:max-w-[450px]">
+    <div class="absolute bottom-0 left-0 -z-1 w-full max-w-64 rotate-180 xl:max-w-md">
         <img src="/images/shape/grid-01.svg" alt="" />
     </div>
 
-    <div class="mx-auto w-full max-w-[242px] text-center sm:max-w-[472px]">
-        <h1 class="mb-8 font-semibold text-ink text-title-md xl:text-title-2xl">
+    <div class="mx-auto w-full max-w-60 text-center sm:max-w-md">
+        <h1 class="mb-8 text-2xl font-semibold text-ink text-balance">
 {{ 'COMMON.NOT_FOUND.TITLE' | translate }}
         </h1>
 
-        <img src="/images/error/404.svg" alt="404" class="dark:hidden" />
-        <img src="/images/error/404-dark.svg" alt="404" class="hidden dark:block" />
+        <img src="/images/error/404.svg" alt="" class="dark:hidden" />
+        <img src="/images/error/404-dark.svg" alt="" class="hidden dark:block" />
 
-        <p class="mt-10 mb-4 text-base text-ink-muted sm:text-lg">
+        <p class="mt-10 mb-4 text-base text-ink-muted text-pretty">
             {{ 'COMMON.NOT_FOUND.MESSAGE' | translate }}
         </p>
 
         <a routerLink="/"
-            class="hover:text-ink mk-btn-secondary">
+            class="mk-btn-secondary">
             {{ 'COMMON.NOT_FOUND.BACK_HOME' | translate }}
         </a>
     </div>

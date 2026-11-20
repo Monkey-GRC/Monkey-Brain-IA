@@ -1,0 +1,62 @@
+@if (user(); as person) {
+  <div class="relative">
+    <button type="button" (click)="toggle()" data-testid="profile-trigger" aria-haspopup="menu" [attr.aria-expanded]="open()"
+      [attr.aria-label]="'SHELL.PROFILE.OPEN' | translate" [title]="displayName()"
+      class="flex items-center gap-2.5 rounded-full p-1 pr-2 text-ink-muted transition hover:bg-tint hover:text-ink active:translate-y-px focus:outline-none focus-visible:ring-2 focus-visible:ring-action/40"
+      [class.bg-tint]="open()">
+      <span class="flex size-10 items-center justify-center rounded-full bg-action text-sm font-semibold text-on-action" aria-hidden="true">{{ initials() }}</span>
+      <span class="material-symbols-rounded text-[20px] leading-none transition-transform duration-200 motion-reduce:transition-none" [class.rotate-180]="open()" aria-hidden="true">expand_more</span>
+    </button>
+
+    @if (open()) {
+      <div role="menu" data-testid="profile-panel"
+        class="mk-enter absolute right-0 top-full z-(--z-header-menu) mt-2 w-72 max-w-[calc(100vw-1.5rem)] rounded-card border border-line bg-surface p-2 shadow-float">
+        <div class="flex items-center gap-3 px-3 py-3">
+          <span class="flex size-11 shrink-0 items-center justify-center rounded-full bg-tint text-sm font-semibold text-action" aria-hidden="true">{{ initials() }}</span>
+          <div class="min-w-0">
+            <p class="truncate text-sm font-semibold text-ink" data-testid="profile-name">{{ displayName() }}</p>
+            <p class="truncate text-xs text-ink-muted" data-testid="profile-email" [title]="person.email">{{ person.email }}</p>
+          </div>
+        </div>
+
+        <div class="my-1 h-px bg-line" role="separator"></div>
+
+        <a role="menuitem" routerLink="/ajustes" (click)="close()" data-testid="profile-settings"
+          class="flex items-center gap-3 rounded-control px-3 py-2.5 text-sm font-medium text-ink transition-colors hover:bg-tint active:bg-tint-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-action/40">
+          <span class="material-symbols-rounded text-[20px] text-ink-muted" aria-hidden="true">settings</span>{{ 'SHELL.HEADER.SETTINGS' | translate }}
+        </a>
+
+        <div class="flex items-center justify-between gap-3 rounded-control px-3 py-2.5">
+          <span class="flex items-center gap-3 text-sm font-medium text-ink">
+            <span class="material-symbols-rounded text-[20px] text-ink-muted" aria-hidden="true">translate</span>{{ 'SHELL.PROFILE.LANGUAGE' | translate }}
+          </span>
+          <div class="inline-flex rounded-control bg-tint p-0.5" role="group" [attr.aria-label]="'SHELL.PROFILE.LANGUAGE' | translate">
+            @for (option of languages; track option.value) {
+              <button type="button" (click)="setLanguage(option.value)" [attr.aria-pressed]="language.current() === option.value" [attr.data-testid]="'profile-lang-' + option.value"
+                class="rounded-control px-2.5 py-1 text-xs font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-action/40"
+                [class]="language.current() === option.value ? 'bg-surface text-action shadow-soft' : 'text-ink-muted hover:text-ink'">{{ option.label }}</button>
+            }
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between gap-3 rounded-control px-3 py-2.5">
+          <span id="profile-dark-label" class="flex items-center gap-3 text-sm font-medium text-ink">
+            <span class="material-symbols-rounded text-[20px] text-ink-muted" aria-hidden="true">{{ isDark() ? 'dark_mode' : 'light_mode' }}</span>{{ 'SHELL.PROFILE.DARK_MODE' | translate }}
+          </span>
+          <button type="button" role="switch" [attr.aria-checked]="isDark()" aria-labelledby="profile-dark-label" (click)="toggleDark()" data-testid="profile-dark"
+            class="relative h-6 w-11 shrink-0 rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-action/40"
+            [class]="isDark() ? 'bg-action' : 'bg-line-control'">
+            <span class="absolute left-0.5 top-0.5 size-5 rounded-full bg-surface shadow-soft transition-transform duration-200 motion-reduce:transition-none" [class.translate-x-5]="isDark()"></span>
+          </button>
+        </div>
+
+        <div class="my-1 h-px bg-line" role="separator"></div>
+
+        <button type="button" role="menuitem" (click)="logout()" data-testid="profile-logout"
+          class="flex w-full items-center gap-3 rounded-control px-3 py-2.5 text-sm font-medium text-bad-ink transition-colors hover:bg-tint active:bg-tint-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-action/40">
+          <span class="material-symbols-rounded text-[20px]" aria-hidden="true">logout</span>{{ 'SHELL.HEADER.LOGOUT' | translate }}
+        </button>
+      </div>
+    }
+  </div>
+}

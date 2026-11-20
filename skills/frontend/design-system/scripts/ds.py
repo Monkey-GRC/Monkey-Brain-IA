@@ -68,19 +68,24 @@ RULES = [
     ('uppercase in a label', r'(?<![\w-])(?:[a-z-]+:)*uppercase(?![\w-])', ('.ts', '.html'), 'sentence case (code inputs that normalise what is typed are excluded)', 'fail'),
     ('font-bold (700)', r'(?<![\w-])(?:[a-z-]+:)*font-bold\b', ('.ts', '.html'), 'font-semibold (700 only in the main figure of a card)', 'warn'),
     ('arbitrary text-[Npx]', r'text-\[\d+(?:\.\d+)?(?:px|rem)\]', ('.ts', '.html'), 'the type scale (text-xs/sm/base, text-kpi); icon sizes are excluded', 'warn'),
-    ('h1 text-3xl / bold', r'<h1\b[^>]*(?:text-3xl|font-bold)', ('.ts', '.html'), 'one title step (Q1 of MD-483)', 'warn'),
+    ('h1 text-3xl / bold', r'<h1\b[^>]*(?:text-3xl|font-bold)', ('.ts', '.html'), 'one title step: text-2xl, the one of page-header (MD-485, 6.1 A)', 'fail'),
     ('big figure without tabular-nums', r'^(?!.*tabular-nums)(?!.*<h[1-6]\b)(?!.*mk-input).*\btext-(?:3xl|4xl|kpi)\b', ('.ts', '.html'), 'tabular-nums', 'warn'),
-    ('transition-all', r'\btransition-all\b', ('.ts', '.html'), 'transition-colors / transition-opacity / transform', 'warn'),
-    ('ease-in-out / linear / in', r'(?<![\w-])(?:[a-z-]+:)*ease-(?:in-out|linear|in)\b|\[[^\]]*ease-in-out', ('.ts', '.html'), 'the single curve of the system', 'warn'),
-    ('h-screen / 100vh', r'\b(?:min-)?h-screen\b|100vh', ('.ts', '.html'), 'min-h-dvh / h-dvh', 'warn'),
-    ('arbitrary z-[N]', r'(?<![\w-])(?:[a-z-]+:)*-?z-\[', ('.ts', '.html'), 'the --z-* scale of the theme', 'warn'),
+    # MD-485 (points 4 and 5): motion, full-height, z-index, modals and fake links are done; they FAIL from now on.
+    ('transition-all', r'\btransition-all\b', ('.ts', '.html'), 'transition-colors / transition-opacity / transform (app-progress-line for a bar)', 'fail'),
+    ('ease-in-out / linear / in', r'(?<![\w-])(?:[a-z-]+:)*ease-(?:in-out|linear|in)\b|\[[^\]]*ease-in-out', ('.ts', '.html'), 'the single curve of the system', 'fail'),
+    ('h-screen / 100vh', r'\b(?:min-)?h-screen\b|100vh', ('.ts', '.html'), 'min-h-dvh / h-dvh', 'fail'),
+    ('arbitrary z-[N]', r'(?<![\w-])(?:[a-z-]+:)*-?z-\[', ('.ts', '.html'), 'the --z-* scale of the theme', 'fail'),
     ('rounded-md/lg/xl', r'\brounded-(?:sm|md|lg|xl|2xl|3xl)\b', ('.ts', '.html'), 'rounded-control / card / panel / badge', 'warn'),
-    ('app-modal in a view', r'<app-modal\b', ('.html',), 'app-form-modal / side-drawer', 'warn'),
-    ('javascript:void / href="#"', r'href="(?:javascript:void\(0\)|#)"', ('.ts', '.html'), 'a real link, or aria-disabled', 'warn'),
+    ('app-modal in a view', r'<app-modal\b', ('.html',), 'app-form-modal / side-drawer', 'fail'),
+    ('javascript:void / href="#"', r'href="(?:javascript:void\(0\)|#)"', ('.ts', '.html'), 'a real link, or aria-disabled', 'fail'),
+    ('icon size off the scale', r'material-symbols[^>]*\btext-\[(?!(?:16|20|24|28|32|44)px\])\d+(?:\.\d+)?px\]', ('.ts', '.html'), '16 / 20 / 24 px (28 metric, 32 empty state, 44 final screen)', 'fail'),
     ('static style=""', r'(?<![\[\w.-])style="', ('.ts', '.html'), 'classes', 'warn'),
 ]
 # Files where a rule is allowed on purpose (documented exceptions).
 RULE_ALLOW = {'dark: with colour in a view': ('device-icon.ts',), 'uppercase in a label': ('password-rules.ts',)}
+# Rules that a canonical base component (a file that also exists in the canonical copy, e.g. notice-dialog, second-factor-dialog) may break on purpose: they are the
+# building blocks a view uses instead (`app-form-modal`, `app-side-drawer` and these dialogs are built on `app-modal`). Platform- or Admin-only components still count.
+RULE_CANON_OK = {'app-modal in a view'}
 # A text input that normalises what is typed may keep `uppercase`.
 RULE_LINE_SKIP = {'uppercase in a label': re.compile(r'<input|mk-input|<code\b')}
 ICON_LINE = re.compile(r'material-symbols')
@@ -299,6 +304,11 @@ def _rule_files(root):
     return out
 
 
+def _is_canonical(rel):
+    """`rel` is 'src/app/...': True when the same file lives in the canonical copy (a synced base component)."""
+    return rel.startswith('src/') and os.path.isfile(os.path.join(CANON, rel[len('src/'):]))
+
+
 def scan_rules(root):
     """-> {rule name: [(file, line_no, line)]} for RULES (+ `font-mono` without `--font-mono`)."""
     hits = {name: [] for name, *_ in RULES}
@@ -321,6 +331,8 @@ def scan_rules(root):
                 if name in RULE_LINE_SKIP and RULE_LINE_SKIP[name].search(line):
                     continue
                 if name == 'arbitrary text-[Npx]' and ICON_LINE.search(line):
+                    continue
+                if name in RULE_CANON_OK and _is_canonical(rel):
                     continue
                 if re.search(rx, line):
                     hits[name].append((rel, n, line.strip()))
@@ -456,7 +468,7 @@ def pair_report(css=None):
             for bg in ('surface', 'tint'):
                 add(None, 'data-%d' % n, bg, 4.5)
         for st in ('ok', 'bad', 'warn', 'neutral'):
-            add(None, st, 'surface', 3.0, 'fail' if mode == 'dark' else 'warn')
+            add(None, st, 'surface', 3.0)  # MD-485 (6.14): warn and neutral pass 3:1 in light too; it fails now
         for bg in ('surface', 'canvas', 'tint'):
             add(None, 'line-control', bg, 3.0)
         # Icon of a metric card on its circle (D127): a graphic object, not text -> 3:1 (WCAG 1.4.11).
@@ -464,6 +476,12 @@ def pair_report(css=None):
             m = re.fullmatch(r'metric-(.+)-bg', name)
             if m and get('badge-%s-ink' % m.group(1)):
                 add(None, 'badge-%s-ink' % m.group(1), name, 3.0)
+        # Toast (MD-485): the icon (a graphic, 3:1) and the title and message (text, 4.5:1) on the strongest point of the wash, its left edge.
+        for wash, icon in (('ok', 'ok-ink'), ('warn', 'warn-ink'), ('bad', 'bad-ink'), ('info', 'action')):
+            if get('toast-%s-wash' % wash):
+                add(None, icon, 'toast-%s-wash' % wash, 3.0)
+                add(None, 'ink', 'toast-%s-wash' % wash, 4.5)
+                add(None, 'ink-muted', 'toast-%s-wash' % wash, 4.5)
         surface = get('surface')
         for st, pct in (('ok', 8), ('warn', 10), ('bad', 8), ('neutral', 10)):
             base = get(st)

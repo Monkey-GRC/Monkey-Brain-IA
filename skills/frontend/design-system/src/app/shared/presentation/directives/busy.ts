@@ -91,7 +91,7 @@ export class Busy implements OnDestroy {
 
   private addSpinner(): void {
     const spinner = this.renderer.createElement('span') as HTMLElement;
-    spinner.className = 'material-symbols-rounded motion-safe:animate-spin text-[18px] leading-none';
+    spinner.className = 'material-symbols-rounded motion-safe:animate-spin text-[20px] leading-none';
     spinner.setAttribute('aria-hidden', 'true');
     spinner.setAttribute('data-busy-spinner', '');
     spinner.textContent = 'progress_activity';

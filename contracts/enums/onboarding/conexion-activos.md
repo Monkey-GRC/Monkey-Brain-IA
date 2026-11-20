@@ -101,7 +101,7 @@ Nulo hasta que se elige. Qué canales existen por categoría: `contracts/onboard
 |---|---|
 | `readonly_role` | Rol de solo lectura (recomendado en nube) |
 | `access_keys` | Usuario con llaves (menos seguro) |
-| `agent` | Agente instalado |
+| `agent` | Sonda instalada |
 | `identity_federation` | Federación de identidad, sin claves (GCP, D112) |
 
 ## `resource_kind`

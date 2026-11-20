@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { provideTranslateService } from '@ngx-translate/core';
-import { ToastContainer } from './toast-container';
+import { shellPlace, ToastContainer } from './toast-container';
 import { TOAST_DURATION_MS, ToastService } from './toast.service';
 
 describe('ToastContainer', () => {
@@ -28,24 +28,34 @@ describe('ToastContainer', () => {
     service.showWarning('<b>Aviso</b>', '<img src=x onerror=alert(1)>');
     fixture.detectChanges();
     expect(all().length).toBe(1);
-    expect(el.querySelector('[data-testid="toast-title"]')!.textContent).toBe('<b>Aviso</b>');
+    expect(el.querySelector('[data-testid="toast-title"]')!.textContent).toContain('<b>Aviso</b>');
     expect(el.querySelector('[data-testid="toast-message"]')!.textContent).toBe('<img src=x onerror=alert(1)>');
     expect(el.querySelector('img')).toBeNull();
     expect(el.querySelector('b')).toBeNull();
   });
 
-  it('marks the tone, with the status dot, and gives only an error role="alert"', () => {
+  it('marks the tone with its icon and wash, says the status word to a screen reader, and gives only an error role="alert"', () => {
     const { fixture, service, all } = setup();
     service.showSuccess('ok');
     service.showError('fail');
+    service.showInfo('info');
+    service.showWarning('warn');
     fixture.detectChanges();
-    const [ok, fail] = all();
+    const [ok, fail, info, warn] = all();
+    const icon = (el: HTMLElement) => el.querySelector('[data-testid="toast-icon"]')!;
     expect(ok.getAttribute('data-tone')).toBe('success');
     expect(ok.getAttribute('role')).toBeNull();
-    expect(ok.querySelector('app-status-indicator')!.getAttribute('data-tone')).toBe('ok');
-    expect(fail.getAttribute('data-tone')).toBe('error');
+    expect(ok.classList).toContain('mk-toast-success');
+    expect(icon(ok).textContent!.trim()).toBe('check_circle');
+    expect(icon(ok).getAttribute('aria-hidden')).toBe('true');
+    expect(ok.querySelector('[data-testid="toast-tone"]')!.classList).toContain('sr-only');
+    expect(ok.querySelector('[data-testid="toast-tone"]')!.textContent).toContain('COMMON.TOAST.SUCCESS');
     expect(fail.getAttribute('role')).toBe('alert');
-    expect(fail.querySelector('app-status-indicator')!.getAttribute('data-tone')).toBe('bad');
+    expect(fail.classList).toContain('mk-toast-error');
+    expect(icon(fail).textContent!.trim()).toBe('error');
+    expect(icon(info).textContent!.trim()).toBe('info');
+    expect(icon(warn).textContent!.trim()).toBe('warning');
+    expect(ok.querySelector('app-status-indicator')).toBeNull();
   });
 
   it('omits the message line when there is no message', () => {
@@ -65,7 +75,7 @@ describe('ToastContainer', () => {
     button.click();
     fixture.detectChanges();
     expect(all().length).toBe(1);
-    expect(all()[0].querySelector('[data-testid="toast-title"]')!.textContent).toBe('b');
+    expect(all()[0].querySelector('[data-testid="toast-title"]')!.textContent).toMatch(/: b$/);
   });
 
   it('pauses the auto-close with hover and with focus, and resumes on leaving', () => {
@@ -95,5 +105,24 @@ describe('ToastContainer', () => {
     expect(document.activeElement).toBe(before);
     expect(el.querySelectorAll('[tabindex]').length).toBe(0);
     expect(all()[0].querySelectorAll('button').length).toBe(1);
+  });
+
+  it('sits under the shell header, at the layout gap and aligned with its right edge; without a header it keeps its own margin', () => {
+    expect(shellPlace()).toBeNull();
+    const header = document.createElement('header');
+    header.setAttribute('data-app-header', '');
+    header.style.cssText = 'position:fixed;top:12px;left:0;width:calc(100% - 12px);height:82px';
+    document.body.appendChild(header);
+    try {
+      const place = shellPlace()!;
+      expect(place.top).toBe(12 + 82 + 12);
+      expect(place.right).toBe(12);
+      const { fixture, el, service } = setup();
+      service.showInfo('x');
+      fixture.detectChanges();
+      expect((el.querySelector('[data-testid="toast-region"]') as HTMLElement).style.top).toBe('106px');
+    } finally {
+      header.remove();
+    }
   });
 });

@@ -1,5 +1,5 @@
-<!-- Por encima del panel lateral (z-100001): se abre desde un panel y, si quedara debajo, el botón de confirmar no se vería. -->
-<div class="fixed inset-0 z-[100002] flex items-center justify-center bg-scrim p-4" role="presentation" (click)="$event.target === $event.currentTarget && cancel()">
+<!-- Por encima del panel lateral (`--z-dialog` sobre `--z-drawer`): se abre desde un panel y, si quedara debajo, el botón de confirmar no se vería. -->
+<div class="mk-backdrop-in fixed inset-0 z-(--z-dialog) flex items-center justify-center bg-scrim p-4" role="presentation" (click)="$event.target === $event.currentTarget && cancel()">
   <div
     cdkTrapFocus
     [cdkTrapFocusAutoCapture]="true"
@@ -18,6 +18,7 @@
       <button
         type="button"
         cdkFocusInitial
+        data-cancel
         (click)="cancel()"
         [disabled]="busy()"
         class="mk-btn-secondary"
@@ -26,6 +27,7 @@
       </button>
       <button
         type="button"
+        data-confirm
         (click)="confirm()"
         [appBusy]="busy()"
         [class]="tone() === 'danger' ? 'mk-btn-danger' : tone() === 'neutral' ? 'mk-btn-secondary' : 'mk-btn'"

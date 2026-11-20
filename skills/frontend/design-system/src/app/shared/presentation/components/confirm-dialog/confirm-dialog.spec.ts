@@ -111,9 +111,14 @@ describe('ConfirmDialog', () => {
     panel.componentRef.setInput('open', true);
     panel.componentRef.setInput('titleKey', 'TEST.PANEL');
     panel.detectChanges();
-    const topLayer = (root: HTMLElement) =>
-      Math.max(...Array.from(root.querySelectorAll('[class*="z-["]')).map((e) => Number(/z-\[(\d+)\]/.exec(e.className)![1])));
-    expect(topLayer(el())).toBeGreaterThan(topLayer(panel.nativeElement));
+    // Each layer asks for its name in the stacking scale of the theme (`z-(--z-dialog)`, `z-(--z-drawer)`), and the scale puts the dialog above the drawer.
+    const layer = (root: HTMLElement) => /z-\(--(z-[a-z-]+)\)/.exec(root.querySelector<HTMLElement>('[class*="z-(--z-"]')?.className ?? '')?.[1];
+    expect(layer(el())).toBe('z-dialog');
+    expect(layer(panel.nativeElement)).toBe('z-drawer-scrim');
+    const scale = getComputedStyle(document.documentElement);
+    const value = (name: string) => Number(scale.getPropertyValue('--' + name).trim());
+    expect(value('z-dialog')).toBeGreaterThan(value('z-drawer'));
+    expect(value('z-drawer')).toBeGreaterThan(value('z-drawer-scrim') - 1);
   });
 
   it('paints the confirm button red for a dangerous action', () => {

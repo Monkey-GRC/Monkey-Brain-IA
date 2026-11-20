@@ -75,13 +75,73 @@ describe('SideDrawer', () => {
     expect(host.closed).toBe(0);
   });
 
-  it('guarded blocks Esc and the backdrop but not the close button', () => {
-    host.guarded = true;
+  describe('guarded (MD-485): with data written it asks before discarding, never in silence', () => {
+    const confirm = () => document.querySelector<HTMLElement>('[role="alertdialog"]');
+    const escape = () => document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', cancelable: true }));
+    const ways: [string, () => void][] = [
+      ['Esc', escape],
+      ['the backdrop', () => (el().querySelector('[data-testid="drawer-backdrop"]') as HTMLElement).click()],
+      ['the close button', () => (el().querySelector('[data-drawer-close]') as HTMLElement).click()],
+    ];
+
+    beforeEach(() => {
+      host.guarded = true;
+      fixture.detectChanges();
+    });
+
+    for (const [name, close] of ways) {
+      it(`asks before closing on ${name}; «Seguir editando» keeps it open and «Descartar cambios» closes`, () => {
+        close();
+        fixture.detectChanges();
+        expect(host.closed).toBe(0);
+        expect(confirm()).not.toBeNull();
+        expect(confirm()!.textContent).toContain('COMMON.DISCARD.TITLE');
+        confirm()!.querySelector<HTMLButtonElement>('[data-cancel]')!.click();
+        fixture.detectChanges();
+        expect(confirm()).toBeNull();
+        expect(host.closed).toBe(0);
+        expect(el().querySelector('#body')).not.toBeNull();
+        close();
+        fixture.detectChanges();
+        confirm()!.querySelector<HTMLButtonElement>('[data-confirm]')!.click();
+        fixture.detectChanges();
+        expect(host.closed).toBe(1);
+      });
+    }
+
+    it('Esc on the confirmation only answers it (keep editing); the drawer stays open', () => {
+      escape();
+      fixture.detectChanges();
+      expect(confirm()).not.toBeNull();
+      escape();
+      fixture.detectChanges();
+      expect(confirm()).toBeNull();
+      expect(host.closed).toBe(0);
+      expect(el().querySelector('[role="dialog"]')).not.toBeNull();
+    });
+
+    it('starts the confirmation on «Seguir editando», the safe choice', () => {
+      escape();
+      fixture.detectChanges();
+      expect(confirm()!.querySelector('[data-cancel]')!.hasAttribute('cdkFocusInitial')).toBeTrue();
+      expect(confirm()!.querySelector('[data-cancel]')!.textContent).toContain('COMMON.DISCARD.KEEP');
+      expect(confirm()!.querySelector('[data-confirm]')!.textContent).toContain('COMMON.DISCARD.CONFIRM');
+    });
+
+    it('does nothing at all while it is not dismissible (sending)', () => {
+      host.dismissible = false;
+      fixture.detectChanges();
+      for (const [, close] of ways) close();
+      fixture.detectChanges();
+      expect(confirm()).toBeNull();
+      expect(host.closed).toBe(0);
+    });
+  });
+
+  it('without data (not guarded) every way out closes at once, without asking', () => {
+    (el().querySelector('[data-drawer-close]') as HTMLElement).click();
     fixture.detectChanges();
-    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
-    (el().querySelector('[data-testid="drawer-backdrop"]') as HTMLElement).click();
-    expect(host.closed).toBe(0);
-    (el().querySelector('button[aria-label="COMMON.CLOSE"]') as HTMLElement).click();
+    expect(document.querySelector('[role="alertdialog"]')).toBeNull();
     expect(host.closed).toBe(1);
   });
 
