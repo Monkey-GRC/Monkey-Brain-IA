@@ -13,24 +13,22 @@ requisitos en [`seguridad/aislamiento-tenant.md`](../../seguridad/aislamiento-te
 ⚪ por construir. El estado sale de la columna de estado de cada `SEG-n` y se comprobó en `Backend/` (migraciones,
 `PrismaService.withScope` y las suites de `test/aislamiento/`).
 
-**Jira:** épica [MD-321](https://rod2408.atlassian.net/browse/MD-321), una historia por fila. El cerebro manda: si una historia cambia, se actualiza aquí y después su issue.
-
 ## Resumen
 
-| ID | Historia | Rol | Estado | Reglas | Jira |
-|---|---|---|---|---|---|
-| HU-TEN-01 | Que mi empresa nunca vea, cambie ni borre datos de otra | Persona | ✅ | SEG-01, D25 | MD-430 |
-| HU-TEN-02 | Un recurso de otra empresa no existe para mí (404, no 403) | Persona | ✅ | `conventions.md` (`NOT_FOUND`) | MD-431 |
-| HU-TEN-03 | Sin empresa declarada no se ve nada (falla cerrado) | Sistema | ✅ | SEG-02 | MD-432 |
-| HU-TEN-04 | La empresa declarada no pasa a la petición siguiente | Sistema | ✅ | SEG-03 | MD-433 |
-| HU-TEN-05 | La aplicación no puede saltarse el aislamiento | Sistema · `auditor` | ✅ | SEG-04 | MD-434 |
-| HU-TEN-06 | Toda tabla nueva de datos de cliente nace aislada | Sistema (CI) | 🟡 | SEG-05 | MD-435 |
-| HU-TEN-07 | El catálogo maestro se lee libre y solo lo escribe Monkey | `admin_monkey` · Persona | ✅ | SEG-06, D31 | MD-436 |
-| HU-TEN-08 | Monkey Admin ve todas las empresas; una empresa, solo la suya | `admin_monkey` · Persona | ✅ | D31 | MD-437 |
-| HU-TEN-09 | El rastro de mi empresa no se lee ni se escribe desde otra | Persona · `auditor` | ✅ | SEG-34, D31 | MD-438 |
-| HU-TEN-10 | No poder enlazar mis datos a un registro de otra empresa | Persona | 🟡 | SEG-07 | MD-439 |
-| HU-TEN-11 | Identificar a la persona antes de saber su empresa, sin abrir la base | Sistema | 🟡 | SEG-08, D29 | MD-440 |
-| HU-TEN-12 | Dar a un cliente que lo exige una base de datos propia | `admin_monkey` | ⚪ | SEG-09, D25, DT-22, P2(d) | MD-441 |
+| ID | Historia | Rol | Estado | Reglas |
+|---|---|---|---|---|
+| HU-TEN-01 | Que mi empresa nunca vea, cambie ni borre datos de otra | Persona | ✅ | SEG-01, D25 |
+| HU-TEN-02 | Un recurso de otra empresa no existe para mí (404, no 403) | Persona | ✅ | `conventions.md` (`NOT_FOUND`) |
+| HU-TEN-03 | Sin empresa declarada no se ve nada (falla cerrado) | Sistema | ✅ | SEG-02 |
+| HU-TEN-04 | La empresa declarada no pasa a la petición siguiente | Sistema | ✅ | SEG-03 |
+| HU-TEN-05 | La aplicación no puede saltarse el aislamiento | Sistema · `auditor` | ✅ | SEG-04 |
+| HU-TEN-06 | Toda tabla nueva de datos de cliente nace aislada | Sistema (CI) | 🟡 | SEG-05 |
+| HU-TEN-07 | El catálogo maestro se lee libre y solo lo escribe Monkey | `admin_monkey` · Persona | ✅ | SEG-06, D31 |
+| HU-TEN-08 | Monkey Admin ve todas las empresas; una empresa, solo la suya | `admin_monkey` · Persona | ✅ | D31 |
+| HU-TEN-09 | El rastro de mi empresa no se lee ni se escribe desde otra | Persona · `auditor` | ✅ | SEG-34, D31 |
+| HU-TEN-10 | No poder enlazar mis datos a un registro de otra empresa | Persona | 🟡 | SEG-07 |
+| HU-TEN-11 | Identificar a la persona antes de saber su empresa, sin abrir la base | Sistema | 🟡 | SEG-08, D29 |
+| HU-TEN-12 | Dar a un cliente que lo exige una base de datos propia | `admin_monkey` | ⚪ | SEG-09, D25, DT-22, P2(d) |
 
 ---
 

@@ -7,8 +7,6 @@ historia dice quién, qué y para qué; sus criterios citan la regla que los fij
 el servidor, en [`infraestructura/`](infraestructura/README.md); los pasos de cada caso, en
 [`05-casos-de-uso.md`](05-casos-de-uso.md).
 
-**Jira:** épica [MD-322](https://rod2408.atlassian.net/browse/MD-322), una historia por fila. El cerebro manda: si una historia cambia, se actualiza aquí y después su issue.
-
 **Actores.** Plataforma no tiene pantallas: sus historias son de **operación**. «Equipo de Monkey» = quien desarrolla y
 opera el producto (los frontends consumen estas reglas); «Sistema» = el Backend o un proceso programado. `admin_monkey`
 (D96) solo aparece cuando usa Monkey Admin. **Estado:** ✅ construida · 🟡 parcial · ⚪ por construir. Solo hay historias
@@ -17,25 +15,25 @@ no son historias hasta que se decidan.
 
 ## Resumen
 
-| ID | Historia | Rol | Estado | Reglas | Jira |
-|---|---|---|---|---|---|
-| HU-PLT-01 | Recibir toda respuesta con el mismo sobre | Equipo de Monkey | ✅ | `conventions.md` | MD-442 |
-| HU-PLT-02 | Recibir cada error con un código estable y los campos señalados | Equipo de Monkey | ✅ | `conventions.md`, `VALIDATION_FAILED` | MD-443 |
-| HU-PLT-03 | Que el mensaje llegue en el idioma de la persona | Equipo de Monkey | ✅ | D111, `conventions.md` | MD-444 |
-| HU-PLT-04 | Paginar igual toda colección que crece | Equipo de Monkey | ✅ | `conventions.md` | MD-445 |
-| HU-PLT-05 | Frenar el abuso por usuario y por empresa | Sistema | 🟡 | SEG-19, DT-37, D124 | MD-446 |
-| HU-PLT-06 | Frenar por dirección las rutas públicas | Sistema | ⚪ | D124, DT-37 | MD-447 |
-| HU-PLT-07 | Esperar una conexión libre en vez de fallar | Sistema | ✅ | D49 | MD-448 |
-| HU-PLT-08 | Enviar correos con la marca y un servicio intercambiable | Sistema | ✅ | D99, D111, SEG-71 | MD-449 |
-| HU-PLT-09 | Guardar y entregar archivos sin hacerlos públicos | Sistema | ✅ | SEG-44, SEG-59 | MD-450 |
-| HU-PLT-10 | Aceptar un archivo solo si su contenido es lo que dice | Sistema | ✅ | SEG-43, SEG-60 | MD-451 |
-| HU-PLT-11 | Guardar cifradas las credenciales del cliente | Sistema | ✅ | SEG-24, D46 | MD-452 |
-| HU-PLT-12 | Rotar la llave de cifrado con un procedimiento | Equipo de Monkey | ⚪ | SEG-25, DT-5 | MD-453 |
-| HU-PLT-13 | Ver la documentación de la API solo en local | Equipo de Monkey | ✅ | SEG-62 | MD-454 |
-| HU-PLT-14 | Verificar cada cambio antes de fusionarlo | Equipo de Monkey | 🟡 | SEG-40, SEG-41, DT-46 | MD-455 |
-| HU-PLT-15 | Desplegar al fusionar, con el entorno comprobado y la base respaldada | Equipo de Monkey | ✅ | SEG-42 | MD-456 |
-| HU-PLT-16 | Respaldar la base cada noche y poder recuperarla | Equipo de Monkey | 🟡 | DT-84, SEG-35 | MD-457 |
-| HU-PLT-17 | Mantener al día la base de ubicación | Sistema | ✅ | D123 | MD-458 |
+| ID | Historia | Rol | Estado | Reglas |
+|---|---|---|---|---|
+| HU-PLT-01 | Recibir toda respuesta con el mismo sobre | Equipo de Monkey | ✅ | `conventions.md` |
+| HU-PLT-02 | Recibir cada error con un código estable y los campos señalados | Equipo de Monkey | ✅ | `conventions.md`, `VALIDATION_FAILED` |
+| HU-PLT-03 | Que el mensaje llegue en el idioma de la persona | Equipo de Monkey | ✅ | D111, `conventions.md` |
+| HU-PLT-04 | Paginar igual toda colección que crece | Equipo de Monkey | ✅ | `conventions.md` |
+| HU-PLT-05 | Frenar el abuso por usuario y por empresa | Sistema | 🟡 | SEG-19, DT-37, D124 |
+| HU-PLT-06 | Frenar por dirección las rutas públicas | Sistema | ⚪ | D124, DT-37 |
+| HU-PLT-07 | Esperar una conexión libre en vez de fallar | Sistema | ✅ | D49 |
+| HU-PLT-08 | Enviar correos con la marca y un servicio intercambiable | Sistema | ✅ | D99, D111, SEG-71 |
+| HU-PLT-09 | Guardar y entregar archivos sin hacerlos públicos | Sistema | ✅ | SEG-44, SEG-59 |
+| HU-PLT-10 | Aceptar un archivo solo si su contenido es lo que dice | Sistema | ✅ | SEG-43, SEG-60 |
+| HU-PLT-11 | Guardar cifradas las credenciales del cliente | Sistema | ✅ | SEG-24, D46 |
+| HU-PLT-12 | Rotar la llave de cifrado con un procedimiento | Equipo de Monkey | ⚪ | SEG-25, DT-5 |
+| HU-PLT-13 | Ver la documentación de la API solo en local | Equipo de Monkey | ✅ | SEG-62 |
+| HU-PLT-14 | Verificar cada cambio antes de fusionarlo | Equipo de Monkey | 🟡 | SEG-40, SEG-41, DT-46 |
+| HU-PLT-15 | Desplegar al fusionar, con el entorno comprobado y la base respaldada | Equipo de Monkey | ✅ | SEG-42 |
+| HU-PLT-16 | Respaldar la base cada noche y poder recuperarla | Equipo de Monkey | 🟡 | DT-84, SEG-35 |
+| HU-PLT-17 | Mantener al día la base de ubicación | Sistema | ✅ | D123 |
 
 ---
 

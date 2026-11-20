@@ -8,8 +8,6 @@ que los fija. El detalle técnico (cuerpos, errores) está en el
 de cada caso, en [`05-casos-de-uso.md`](05-casos-de-uso.md). Conectar un activo por primera vez no es de este módulo:
 es el componente [Conexión de activos](../onboarding/conexion-activos/README.md) del onboarding.
 
-**Jira:** épica [MD-318](https://rod2408.atlassian.net/browse/MD-318), una historia por fila. El cerebro manda: si una historia cambia, se actualiza aquí y después su issue.
-
 **Roles** (D96): `admin_empresa` opera la medición (evaluar, programar, instalar la sonda); `auditor` y `admin_empresa`
 piden la vista técnica (D81); `responsable` y `delegado` solo ven lo que falló en los controles que tienen a su cargo
 (D102, SEG-66). El trabajador, la tarea programada, la sonda y el motor de nube son piezas del sistema: aparecen como
@@ -19,27 +17,27 @@ construir.
 
 ## Resumen
 
-| ID | Historia | Rol | Estado | Reglas | Jira |
-|---|---|---|---|---|---|
-| HU-CT-01 | Evaluar ahora una cuenta de nube | `admin_empresa` | ✅ | D57, D58, `EXECUTION_IN_PROGRESS`, `ASSET_NOT_VALIDATED` | MD-370 |
-| HU-CT-02 | Seguir una evaluación y consultar el historial | `admin_empresa` | 🟡 | D57, D58 | MD-371 |
-| HU-CT-03 | Distinguir «falló la conexión» de «el control falla» | `admin_empresa` | ✅ | D57, §8 | MD-372 |
-| HU-CT-04 | Que la nube se evalúe sola con la frecuencia elegida | `admin_empresa` | 🟡 | D57 | MD-373 |
-| HU-CT-05 | Ver la preparación de un activo | `admin_empresa` | 🟡 | D61, D62, D68, D80, DT-64, DT-66 | MD-374 |
-| HU-CT-06 | Ver qué falló y cómo corregirlo en una prueba automática | `admin_empresa` · `auditor` · `responsable` · `delegado` | ✅ | D90, D113 punto 14, D70, SEG-66, DT-78 | MD-375 |
-| HU-CT-07 | Leer cada hallazgo en la plantilla de siete campos | `admin_empresa` | ⚪ | P14 E2 | MD-376 |
-| HU-CT-08 | Consultar la vista técnica por comprobación y recurso | `admin_empresa` · `auditor` | ⚪ | D81, D56, P14 E2 | MD-377 |
-| HU-CT-09 | Instalar la sonda en un servidor con un comando de un solo uso | `admin_empresa` | 🟡 | D113 punto 4, D54, `AGENT_INSTALL_NOT_READY` | MD-378 |
-| HU-CT-10 | Generar de nuevo el comando si se perdió | `admin_empresa` | ✅ | D113 punto 4 | MD-379 |
-| HU-CT-11 | Que el servidor pase solo a «Conectado» y se relea | `admin_empresa` | ✅ | D113 punto 13 | MD-380 |
-| HU-CT-12 | Comprobar ahora un servidor | `admin_empresa` | ✅ | D113 punto 13, `ASSET_NOT_VALIDATED` | MD-381 |
-| HU-CT-13 | Que los resultados de un servidor solo lleguen a su empresa | `admin_empresa` | ✅ | D113 punto 3, D54, SEG-45 | MD-382 |
-| HU-CT-14 | Que la medición mueva el estado de mis controles | `admin_empresa` | 🟡 | D56, D68, D113 punto 2, DT-50, P15 | MD-383 |
-| HU-CT-15 | Que Monkey lea mi nube sin escribir en ella ni guardar secretos de más | `admin_empresa` | 🟡 | D57, D58, D112, SEG-26, SEG-46, SEG-47, SEG-48, SEG-78 | MD-384 |
-| HU-CT-16 | No ver nunca el nombre del proveedor de un motor | Persona de la empresa | 🟡 | D70, D100, SEG-39 | MD-385 |
-| HU-CT-17 | Que solo se ofrezca medir lo que tiene prueba | `admin_empresa` | ✅ | D71 punto 3, D113 punto 7 | MD-386 |
-| HU-CT-18 | Que al dar de baja un servidor su agente se retire de la sonda | `admin_empresa` | 🟡 | D113 punto 8, DT-106 | MD-387 |
-| HU-CT-19 | Conservar el historial de mediciones el periodo auditado | `auditor` | ⚪ | D53 punto 5, D113 punto 5, DT-48 | MD-388 |
+| ID | Historia | Rol | Estado | Reglas |
+|---|---|---|---|---|
+| HU-CT-01 | Evaluar ahora una cuenta de nube | `admin_empresa` | ✅ | D57, D58, `EXECUTION_IN_PROGRESS`, `ASSET_NOT_VALIDATED` |
+| HU-CT-02 | Seguir una evaluación y consultar el historial | `admin_empresa` | 🟡 | D57, D58 |
+| HU-CT-03 | Distinguir «falló la conexión» de «el control falla» | `admin_empresa` | ✅ | D57, §8 |
+| HU-CT-04 | Que la nube se evalúe sola con la frecuencia elegida | `admin_empresa` | 🟡 | D57 |
+| HU-CT-05 | Ver la preparación de un activo | `admin_empresa` | 🟡 | D61, D62, D68, D80, DT-64, DT-66 |
+| HU-CT-06 | Ver qué falló y cómo corregirlo en una prueba automática | `admin_empresa` · `auditor` · `responsable` · `delegado` | ✅ | D90, D113 punto 14, D70, SEG-66, DT-78 |
+| HU-CT-07 | Leer cada hallazgo en la plantilla de siete campos | `admin_empresa` | ⚪ | P14 E2 |
+| HU-CT-08 | Consultar la vista técnica por comprobación y recurso | `admin_empresa` · `auditor` | ⚪ | D81, D56, P14 E2 |
+| HU-CT-09 | Instalar la sonda en un servidor con un comando de un solo uso | `admin_empresa` | 🟡 | D113 punto 4, D54, `AGENT_INSTALL_NOT_READY` |
+| HU-CT-10 | Generar de nuevo el comando si se perdió | `admin_empresa` | ✅ | D113 punto 4 |
+| HU-CT-11 | Que el servidor pase solo a «Conectado» y se relea | `admin_empresa` | ✅ | D113 punto 13 |
+| HU-CT-12 | Comprobar ahora un servidor | `admin_empresa` | ✅ | D113 punto 13, `ASSET_NOT_VALIDATED` |
+| HU-CT-13 | Que los resultados de un servidor solo lleguen a su empresa | `admin_empresa` | ✅ | D113 punto 3, D54, SEG-45 |
+| HU-CT-14 | Que la medición mueva el estado de mis controles | `admin_empresa` | 🟡 | D56, D68, D113 punto 2, DT-50, P15 |
+| HU-CT-15 | Que Monkey lea mi nube sin escribir en ella ni guardar secretos de más | `admin_empresa` | 🟡 | D57, D58, D112, SEG-26, SEG-46, SEG-47, SEG-48, SEG-78 |
+| HU-CT-16 | No ver nunca el nombre del proveedor de un motor | Persona de la empresa | 🟡 | D70, D100, SEG-39 |
+| HU-CT-17 | Que solo se ofrezca medir lo que tiene prueba | `admin_empresa` | ✅ | D71 punto 3, D113 punto 7 |
+| HU-CT-18 | Que al dar de baja un servidor su agente se retire de la sonda | `admin_empresa` | 🟡 | D113 punto 8, DT-106 |
+| HU-CT-19 | Conservar el historial de mediciones el periodo auditado | `auditor` | ⚪ | D53 punto 5, D113 punto 5, DT-48 |
 
 ---
 

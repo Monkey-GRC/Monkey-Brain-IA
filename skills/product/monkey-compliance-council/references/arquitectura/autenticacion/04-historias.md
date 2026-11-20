@@ -5,30 +5,27 @@ tiene?** Cada historia dice quién, qué y para qué; sus criterios de aceptaci�
 fija. El detalle técnico (cuerpos, errores) está en el [contrato](../../../../../../contracts/autenticacion.md); la
 secuencia, en [`03-flujos.md`](03-flujos.md); los pasos de cada caso, en [`05-casos-de-uso.md`](05-casos-de-uso.md).
 
-**Jira:** épica [MD-247](https://rod2408.atlassian.net/browse/MD-247), una historia por fila. El cerebro manda: si una
-historia cambia, se actualiza aquí y después su issue.
-
 **Roles** (D96): `admin_empresa`, `responsable`, `delegado`, `auditor` (Monkey Platform) y `admin_monkey` (Monkey Admin).
 «Persona» = cualquiera de ellos. **Estado** de cada historia: ✅ construida · 🟡 parcial · ⚪ por construir.
 
 ## Resumen
 
-| ID | Historia | Rol | Estado | Reglas | Jira |
-|---|---|---|---|---|---|
-| HU-AUTH-01 | Activar la cuenta de mi empresa con la clave de acceso | `admin_empresa` | ✅ | D43, D51 | MD-248 |
-| HU-AUTH-02 | Activar mi cuenta con el código que me dio mi administrador | `responsable` · `delegado` · `auditor` | ✅ | D95, D96, SEG-64 | MD-249 |
-| HU-AUTH-03 | Configurar el segundo factor la primera vez | Persona | ✅ | D66, D94, SEG-16 | MD-250 |
-| HU-AUTH-04 | Iniciar sesión con contraseña y código | Persona | ✅ | D94, SEG-10, SEG-11 | MD-251 |
-| HU-AUTH-05 | Entrar con un código de recuperación si no tengo el celular | Persona | ✅ | D94 | MD-252 |
-| HU-AUTH-06 | Recordar este dispositivo 30 días | Persona salvo `admin_monkey` | ✅ | D123, SEG-84 | MD-253 |
-| HU-AUTH-07 | Ver y olvidar mis dispositivos recordados | Persona salvo `admin_monkey` | ✅ | D123, SEG-84 | MD-254 |
-| HU-AUTH-08 | Seguir dentro mientras trabajo y salir sola si me voy | Persona | ✅ | §5.3, SEG-12 | MD-255 |
-| HU-AUTH-09 | Cerrar sesión sin dejar rastro en el navegador | Persona | ✅ | D123 | MD-256 |
-| HU-AUTH-10 | Cambiar mi contraseña cuando quiera | Persona | ✅ | D101, SEG-14 | MD-257 |
-| HU-AUTH-11 | Recuperar mi contraseña si la olvidé | Persona | ✅ | D101, SEG-14 | MD-258 |
-| HU-AUTH-12 | Regenerar mis códigos de recuperación | Persona | ✅ | D94 | MD-259 |
-| HU-AUTH-13 | Restablecer el segundo factor de alguien de mi equipo | `admin_empresa` | ✅ | D94 punto 8 | MD-260 |
-| HU-AUTH-14 | Recibir mis correos en mi idioma | Persona | ✅ | D111 | MD-261 |
+| ID | Historia | Rol | Estado | Reglas |
+|---|---|---|---|---|
+| HU-AUTH-01 | Activar la cuenta de mi empresa con la clave de acceso | `admin_empresa` | ✅ | D43, D51 |
+| HU-AUTH-02 | Activar mi cuenta con el código que me dio mi administrador | `responsable` · `delegado` · `auditor` | ✅ | D95, D96, SEG-64 |
+| HU-AUTH-03 | Configurar el segundo factor la primera vez | Persona | ✅ | D66, D94, SEG-16 |
+| HU-AUTH-04 | Iniciar sesión con contraseña y código | Persona | ✅ | D94, SEG-10, SEG-11 |
+| HU-AUTH-05 | Entrar con un código de recuperación si no tengo el celular | Persona | ✅ | D94 |
+| HU-AUTH-06 | Recordar este dispositivo 30 días | Persona salvo `admin_monkey` | ✅ | D123, SEG-84 |
+| HU-AUTH-07 | Ver y olvidar mis dispositivos recordados | Persona salvo `admin_monkey` | ✅ | D123, SEG-84 |
+| HU-AUTH-08 | Seguir dentro mientras trabajo y salir sola si me voy | Persona | ✅ | §5.3, SEG-12 |
+| HU-AUTH-09 | Cerrar sesión sin dejar rastro en el navegador | Persona | ✅ | D123 |
+| HU-AUTH-10 | Cambiar mi contraseña cuando quiera | Persona | ✅ | D101, SEG-14 |
+| HU-AUTH-11 | Recuperar mi contraseña si la olvidé | Persona | ✅ | D101, SEG-14 |
+| HU-AUTH-12 | Regenerar mis códigos de recuperación | Persona | ✅ | D94 |
+| HU-AUTH-13 | Restablecer el segundo factor de alguien de mi equipo | `admin_empresa` | ✅ | D94 punto 8 |
+| HU-AUTH-14 | Recibir mis correos en mi idioma | Persona | ✅ | D111 |
 
 ---
 

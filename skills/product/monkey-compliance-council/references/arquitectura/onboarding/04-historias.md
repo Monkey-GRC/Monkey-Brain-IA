@@ -11,8 +11,6 @@ los contratos de [`contracts/onboarding/`](../../../../../../contracts/onboardin
 [`03-flujos.md`](03-flujos.md) y en el `03-flujos.md` de cada componente; los pasos de cada caso, en
 [`05-casos-de-uso.md`](05-casos-de-uso.md).
 
-**Jira:** épica [MD-317](https://rod2408.atlassian.net/browse/MD-317), una historia por fila. El cerebro manda: si una historia cambia, se actualiza aquí y después su issue.
-
 **Alcance** (D89): en sentido estricto el onboarding es solo el contexto de la empresa (Componente 1); declarar
 servicios y conectar activos se hace cuando el cliente quiera. Este módulo cubre los tres componentes porque comparten
 propósito, actor y orden ([`README.md`](README.md)). La evaluación de riesgos ocurre en la pantalla del servicio pero
@@ -25,52 +23,52 @@ de Platform» = cualquiera de los cuatro. **Estado** de cada historia: ✅ const
 
 ### Componente 1 · Contexto organizacional
 
-| ID | Historia | Rol | Estado | Reglas | Jira |
-|---|---|---|---|---|---|
-| HU-ONB-01 | Declarar el contexto de mi empresa | `admin_empresa` | ✅ | D44, D47, D73 | MD-341 |
-| HU-ONB-02 | Llenar el contexto por partes sin perder lo escrito | `admin_empresa` | ✅ | D44, DT-18 | MD-342 |
-| HU-ONB-03 | Corregir el contexto de mi empresa | `admin_empresa` | ✅ | D44 | MD-343 |
-| HU-ONB-04 | Terminar el onboarding con solo el contexto de la empresa | `admin_empresa` | ✅ | D89 | MD-344 |
-| HU-ONB-05 | Registrar los cargos que responden ante el auditor | `admin_empresa` (Persona de Platform lee) | ✅ | D30, D102 | MD-345 |
+| ID | Historia | Rol | Estado | Reglas |
+|---|---|---|---|---|
+| HU-ONB-01 | Declarar el contexto de mi empresa | `admin_empresa` | ✅ | D44, D47, D73 |
+| HU-ONB-02 | Llenar el contexto por partes sin perder lo escrito | `admin_empresa` | ✅ | D44, DT-18 |
+| HU-ONB-03 | Corregir el contexto de mi empresa | `admin_empresa` | ✅ | D44 |
+| HU-ONB-04 | Terminar el onboarding con solo el contexto de la empresa | `admin_empresa` | ✅ | D89 |
+| HU-ONB-05 | Registrar los cargos que responden ante el auditor | `admin_empresa` (Persona de Platform lee) | ✅ | D30, D102 |
 
 ### Componente 2 · Contexto del servicio
 
-| ID | Historia | Rol | Estado | Reglas | Jira |
-|---|---|---|---|---|---|
-| HU-ONB-06 | Declarar un servicio con un marco contratado | `admin_empresa` | ✅ | D45, D47, D50, D51 | MD-346 |
-| HU-ONB-07 | Que el catálogo del marco quede preparado al crear el servicio | `admin_empresa` | ✅ | D23, D36, D40, D45, DT-14 | MD-347 |
-| HU-ONB-08 | Entregar la descripción del sistema con un enlace o un archivo | `admin_empresa` | ✅ | D51, SEG-43, SEG-59 | MD-348 |
-| HU-ONB-09 | Que la descripción del sistema se lea y llene CSOC y CUEC | `admin_empresa` | ⚪ | D11, DT-12 | MD-349 |
-| HU-ONB-10 | Editar o ampliar un servicio | `admin_empresa` | ✅ | D45 | MD-350 |
-| HU-ONB-11 | Eliminar un servicio sin borrar lo ya evaluado | `admin_empresa` | ✅ | D45 | MD-351 |
-| HU-ONB-12 | Ver solo los servicios que me tocan | Persona de Platform | ✅ | D96, D102 | MD-352 |
+| ID | Historia | Rol | Estado | Reglas |
+|---|---|---|---|---|
+| HU-ONB-06 | Declarar un servicio con un marco contratado | `admin_empresa` | ✅ | D45, D47, D50, D51 |
+| HU-ONB-07 | Que el catálogo del marco quede preparado al crear el servicio | `admin_empresa` | ✅ | D23, D36, D40, D45, DT-14 |
+| HU-ONB-08 | Entregar la descripción del sistema con un enlace o un archivo | `admin_empresa` | ✅ | D51, SEG-43, SEG-59 |
+| HU-ONB-09 | Que la descripción del sistema se lea y llene CSOC y CUEC | `admin_empresa` | ⚪ | D11, DT-12 |
+| HU-ONB-10 | Editar o ampliar un servicio | `admin_empresa` | ✅ | D45 |
+| HU-ONB-11 | Eliminar un servicio sin borrar lo ya evaluado | `admin_empresa` | ✅ | D45 |
+| HU-ONB-12 | Ver solo los servicios que me tocan | Persona de Platform | ✅ | D96, D102 |
 
 ### Riesgos del servicio (dueño: módulo de riesgos)
 
-| ID | Historia | Rol | Estado | Reglas | Jira |
-|---|---|---|---|---|---|
-| HU-ONB-13 | Evaluar los riesgos del servicio en la misma alta | `admin_empresa` | ✅ | D89, D93 | MD-353 |
-| HU-ONB-14 | No declarar activos mientras falten riesgos por evaluar | `admin_empresa` | 🟡 | D89, DT-77 | MD-354 |
+| ID | Historia | Rol | Estado | Reglas |
+|---|---|---|---|---|
+| HU-ONB-13 | Evaluar los riesgos del servicio en la misma alta | `admin_empresa` | ✅ | D89, D93 |
+| HU-ONB-14 | No declarar activos mientras falten riesgos por evaluar | `admin_empresa` | 🟡 | D89, DT-77 |
 
 ### Componente 3 · Conexión de activos
 
-| ID | Historia | Rol | Estado | Reglas | Jira |
-|---|---|---|---|---|---|
-| HU-ONB-15 | Elegir en un catálogo la plataforma que quiero conectar | `admin_empresa` | 🟡 | D67, D92, P21, DT-68 | MD-355 |
-| HU-ONB-16 | Conectar una cuenta de AWS con un rol de solo lectura | `admin_empresa` | 🟡 | D53, D58, SEG-78, DT-103 | MD-356 |
-| HU-ONB-17 | Conectar AWS con llaves si no puedo crear el rol | `admin_empresa` | ✅ | D58, SEG-24, SEG-50 | MD-357 |
-| HU-ONB-18 | Conectar un proyecto de GCP sin entregar claves | `admin_empresa` | ✅ | D112, D114, SEG-78 | MD-358 |
-| HU-ONB-19 | Declarar un servidor para que lo lea la sonda | `admin_empresa` | ✅ | D113 | MD-359 |
-| HU-ONB-20 | Conectar bases de datos, equipos y las demás nubes | `admin_empresa` | ⚪ | D67, D113 | MD-360 |
-| HU-ONB-21 | Comprobar que la conexión funciona de verdad | `admin_empresa` | ✅ | D46, D57, D58 | MD-361 |
-| HU-ONB-22 | Ver los activos que encontró la conexión | `admin_empresa` | ✅ | D59, D61, SEG-51 | MD-362 |
-| HU-ONB-23 | Elegir qué activos son de cada servicio | `admin_empresa` | ✅ | D61, SEG-53 | MD-363 |
-| HU-ONB-24 | Activar la conexión y fijar cada cuánto se mide | `admin_empresa` | 🟡 | D46, D57 | MD-364 |
-| HU-ONB-25 | Ver las conexiones de un servicio | `admin_empresa` | ✅ | D60, D61 | MD-365 |
-| HU-ONB-26 | Cambiar los datos de una conexión | `admin_empresa` | ✅ | D112, SEG-78 | MD-366 |
-| HU-ONB-27 | Dar de baja una conexión | `admin_empresa` | ✅ | D61, SEG-52, DT-11 | MD-367 |
-| HU-ONB-28 | Ajustar la criticidad y el responsable de un activo descubierto | `admin_empresa` | ⚪ | D61, DT-63 | MD-368 |
-| HU-ONB-29 | No ver nunca el nombre del motor ni de la sonda | Persona de Platform | ✅ | D46, D70 | MD-369 |
+| ID | Historia | Rol | Estado | Reglas |
+|---|---|---|---|---|
+| HU-ONB-15 | Elegir en un catálogo la plataforma que quiero conectar | `admin_empresa` | 🟡 | D67, D92, P21, DT-68 |
+| HU-ONB-16 | Conectar una cuenta de AWS con un rol de solo lectura | `admin_empresa` | 🟡 | D53, D58, SEG-78, DT-103 |
+| HU-ONB-17 | Conectar AWS con llaves si no puedo crear el rol | `admin_empresa` | ✅ | D58, SEG-24, SEG-50 |
+| HU-ONB-18 | Conectar un proyecto de GCP sin entregar claves | `admin_empresa` | ✅ | D112, D114, SEG-78 |
+| HU-ONB-19 | Declarar un servidor para que lo lea la sonda | `admin_empresa` | ✅ | D113 |
+| HU-ONB-20 | Conectar bases de datos, equipos y las demás nubes | `admin_empresa` | ⚪ | D67, D113 |
+| HU-ONB-21 | Comprobar que la conexión funciona de verdad | `admin_empresa` | ✅ | D46, D57, D58 |
+| HU-ONB-22 | Ver los activos que encontró la conexión | `admin_empresa` | ✅ | D59, D61, SEG-51 |
+| HU-ONB-23 | Elegir qué activos son de cada servicio | `admin_empresa` | ✅ | D61, SEG-53 |
+| HU-ONB-24 | Activar la conexión y fijar cada cuánto se mide | `admin_empresa` | 🟡 | D46, D57 |
+| HU-ONB-25 | Ver las conexiones de un servicio | `admin_empresa` | ✅ | D60, D61 |
+| HU-ONB-26 | Cambiar los datos de una conexión | `admin_empresa` | ✅ | D112, SEG-78 |
+| HU-ONB-27 | Dar de baja una conexión | `admin_empresa` | ✅ | D61, SEG-52, DT-11 |
+| HU-ONB-28 | Ajustar la criticidad y el responsable de un activo descubierto | `admin_empresa` | ⚪ | D61, DT-63 |
+| HU-ONB-29 | No ver nunca el nombre del motor ni de la sonda | Persona de Platform | ✅ | D46, D70 |
 
 ---
 

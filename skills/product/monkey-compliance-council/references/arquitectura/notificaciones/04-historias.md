@@ -12,26 +12,24 @@ que envía ([`empresas`](../../../../../../contracts/empresas.md), [`gestion-usu
 **Roles** (D96, D102): `admin_empresa`, `responsable`, `delegado`, `auditor` (Monkey Platform) y `admin_monkey` (Monkey Admin).
 «Persona» = cualquiera de ellos. **Estado** de cada historia: ✅ construida · 🟡 parcial · ⚪ por construir.
 
-**Jira:** épica [MD-323](https://rod2408.atlassian.net/browse/MD-323), una historia por fila. El cerebro manda: si una historia cambia, se actualiza aquí y después su issue.
-
 ## Resumen
 
-| ID | Historia | Rol | Estado | Reglas | Jira |
-|---|---|---|---|---|---|
-| HU-NOT-01 | Recibir por correo la clave de acceso de mi empresa | `admin_empresa` (aún sin cuenta) | ✅ | D99, SEG-71 | MD-459 |
-| HU-NOT-02 | Recibir por correo mi invitación con el código de activación | Persona invitada | ✅ | D102 punto 14, D117, SEG-75 | MD-460 |
-| HU-NOT-03 | Saber si el correo salió y reenviarlo si no llegó | `admin_monkey` · `admin_empresa` · `responsable` | ✅ | D99, DT-90 | MD-461 |
-| HU-NOT-04 | Recibir el enlace para recuperar mi contraseña | Persona | ✅ | D101, SEG-14 | MD-462 |
-| HU-NOT-05 | Enterarme por correo de que cambió mi contraseña | Persona | ✅ | D101 | MD-463 |
-| HU-NOT-06 | Recibir correos en mi idioma, sin secretos a la vista ni nombres de proveedores | Persona | ✅ | D111, D70, SEG-39, SEG-75 | MD-464 |
-| HU-NOT-07 | Enterarme de que me asignaron o reasignaron un control | `responsable` · `delegado` | ⚪ | P39, D102 | MD-465 |
-| HU-NOT-08 | Enterarme de que mi evidencia fue validada o rechazada | `responsable` · `delegado` · `admin_empresa` | ⚪ | P39 | MD-466 |
-| HU-NOT-09 | Enterarme de que un control dejó de cumplir o la evaluación automática falló | `admin_empresa` · `responsable` · `delegado` | ⚪ | P39, D70 | MD-467 |
-| HU-NOT-10 | Enterarme de una observación nueva del auditor | `responsable` · `delegado` | ⚪ | P39, D102 punto 9 | MD-468 |
-| HU-NOT-11 | Recibir recordatorios antes de que algo venza | `admin_empresa` · `responsable` · `delegado` | ⚪ | P39 punto 6, P22 punto 2 | MD-469 |
-| HU-NOT-12 | Ver mis avisos en un centro de notificaciones dentro de la app | Persona de Platform | ⚪ | P39 punto 5 | MD-470 |
-| HU-NOT-13 | Elegir cómo y cada cuánto recibo los avisos | Persona de Platform | ⚪ | P39 punto 4 | MD-471 |
-| HU-NOT-14 | Enterarme a tiempo de que una empresa archivada está por borrarse | `admin_monkey` | ⚪ | D97, DT-83 | MD-472 |
+| ID | Historia | Rol | Estado | Reglas |
+|---|---|---|---|---|
+| HU-NOT-01 | Recibir por correo la clave de acceso de mi empresa | `admin_empresa` (aún sin cuenta) | ✅ | D99, SEG-71 |
+| HU-NOT-02 | Recibir por correo mi invitación con el código de activación | Persona invitada | ✅ | D102 punto 14, D117, SEG-75 |
+| HU-NOT-03 | Saber si el correo salió y reenviarlo si no llegó | `admin_monkey` · `admin_empresa` · `responsable` | ✅ | D99, DT-90 |
+| HU-NOT-04 | Recibir el enlace para recuperar mi contraseña | Persona | ✅ | D101, SEG-14 |
+| HU-NOT-05 | Enterarme por correo de que cambió mi contraseña | Persona | ✅ | D101 |
+| HU-NOT-06 | Recibir correos en mi idioma, sin secretos a la vista ni nombres de proveedores | Persona | ✅ | D111, D70, SEG-39, SEG-75 |
+| HU-NOT-07 | Enterarme de que me asignaron o reasignaron un control | `responsable` · `delegado` | ⚪ | P39, D102 |
+| HU-NOT-08 | Enterarme de que mi evidencia fue validada o rechazada | `responsable` · `delegado` · `admin_empresa` | ⚪ | P39 |
+| HU-NOT-09 | Enterarme de que un control dejó de cumplir o la evaluación automática falló | `admin_empresa` · `responsable` · `delegado` | ⚪ | P39, D70 |
+| HU-NOT-10 | Enterarme de una observación nueva del auditor | `responsable` · `delegado` | ⚪ | P39, D102 punto 9 |
+| HU-NOT-11 | Recibir recordatorios antes de que algo venza | `admin_empresa` · `responsable` · `delegado` | ⚪ | P39 punto 6, P22 punto 2 |
+| HU-NOT-12 | Ver mis avisos en un centro de notificaciones dentro de la app | Persona de Platform | ⚪ | P39 punto 5 |
+| HU-NOT-13 | Elegir cómo y cada cuánto recibo los avisos | Persona de Platform | ⚪ | P39 punto 4 |
+| HU-NOT-14 | Enterarme a tiempo de que una empresa archivada está por borrarse | `admin_monkey` | ⚪ | D97, DT-83 |
 
 ---
 

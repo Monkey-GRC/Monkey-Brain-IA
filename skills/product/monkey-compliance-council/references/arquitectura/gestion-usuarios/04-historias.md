@@ -7,8 +7,6 @@ verificables y citan la regla que los fija. El detalle técnico (cuerpos, errore
 [administradores](../../../../../../contracts/gestion-usuarios/administradores.md); la secuencia, en
 [`03-flujos.md`](03-flujos.md); los pasos de cada caso, en [`05-casos-de-uso.md`](05-casos-de-uso.md).
 
-**Jira:** épica [MD-263](https://rod2408.atlassian.net/browse/MD-263), una historia por fila. El cerebro manda: si una historia cambia, se actualiza aquí y después su issue.
-
 **Roles** (D96, D102): `admin_empresa`, `responsable`, `delegado`, `auditor` (Monkey Platform) y `admin_monkey` (Monkey
 Admin). «Persona de empresa» = cualquiera de los cuatro primeros. **Estado** de cada historia: ✅ construida · 🟡 parcial ·
 ⚪ por construir. El estado sale del «Estado de implementación» del contrato (la API del sprint 3 está completa, MD-186 a
@@ -16,35 +14,35 @@ MD-195) y de lo que falta de las pantallas (MD-199 a MD-204).
 
 ## Resumen
 
-| ID | Historia | Rol | Estado | Reglas | Jira |
-|---|---|---|---|---|---|
-| HU-USR-01 | Invitar a una persona a mi empresa | `admin_empresa` | ✅ | D98, D102, D104, SEG-75 | MD-289 |
-| HU-USR-02 | Invitar a un delegado a mi equipo | `responsable` | ✅ | D102, D104 | MD-290 |
-| HU-USR-03 | Reenviar una invitación que no llegó | `admin_empresa` | ✅ | SEG-75, DT-90 | MD-291 |
-| HU-USR-04 | Ver y filtrar el equipo | `admin_empresa` · `responsable` | ✅ | D102 | MD-292 |
-| HU-USR-05 | Corregir el nombre de una persona | `admin_empresa` | ✅ | D98 | MD-293 |
-| HU-USR-06 | Corregir si un delegado es interno o externo | `admin_empresa` | 🟡 | D102 | MD-294 |
-| HU-USR-07 | Dar de baja a una persona sin dejar controles huérfanos | `admin_empresa` | 🟡 | D98, D102, SEG-23, SEG-74 | MD-295 |
-| HU-USR-08 | Reactivar a una persona | `admin_empresa` | 🟡 | D102, D103, SEG-72 | MD-296 |
-| HU-USR-09 | No pasar del cupo de usuarios de mi empresa | `admin_empresa` · `responsable` | ✅ | D103, SEG-72 | MD-297 |
-| HU-USR-10 | Fijar el cupo de usuarios de una empresa | `admin_monkey` | ✅ | D103, SEG-72, SEG-77 | MD-298 |
-| HU-USR-11 | Organizar a los responsables en grupos | `admin_empresa` | ✅ | D102, D104 | MD-299 |
-| HU-USR-12 | Crear el equipo de delegados de un responsable | `responsable` · `admin_empresa` | ✅ | D102, D104 | MD-300 |
-| HU-USR-13 | Mover a un delegado a otro equipo | `admin_empresa` | ✅ | D102, SEG-73 | MD-301 |
-| HU-USR-14 | Saber a qué responsable pertenezco | `delegado` | ✅ | D104 | MD-302 |
-| HU-USR-15 | Asignar el dueño de cada control | `admin_empresa` | 🟡 | D102, SEG-73 | MD-303 |
-| HU-USR-16 | Asignar el ejecutor de mis controles | `responsable` | 🟡 | D102, D104, SEG-73 | MD-304 |
-| HU-USR-17 | Ver quién es dueño y ejecutor de cada control | Persona de empresa | 🟡 | D80, D102 | MD-305 |
-| HU-USR-18 | Ver solo mis controles y el avance de lo mío | `responsable` · `delegado` | ✅ | D102, D118, SEG-76 | MD-306 |
-| HU-USR-19 | Ver «Mi trabajo» al entrar | `responsable` · `delegado` | 🟡 | D102, D122 | MD-307 |
-| HU-USR-20 | Ver la carga de trabajo de cada persona | `admin_empresa` | 🟡 | D102, D122 | MD-308 |
-| HU-USR-21 | Invitar a otro administrador de Monkey | `admin_monkey` | ✅ | D117, SEG-80 | MD-309 |
-| HU-USR-22 | Desactivar a un administrador con 7 días de gracia | `admin_monkey` | ✅ | D117, SEG-79, SEG-81 | MD-310 |
-| HU-USR-23 | Reactivar a un administrador dentro de la gracia | `admin_monkey` | ✅ | D117, SEG-81 | MD-311 |
-| HU-USR-24 | Saber quién hizo algo aunque su cuenta se haya borrado | `admin_monkey` | ✅ | D117, SEG-82 | MD-312 |
-| HU-USR-25 | Buscar personas y ver el detalle de una persona | `admin_empresa` · `responsable` | ⚪ | P42 | MD-313 |
-| HU-USR-26 | Ver el equipo de una empresa y darle soporte desde Monkey Admin | `admin_monkey` | ⚪ | P47, D103 | MD-314 |
-| HU-USR-27 | Ver las cuentas sin ingreso reciente | `admin_empresa` | ⚪ | P41 | MD-315 |
+| ID | Historia | Rol | Estado | Reglas |
+|---|---|---|---|---|
+| HU-USR-01 | Invitar a una persona a mi empresa | `admin_empresa` | ✅ | D98, D102, D104, SEG-75 |
+| HU-USR-02 | Invitar a un delegado a mi equipo | `responsable` | ✅ | D102, D104 |
+| HU-USR-03 | Reenviar una invitación que no llegó | `admin_empresa` | ✅ | SEG-75, DT-90 |
+| HU-USR-04 | Ver y filtrar el equipo | `admin_empresa` · `responsable` | ✅ | D102 |
+| HU-USR-05 | Corregir el nombre de una persona | `admin_empresa` | ✅ | D98 |
+| HU-USR-06 | Corregir si un delegado es interno o externo | `admin_empresa` | 🟡 | D102 |
+| HU-USR-07 | Dar de baja a una persona sin dejar controles huérfanos | `admin_empresa` | 🟡 | D98, D102, SEG-23, SEG-74 |
+| HU-USR-08 | Reactivar a una persona | `admin_empresa` | 🟡 | D102, D103, SEG-72 |
+| HU-USR-09 | No pasar del cupo de usuarios de mi empresa | `admin_empresa` · `responsable` | ✅ | D103, SEG-72 |
+| HU-USR-10 | Fijar el cupo de usuarios de una empresa | `admin_monkey` | ✅ | D103, SEG-72, SEG-77 |
+| HU-USR-11 | Organizar a los responsables en grupos | `admin_empresa` | ✅ | D102, D104 |
+| HU-USR-12 | Crear el equipo de delegados de un responsable | `responsable` · `admin_empresa` | ✅ | D102, D104 |
+| HU-USR-13 | Mover a un delegado a otro equipo | `admin_empresa` | ✅ | D102, SEG-73 |
+| HU-USR-14 | Saber a qué responsable pertenezco | `delegado` | ✅ | D104 |
+| HU-USR-15 | Asignar el dueño de cada control | `admin_empresa` | 🟡 | D102, SEG-73 |
+| HU-USR-16 | Asignar el ejecutor de mis controles | `responsable` | 🟡 | D102, D104, SEG-73 |
+| HU-USR-17 | Ver quién es dueño y ejecutor de cada control | Persona de empresa | 🟡 | D80, D102 |
+| HU-USR-18 | Ver solo mis controles y el avance de lo mío | `responsable` · `delegado` | ✅ | D102, D118, SEG-76 |
+| HU-USR-19 | Ver «Mi trabajo» al entrar | `responsable` · `delegado` | 🟡 | D102, D122 |
+| HU-USR-20 | Ver la carga de trabajo de cada persona | `admin_empresa` | 🟡 | D102, D122 |
+| HU-USR-21 | Invitar a otro administrador de Monkey | `admin_monkey` | ✅ | D117, SEG-80 |
+| HU-USR-22 | Desactivar a un administrador con 7 días de gracia | `admin_monkey` | ✅ | D117, SEG-79, SEG-81 |
+| HU-USR-23 | Reactivar a un administrador dentro de la gracia | `admin_monkey` | ✅ | D117, SEG-81 |
+| HU-USR-24 | Saber quién hizo algo aunque su cuenta se haya borrado | `admin_monkey` | ✅ | D117, SEG-82 |
+| HU-USR-25 | Buscar personas y ver el detalle de una persona | `admin_empresa` · `responsable` | ⚪ | P42 |
+| HU-USR-26 | Ver el equipo de una empresa y darle soporte desde Monkey Admin | `admin_monkey` | ⚪ | P47, D103 |
+| HU-USR-27 | Ver las cuentas sin ingreso reciente | `admin_empresa` | ⚪ | P41 |
 
 ---
 

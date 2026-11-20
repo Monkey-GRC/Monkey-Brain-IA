@@ -11,21 +11,19 @@ cada caso, en [`05-casos-de-uso.md`](05-casos-de-uso.md).
 (Monkey Platform) y `admin_monkey` (Monkey Admin). «Persona» = cualquiera de ellos. **Estado** de cada historia:
 ✅ construida · 🟡 parcial · ⚪ por construir.
 
-**Jira:** épica [MD-320](https://rod2408.atlassian.net/browse/MD-320), una historia por fila. El cerebro manda: si una historia cambia, se actualiza aquí y después su issue.
-
 ## Resumen
 
-| ID | Historia | Rol | Estado | Reglas | Jira |
-|---|---|---|---|---|---|
-| HU-TRZ-01 | Que cada acción deje constancia de quién, cuándo y cómo estaba antes | `auditor` | ✅ | D41, D52, SEG-36 | MD-421 |
-| HU-TRZ-02 | Que nadie pueda editar ni borrar el rastro | `auditor` | ✅ | D41, SEG-33 | MD-422 |
-| HU-TRZ-03 | Que los intentos rechazados también queden registrados | `auditor` | 🟡 | SEG-37, DT-29 | MD-423 |
-| HU-TRZ-04 | Saber cuándo y por qué cambió el estado de un control | `auditor` | 🟡 | D91, SEG-63, DT-79 | MD-424 |
-| HU-TRZ-05 | Distinguir lo que cambió la sonda de lo que cambió una persona | `auditor` | ✅ | D91 | MD-425 |
-| HU-TRZ-06 | Que el rastro de mi empresa no lo vea ni lo escriba otra | `admin_empresa` | ✅ | SEG-34 | MD-426 |
-| HU-TRZ-07 | Que el rastro de una empresa activa se conserve 7 años | `auditor` | 🟡 | D41, D97, SEG-35, DT-84 | MD-427 |
-| HU-TRZ-08 | Consultar el rastro de auditoría de mi empresa | `auditor` · `admin_empresa` · `admin_monkey` | ⚪ | §5.5 | MD-428 |
-| HU-TRZ-09 | Ver el historial de estados de un control | `auditor` · `admin_empresa` | ⚪ | D91, §5.5 | MD-429 |
+| ID | Historia | Rol | Estado | Reglas |
+|---|---|---|---|---|
+| HU-TRZ-01 | Que cada acción deje constancia de quién, cuándo y cómo estaba antes | `auditor` | ✅ | D41, D52, SEG-36 |
+| HU-TRZ-02 | Que nadie pueda editar ni borrar el rastro | `auditor` | ✅ | D41, SEG-33 |
+| HU-TRZ-03 | Que los intentos rechazados también queden registrados | `auditor` | 🟡 | SEG-37, DT-29 |
+| HU-TRZ-04 | Saber cuándo y por qué cambió el estado de un control | `auditor` | 🟡 | D91, SEG-63, DT-79 |
+| HU-TRZ-05 | Distinguir lo que cambió la sonda de lo que cambió una persona | `auditor` | ✅ | D91 |
+| HU-TRZ-06 | Que el rastro de mi empresa no lo vea ni lo escriba otra | `admin_empresa` | ✅ | SEG-34 |
+| HU-TRZ-07 | Que el rastro de una empresa activa se conserve 7 años | `auditor` | 🟡 | D41, D97, SEG-35, DT-84 |
+| HU-TRZ-08 | Consultar el rastro de auditoría de mi empresa | `auditor` · `admin_empresa` · `admin_monkey` | ⚪ | §5.5 |
+| HU-TRZ-09 | Ver el historial de estados de un control | `auditor` · `admin_empresa` | ⚪ | D91, §5.5 |
 
 ---
 

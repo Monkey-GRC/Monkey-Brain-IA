@@ -5,25 +5,23 @@ entender qué aporta, y cómo se comprueba que lo tiene?** Cada historia dice qu
 aceptación son verificables y citan la regla que los fija. El detalle técnico (cuerpos, errores) está en el
 [contrato](../../../../../../contracts/integraciones.md); los pasos de cada caso, en [`05-casos-de-uso.md`](05-casos-de-uso.md).
 
-**Jira:** épica [MD-324](https://rod2408.atlassian.net/browse/MD-324), una historia por fila. El cerebro manda: si una historia cambia, se actualiza aquí y después su issue.
-
 **Roles** (D96): `admin_empresa` y `auditor` (Monkey Platform). `responsable`, `delegado` y `admin_monkey` no entran a
 esta sección (D110 punto 5). **Estado** de cada historia: ✅ construida · 🟡 parcial · ⚪ por construir.
 
 ## Resumen
 
-| ID | Historia | Rol | Estado | Reglas | Jira |
-|---|---|---|---|---|---|
-| HU-INT-01 | Ver las integraciones que mi empresa ya tiene, con su estado | `admin_empresa` · `auditor` | ✅ | D110, D57, D61, SEG-01 | MD-473 |
-| HU-INT-02 | Enterarme de qué integración necesita atención y por qué conexión | `admin_empresa` · `auditor` | ✅ | D110, D57 | MD-474 |
-| HU-INT-03 | Explorar el catálogo para agregar una integración | `admin_empresa` | ✅ | D110, D67 | MD-475 |
-| HU-INT-04 | Conocer una integración antes de conectarla | `admin_empresa` | ✅ | D110, D58, SEG-48, SEG-50, SEG-01 | MD-476 |
-| HU-INT-05 | Ver qué alimenta una integración en el cumplimiento | `admin_empresa` · `auditor` | ✅ | D56, D70, regla 4 | MD-477 |
-| HU-INT-06 | Conectar una integración disponible a uno de mis servicios | `admin_empresa` | ✅ | D110, D89 | MD-478 |
-| HU-INT-07 | Revisar como auditor solo lo que la empresa tiene conectado | `auditor` | ✅ | D110 punto 5 | MD-479 |
-| HU-INT-08 | Saber qué integraciones vienen pronto, sin poder conectarlas aún | `admin_empresa` | ✅ | D110 punto 6, D67 | MD-480 |
-| HU-INT-09 | Conectar la organización de GitHub de mi empresa | `admin_empresa` | ⚪ | P44, P45, D56 | MD-481 |
-| HU-INT-10 | Llevar el trabajo de cumplimiento a Jira | por decidir (P46) | ⚪ | P46 | MD-482 |
+| ID | Historia | Rol | Estado | Reglas |
+|---|---|---|---|---|
+| HU-INT-01 | Ver las integraciones que mi empresa ya tiene, con su estado | `admin_empresa` · `auditor` | ✅ | D110, D57, D61, SEG-01 |
+| HU-INT-02 | Enterarme de qué integración necesita atención y por qué conexión | `admin_empresa` · `auditor` | ✅ | D110, D57 |
+| HU-INT-03 | Explorar el catálogo para agregar una integración | `admin_empresa` | ✅ | D110, D67 |
+| HU-INT-04 | Conocer una integración antes de conectarla | `admin_empresa` | ✅ | D110, D58, SEG-48, SEG-50, SEG-01 |
+| HU-INT-05 | Ver qué alimenta una integración en el cumplimiento | `admin_empresa` · `auditor` | ✅ | D56, D70, regla 4 |
+| HU-INT-06 | Conectar una integración disponible a uno de mis servicios | `admin_empresa` | ✅ | D110, D89 |
+| HU-INT-07 | Revisar como auditor solo lo que la empresa tiene conectado | `auditor` | ✅ | D110 punto 5 |
+| HU-INT-08 | Saber qué integraciones vienen pronto, sin poder conectarlas aún | `admin_empresa` | ✅ | D110 punto 6, D67 |
+| HU-INT-09 | Conectar la organización de GitHub de mi empresa | `admin_empresa` | ⚪ | P44, P45, D56 |
+| HU-INT-10 | Llevar el trabajo de cumplimiento a Jira | por decidir (P46) | ⚪ | P46 |
 
 **Fuera de las historias:** la interfaz única de conector (conectar, validar, credencial temporal, ejecutar, normalizar;
 D110 punto 7) no es una capacidad que vea una persona: se construye con la primera integración nueva que se conecte de
