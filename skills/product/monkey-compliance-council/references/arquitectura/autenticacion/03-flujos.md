@@ -16,7 +16,7 @@ ruta están en `contracts/autenticacion.md`; aquí solo el movimiento de la info
 | Clave de acceso | `admin_monkey` al registrar | Correo del administrador | HMAC en `access_keys` | Vence; uso único |
 | Código de activación | `admin_empresa` al invitar | Respuesta de la API, una vez | HMAC en `user_activation_codes` | 7 días; uso único |
 | Token de recuperación | API | Correo | HMAC en `password_reset_tokens` | Corto; uso único |
-| Dispositivo recordado (D123) | API al verificar el código con la casilla | Cookie `httpOnly` `mnk_device` (ruta `/v1/auth`) | HMAC en `trusted_devices` | 30 días sin renovarse; se olvida al cerrar sesión o cambiar credenciales |
+| Dispositivo recordado (D123) | API al verificar el código con la casilla | Cookie `httpOnly` `mnk_device` (ruta `/v1/auth`) | HMAC en `trusted_devices` | 30 días sin renovarse; se olvida al cerrar sesión (solo si es de quien sale) o cambiar credenciales; Monkey Admin (`X-Monkey-Client: admin`) ni la lee ni la escribe ni la borra (MD-489) |
 
 ## 1 · Entrar (con y sin segundo factor)
 
