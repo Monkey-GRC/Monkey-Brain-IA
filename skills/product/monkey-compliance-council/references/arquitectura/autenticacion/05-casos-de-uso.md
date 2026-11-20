@@ -120,13 +120,14 @@ Fuente del diagrama: [`05-casos-de-uso.puml`](05-casos-de-uso.puml) (PlantUML; s
 **Flujo principal**
 1. Mientras la persona trabaja, el sistema renueva el acceso de forma invisible (el refresh rota en cada uso).
 2. La persona pulsa «Cerrar sesión».
-3. El sistema cierra la sesión, olvida el dispositivo recordado de ese navegador y borra las cookies.
+3. El sistema cierra la sesión, olvida el dispositivo recordado de ese navegador (si es suyo o ya no sirve a nadie) y borra las cookies.
 
 **Flujos alternos**
 - 1a. 30 min sin actividad u 8 h desde que entró → la sesión vence; la siguiente acción lleva al ingreso.
 - 1b. Otra pestaña renovó a la vez → se reintenta una vez; no saca a la persona.
 - 1c. Un error de dominio (p. ej. código equivocado) no se confunde con una sesión vencida: no renueva ni reintenta (MD-229).
 - 3a. La sesión ya había vencido → igual se olvida el dispositivo del navegador.
+- 3b. La cookie `mnk_device` es el dispositivo vigente de otra persona → se conserva cookie y dispositivo (MD-489).
 
 ### CU-AUTH-06 · Cambiar la contraseña
 

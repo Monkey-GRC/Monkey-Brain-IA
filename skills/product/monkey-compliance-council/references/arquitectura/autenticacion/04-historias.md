@@ -119,6 +119,7 @@ re-entrar a cada rato ni dejar una sesión expuesta.
 como yo **para** proteger mi cuenta.
 
 - Se cierra la sesión y se olvida el dispositivo recordado de ese navegador, aunque la sesión ya hubiera vencido (D123).
+- Si la cookie del navegador es el dispositivo vigente de **otra** persona, no se borra ni se toca ese dispositivo (MD-489).
 - El siguiente ingreso vuelve a pedir el código y a ofrecer la casilla.
 
 ### HU-AUTH-10 · Cambiar mi contraseña cuando quiera

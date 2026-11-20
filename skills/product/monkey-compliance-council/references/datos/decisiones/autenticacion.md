@@ -108,6 +108,9 @@ Recordar el dispositivo resuelve esa fricción sin bajar la seguridad y con much
    Hector Rios, 2026-11-18).
 7. **`admin_monkey` no puede recordar un dispositivo:** entra a todas las empresas y para él el código en cada ingreso
    está justificado. La API lo rechaza; la app Admin (que solo admite `admin_monkey`) no muestra la casilla.
+   **La cookie es solo de Platform** (MD-489, 2026-11-20): las dos apps comparten el host de la API, así que con
+   `X-Monkey-Client: admin` la API ignora `mnk_device` y `remember_device`. Entrar o salir de Admin en el mismo navegador
+   no hace perder el dispositivo de Platform, y un cierre de sesión no borra la cookie vigente de otra persona.
 8. **Auditoría:** `auth.device_trusted`, `auth.device_revoked` y el ingreso marcado como «sin código, dispositivo recordado».
 
 **Por qué.** Un ingreso con contraseña y dispositivo previamente verificado sigue siendo de dos factores (algo que sabe

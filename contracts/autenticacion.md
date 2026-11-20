@@ -190,7 +190,7 @@ Sin cuerpo.
 | | |
 |---|---|
 | **Quién** | Con sesión |
-| **Éxito** | `204`, cookies invalidadas (idempotente). También olvida el dispositivo recordado de este navegador y borra `mnk_device` ([D123](#dispositivos-recordados-d123-seg-84)) |
+| **Éxito** | `204`, cookies invalidadas (idempotente). Desde Platform también olvida el dispositivo recordado de este navegador si es de quien cierra sesión, y borra `mnk_device` salvo que sea el vigente de otra persona; con `X-Monkey-Client: admin` no lo toca ([D123](#dispositivos-recordados-d123-seg-84), MD-489) |
 
 Sin cuerpo.
 
@@ -259,11 +259,15 @@ sesión sigue la misma política (30 min de inactividad, 8 h máximo).
 token opaco; en la base solo queda su HMAC con `TOKEN_HASH_PEPPER` (SEG-17). **Una por navegador:** si otra persona marca
 «recordar» en el mismo navegador, la pisa y la anterior vuelve a ver su código. Nunca viaja en el cuerpo ni entra a la
 auditoría. Solo existe con prefijo `mnk_`: Monkey Admin no la usa (`admin_monkey` no puede recordar dispositivos).
+**Solo es de Platform (MD-489).** Admin y Platform comparten el host de la API, así que la cookie también viaja en las
+peticiones de Admin. Con `X-Monkey-Client: admin` la API la ignora del todo: el login no la lee (pide el código), el
+logout no la revoca ni la borra, `mfa/verify` y `mfa/setup/confirm` ignoran `remember_device` (sin fila, sin cookie y
+sin 422) y `DELETE /v1/auth/devices*` no la borra. Así entrar o salir de Admin nunca hace perder el dispositivo de Platform.
 
 **Cómo nace.** `remember_device: true` en `mfa/verify` (con código de la app o de recuperación) o en `mfa/setup/confirm`,
 una vez que el código es correcto. El dispositivo y su rastro `auth.device_trusted` se guardan en la misma transacción que
-la sesión. Con `admin_monkey`, la petición responde `422 REMEMBER_DEVICE_NOT_ALLOWED` **antes** de comprobar el código: no
-gasta el código ni cuenta como intento fallido.
+la sesión. Con `admin_monkey` desde Platform, la petición responde `422 REMEMBER_DEVICE_NOT_ALLOWED` **antes** de comprobar
+el código: no gasta el código ni cuenta como intento fallido.
 
 **Vigencia.** 30 días desde que se marca; el uso no la renueva. Deja de valer, en la misma transacción que el cambio que
 la provoca: al cambiar o recuperar la contraseña; al restablecer la MFA (`DELETE /v1/users/{id}/mfa` o `npm run mfa:reset`);
@@ -272,7 +276,9 @@ aquí; y **al cerrar sesión**.
 
 **Cerrar sesión lo olvida (D123).** Quien pulsa «Cerrar sesión» espera que en ese navegador no quede rastro de su
 identidad: `POST /v1/auth/logout` revoca el dispositivo de la cookie `mnk_device` (si es de esa persona) y la borra, en la
-misma transacción que cierra la sesión, y deja `auth.device_revoked` (`{ device_id, scope: "logout" }`). El siguiente ingreso
+misma transacción que cierra la sesión, y deja `auth.device_revoked` (`{ device_id, scope: "logout" }`). La cookie se borra
+si el dispositivo era de esa persona o ya no vale (vencido, revocado, manipulado); si es el vigente de **otra** persona
+que comparte el navegador, la cookie y su dispositivo se conservan (MD-489). Sin sesión, se olvida por su huella. El siguiente ingreso
 vuelve a pedir el código y a ofrecer la casilla. Lo único que conserva el dispositivo es **no** cerrar sesión (cerrar la
 pestaña o dejar que la sesión venza por inactividad o a las 8 h): ahí el próximo ingreso pide solo la contraseña, hasta que
 venzan los 30 días.
