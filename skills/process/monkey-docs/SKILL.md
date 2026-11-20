@@ -2,15 +2,15 @@
 name: monkey-docs
 description: >-
   Escribe y mantiene las historias de usuario (04-historias.md) y los casos de uso (05-casos-de-uso.md con su diagrama UML
-  en PlantUML) de un módulo de Monkey, los exporta a PDF para el comité o un auditor y los sincroniza con Jira (épica por
-  módulo). Úsala al documentar un módulo o al cambiar lo que hace. No usar para decidir qué se construye ni para contratos.
+  en PlantUML) de un módulo de Monkey, los exporta a PDF para el comité o un auditor. Úsala al documentar un módulo o al cambiar lo que hace. No usar para decidir qué se construye ni para contratos.
 ---
 
 # Historias, casos de uso y su entrega
 
 Cada módulo de `references/arquitectura/<módulo>/` lleva `04-historias.md` y `05-casos-de-uso.md` (convención de
 `arquitectura/README.md`). **La fuente es el cerebro** (Markdown + PlantUML, versionado y vigilado por `docs-guardian`); el
-PDF es solo la entrega, y Jira el lugar donde se planifica. El piloto y la referencia de formato es
+PDF es solo la entrega. **Las historias no se copian a Jira** (Rod, 2026-11-20): viven solo aquí y se generan desde el
+cerebro; Jira queda para los tickets de trabajo. El piloto y la referencia de formato es
 [`autenticacion/`](../../product/monkey-compliance-council/references/arquitectura/autenticacion/04-historias.md) (MD-246).
 
 ## 1. De dónde sale el contenido (nada se inventa)
@@ -68,14 +68,6 @@ skills/process/monkey-docs/scripts/export-pdf.sh --all
 Portada azul marino con el logo de Monkey, encabezado con logo y pie con «Página n de m», tablas con cabecera de
 marca, el estado como etiqueta de color (Construida, Parcial, Por construir) y el diagrama. `build-pdf-html.py` arma la
 presentación y **limpia los atajos de escritura** que en un entregable se ven raros (→ y ⇒ pasan a «:», la raya — a coma o
-guion, – de rango a «a», … a «...»); también quita la nota «Jira:» y deja los enlaces internos como texto. Los logos
+guion, – de rango a «a», … a «...»); también deja los enlaces internos como texto. Los logos
 están en `assets/`. Cambiar el aspecto del PDF es tocar ese script, nunca el Markdown. `exports/` no se versiona: el PDF se regenera desde el cerebro.
 
-## 6. Jira: una épica por módulo
-
-Una **épica** «Historias · <Módulo>» y una **historia** de Jira por cada `HU-…`, con el ID al inicio del resumen
-(`HU-AUTH-04 · Iniciar sesión con contraseña y código`), el texto «Como… quiero… para…», los criterios y el enlace al
-archivo del cerebro. **Claude mueve a «Listo» (transición 31) cada historia ✅ al crearla, y la épica cuando todas sus
-historias lo están** (autorizado por Rod el 2026-11-18, solo para estas historias de documentación; los demás tickets los
-sigue moviendo Rod). Las 🟡 y ⚪ quedan en «Por hacer». El cerebro manda: si cambia una historia, se actualiza también su
-issue.

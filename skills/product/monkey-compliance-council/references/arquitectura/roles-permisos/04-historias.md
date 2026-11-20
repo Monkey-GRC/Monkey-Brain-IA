@@ -11,28 +11,26 @@ Este módulo es una **regla transversal**: no tiene pantallas propias. Sus histo
 ([Gestión de usuarios](../gestion-usuarios/README.md)) ni cómo se sube o se revisa una evidencia (Cumplimiento): dicen
 **qué le toca a cada rol** y qué se le niega. Por eso son pocas, una por rol más las que valen para todos.
 
-**Jira:** épica [MD-264](https://rod2408.atlassian.net/browse/MD-264), una historia por fila. El cerebro manda: si una historia cambia, se actualiza aquí y después su issue.
-
 **Roles** (D96, D102): `admin_empresa`, `responsable`, `delegado`, `auditor` (Monkey Platform) y `admin_monkey` (Monkey
 Admin). «Persona» = cualquiera de ellos. No hay roles personalizados. **Estado** de cada historia: ✅ construida ·
 🟡 parcial · ⚪ por construir.
 
 ## Resumen
 
-| ID | Historia | Rol | Estado | Reglas | Jira |
-|---|---|---|---|---|---|
-| HU-ROL-01 | Que el servidor decida lo que mi rol puede hacer, no la pantalla | Persona | ✅ | SEG-20, §5.3 | MD-277 |
-| HU-ROL-02 | No ver nunca los datos de otra empresa | Persona de Platform | ✅ | D63, SEG-66, SEG-70 | MD-278 |
-| HU-ROL-03 | Que una baja o un cambio de rol se note en la siguiente petición | `admin_empresa` | ✅ | SEG-20, `CC6.3` | MD-279 |
-| HU-ROL-04 | Ver y decidir todo el cumplimiento de mi empresa | `admin_empresa` | ✅ | D81, D96, D102, SEG-54, SEG-67 | MD-280 |
-| HU-ROL-05 | Ver y tocar solo los controles de los que soy dueño | `responsable` | 🟡 | D102, SEG-22, SEG-54, SEG-66, SEG-67 | MD-281 |
-| HU-ROL-06 | Ver y tocar solo los controles que ejecuto | `delegado` | 🟡 | D102, D121, SEG-22, SEG-66, SEG-67 | MD-282 |
-| HU-ROL-07 | Leer todo el cumplimiento de la empresa sin poder cambiarlo | `auditor` | 🟡 | D63, D96, D102, SEG-21, SEG-54, SEG-67 | MD-283 |
-| HU-ROL-08 | Registrar observaciones que solo yo edito y cierro | `auditor` | 🟡 | D96, SEG-70 | MD-284 |
-| HU-ROL-09 | Descargar evidencias, exportar reportes y consultar el rastro | `auditor` | 🟡 | D63, §5.5 | MD-285 |
-| HU-ROL-10 | Administrar la plataforma sin entrar al cumplimiento de un cliente | `admin_monkey` | ✅ | D24, D103, SEG-20 | MD-286 |
-| HU-ROL-11 | Dar mi calificación del servicio sin cambiar su estado calculado | `auditor` | ⚪ | D77, P35 | MD-287 |
-| HU-ROL-12 | Juzgar lo que la empresa presenta como final, con independencia | `auditor` | ⚪ | P36 | MD-288 |
+| ID | Historia | Rol | Estado | Reglas |
+|---|---|---|---|---|
+| HU-ROL-01 | Que el servidor decida lo que mi rol puede hacer, no la pantalla | Persona | ✅ | SEG-20, §5.3 |
+| HU-ROL-02 | No ver nunca los datos de otra empresa | Persona de Platform | ✅ | D63, SEG-66, SEG-70 |
+| HU-ROL-03 | Que una baja o un cambio de rol se note en la siguiente petición | `admin_empresa` | ✅ | SEG-20, `CC6.3` |
+| HU-ROL-04 | Ver y decidir todo el cumplimiento de mi empresa | `admin_empresa` | ✅ | D81, D96, D102, SEG-54, SEG-67 |
+| HU-ROL-05 | Ver y tocar solo los controles de los que soy dueño | `responsable` | 🟡 | D102, SEG-22, SEG-54, SEG-66, SEG-67 |
+| HU-ROL-06 | Ver y tocar solo los controles que ejecuto | `delegado` | 🟡 | D102, D121, SEG-22, SEG-66, SEG-67 |
+| HU-ROL-07 | Leer todo el cumplimiento de la empresa sin poder cambiarlo | `auditor` | 🟡 | D63, D96, D102, SEG-21, SEG-54, SEG-67 |
+| HU-ROL-08 | Registrar observaciones que solo yo edito y cierro | `auditor` | 🟡 | D96, SEG-70 |
+| HU-ROL-09 | Descargar evidencias, exportar reportes y consultar el rastro | `auditor` | 🟡 | D63, §5.5 |
+| HU-ROL-10 | Administrar la plataforma sin entrar al cumplimiento de un cliente | `admin_monkey` | ✅ | D24, D103, SEG-20 |
+| HU-ROL-11 | Dar mi calificación del servicio sin cambiar su estado calculado | `auditor` | ⚪ | D77, P35 |
+| HU-ROL-12 | Juzgar lo que la empresa presenta como final, con independencia | `auditor` | ⚪ | P36 |
 
 ---
 

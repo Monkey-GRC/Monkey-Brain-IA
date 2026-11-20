@@ -72,11 +72,6 @@ def enlaces_a_texto(h: str) -> str:
     return h
 
 
-def quitar_nota_jira(h: str) -> str:
-    # «**Jira:** …» es una nota de mantenimiento del cerebro, no del entregable.
-    return re.sub(r"<p><strong>Jira:</strong>[\s\S]*?</p>\s*", "", h)
-
-
 def tablas(h: str) -> str:
     # Las tablas de ficha de un caso («| | |») tienen la cabecera vacía: se marcan para dibujarlas como ficha.
     h = re.sub(r"<table>\s*<thead>\s*<tr>\s*(?:<th[^>]*>\s*</th>\s*)+</tr>\s*</thead>",
@@ -87,7 +82,6 @@ def tablas(h: str) -> str:
 
 
 def procesar(h: str) -> str:
-    h = quitar_nota_jira(h)
     h = enlaces_a_texto(h)
     h = limpiar_html(h)
     h = estados_a_etiquetas(h)

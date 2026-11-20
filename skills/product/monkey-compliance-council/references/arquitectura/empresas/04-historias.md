@@ -6,8 +6,6 @@ criterios de aceptación son verificables y citan la regla que los fija. El deta
 [contrato](../../../../../../contracts/empresas.md); la secuencia, en [`03-flujos.md`](03-flujos.md); los pasos de cada
 caso, en [`05-casos-de-uso.md`](05-casos-de-uso.md).
 
-**Jira:** épica [MD-265](https://rod2408.atlassian.net/browse/MD-265), una historia por fila. El cerebro manda: si una historia cambia, se actualiza aquí y después su issue.
-
 **Roles** (D96, D103): el único actor es `admin_monkey` (Monkey Admin). El cliente solo aparece al final: su primer
 `admin_empresa` recibe la clave por correo y la canjea en [Autenticación](../autenticacion/04-historias.md)
 (HU-AUTH-01). `admin_monkey` **no entra** al cumplimiento de nadie ni crea cuentas de su equipo (D43, D96). **Estado**
@@ -15,19 +13,19 @@ de cada historia: ✅ construida · 🟡 parcial · ⚪ por construir.
 
 ## Resumen
 
-| ID | Historia | Rol | Estado | Reglas | Jira |
-|---|---|---|---|---|---|
-| HU-EMP-01 | Registrar una empresa cliente | `admin_monkey` | ✅ | D24, D99, D103, SEG-71 | MD-266 |
-| HU-EMP-02 | Contratar los marcos de la empresa al registrarla | `admin_monkey` | ✅ | D47, D50 | MD-267 |
-| HU-EMP-03 | Reenviar la clave de acceso si no llegó | `admin_monkey` | ✅ | D99, SEG-71 | MD-268 |
-| HU-EMP-04 | Consultar las empresas y su estado | `admin_monkey` | ✅ | D99, D103 | MD-269 |
-| HU-EMP-05 | Fijar y cambiar el cupo de usuarios | `admin_monkey` | ✅ | D103 | MD-270 |
-| HU-EMP-06 | Corregir el nombre o el correo antes del canje | `admin_monkey` | ⚪ | P2(c) | MD-271 |
-| HU-EMP-07 | Registrar una empresa con base de datos dedicada | `admin_monkey` | ⚪ | D24, P2(d) | MD-272 |
-| HU-EMP-08 | Archivar una empresa | `admin_monkey` | ✅ | D97, SEG-68 | MD-273 |
-| HU-EMP-09 | Reactivar una empresa archivada | `admin_monkey` | ✅ | D97, SEG-68 | MD-274 |
-| HU-EMP-10 | Saber qué empresas están por borrarse | `admin_monkey` | 🟡 | D97 punto 5, DT-83 | MD-275 |
-| HU-EMP-11 | Que una empresa archivada se borre del todo al vencer su plazo | `admin_monkey` | ✅ | D97, SEG-68 | MD-276 |
+| ID | Historia | Rol | Estado | Reglas |
+|---|---|---|---|---|
+| HU-EMP-01 | Registrar una empresa cliente | `admin_monkey` | ✅ | D24, D99, D103, SEG-71 |
+| HU-EMP-02 | Contratar los marcos de la empresa al registrarla | `admin_monkey` | ✅ | D47, D50 |
+| HU-EMP-03 | Reenviar la clave de acceso si no llegó | `admin_monkey` | ✅ | D99, SEG-71 |
+| HU-EMP-04 | Consultar las empresas y su estado | `admin_monkey` | ✅ | D99, D103 |
+| HU-EMP-05 | Fijar y cambiar el cupo de usuarios | `admin_monkey` | ✅ | D103 |
+| HU-EMP-06 | Corregir el nombre o el correo antes del canje | `admin_monkey` | ⚪ | P2(c) |
+| HU-EMP-07 | Registrar una empresa con base de datos dedicada | `admin_monkey` | ⚪ | D24, P2(d) |
+| HU-EMP-08 | Archivar una empresa | `admin_monkey` | ✅ | D97, SEG-68 |
+| HU-EMP-09 | Reactivar una empresa archivada | `admin_monkey` | ✅ | D97, SEG-68 |
+| HU-EMP-10 | Saber qué empresas están por borrarse | `admin_monkey` | 🟡 | D97 punto 5, DT-83 |
+| HU-EMP-11 | Que una empresa archivada se borre del todo al vencer su plazo | `admin_monkey` | ✅ | D97, SEG-68 |
 
 ---
 

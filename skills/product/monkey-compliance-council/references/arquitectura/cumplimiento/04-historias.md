@@ -10,8 +10,6 @@ tiene?** Cada historia dice quién, qué y para qué; sus criterios citan la reg
 ver qué falló en una prueba automática, [HU-CT-06](../control-tecnico/04-historias.md); ver solo lo mío y «Mi
 trabajo», [HU-USR-18 y 19](../gestion-usuarios/04-historias.md); asignar dueño y ejecutor, HU-USR-15 y 16.
 
-**Jira:** épica [MD-319](https://rod2408.atlassian.net/browse/MD-319), una historia por fila. El cerebro manda: si una historia cambia, se actualiza aquí y después su issue.
-
 **Roles** (D96, D102): `admin_empresa` (el experto en compliance: decide, valida y edita), `responsable` (dueño de sus
 controles), `delegado` (ejecutor) y `auditor` (lee todo y escribe observaciones; no califica). «Persona de empresa» =
 cualquiera de los cuatro; el `responsable` y el `delegado` ven y tocan **solo lo de sus controles** (SEG-66): lo ajeno
@@ -20,40 +18,40 @@ Ante el cliente, los motores son «sonda» o «evaluación automática» (regla 
 
 ## Resumen
 
-| ID | Historia | Rol | Estado | Reglas | Jira |
-|---|---|---|---|---|---|
-| HU-CUM-01 | Ver el estado de cada marco del servicio con su avance y cobertura | Persona de empresa | ✅ | D62, D80, D87, D118 | MD-389 |
-| HU-CUM-02 | Declarar el período auditado de un marco | `admin_empresa` | ✅ | D87, D105, `P26` | MD-390 |
-| HU-CUM-03 | Pedir la vista técnica del resumen y de los controles | `admin_empresa` · `auditor` | ✅ | D81, D96 | MD-391 |
-| HU-CUM-04 | Ver los controles del servicio con su estado, su código y qué falta | Persona de empresa | ✅ | D80, D62, D102 | MD-392 |
-| HU-CUM-05 | Ver el detalle de un control y sus pruebas | Persona de empresa | ✅ | D70, D82, D85 | MD-393 |
-| HU-CUM-06 | Crear un control propio | `admin_empresa` | 🟡 | D65, D96, D102 | MD-394 |
-| HU-CUM-07 | Ajustar la interpretación o las dimensiones de un control | `admin_empresa` | ✅ | D96 | MD-395 |
-| HU-CUM-08 | Dar de baja un control sin perder su historial | `admin_empresa` | ✅ | D96, D119 | MD-396 |
-| HU-CUM-09 | Saber qué cambia antes de confirmar una edición o una baja | `admin_empresa` | ⚪ | `P33` | MD-397 |
-| HU-CUM-10 | Ver los controles agrupados en un marco sin categorías | Persona de empresa | ⚪ | `P27` | MD-398 |
-| HU-CUM-11 | Subir la evidencia de una prueba documental | `admin_empresa` · `responsable` · `delegado` | ✅ | D88, D102, SEG-60 | MD-399 |
-| HU-CUM-12 | Ver en un solo lugar las evidencias que me tocan | Persona de empresa | ✅ | D102, MD-208 | MD-400 |
-| HU-CUM-13 | Ver o descargar una evidencia sin exponer el archivo | Persona de empresa | ✅ | SEG-60, MD-177 | MD-401 |
-| HU-CUM-14 | Validar o rechazar una evidencia | `responsable` dueño · `admin_empresa` | 🟡 | D102, SEG-67, `P34` | MD-402 |
-| HU-CUM-15 | Que ninguna IA dé por buena una evidencia | Persona de empresa | ✅ | Regla 3, RN-03 | MD-403 |
-| HU-CUM-16 | Gestionar los requerimientos propios de un control | `admin_empresa` | 🟡 | D88 | MD-404 |
-| HU-CUM-17 | Registrar el veredicto de una prueba manual | `admin_empresa` · `responsable` · `delegado` | 🟡 | D85, D121, `P37` | MD-405 |
-| HU-CUM-18 | Aprobar o rechazar un veredicto | `responsable` dueño · `admin_empresa` | 🟡 | D121, SEG-67, `P34` | MD-406 |
-| HU-CUM-19 | Consultar el historial de veredictos de una prueba | Persona de empresa | 🟡 | D121, D119 | MD-407 |
-| HU-CUM-20 | Excluir un activo de una prueba con motivo y vigencia | `admin_empresa` | 🟡 | D96, D87, SEG-67 | MD-408 |
-| HU-CUM-21 | Ver las exclusiones del servicio y cuáles vencieron | `admin_empresa` · `auditor` | ✅ | D96, DT-72 | MD-409 |
-| HU-CUM-22 | Escribir una observación sobre un servicio, un control o una evidencia | `auditor` | 🟡 | D96, SEG-69, SEG-70 | MD-410 |
-| HU-CUM-23 | Responder una observación | `admin_empresa` · `responsable` · `delegado` | 🟡 | SEG-70, `P37`, `P39` | MD-411 |
-| HU-CUM-24 | Cerrar o devolver una observación que escribí | `auditor` (su autor) | 🟡 | SEG-69, SEG-70 | MD-412 |
-| HU-CUM-25 | Ver los riesgos y causas del servicio en el mapa de calor | Persona de empresa | ✅ | D33, D76, D102 | MD-413 |
-| HU-CUM-26 | Crear, editar, dar de baja y reactivar riesgos y causas | `admin_empresa` | ✅ | D28, D93, D96 | MD-414 |
-| HU-CUM-27 | Vincular causas a riesgos y controles a causas | `admin_empresa` | ✅ | D96 | MD-415 |
-| HU-CUM-28 | Reevaluar un riesgo y ver cómo cambió | `admin_empresa` · `auditor` | ✅ | D33, D76 | MD-416 |
-| HU-CUM-29 | Decidir el tratamiento de un riesgo | `admin_empresa` | ✅ | D30 | MD-417 |
-| HU-CUM-30 | Ver el riesgo residual y las matrices inherente y residual | `admin_empresa` · `auditor` | ⚪ | `P22`, D75 | MD-418 |
-| HU-CUM-31 | Que lo no medido nunca cuente como cumplido | Persona de empresa | ✅ | D62, D68, §9, DT-50 | MD-419 |
-| HU-CUM-32 | Calificar el marco de un servicio como auditor | `auditor` | ⚪ | D96, `P35` | MD-420 |
+| ID | Historia | Rol | Estado | Reglas |
+|---|---|---|---|---|
+| HU-CUM-01 | Ver el estado de cada marco del servicio con su avance y cobertura | Persona de empresa | ✅ | D62, D80, D87, D118 |
+| HU-CUM-02 | Declarar el período auditado de un marco | `admin_empresa` | ✅ | D87, D105, `P26` |
+| HU-CUM-03 | Pedir la vista técnica del resumen y de los controles | `admin_empresa` · `auditor` | ✅ | D81, D96 |
+| HU-CUM-04 | Ver los controles del servicio con su estado, su código y qué falta | Persona de empresa | ✅ | D80, D62, D102 |
+| HU-CUM-05 | Ver el detalle de un control y sus pruebas | Persona de empresa | ✅ | D70, D82, D85 |
+| HU-CUM-06 | Crear un control propio | `admin_empresa` | 🟡 | D65, D96, D102 |
+| HU-CUM-07 | Ajustar la interpretación o las dimensiones de un control | `admin_empresa` | ✅ | D96 |
+| HU-CUM-08 | Dar de baja un control sin perder su historial | `admin_empresa` | ✅ | D96, D119 |
+| HU-CUM-09 | Saber qué cambia antes de confirmar una edición o una baja | `admin_empresa` | ⚪ | `P33` |
+| HU-CUM-10 | Ver los controles agrupados en un marco sin categorías | Persona de empresa | ⚪ | `P27` |
+| HU-CUM-11 | Subir la evidencia de una prueba documental | `admin_empresa` · `responsable` · `delegado` | ✅ | D88, D102, SEG-60 |
+| HU-CUM-12 | Ver en un solo lugar las evidencias que me tocan | Persona de empresa | ✅ | D102, MD-208 |
+| HU-CUM-13 | Ver o descargar una evidencia sin exponer el archivo | Persona de empresa | ✅ | SEG-60, MD-177 |
+| HU-CUM-14 | Validar o rechazar una evidencia | `responsable` dueño · `admin_empresa` | 🟡 | D102, SEG-67, `P34` |
+| HU-CUM-15 | Que ninguna IA dé por buena una evidencia | Persona de empresa | ✅ | Regla 3, RN-03 |
+| HU-CUM-16 | Gestionar los requerimientos propios de un control | `admin_empresa` | 🟡 | D88 |
+| HU-CUM-17 | Registrar el veredicto de una prueba manual | `admin_empresa` · `responsable` · `delegado` | 🟡 | D85, D121, `P37` |
+| HU-CUM-18 | Aprobar o rechazar un veredicto | `responsable` dueño · `admin_empresa` | 🟡 | D121, SEG-67, `P34` |
+| HU-CUM-19 | Consultar el historial de veredictos de una prueba | Persona de empresa | 🟡 | D121, D119 |
+| HU-CUM-20 | Excluir un activo de una prueba con motivo y vigencia | `admin_empresa` | 🟡 | D96, D87, SEG-67 |
+| HU-CUM-21 | Ver las exclusiones del servicio y cuáles vencieron | `admin_empresa` · `auditor` | ✅ | D96, DT-72 |
+| HU-CUM-22 | Escribir una observación sobre un servicio, un control o una evidencia | `auditor` | 🟡 | D96, SEG-69, SEG-70 |
+| HU-CUM-23 | Responder una observación | `admin_empresa` · `responsable` · `delegado` | 🟡 | SEG-70, `P37`, `P39` |
+| HU-CUM-24 | Cerrar o devolver una observación que escribí | `auditor` (su autor) | 🟡 | SEG-69, SEG-70 |
+| HU-CUM-25 | Ver los riesgos y causas del servicio en el mapa de calor | Persona de empresa | ✅ | D33, D76, D102 |
+| HU-CUM-26 | Crear, editar, dar de baja y reactivar riesgos y causas | `admin_empresa` | ✅ | D28, D93, D96 |
+| HU-CUM-27 | Vincular causas a riesgos y controles a causas | `admin_empresa` | ✅ | D96 |
+| HU-CUM-28 | Reevaluar un riesgo y ver cómo cambió | `admin_empresa` · `auditor` | ✅ | D33, D76 |
+| HU-CUM-29 | Decidir el tratamiento de un riesgo | `admin_empresa` | ✅ | D30 |
+| HU-CUM-30 | Ver el riesgo residual y las matrices inherente y residual | `admin_empresa` · `auditor` | ⚪ | `P22`, D75 |
+| HU-CUM-31 | Que lo no medido nunca cuente como cumplido | Persona de empresa | ✅ | D62, D68, §9, DT-50 |
+| HU-CUM-32 | Calificar el marco de un servicio como auditor | `auditor` | ⚪ | D96, `P35` |
 
 ---
 

@@ -8,8 +8,6 @@ y citan la regla que los fija. El detalle técnico (cuerpos, errores) está en e
 [enums](../../../../../../contracts/enums.md); la secuencia, en [`03-flujos.md`](03-flujos.md); qué exige cada marco, en
 [`marcos/`](marcos/README.md); los pasos de cada caso, en [`05-casos-de-uso.md`](05-casos-de-uso.md).
 
-**Jira:** épica [MD-316](https://rod2408.atlassian.net/browse/MD-316), una historia por fila. El cerebro manda: si una historia cambia, se actualiza aquí y después su issue.
-
 **Roles** (D96): `admin_monkey` (Monkey Admin) cura el catálogo; `admin_empresa` lee los marcos que puede usar;
 «Persona» = cualquier usuario con sesión, que solo ve opciones de formularios, nunca el catálogo crudo. La carga inicial
 la corre el **equipo de Monkey** con un script, sin usuario humano (D35); no es una pantalla. **Estado** de cada
@@ -20,24 +18,24 @@ historia: ✅ construida · 🟡 parcial · ⚪ por construir.
 
 ## Resumen
 
-| ID | Historia | Rol | Estado | Reglas | Jira |
-|---|---|---|---|---|---|
-| HU-CAT-01 | Ver las opciones de un formulario con su etiqueta en mi idioma | Persona | ✅ | `enums.md`, `404` | MD-325 |
-| HU-CAT-02 | Ver los marcos que Monkey ofrece y elegir solo los contratados | `admin_empresa` | 🟡 | D37, D47, D50, DT-41 | MD-326 |
-| HU-CAT-03 | Consultar el catálogo maestro en Monkey Admin | `admin_monkey` | ✅ | D31, SEG-06, `FORBIDDEN`, `NOT_FOUND` | MD-327 |
-| HU-CAT-04 | Encontrar los controles sin evidencia requerida o sin requisito | `admin_monkey` | ✅ | contrato (filtros) | MD-328 |
-| HU-CAT-05 | Crear y editar controles, riesgos, causas, pruebas y evidencias requeridas | `admin_monkey` | ✅ | SEG-36, `CODE_ALREADY_EXISTS`, `VALIDATION_FAILED` | MD-329 |
-| HU-CAT-06 | Que lo que ve el cliente de una prueba nunca nombre al proveedor | `admin_monkey` | ✅ | D70, D82, SEG-39, `text.names_provider` | MD-330 |
-| HU-CAT-07 | Dar de baja y reactivar una pieza sin borrarla | `admin_monkey` | ✅ | D28, SEG-36, `CATALOG_ITEM_IN_USE` | MD-331 |
-| HU-CAT-08 | Vincular y desvincular piezas del catálogo | `admin_monkey` | ✅ | `LINK_ALREADY_EXISTS`, `CATALOG_ITEM_IN_USE`, SEG-36 | MD-332 |
-| HU-CAT-09 | Que solo `admin_monkey` pueda cambiar el catálogo | `admin_monkey` | ✅ | D31, SEG-06, `FORBIDDEN` | MD-333 |
-| HU-CAT-10 | Cargar el catálogo del comité sin adivinar nada | Equipo de Monkey | 🟡 | D35, D38, D39, D68, P9, DT-69 | MD-334 |
-| HU-CAT-11 | Reconciliar el Excel nuevo del comité con lo cambiado desde Monkey Admin | Equipo de Monkey | ✅ | D35, SEG-36 | MD-335 |
-| HU-CAT-12 | Que mi empresa no cambie cuando Monkey cambia el catálogo | `admin_empresa` | ✅ | D28, D36, D40 | MD-336 |
-| HU-CAT-13 | Publicar una versión del catálogo y propagarla a las empresas | `admin_monkey` | ⚪ | A4, §3.5 | MD-337 |
-| HU-CAT-14 | Aceptar o no un cambio que altera cómo se mide | `admin_empresa` | ⚪ | A4, D96 | MD-338 |
-| HU-CAT-15 | Activar un marco nuevo mapeando, sin reconstruir controles | `admin_monkey` | ⚪ | D37, D50, D56, DT-38 | MD-339 |
-| HU-CAT-16 | Ver el contenido del catálogo en mi idioma | Persona | 🟡 | DT-100, DT-21 | MD-340 |
+| ID | Historia | Rol | Estado | Reglas |
+|---|---|---|---|---|
+| HU-CAT-01 | Ver las opciones de un formulario con su etiqueta en mi idioma | Persona | ✅ | `enums.md`, `404` |
+| HU-CAT-02 | Ver los marcos que Monkey ofrece y elegir solo los contratados | `admin_empresa` | 🟡 | D37, D47, D50, DT-41 |
+| HU-CAT-03 | Consultar el catálogo maestro en Monkey Admin | `admin_monkey` | ✅ | D31, SEG-06, `FORBIDDEN`, `NOT_FOUND` |
+| HU-CAT-04 | Encontrar los controles sin evidencia requerida o sin requisito | `admin_monkey` | ✅ | contrato (filtros) |
+| HU-CAT-05 | Crear y editar controles, riesgos, causas, pruebas y evidencias requeridas | `admin_monkey` | ✅ | SEG-36, `CODE_ALREADY_EXISTS`, `VALIDATION_FAILED` |
+| HU-CAT-06 | Que lo que ve el cliente de una prueba nunca nombre al proveedor | `admin_monkey` | ✅ | D70, D82, SEG-39, `text.names_provider` |
+| HU-CAT-07 | Dar de baja y reactivar una pieza sin borrarla | `admin_monkey` | ✅ | D28, SEG-36, `CATALOG_ITEM_IN_USE` |
+| HU-CAT-08 | Vincular y desvincular piezas del catálogo | `admin_monkey` | ✅ | `LINK_ALREADY_EXISTS`, `CATALOG_ITEM_IN_USE`, SEG-36 |
+| HU-CAT-09 | Que solo `admin_monkey` pueda cambiar el catálogo | `admin_monkey` | ✅ | D31, SEG-06, `FORBIDDEN` |
+| HU-CAT-10 | Cargar el catálogo del comité sin adivinar nada | Equipo de Monkey | 🟡 | D35, D38, D39, D68, P9, DT-69 |
+| HU-CAT-11 | Reconciliar el Excel nuevo del comité con lo cambiado desde Monkey Admin | Equipo de Monkey | ✅ | D35, SEG-36 |
+| HU-CAT-12 | Que mi empresa no cambie cuando Monkey cambia el catálogo | `admin_empresa` | ✅ | D28, D36, D40 |
+| HU-CAT-13 | Publicar una versión del catálogo y propagarla a las empresas | `admin_monkey` | ⚪ | A4, §3.5 |
+| HU-CAT-14 | Aceptar o no un cambio que altera cómo se mide | `admin_empresa` | ⚪ | A4, D96 |
+| HU-CAT-15 | Activar un marco nuevo mapeando, sin reconstruir controles | `admin_monkey` | ⚪ | D37, D50, D56, DT-38 |
+| HU-CAT-16 | Ver el contenido del catálogo en mi idioma | Persona | 🟡 | DT-100, DT-21 |
 
 ---
 
