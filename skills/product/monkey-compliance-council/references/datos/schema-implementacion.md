@@ -134,7 +134,7 @@ MAIL_PROVIDER="log"               # `log` (solo escribe el mensaje en el log; el
 MAIL_API_KEY=""                   # credencial del servicio de correo; obligatoria si MAIL_PROVIDER no es `log`. Nunca en el repo
 MAIL_FROM=""                      # remitente, p. ej. «Monkey <no-reply@tu-dominio>»; el dominio debe estar verificado en el servicio
 PLATFORM_APP_URL="http://localhost:4200"  # dónde canjea la clave el cliente (Monkey Platform); sin barra final
-ADMIN_APP_URL="http://localhost:4201" # dónde abre el enlace de recuperar la contraseña el admin_monkey (Monkey Admin); sin valor usa PLATFORM_APP_URL (D101)
+ADMIN_APP_URL="http://localhost:4201" # dónde abren el enlace de recuperar la contraseña del admin_monkey y la invitación de administrador (Monkey Admin, D101, D117). Obligatoria: sin ella no se envía el enlace y el despliegue se detiene en check-env (MD-492)
 
 # Componente 3 (D46)
 CREDENTIALS_ENCRYPTION_KEY="..."  # 32 bytes en base64 (AES-256-GCM): cifra las credenciales de los sistemas que
