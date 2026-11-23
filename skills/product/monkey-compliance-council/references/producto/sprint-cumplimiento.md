@@ -28,7 +28,7 @@ cambios con aprobación), §7.5 (el veredicto) y §7.6 (las observaciones).
 | Responsables de la organización (MD-105) | MD-133 cargos en la API · MD-135 cargos en pantalla (`/responsables` en Platform): **construidos** |
 | Medición y resumen (MD-106) | MD-137 resumen del servicio · MD-138 motor de cálculo (`domain/engine/`) · MD-139 estado del activo: **construidos** |
 | Exclusiones y cierre (MD-107) | MD-144 exclusiones · MD-168 período y fecha de corte (API y pantalla) · MD-171 vencimiento derivado al leer · MD-145 evaluaciones inmutables: **construidos**. **Falta:** MD-170 exclusión de un check (`DT-74`). MD-147 verificación del backend y MD-149 revisión de pantallas y demo: sin comprobar |
-| Auditoría (MD-152) | MD-155 veredicto manual (en dos niveles desde MD-194) y MD-157 rol auditor: **construidos**. MD-154 observaciones del auditor: **API construida; faltan las pantallas** (y el aviso a la empresa, `P39`) |
+| Auditoría (MD-152) | MD-155 veredicto manual (en dos niveles desde MD-194) y MD-157 rol auditor: **construidos**. MD-154 observaciones del auditor: **API construida; faltan las pantallas** (y el aviso a la empresa, D143) |
 
 ## Lo que sigue pendiente del motor del comité (D68)
 
@@ -66,4 +66,4 @@ El comité no entregará el Excel de permisos por pantalla: manda la matriz de `
 
 ## Preguntas abiertas que tocan este sprint
 
-`datos/pendientes/README.md`: **P22** (lo que falta para calcular el riesgo), **P26** (período y fecha de corte: definidos de forma provisional con D87) y **P35** (la evaluación del auditor).
+`datos/pendientes/README.md`: **P22** (lo que falta para calcular el riesgo), **P26** (cerrada por D145) y **P35** (la evaluación del auditor).

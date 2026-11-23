@@ -37,18 +37,3 @@ cálculo de cobertura en nube; no bloquean el módulo de Cumplimiento.
 2. Quién revisa el texto de IA antes de que llegue al cliente y quién responde por un falso positivo.
 
 **Qué depende:** columnas nuevas de `check_results` (recurso, región, detalle), carga de checks, `Evaluation` en nube y el paso 3 del onboarding para nube (construido para AWS y GCP, D58 y D112).
-
-
----
-
-## P49 · Los vínculos de la VF18 que no son checks, y la prioridad de una brecha sin severidad
-
-**Estado:** abierto desde 2026-11-22 (D129). El resto de `TEST_CHECKS` está decidido y ratificado por el comité.
-
-1. **19 vínculos con check ID `N/A`**: 16 son módulos de la sonda (detección de vulnerabilidades, monitoreo de integridad de archivos, inventario, detección de intrusiones y rootcheck) y 3 son puntajes globales (de la evaluación de configuración de la sonda, de la de bases de datos y del marco CIS del motor de nube). **Doce son Directos**, así que deciden el cumplimiento de su prueba. ¿Cuándo es PASS y cuándo FAIL cada uno? Hoy Monkey solo lee la evaluación de configuración de la sonda y los checks del motor de nube.
-2. La fila «Detección de vulnerabilidades» es Directo en VUL-1 y en VUL-2, y `IN-07` pide que un atributo técnico sea Directo en un solo control. ¿Cuál de los dos es el dueño?
-3. **La prioridad del mensaje de brecha** es la severidad del check por la criticidad del activo (D138), pero los checks de la sonda no traen severidad. ¿Qué se usa para ellos?
-
-**Qué depende:** el rol de esos 19 vínculos (RC-04), el mensaje de brecha (RC-18) y D7 (las vulnerabilidades solo como insumo), que estos Directos cambiarían.
-
----

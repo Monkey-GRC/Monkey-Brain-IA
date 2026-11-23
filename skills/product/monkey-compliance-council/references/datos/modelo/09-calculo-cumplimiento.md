@@ -5,7 +5,7 @@
 
 ## 9. Cómo se calcula el cumplimiento
 
-Regla del **comité**: la hoja `MAP CALOR` de la VF18 (secciones 2 a 14), D128 y D130. Ante una duda de cálculo, manda esta sección; ante una diferencia con el libro, manda el libro. Las reglas se citan por su código del libro para poder volver a él: estados por nivel (§3.x del libro), reglas de prueba `T-01` a `T-07`, nivel del control `R1` a `R6`, suficiencia `S-01` a `S-05`, parámetros `PR-01` a `PR-16`, gestión `G-01` a `G-11` y documentos `D-01` a `D-15`. Las reglas `RN-xx` y `REQ-xxx` de la VF2 valen **solo donde no contradicen** a `MAP CALOR` (tabla 5 de `01_DESARROLLO`); lo que se conserva de ellas está dicho abajo. Lo que el libro no define o donde se contradice está en `P48`.
+Regla del **comité**: la hoja `MAP CALOR` de la VF18 (secciones 2 a 14), D128 y D130. Ante una duda de cálculo, manda esta sección; ante una diferencia con el libro, manda el libro. Las reglas se citan por su código del libro para poder volver a él: estados por nivel (§3.x del libro), reglas de prueba `T-01` a `T-07`, nivel del control `R1` a `R6`, suficiencia `S-01` a `S-05`, parámetros `PR-01` a `PR-16`, gestión `G-01` a `G-11` y documentos `D-01` a `D-15`. Las reglas `RN-xx` y `REQ-xxx` de la VF2 valen **solo donde no contradicen** a `MAP CALOR` (tabla 5 de `01_DESARROLLO`); lo que se conserva de ellas está dicho abajo. Lo que el libro no definía o donde se contradecía lo cerró D140.
 
 ### Los principios (`00_LEEME`, P1 a P7)
 
@@ -47,7 +47,7 @@ Los valores y sus etiquetas viven en `contracts/enums/cumplimiento.md`.
 | FAIL | No cumple y no tiene excepción aprobada | Si el check es Directo, excepción del test; si es Complementario, observación |
 | FAIL con excepción aprobada | Hay una excepción formal vigente (D135) | Cuenta como PASS mientras esté vigente; se muestra marcado |
 | No aplica | La plataforma o la política del check no existe en el alcance del cliente | No entra en el cálculo |
-| Sin datos | Debería aplicar y no hay resultado (activo sin agente o sin conexión, recolección fallida, permisos) | Nunca es PASS: el test queda pendiente o en excepción de cobertura (`P48`, punto 1) |
+| Sin datos | Debería aplicar y no hay resultado (activo sin agente o sin conexión, recolección fallida, permisos) | Nunca es PASS: el test queda pendiente mientras la ventana está abierta y en excepción de cobertura al cerrarla (D140) |
 
 De la lectura de los motores: `passed` → PASS · `failed` → FAIL (o FAIL con excepción, si la hay) · `not_applicable` → No aplica · `not_run` → Sin datos. **El error técnico se conserva** (DEV-16): un resultado `invalid` se reintenta al menos tres veces y, si sigue fallando, se avisa para revisión (D76); mientras tanto el check está **Sin datos**. Una corrida que no llegó a la cuenta del cliente (D57) no guarda resultados.
 
@@ -101,7 +101,7 @@ De la lectura de los motores: `passed` → PASS · `failed` → FAIL (o FAIL con
 - **R2.** El test documental no sube el nivel por sí solo, pero si el documento base falta, está vencido o no está aprobado, **el nivel máximo es Débil**.
 - **R3.** La escala es interna de Monkey; no reemplaza la opinión del auditor.
 - **R4.** **Un control cumple solo en Adecuado o Sólido.** Cualquier requisito Pendiente, Vencido o No cumple impide el 100%. El cumplimiento es definitivo solo con la aprobación final (D132).
-- **R5.** El evaluador puede cambiar el nivel sugerido solo con justificación escrita y aprobación del `admin_empresa`; Monkey guarda los dos, el sugerido y el final (quién es el evaluador: `P48`).
+- **R5.** El evaluador puede cambiar el nivel sugerido solo con justificación escrita y aprobación del `admin_empresa`; Monkey guarda los dos, el sugerido y el final (el evaluador es el responsable del control, D140).
 - **R6.** Dos vistas del mismo control: **a la fecha** (la última ventana) y **del período** (todas las ventanas del período auditado). El período cumple solo si cada ventana tuvo evidencia válida.
 
 **El avance de un control es su C%**, y se muestra junto al nivel y a la lista de requisitos que impiden el 100% (REQ-026 se conserva).
@@ -128,7 +128,7 @@ Cada control se evalúa por **ventanas de calendario** según su periodicidad (l
 |---|---|---|---|
 | Diario · Semanal · Mensual · Bimensual | Día · semana · mes · bimestre calendario | El mismo día · 2 · 5 · 10 días antes | Vencido |
 | Trimestral · Semestral | Trimestre (ene–mar…) · semestre calendario | 15 · 20 días antes | Vencido |
-| Anual | Año del período (o 12 meses desde la última ejecución: `P48`) | 30 días antes | Vencido |
+| Anual | 12 meses desde la última ejecución (D140) | 30 días antes | Vencido |
 | Permanente | Continua: resultados automáticos con frescura ≤ PR-05; lo manual del control, con la periodicidad de su documento | Cuando la última recolección supera PR-05 | Evidencia → Desactualizada; test → Pendiente |
 | Cuando sea requerido | Por evento: evidencia de cada evento del período, o una declaración trimestral de «sin ocurrencias» del responsable | 15 días antes del cierre del trimestre | Evento sin evidencia → Excepción; sin declaración → Vencido |
 
@@ -163,7 +163,7 @@ La **matriz inherente** y la **residual** muestran la posición de cada riesgo a
 
 ### Los parámetros (§11 del libro)
 
-**Configurables y nunca escritos en el código** (RC-19). Quién los edita y si son por empresa o por servicio: `P48`.
+**Configurables y nunca escritos en el código** (RC-19). Tienen un valor de Monkey igual para todos los clientes; la empresa solo cambia la periodicidad de sus controles (G-10) (D140).
 
 | ID | Parámetro | Por defecto |
 |---|---|---|
@@ -191,7 +191,7 @@ Un test técnico con 50 servidores en alcance y sus checks Directos (T-04):
 | Caso | Situación | Estado del test |
 |---|---|---|
 | C1 | 45 en PASS y 5 en FAIL | Excepción |
-| C2 | 45 en PASS y 5 sin resultado | Excepción por cobertura según T-04(d), o Pendiente (`P48`, punto 1) |
+| C2 | 45 en PASS y 5 sin resultado | Pendiente mientras la ventana está abierta; excepción por cobertura (T-04 d) al cerrarla (D140) |
 | C3 | 50 de 50 en PASS | Correcto |
 | C4 | 48 en PASS y 2 con error técnico (sin datos tras los reintentos) | Igual que C2 |
 | C5 | 47 en PASS y 3 en FAIL con excepción aprobada vigente | Correcto (los 3 se muestran marcados) |

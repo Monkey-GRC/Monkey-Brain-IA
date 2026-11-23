@@ -244,7 +244,7 @@ es y en) y el contenido del detalle por código (`integration.content.<code>.*`)
 | `jira` | `workflow` | — | `coming_soon` | Convertirá cada hallazgo en un ticket asignado y seguirá su avance hasta cerrarlo. |
 
 GitHub no tiene plataforma de conexión porque su categoría de activo y su mapeo a controles los decide el comité (P45; los checks que cuentan, D129,
-P45); el alcance de Jira, también (P46).
+P45); el alcance de Jira lo cerraron D138 y D144.
 
 ## Estado de implementación
 

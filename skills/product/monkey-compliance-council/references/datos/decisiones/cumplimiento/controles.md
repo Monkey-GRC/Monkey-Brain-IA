@@ -45,7 +45,7 @@ Por qué este componente es como es. Lo vigente está en [`arquitectura/cumplimi
 
 **Por qué.** Es el modelo del libro: separa lo que Monkey calcula (el nivel, D130) de lo que una persona aprueba. La IA nunca aprueba (regla 3).
 
-**Qué cambia.** §7 (estados de gestión y aprobaciones por control), `contracts/cumplimiento/controles.md`, `evidencia.md` y `veredictos.md`. **Reemplaza** D121 (el veredicto revisado en dos niveles) y el punto 8 de D102 (la revisión por evidencia); con D133, **reemplaza D88**. **Cierra `P34`**: que el administrador dueño de un control dé la aprobación final de lo suyo es la regla (G-05). Quién registra el resultado de una prueba operativa o técnica manual queda en `P48`.
+**Qué cambia.** §7 (estados de gestión y aprobaciones por control), `contracts/cumplimiento/controles.md`, `evidencia.md` y `veredictos.md`. **Reemplaza** D121 (el veredicto revisado en dos niveles) y el punto 8 de D102 (la revisión por evidencia); con D133, **reemplaza D88**. **Cierra `P34`**: que el administrador dueño de un control dé la aprobación final de lo suyo es la regla (G-05). El resultado de una prueba operativa o técnica manual lo registra el responsable (D140).
 
 **Fuente:** comité funcional, VF18 (`MAP CALOR`, secciones 3.1, 6 y 14; `Modelo de Gestión usuarios`, Tabla 2), 2026-11-22.
 

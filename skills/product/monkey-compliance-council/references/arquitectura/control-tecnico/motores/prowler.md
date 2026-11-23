@@ -38,4 +38,4 @@ entrega resultados crudos que Monkey traduce a su modelo. Wazuh (`wazuh.md`) es 
 | ¿Cómo se guarda en el modelo (recurso hijo, procedencia, ejecuciones)? | `D56`, `modelo/08-control-tecnico.md` |
 | ¿Cómo se ejecuta y con qué aislamiento? | `D57` y `Backend/src/runner/` |
 | ¿Qué falta o está parchado? | `deuda-tecnica/control-tecnico.md` (DT-43, DT-44, DT-45, DT-50, DT-52) |
-| ¿Qué sigue abierto? | `P14` (unidad de evaluación, conexión y legal; el rol de cada motor se cerró en D100 y el catálogo en D129) y `P49` (puntajes globales que la VF18 marca como Directos) |
+| ¿Qué sigue abierto? | `P14` (unidad de evaluación, conexión y legal; el rol de cada motor se cerró en D100 y el catálogo en D129); los puntajes globales los cerraron D141 y D146 |

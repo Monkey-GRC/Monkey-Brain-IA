@@ -25,7 +25,7 @@ límite de tiempo. Lo usa `admin_empresa`.
 > |---|---|
 > | `evidence_requirements`, clonadas de plantillas de evidencia | **Requisitos del control del cliente**, uno por `control_requirements` y control del cliente, con su periodicidad configurada y su «No aplica» justificado y aprobado (D129, RC-02). Los documentos son de la empresa (§11) |
 > | `client_control_tests` (N:M control ↔ test) | Se retira: la prueba pertenece a su control (D129) |
-> | Revisión de cada evidencia por rol (`evidence_reviews`, D102) y del veredicto en dos niveles (`test_verdict_reviews`, D121) | **La aprobación es del control** (D132): estados de gestión y dos aprobaciones (responsable y, al final, `admin_empresa`), con motivo al devolver. La evidencia que causa una devolución queda «devuelta». Quién registra el resultado de una prueba manual: `P48` |
+> | Revisión de cada evidencia por rol (`evidence_reviews`, D102) y del veredicto en dos niveles (`test_verdict_reviews`, D121) | **La aprobación es del control** (D132): estados de gestión y dos aprobaciones (responsable y, al final, `admin_empresa`), con motivo al devolver. La evidencia que causa una devolución queda «devuelta». El resultado de una prueba manual lo registra el responsable al revisar la evidencia del delegado (D140) |
 > | La evidencia vale si cae en el período (C1) | Además, **por ventana** de la periodicidad del control o del requisito (D131); el `admin_empresa` cambia la periodicidad con justificación (G-10). El período auditado dura 6 meses como mínimo |
 > | `exclusions`: un activo sale del denominador de una prueba hasta el fin del período | **Excepción de un check en un activo**: cuenta como PASS marcado, con fecha de fin de 90 días como máximo (D135) |
 > | `client_cause_controls.is_mandatory` y `effect`; `residual_parameters` | Se retiran: el residual sale de la cobertura verificada y de PR-08 a PR-10; el apetito, de las zonas de color (D134) |
@@ -430,7 +430,7 @@ causa— en `new_value`. Lo escribe, en la misma transacción, la escritura que 
 test manual, la entrega de una evidencia, la validación del administrador, decidir una exclusión y lo que mide la
 sonda. Si lo causa el sistema (la sonda), `user_id`, `ip_address` y `user_agent` van nulos.
 
-**Las vulnerabilidades son solo insumo en el MVP** (decisión D7; con la VF18, la detección de vulnerabilidades es check Directo de VUL-1 y VUL-2, `P49`): alimentan los hallazgos de
+**Las vulnerabilidades son solo insumo en el MVP** (decisión D7; con la VF18, la detección de vulnerabilidades es check Directo de VUL-1 y Complementario de VUL-2, y pasa si no hay hallazgos críticos ni altos abiertos, D141): alimentan los hallazgos de
 los controles de gestión de vulnerabilidades y parches (`CC7.1` / `A.8.8`). El módulo con
 vida propia no entra al MVP.
 

@@ -26,16 +26,3 @@ tienen guías de uso: logo oficial sin modificar, espacio libre mínimo, a veces
 **Procedencia hoy** (`DT-68`): colecciones de iconos de marca, no los kits de cada proveedor. Simple Icons: Linux, HP (para HP-UX), PostgreSQL, MySQL, Oracle, MongoDB, GitHub y Jira (estos dos, MD-211) · Devicon: AWS, Azure, GCP, SQL Server y un icono genérico de Unix (para Solaris) · Logos: Microsoft (para Microsoft 365), la «G» de Google (para Google Workspace), Windows, AIX y Apple (para macOS). Cinco son una sustitución por la marca dueña del producto, no el logo propio de ese producto.
 
 **Qué depende:** los logos de `Frontend-Platform` (`logo_key`, D67) y la publicación del marketplace.
-
----
-
-## P50 · Quién traduce al inglés el contenido del catálogo v2
-
-**Estado:** abierto desde 2026-11-22. El requerimiento RC-21 de la VF18 lo deja «por decidir».
-
-1. El libro está solo en español (114 controles, 576 requisitos, 472 pruebas, 42 documentos, 100 causas, 10 riesgos) y la aplicación maneja español e inglés (D111). ¿Quién escribe el inglés y quién lo revisa? *Propuesta: desarrollo lo traduce con IA y marca su procedencia, como D90 con los checks, y el comité lo revisa.*
-2. Mientras no esté, ¿el catálogo v2 se muestra en español también con la aplicación en inglés, como hoy (DT-100)?
-
-**Qué depende:** mostrar el catálogo v2 en inglés; DT-100.
-
----

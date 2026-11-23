@@ -92,7 +92,7 @@ Excluir un **activo de un test** cambia lo que se mide (D74). **El `admin_empres
 #### Response `201`
 El objeto exclusión de arriba.
 
-> - La vigencia **no la manda el cliente:** empieza hoy y termina en el `period_end` de la evaluación del servicio. Si esa evaluación no tiene período, `409 EVALUATION_NOT_DEFINED` (`P26`).
+> - La vigencia **no la manda el cliente:** empieza hoy y termina en el `period_end` de la evaluación del servicio. Si esa evaluación no tiene período, `409 EVALUATION_NOT_DEFINED` (D87, D145).
 > - Repetir una exclusión aprobada y vigente de lo mismo es `409 EXCLUSION_ALREADY_EXISTS`.
 > - **El activo sale del universo aplicable del test** (su resultado pasa a `excluded`) y queda el evento `exclusion.approve`.
 
@@ -136,7 +136,7 @@ Los errores comunes (`FORBIDDEN`, `NOT_FOUND`, `VALIDATION_FAILED`) están en [`
 
 ## Preguntas abiertas
 
-- **`P26`:** período y fecha de corte de la evaluación del servicio. Mientras no se definan, crear una exclusión responde `409 EVALUATION_NOT_DEFINED`.
+- **D87 y D145:** período y fecha de corte de la evaluación del servicio. Mientras no se definan, crear una exclusión responde `409 EVALUATION_NOT_DEFINED`.
 
 ---
 

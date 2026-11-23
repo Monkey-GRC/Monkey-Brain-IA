@@ -13,8 +13,7 @@ los cuerpos y errores están en los contratos de quien envía
 
 Fuente del diagrama: [`05-casos-de-uso.puml`](05-casos-de-uso.puml) (PlantUML; se regenera con
 `skills/process/monkey-docs/scripts/render-uml.sh`). Los casos CU-NOT-01 a CU-NOT-03 incluyen **CU-NOT-04**, el envío
-común por el puerto `Mailer`. CU-NOT-05 a CU-NOT-07 están **por construir**: los dos primeros dependen de `P39`, abierta, y
-sus pasos solo recogen lo ya decidido.
+común por el puerto `Mailer`. CU-NOT-05 a CU-NOT-07 están **por construir**: los dos primeros ya están decididos (D138, D143) y se construyen en MD-69.
 
 ## Resumen
 
@@ -114,18 +113,17 @@ sus pasos solo recogen lo ya decidido.
 
 | | |
 |---|---|
-| **Actor** | Sistema; reciben `admin_empresa`, `responsable`, `delegado` (y quizá `auditor`) |
+| **Actor** | Sistema; reciben `admin_empresa`, `responsable`, `delegado` según D138 |
 | **Precondición** | Un evento de cumplimiento registrado en `compliance_events` |
-| **Postcondición** | Por definir en `P39` |
+| **Postcondición** | El aviso queda en la campana de cada destinatario y entra en su resumen diario por correo (D143) |
 
-**Flujo principal** (solo lo decidido; el resto depende de `P39`)
+**Flujo principal**
 1. Ocurre un evento: asignación o reasignación, evidencia revisada, control que pasa a «no cumple», fallo de la evaluación
-   automática, observación del auditor o vencimiento próximo (lista candidata de `P39` punto 2).
+   automática, observación del auditor o los eventos de D138 (ventana por vencer o vencida, check Directo en falla, control por aprobar, aprobado o devuelto, avisos de Documentos).
 2. El sistema resuelve el dueño y el ejecutor del control (D102).
 3. El sistema genera el aviso con la plantilla de 7 campos de `producto/philosophy.md`, sin nombrar proveedores (SEG-39).
 
-**Abierto en `P39`:** qué eventos notifican (2), quién recibe cada uno (3), canal (1), frecuencia (4) y recordatorios (6,
-cuya periodicidad y días de aviso ya definió D131). Un resumen periódico necesita un planificador que hoy no existe.
+4. El aviso se guarda en la tabla de notificaciones (campana, al instante) y entra en el resumen diario por correo, salvo que la persona haya apagado el correo (D143). El resumen necesita un planificador que hoy no existe.
 
 ### CU-NOT-06 · Consultar mis avisos y preferencias ⚪
 
@@ -133,10 +131,11 @@ cuya periodicidad y días de aviso ya definió D131). Un resumen periódico nece
 |---|---|
 | **Actor** | Persona de Platform |
 | **Precondición** | Sesión abierta |
-| **Postcondición** | Por definir en `P39` |
+| **Postcondición** | La persona ve sus avisos y su preferencia de correo queda guardada |
 
-Campana, leído y no leído, historial y retención (`P39` punto 5) y preferencias de canal y frecuencia (`P39` punto 4).
-Sin pasos hasta que el comité responda.
+1. La persona abre la campana: ve sus avisos de los últimos 90 días, con leído y no leído (D143).
+2. Marca avisos como leídos.
+3. En sus preferencias, apaga o enciende el resumen diario por correo; los avisos de la app no se apagan (D143).
 
 ### CU-NOT-07 · Avisar del borrado próximo de una empresa ⚪
 

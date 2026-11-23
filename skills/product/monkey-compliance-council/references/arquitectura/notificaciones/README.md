@@ -4,8 +4,8 @@ Responde: **¿cómo se entera alguien de que tiene algo que hacer?** Hoy solo po
 la tabla de abajo): no existe un sistema de notificaciones. Este directorio documenta lo que hay, lo que falta y qué lo
 bloquea, para que nadie lo construya a medias por su cuenta.
 
-> **El sistema de notificaciones no está construido.** Es `MD-69`, aplazado, y las preguntas abiertas de `P39`. Mientras
-> `P39` siga abierta **se pregunta, no se resuelve** (`CLAUDE.md`).
+> **El sistema de notificaciones no está construido**, pero ya está decidido: los eventos y destinatarios en D138, los
+> recordatorios en D131 y el canal, la frecuencia y el centro de notificaciones en D143. Se construye en `MD-69`.
 
 ## Lo único que sale hoy
 
@@ -26,17 +26,15 @@ preferencias.
 - **Que un control pasó a no cumplir**, que la sonda falló, que una evidencia fue rechazada, que el auditor
   escribió una observación, que algo vence: nadie avisa. Se ve entrando a mirar.
 
-## Lo que hay que decidir antes de construir
+## Lo que ya está decidido
 
-Está en `P39`, con ocho preguntas (la 8, la invitación por correo, ya la decidió D102 punto 14 y está construida). Las que más condicionan el diseño:
-
-| Pregunta | Por qué bloquea |
+| Tema | Decisión |
 |---|---|
-| ¿Entra en el sprint 3? ¿Correo, en la app, o los dos? | Define si hace falta una tabla de notificaciones o solo un puerto más |
-| ¿Qué eventos notifican? | Hoy el único disparador fiable es `compliance_events` ([Trazabilidad](../trazabilidad/README.md)) |
-| ¿Quién recibe qué? | Depende de la cadena de asignación (D102): dueño, ejecutor y `admin_empresa` |
-| ¿Frecuencia: inmediato o resumen? | Cambia por completo la arquitectura (envío directo vs. cola y planificador) |
-| Recordatorios de vencimiento | Ya definidos: periodicidad por control y días de aviso (D131, PR-06) |
+| Eventos y quién recibe cada uno | D138: ventana por vencer o vencida, check Directo en falla, evidencia automática desactualizada, control por aprobar, aprobado o devuelto, y los avisos de Documentos |
+| Canal | En la app y por correo (D143) |
+| Frecuencia | En la app, al instante; por correo, resumen diario. Cada persona puede apagar el correo (D143). Necesita cola y planificador |
+| Centro de notificaciones | Campana con leído y no leído e historial de 90 días (D143). Necesita una tabla de notificaciones |
+| Recordatorios de vencimiento | Periodicidad por control y días de aviso (D131, PR-06) |
 
 ## Dos restricciones que ya valen
 
@@ -55,14 +53,14 @@ solo mecanismo.
 
 ## Dónde está cada dato
 
-`P39` en `datos/pendientes/notificaciones.md` · `MD-69` · D99, D101, D102 y D117 · `producto/philosophy.md` (cómo se redacta).
+D138, D143 · `MD-69` · D99, D101, D102 y D117 · `producto/philosophy.md` (cómo se redacta).
 
 Registros de este módulo:
 
 | Registro | Dónde |
 |---|---|
 | Decisiones (`D-n`) | [`datos/decisiones/notificaciones.md`](../../datos/decisiones/notificaciones.md): `D138`; lo que sale hoy lo deciden además D99, D101, D102 y D117 ([`empresas`](../../datos/decisiones/empresas.md), [`autenticacion`](../../datos/decisiones/autenticacion.md), [`gestion-usuarios`](../../datos/decisiones/gestion-usuarios.md)) |
-| Pendientes del comité (`P-n`) | [`datos/pendientes/notificaciones.md`](../../datos/pendientes/notificaciones.md): `P39` — **si sigue abierto, se pregunta** |
+| Pendientes del comité (`P-n`) | [`datos/pendientes/notificaciones.md`](../../datos/pendientes/notificaciones.md): ninguno abierto (P39 la cerró D143) |
 | Deuda vigente (`DT-n`) | [`deuda-tecnica/notificaciones.md`](../../deuda-tecnica/notificaciones.md): 1 ficha (`DT-83`) |
 | Requisitos de seguridad (`SEG-n`) | ninguno propio. Un aviso que vea un usuario cumple los de [`plataforma.md`](../../seguridad/plataforma.md) |
 

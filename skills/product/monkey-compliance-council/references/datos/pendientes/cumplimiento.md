@@ -2,21 +2,7 @@
 
 Preguntas abiertas que afectan a [Cumplimiento](../../arquitectura/cumplimiento/README.md). **Si una sigue aquí, no se resuelve por cuenta propia: se pregunta.** Tablero y reglas: [`README.md`](README.md).
 
-## P26 · Quién define el período auditado y la fecha de corte de una evaluación
 
-**Estado:** abierto desde 2026-10-14 (MD-108). El motor no ejecuta sin los cinco datos de la evaluación: servicio, marco, versión, **período auditado** y **fecha de corte** (REQ-004, §9). `service_frameworks` tiene `period_start`, `period_end` y `cutoff_date` (columnas desde MD-144), pero ningún formulario ni endpoint las llena: el onboarding solo pide un `evaluation_period` de texto.
-
-1. **¿Quién declara el período auditado y cuándo?** *Recomendación: `admin_empresa`, al contratar el marco o crear el servicio; editable mientras no se haya congelado.*
-2. **¿La fecha de corte es «hoy» mientras se monitorea y se congela al emitir una evaluación del servicio (hoy en pausa, D96)?** *Recomendación: sí; así cada evaluación dice sobre qué datos se hizo.*
-
-**Respuesta provisional (D87, 2026-10-20):** se adoptaron las dos recomendaciones para poder construirlo (el criterio de desarrollo no sustituye al comité): `admin_empresa` declara el período; la fecha de corte es «hoy» mientras se monitorea y se congela al emitir una evaluación. Inicio y fin pueden coincidir (Tipo I). **Sigue abierto para el comité:** si se vende Tipo I, qué pasa al llegar el período siguiente (hoy una sola fila por servicio y marco) y el nombre (el Excel dice «fecha de evaluación»).
-
-**Lo que respondió la VF18 (D131, 2026-11-22):** el período auditado se configura al inicio, por servicio y marco, y en SOC 2 dura **como mínimo 6 meses** (PR-16, configurable); solo cuentan las ventanas y las evidencias que caen dentro (G-11). La fecha de corte no la define el libro y sigue siendo «hoy» (D105). **Sigue abierto:** si se vende Tipo I (con el mínimo de 6 meses no cabría una fecha puntual) y qué pasa al llegar el período siguiente.
-
-**Qué depende:** el resumen del servicio (MD-137), las evaluaciones del servicio (en pausa, D96) y la vigencia de las exclusiones (MD-144). Sin período la API responde `not_measured` y `409 EVALUATION_NOT_DEFINED`, también al proponer una exclusión (MD-144). **MD-168 está construido (2026-10-20, D87)**: `PUT …/evaluation-period`.
-
-
----
 
 ## P27 · Cómo se agrupan los controles en un marco sin categorías
 
@@ -73,22 +59,3 @@ Preguntas abiertas que afectan a [Cumplimiento](../../arquitectura/cumplimiento/
 7. **¿El texto «en qué falla / qué hacer»** de la plantilla de 7 campos?
 
 **Qué depende:** ampliar el contrato del dashboard y esa tabla; no bloquea.
-
-
----
-
-## P48 · El motor v2: lo que la VF18 no define o donde se contradice
-
-**Estado:** abierto desde 2026-11-22 (D128). El resto del modelo de evaluación del libro está decidido (D130 a D135).
-
-1. **Un activo en alcance sin resultado.** La regla T-04 dice que es excepción; la sección 3.2 dice «pendiente o en excepción de cobertura». ¿Cuándo es cada uno? (¿pendiente mientras la ventana está abierta y excepción al cerrarla?)
-2. **Quién registra el resultado de una prueba manual** (operativa, de población o técnica manual: correcto, observación o excepción). ¿El delegado o el responsable al cargar su evidencia, o el responsable al aprobar el control?
-3. **R5: ¿quién es «el evaluador»** que puede cambiar el nivel sugerido de un control, con justificación y aprobación del administrador?
-4. **El plan de remediación** que pide el nivel Parcial (uno por cada excepción) y **el plan de tratamiento aprobado** de la zona naranja del riesgo: ¿qué datos lleva cada uno, quién lo registra y quién lo aprueba? Hoy existen `action_plans` y `risk_treatments`.
-5. **Los parámetros PR-01 a PR-16**: ¿son valores de Monkey para todos, de cada empresa o de cada servicio, y quién los edita? El libro solo dice que el `admin_empresa` cambia la periodicidad de un control (G-10).
-6. **La ventana anual**: ¿«año del período» o «12 meses desde la última ejecución»? El libro da las dos.
-7. **Las reglas 2, 16 y 17** que citan `REQUISITOS`, `IN-07` e `IN-06` no vienen en la copia del libro (DEV-01). ¿Se entregan, o basta con lo que dicen `IN-06` e `IN-07`?
-
-**Qué depende:** el motor v2 (RC-06, RC-08, RC-11 y RC-19).
-
----

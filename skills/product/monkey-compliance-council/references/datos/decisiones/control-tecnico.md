@@ -319,3 +319,31 @@ exige permiso para crear proyectos y facturación propia para los checks de moni
 **Qué cambia.** `contracts/enums/onboarding/conexion-activos.md` y `conectar.md`, `contracts/enums.md`, el Backend (datos de referencia y catálogos) y los pasos «Cómo conectar» de GCP y AWS en Frontend-Platform.
 
 **Fuente:** Rod, 2026-11-13 («que GCP quede en el enum que es, todo funcional, sin cosas hardcodeadas que no sean necesarias»).
+
+---
+
+## D141 · Los vínculos de la VF18 que no son checks, el dueño de la detección de vulnerabilidades y la prioridad de una brecha de la sonda (2026-11-23; cierra P49 salvo el umbral de los puntajes; ajusta D7 y el punto 4 de D139)
+
+**Decisión** (respuestas del comité a `P49`):
+
+1. **Los 16 vínculos a módulos de la sonda** (detección de vulnerabilidades, monitoreo de integridad de archivos, inventario, detección de intrusiones y rootcheck) **pasan si no hay hallazgos críticos ni altos abiertos** y fallan si hay alguno. **Los 3 puntajes globales** (evaluación de configuración de la sonda, la de bases de datos y el marco CIS del motor de nube) pasan si superan un umbral; **el valor del umbral sigue abierto en `P49`**.
+2. **«Detección de vulnerabilidades» es Directo solo en VUL-1**; en VUL-2 pasa a **Complementario**, como pide `IN-07`. El libro la trae Directo en los dos: la carga corrige esa fila hasta que el comité la corrija en el libro.
+3. **La prioridad del mensaje de brecha** de un check de la sonda, que no trae severidad, es **la criticidad del activo** (completa D138).
+
+**Por qué.** Doce de esos vínculos son Directos y deciden su prueba; sin una regla, la prueba no se podía evaluar.
+
+**Qué cambia.** §3 y §9, `contracts/catalogo-maestro.md` (los «N/A» de módulo ya tienen efecto), el cargador del catálogo v2 (rol de VUL-2) y `07-cumplimiento.md`. **Ajusta D7**: las vulnerabilidades dejan de ser solo insumo, porque deciden VUL-1. **Ajusta el punto 4 de D139**: los 16 vínculos de módulo cuentan; los 3 puntajes siguen sin efecto hasta que se fije el umbral.
+
+**Fuente:** comité funcional, 2026-11-23, en reunión con Héctor Ríos (Rod): aprobó las tres propuestas de `P49`.
+
+---
+
+## D146 · Los tres puntajes globales pasan con 80 % o más (2026-11-23; cierra P49)
+
+**Decisión.** Los tres vínculos de `TEST_CHECKS` que son puntajes globales (la evaluación de configuración de la sonda, la de bases de datos y el marco CIS del motor de nube) **pasan con 80 % o más** y fallan por debajo. El 80 % es un parámetro configurable, no un valor escrito en el código (RC-19).
+
+**Por qué.** Era el único punto que D141 dejó abierto; sin él, esos tres vínculos no tenían efecto en el cálculo.
+
+**Qué cambia.** §3 y §9, `contracts/catalogo-maestro.md` y el motor v2 (MD-498): los 19 vínculos «N/A» ya cuentan (completa el punto 4 de D139 y D141).
+
+**Fuente:** Héctor Ríos (Rod), 2026-11-23, como decisión de desarrollo, para no bloquear la VF18. **No es una decisión del comité.**

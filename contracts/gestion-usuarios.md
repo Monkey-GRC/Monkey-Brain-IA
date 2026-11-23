@@ -501,7 +501,7 @@ Precisiones de la construcción (MD-195):
 | `admin_empresa` | Todo; los controles sin dueño se señalan **«Sin asignar»** |
 | `responsable` | Solo los controles de los que es dueño (incluidos los que ejecutan sus delegados), con **el avance de lo suyo**, nunca el de la empresa. Sin vista técnica (`403`) |
 | `delegado` | Solo los controles que ejecuta, con el avance de lo suyo. Sin vista técnica (`403`) |
-| `auditor` | Todo, en solo lectura, con la vista técnica y la cadena de asignación. Sus observaciones llegan al dueño y al ejecutor del control (en «Mi trabajo»; las notificaciones son `P39`) |
+| `auditor` | Todo, en solo lectura, con la vista técnica y la cadena de asignación. Sus observaciones llegan al dueño y al ejecutor del control (en «Mi trabajo»; las notificaciones, D143) |
 
 En las listas de Cumplimiento (`controls`, `evidence`, pruebas de un control, riesgos, observaciones) un `responsable` o `delegado` recibe **solo** lo de sus controles; sin ninguno, la lista llega vacía, no falla. Un recurso que existe pero no es suyo responde `403`; de otra empresa, `404` (`conventions.md`).
 
@@ -582,8 +582,8 @@ Lo que **sigue vigente**:
 
 ## Fuera de este corte
 
-Notificaciones (`P39`), ausencias y delegación temporal, reparto equitativo automático, un rol de soporte de Monkey (D103), el reporte exportable de accesos para el auditor y la contraseña que vence a los 90 días (ver D101).
+Notificaciones (D143, MD-69), ausencias y delegación temporal, reparto equitativo automático, un rol de soporte de Monkey (D103), el reporte exportable de accesos para el auditor y la contraseña que vence a los 90 días (ver D101).
 
 ## Preguntas abiertas
 
-`P35` (calificación del auditor) no bloquean este corte. `P39` (notificaciones) tampoco: el correo de invitación sí entra.
+`P35` (calificación del auditor) no bloquean este corte. Las notificaciones (D143) tampoco: el correo de invitación sí entra.

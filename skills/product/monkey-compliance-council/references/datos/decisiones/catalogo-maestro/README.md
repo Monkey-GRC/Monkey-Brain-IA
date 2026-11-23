@@ -316,7 +316,7 @@ causa→control; sumar Disponibilidad agrega 6 controles.
 1. **Estrategia aditiva con puentes.** El schema v2 se agrega sin retirar las tablas y columnas de la v1, que quedan vacías o nulas tras el reset. La carga alimenta además lo que usa el código v1: `control_tests` (la columna «Test» de `Controles Monkey`), `control_dimensions.type` (del tipo del control) y, en el clonado, los requerimientos de evidencia desde los documentos. Mientras dure, la escritura del catálogo desde Monkey Admin responde `409 CATALOG_READ_ONLY`. La v1 se retira cuando las fases 2 y 3 reescriban el código que la usa (`DT-113`).
 2. **El dominio es de la fila control + punto de enfoque** (`point_of_focus_controls.domain`), no del control: 61 controles tienen 2 a 4 dominios en el libro y `IN-08` no exige que coincidan. La API del Admin devuelve `domains[]` y `domain` como el primero.
 3. **El nombre neutro de la prueba (D70) lo deriva la carga:** en una `T-DOC`, el nombre del documento; en una prueba de control, el texto de su requisito, o el objetivo si ese texto es «Posible Checks …». Se aplica la tabla 9, se valida SEG-39 y queda `display_name_reviewed = false` hasta que Monkey lo revise.
-4. **Los 19 vínculos de `TEST_CHECKS` con check ID «N/A»** se cargan con `check_id` nulo y `module_ref`, sin efecto en el cálculo hasta que el comité resuelva `P49`.
+4. **Los 19 vínculos de `TEST_CHECKS` con check ID «N/A»** se cargan con `check_id` nulo y `module_ref`, sin efecto en el cálculo hasta que el comité resuelva `P49` *(D141: los 16 de módulo ya cuentan; los 3 puntajes, cuando se fije su umbral)*.
 5. **Las plataformas del motor de nube y las políticas de la sonda quedan íntegras en el catálogo** (las 20 y las 77); **ejecutarlas** (adaptador, conexión y credenciales) para las que hoy no se ejecutan va en un ticket aparte. Hoy se ejecutan AWS, GCP y la sonda en Linux y Windows.
 
 **Por qué.** Retirar la v1 ahora obligaba a rehacer el clonado, el motor, la evidencia, los riesgos y el Admin (3 a 4 semanas) y a decidir antes de tiempo el diseño de RC-06 a RC-09. Los puentes mantienen el recorrido crear empresa → contratar SOC 2 → clonar → medir funcionando con la v2. Los otros tres puntos son lo que el libro dice o lo que no define.
@@ -324,3 +324,18 @@ causa→control; sumar Disponibilidad agrega 6 controles.
 **Qué cambia.** §3 (dominio, `control_requirement_tests`, `module_ref`), `contracts/catalogo-maestro.md` («Carga del catálogo v2» y «Transición»), `contracts/cumplimiento/veredictos.md`, `contracts/integraciones.md` y `contracts/enums/control-tecnico.md`.
 
 **Fuente:** Héctor Ríos (Rod), 2026-11-23, en MD-491.
+
+---
+
+## D142 · El contenido del catálogo v2 lo traduce al inglés desarrollo con IA y lo revisa el comité (2026-11-23; cierra P50)
+
+**Decisión** (respuestas del comité a `P50`):
+
+1. **Desarrollo traduce al inglés** el contenido del catálogo v2 con IA, marca su procedencia (traducido por IA, como D90 con los checks) y **el comité lo revisa**.
+2. **Mientras no esté la traducción**, el catálogo se muestra en español también con la aplicación en inglés.
+
+**Por qué.** El libro está solo en español (RC-21, «por decidir») y la aplicación es bilingüe (D111).
+
+**Qué cambia.** `display_name_en` y los demás textos en inglés del catálogo v2 (§3, `contracts/catalogo-maestro.md`), con su procedencia. Lo construye MD-513 y cierra DT-100.
+
+**Fuente:** comité funcional, 2026-11-23, en reunión con Héctor Ríos (Rod): aprobó las dos propuestas de `P50`.

@@ -102,11 +102,11 @@ preparación por severidad se escribe contra esta regla; `DT-65`, el calculador 
 3. **Reglas por tipo de test** T-01 a T-07. En lo técnico **solo deciden los checks Directos** aplicables a la infraestructura del cliente, con el 100% de los activos en alcance con resultado (PR-03); un Complementario en falla es observación; una Dependencia toma la conclusión del control dueño sin reejecutarse. Los checks prueban solo los requisitos técnicos y nunca reemplazan uno documental u operativo (S-01 a S-05).
 4. **Control**: C% = requisitos que cumplen ÷ requisitos aplicables (los «no aplica» aprobados salen del denominador). **Nivel**: 0 No evaluado · 1 Ineficaz · 2 Débil · 3 Parcial · 4 Adecuado · 5 Sólido, con las reglas R1 a R6. **Cumple solo en Adecuado o Sólido** (el todo o nada se conserva), y el cumplimiento es definitivo con la aprobación final (D132). La escala es interna de Monkey (preparación) y no reemplaza la opinión del auditor (P7 del libro).
 5. **Lo que se conserva** (DEV-16): la agregación por categoría y marco (RN-17 a RN-19). En ella un control cuenta como cumplido solo en «Cumplimiento aprobado» (D132); pone su categoría en `NO CUMPLE` si tiene algún requisito que no cumple o vencido, y si no, en `EN EVALUACIÓN` mientras no esté aprobado. También se conservan el semáforo, la fecha de corte (D105) y el **error técnico** de un check: se reintenta tres veces y avisa (D76), y mientras tanto el check está «sin datos», que nunca es PASS.
-6. **Parámetros** PR-01 a PR-16, con los valores por defecto del libro, configurables y nunca escritos en el código (RC-19). Su alcance y quién los edita: `P48`.
+6. **Parámetros** PR-01 a PR-16, con los valores por defecto del libro, configurables y nunca escritos en el código (RC-19). Su alcance: D140 (iguales para todos; la empresa solo cambia la periodicidad).
 
 **Por qué.** Es el modelo del libro. El requisito del control hace explícito lo que antes se mezclaba entre «tests obligatorios» y «dimensiones exigidas».
 
-**Qué cambia.** §9 entero, `contracts/enums/cumplimiento.md` (estados nuevos), `contracts/cumplimiento/controles.md` y `resumen.md`. **Reemplaza** de D68 los estados y reglas del test y del control (`EFECTIVO`, `INCOMPLETO`, `SIN TESTS`…) y el avance por tests; de D62 solo queda el semáforo. Lo que el libro no define está en `P48`.
+**Qué cambia.** §9 entero, `contracts/enums/cumplimiento.md` (estados nuevos), `contracts/cumplimiento/controles.md` y `resumen.md`. **Reemplaza** de D68 los estados y reglas del test y del control (`EFECTIVO`, `INCOMPLETO`, `SIN TESTS`…) y el avance por tests; de D62 solo queda el semáforo. Lo que el libro no definía lo cerró D140.
 
 **Fuente:** comité funcional, VF18 (`00_LEEME`, principios; `MAP CALOR`, secciones 2 a 5, 9 y 11; tabla 5 de `01_DESARROLLO`), 2026-11-22. Cómo entra el nivel en la agregación que se conserva (punto 5) lo derivó desarrollo de R4 y de la sección 14.2 del libro.
 
@@ -129,3 +129,23 @@ preparación por severidad se escribe contra esta regla; `DT-65`, el calculador 
 **Fuente:** comité funcional, VF18 (`MAP CALOR`, secciones 5, 6 y 14.3), 2026-11-22.
 
 ---
+
+---
+
+## D140 · El motor v2: lo que la VF18 no definía (2026-11-23; cierra P48)
+
+**Decisión** (respuestas del comité a `P48`):
+
+1. **Activo en alcance sin resultado.** Mientras la ventana está abierta, el test queda **pendiente**; si la ventana cierra y sigue sin resultado, pasa a **excepción por cobertura** (T-04). Resuelve la diferencia entre T-04 y la sección 3.2.
+2. **El resultado de una prueba manual** (operativa, de población o técnica manual: correcto, observación o excepción) lo registra **el responsable del control** al revisar la evidencia que subió el delegado.
+3. **El evaluador de R5** es **el responsable del control**: puede cambiar el nivel sugerido con justificación escrita, y el cambio lo aprueba el `admin_empresa` (D132). Monkey guarda el nivel sugerido y el final.
+4. **El plan de remediación** (uno por cada excepción del nivel Parcial) y **el plan de tratamiento** (riesgo en zona naranja) llevan lo mismo: **qué se hará, quién y para cuándo**. Los registra el responsable y los aprueba el `admin_empresa`.
+5. **Los parámetros PR-01 a PR-16** tienen un valor por defecto de Monkey, **igual para todos los clientes**. La empresa solo cambia la periodicidad de sus controles (G-10, D131 punto 4).
+6. **La ventana anual** son **12 meses desde la última ejecución**, no el año del período.
+7. **Las reglas 2, 16 y 17** que el libro cita y no trae no se entregan: **bastan `IN-06` e `IN-07`**.
+
+**Por qué.** Eran los huecos del modelo de evaluación que impedían construir el motor v2 (RC-06, RC-08, RC-11 y RC-19). Las propuestas salieron de desarrollo y el comité las aprobó sin cambios.
+
+**Qué cambia.** §9 (tabla de ventanas, R5, parámetros, caso C2), `arquitectura/cumplimiento/riesgos/README.md` (plan de tratamiento) y el punto 6 de D130. Los tickets MD-495, MD-498, MD-500 y MD-511 quedan desbloqueados.
+
+**Fuente:** comité funcional, 2026-11-23, en reunión con Héctor Ríos (Rod): aprobó las siete propuestas de `P48`.

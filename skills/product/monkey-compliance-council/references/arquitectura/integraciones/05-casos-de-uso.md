@@ -21,7 +21,7 @@ también puede el `auditor`). Los casos CU-INT-05 y CU-INT-06 están por constru
 | CU-INT-03 | Ver el detalle de una integración | `admin_empresa` · `auditor` | HU-INT-04, HU-INT-05, HU-INT-07, HU-INT-08 |
 | CU-INT-04 | Conectar una integración a un servicio | `admin_empresa` | HU-INT-06 |
 | CU-INT-05 | Conectar GitHub ⚪ | `admin_empresa` | HU-INT-09 |
-| CU-INT-06 | Llevar el trabajo de cumplimiento a Jira ⚪ | por decidir (P46) | HU-INT-10 |
+| CU-INT-06 | Llevar el trabajo de cumplimiento a Jira ⚪ | D138, D144 | HU-INT-10 |
 
 ---
 
@@ -142,9 +142,9 @@ cliente y por corrida ([README](README.md#la-frontera-del-conector-objetivo-d110
 
 | | |
 |---|---|
-| **Actor** | Por decidir (P46, punto 3) |
-| **Precondición** | Por decidir: quién conecta Jira y con qué permisos (P46, punto 2) |
-| **Postcondición** | Por decidir: remediación, evidencia o ambas (P46, punto 1) |
+| **Actor** | `admin_empresa`, `responsable` (sus controles) y `delegado` (los que ejecuta) (D144) |
+| **Precondición** | El `admin_empresa` conectó Jira con una cuenta de servicio que solo crea y lee tickets del proyecto elegido (D144) |
+| **Postcondición** | El ticket queda creado y ligado al control; cerrarlo no cierra el incumplimiento (D138) |
 
-**Flujo principal:** no se escribe hasta que el comité cierre P46. Hoy Jira está en el catálogo como `coming_soon`, con
+**Flujo principal:** se escribe al construirlo (MD-508): desde el detalle del control o el mensaje de brecha (D144). Hoy Jira está en el catálogo como `coming_soon`, con
 propósito `workflow`: no mide nada (D110).

@@ -169,7 +169,7 @@ erDiagram
         enum type "documentary|population|operational|technical"
         enum dimension "9 valores"
         string display_name "nombre neutro que ve el cliente (D70)"
-        string display_name_en "nulo si falta (P50)"
+        string display_name_en "nulo si falta (D142)"
         text display_description "D82"
         text objective "Que se asegura"
         text why_it_matters
@@ -226,7 +226,7 @@ erDiagram
         text common_objective
         uuid owner_control_id FK "nullable: el dueno de una dependencia"
         text applies_when
-        string module_ref "solo los 19 N/A, check_id nulo (P49)"
+        string module_ref "solo los 19 N/A, check_id nulo (D141)"
         enum provenance "committee_ratified en la v2"
     }
     check_mappings {
@@ -281,7 +281,7 @@ dueño, `owner_control_id`, sacado del objetivo común «dueño CIF-3»; `IN-06`
 dueño). `applies_when` dice cuándo aplica («Cliente conecta AWS», «Agente con la política …»). **Un mismo check es
 Directo en un solo control** (`IN-07`). Todos entran como `committee_ratified` (DEV-12): ya no hay propuestas de
 desarrollo ni confianza calculada (D56). Diecinueve vínculos tienen check ID `N/A`: son módulos de la sonda o
-puntajes globales, no checks, y cómo se evalúan está en `P49`. Se cargan con `check_id` nulo y `module_ref`, sin efecto en el cálculo (MD-491).
+puntajes globales, no checks. Se cargan con `check_id` nulo y `module_ref` (MD-491). Un módulo pasa si no hay hallazgos críticos ni altos abiertos; un puntaje, con 80 % o más (D141, D146).
 
 **La clave del check** es plataforma + check ID en el motor de nube y política + check ID en la sonda (DEV-11); en
 el modelo, `platform` + `policy_id` + `check_id`. `TEST_CHECKS` trae el **nombre** de la política y el cruce con
