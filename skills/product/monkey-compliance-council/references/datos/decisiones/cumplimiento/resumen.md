@@ -4,6 +4,8 @@ Por qué este componente es como es. Lo vigente está en [`arquitectura/cumplimi
 
 ## D87 · El período auditado lo declara la empresa y la fecha de corte es «hoy» hasta que se congela (2026-10-20; responde P26, de forma provisional)
 
+> **Ajustada por D131 (2026-11-22).** El período auditado se sigue declarando por servicio y marco, y en SOC 2 dura como mínimo 6 meses (PR-16, G-11).
+
 **Decisión.**
 1. El **período auditado** (inicio y fin) de cada marco de un servicio lo declara `admin_empresa`, con `PUT /v1/services/{service_id}/frameworks/{framework_code}/evaluation-period`, y se puede editar. El consultor podrá corregirlo cuando trabaje sobre la empresa del cliente (hoy no puede: B6). Mientras no exista una evaluación emitida (MD-155) no hay nada que lo bloquee.
 2. **El inicio y el fin pueden ser el mismo día**: así cabe una evaluación de **SOC 2 Tipo I** (una fecha puntual) además de la de **Tipo II** (un período de 6 a 12 meses). La hoja `Pruebas` del Excel del comité ya reconoce los dos («Tipo II: normalmente 6-12 meses; Tipo I: fecha puntual»).

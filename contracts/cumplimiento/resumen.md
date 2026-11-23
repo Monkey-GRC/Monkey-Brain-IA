@@ -7,6 +7,8 @@ type: contract
 
 # Cumplimiento — resumen del servicio
 
+> **VF18 (D128): este contrato describe la API construida con el catálogo v1.** Con la VF18 un control cuenta como cumplido solo en «Cumplimiento aprobado» (D130, D132) y el período auditado dura 6 meses como mínimo (D131). Se ajusta antes de construir RC-06 y RC-08.
+
 | | |
 |---|---|
 | **Estado** | **ACORDADO** (2026-10-17; D80 el 2026-10-15). El período y la fecha de corte (`P26`) se definen de forma provisional con D87 (2026-10-20). Reescrito por D96 (2026-10-27): la evaluación del auditor está en pausa. D102 (2026-11-03) limita el resumen de un `responsable` o `delegado` a **sus controles** |
@@ -258,7 +260,7 @@ Todos con el mismo sobre (`conventions.md`); `message` es la clave i18n del erro
 
 - **`P26`:** respondida **provisionalmente** (D87). Falta que el comité ratifique: si se vende SOC 2 **Tipo I**, qué pasa cuando **llega el período siguiente** (hoy una sola fila por servicio y marco) y el nombre («fecha de corte» aquí, «fecha de evaluación» en el Excel).
 - **`P35`:** la calificación del auditor (en pausa).
-- **Mitigación y riesgo residual:** no están aquí; entran con `P22` y MD-151 como campos opcionales.
+- **Mitigación y riesgo residual:** no están aquí; entran con D134 (RC-11) como campos opcionales.
 
 ---
 

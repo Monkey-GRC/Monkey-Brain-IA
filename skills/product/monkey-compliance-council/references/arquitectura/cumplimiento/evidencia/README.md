@@ -1,5 +1,7 @@
 # Cumplimiento · Evidencia
 
+> **VF18 (D128): esto describe el código construido con el catálogo v1.** Con la VF18 la evidencia se exige por requisito del control y por ventana, y se aprueba el control, no cada evidencia (D129, D131, D132).
+
 Responde: **¿cómo se respalda una prueba documental con un documento, y quién decide si sirve?** Dos operaciones
 encadenadas: alguien **sube** un documento y el `admin_empresa` lo **revisa**.
 

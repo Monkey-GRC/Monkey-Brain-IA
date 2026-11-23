@@ -1,5 +1,7 @@
 # Cumplimiento · historias de usuario
 
+> **VF18 (D128): estas historias describen el cumplimiento construido (v1).** La regla vigente (requisitos del control, nivel 0 a 5, aprobación por control, apetito por zona) está en D130 a D135; cada historia lo indica donde cambia.
+
 Responde: **¿qué necesita cada persona para saber si un servicio cumple un marco, aportar y revisar los hechos que lo
 deciden (evidencia, veredictos, exclusiones), atender al auditor y gestionar sus riesgos; y cómo se comprueba que lo
 tiene?** Cada historia dice quién, qué y para qué; sus criterios citan la regla que los fija. Cuerpos y errores, en el
@@ -33,11 +35,11 @@ Ante el cliente, los motores son «sonda» o «evaluación automática» (regla 
 | HU-CUM-11 | Subir la evidencia de una prueba documental | `admin_empresa` · `responsable` · `delegado` | ✅ | D88, D102, SEG-60 |
 | HU-CUM-12 | Ver en un solo lugar las evidencias que me tocan | Persona de empresa | ✅ | D102, MD-208 |
 | HU-CUM-13 | Ver o descargar una evidencia sin exponer el archivo | Persona de empresa | ✅ | SEG-60, MD-177 |
-| HU-CUM-14 | Validar o rechazar una evidencia | `responsable` dueño · `admin_empresa` | 🟡 | D102, SEG-67, `P34` |
+| HU-CUM-14 | Validar o rechazar una evidencia | `responsable` dueño · `admin_empresa` | 🟡 | D102, SEG-67; con la VF18, D132 |
 | HU-CUM-15 | Que ninguna IA dé por buena una evidencia | Persona de empresa | ✅ | Regla 3, RN-03 |
 | HU-CUM-16 | Gestionar los requerimientos propios de un control | `admin_empresa` | 🟡 | D88 |
 | HU-CUM-17 | Registrar el veredicto de una prueba manual | `admin_empresa` · `responsable` · `delegado` | 🟡 | D85, D121, `P37` |
-| HU-CUM-18 | Aprobar o rechazar un veredicto | `responsable` dueño · `admin_empresa` | 🟡 | D121, SEG-67, `P34` |
+| HU-CUM-18 | Aprobar o rechazar un veredicto | `responsable` dueño · `admin_empresa` | 🟡 | D121 (reemplazada por D132), SEG-67 |
 | HU-CUM-19 | Consultar el historial de veredictos de una prueba | Persona de empresa | 🟡 | D121, D119 |
 | HU-CUM-20 | Excluir un activo de una prueba con motivo y vigencia | `admin_empresa` | 🟡 | D96, D87, SEG-67 |
 | HU-CUM-21 | Ver las exclusiones del servicio y cuáles vencieron | `admin_empresa` · `auditor` | ✅ | D96, DT-72 |
@@ -49,7 +51,7 @@ Ante el cliente, los motores son «sonda» o «evaluación automática» (regla 
 | HU-CUM-27 | Vincular causas a riesgos y controles a causas | `admin_empresa` | ✅ | D96 |
 | HU-CUM-28 | Reevaluar un riesgo y ver cómo cambió | `admin_empresa` · `auditor` | ✅ | D33, D76 |
 | HU-CUM-29 | Decidir el tratamiento de un riesgo | `admin_empresa` | ✅ | D30 |
-| HU-CUM-30 | Ver el riesgo residual y las matrices inherente y residual | `admin_empresa` · `auditor` | ⚪ | `P22`, D75 |
+| HU-CUM-30 | Ver el riesgo residual y las matrices inherente y residual | `admin_empresa` · `auditor` | ⚪ | D134 |
 | HU-CUM-31 | Que lo no medido nunca cuente como cumplido | Persona de empresa | ✅ | D62, D68, §9, DT-50 |
 | HU-CUM-32 | Calificar el marco de un servicio como auditor | `auditor` | ⚪ | D96, `P35` |
 
@@ -185,7 +187,7 @@ documental cuente o se corrija.
 - Revisa el `responsable` dueño (lo que no subió él) y el `admin_empresa` (cualquiera); `delegado` y `auditor`, `403` (SEG-67).
 - Rechazar exige una nota (`422 note.required`): es lo que lee quien subió.
 - Una revisión por rol; cualquier rechazo gana; sin revisión, pendiente (D102).
-- Quien subió no revisa lo suyo, salvo el `admin_empresa` dueño (`P34`, abierta).
+- Quien subió no revisa lo suyo, salvo el `admin_empresa` dueño, cuya aprobación es la final (D132).
 - 🟡 La API está construida (MD-194); las pantallas de revisión faltan (SEG-21).
 
 ### HU-CUM-15 · Que ninguna IA dé por buena una evidencia
@@ -327,7 +329,7 @@ mapa refleje mi servicio.
 
 ### HU-CUM-30 · Ver el riesgo residual y las matrices inherente y residual
 
-> ⚪ **Depende de `P22` punto 1, abierta** (si cada control es obligatorio y si reduce probabilidad o impacto). La
+> ⚪ **Sin construir; la regla es D134** (cobertura verificada y umbrales; el efecto de cada relación ya no hace falta). La
 > fórmula está adoptada (D75); el dato no.
 
 **Como** `admin_empresa` o `auditor`, **quiero** ver cuánto riesgo queda cuando los controles funcionan **para**

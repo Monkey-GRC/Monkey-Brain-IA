@@ -66,6 +66,8 @@ Por qué Autenticación es como es. **Se consulta para reabrir, no para construi
 
 ## D101 · La contraseña no vence por calendario; la persona la cambia cuando quiere y la recupera si la olvida (2026-10-31; enmienda §5.3 y SEG-14)
 
+> **Punto 1 revertido y punto 2 ajustado por D137 (2026-11-22).** Las contraseñas vuelven a vencer (60 días o menos) y el historial pasa a 24, según las Tablas 3 y 4 de la VF18.
+
 **Decisión.**
 1. **Sin expiración.** Se retira la regla «la contraseña expira a los 90 días» de §5.3. Rotarla a la fuerza genera fatiga: la persona elige claves más débiles o parecidas a la anterior, y no protege si los datos ya se filtraron. Tampoco hay aviso previo ni flujo de «contraseña vencida».
 2. **Cambio voluntario.** Cualquier rol cambia su contraseña cuando quiera, con sesión abierta, su contraseña actual y un código vigente de su segundo factor. Distinta de la actual y de las últimas 5; máximo 3 cambios en 24 h. Cierra las demás sesiones y avisa por correo.
@@ -156,3 +158,20 @@ clave de acceso; `ValidateSessionUseCase`; `PasswordHasher`. Cierra DT-37, DT-11
 construye en **MD-218** (M2 y M3) y **MD-219** (M1).
 
 **Fuente:** Hector Rios, 2026-11-17 (Redis en lugar de Postgres y la aprobación de M1 a M3).
+
+---
+
+## D137 · Las contraseñas de Monkey siguen la Tabla 3 de la VF18: 15 caracteres, historial de 24 y vencimiento a los 60 días (2026-11-22; revierte el punto 1 de D101)
+
+**Decisión** (`Modelo de Gestión usuarios`, Tablas 3 y 4; RC-15):
+
+1. La Tabla 4 fija que las contraseñas de la propia aplicación siguen la Tabla 3: **15 caracteres o más**; mayúscula, minúscula, número y símbolo; **no reutilizar las últimas 24**; **vencen a los 60 días o menos**; bloqueo a los 5 intentos fallidos o menos, por 15 minutos o más (esto último ya coincide, SEG-15).
+2. **Vuelve el vencimiento** que D101 había retirado. Se hace como dice el libro aunque el comité hubiera ratificado D101 (D128). Hacen falta el aviso previo y el flujo de «contraseña vencida» que D101 había descartado.
+3. Las contraseñas que ya existen no se pueden comprobar (se guardan con hash): las reglas nuevas se exigen en el siguiente cambio. Con el reset de D128 todas las cuentas se crean de nuevo.
+4. El resto de la Tabla 4 no cambia frente a §5.3: sesión de 30 minutos de inactividad y 8 horas como máximo, MFA TOTP para todos los roles, cifrado en reposo y en tránsito, rotación de las API keys a 90 días, límite de peticiones, retención del registro de auditoría a 7 años y lista de IP permitidas opcional.
+
+**Por qué.** La Tabla 4 dice que Monkey aplica a sus cuentas lo mismo que le recomienda al implementador en la Tabla 3, «por coherencia».
+
+**Qué cambia.** §5.3, SEG-13 y SEG-14, `contracts/autenticacion.md` y el Backend (RC-15). **Revierte el punto 1 de D101** (sin vencimiento) y ajusta su punto 2 (el historial pasa de 5 a 24).
+
+**Fuente:** comité funcional, VF18 (`Modelo de Gestión usuarios`, Tablas 3 y 4; RC-15), 2026-11-22; Héctor Ríos (Rod), 2026-11-22: «se hace como lo quiera el comité».

@@ -1,5 +1,7 @@
 # Motor · Las reglas, nivel por nivel
 
+> **VF18 (D128): esto describe el código construido con el catálogo v1.** Las reglas del motor v2 están en [§9](../../../datos/modelo/09-calculo-cumplimiento.md) (D130): estos archivos se reescriben con RC-06; la agregación por categoría y marco y el semáforo se conservan.
+
 Responde: **¿qué decide exactamente cada estado?** Lee antes [`README.md`](README.md) (la cadena y los cinco
 principios). Cada tabla se lee de arriba abajo: **gana la primera fila que aplique**.
 

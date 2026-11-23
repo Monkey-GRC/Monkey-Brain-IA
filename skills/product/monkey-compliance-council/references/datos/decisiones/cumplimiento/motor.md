@@ -4,6 +4,8 @@ Por qué este componente es como es. Lo vigente está en [`arquitectura/cumplimi
 
 ## D62 · El cumplimiento se cuenta: dimensión → control → categoría → marco (2026-10-09)
 
+> **Reemplazada por D130 (2026-11-22)**, salvo el semáforo, que se conserva (DEV-16).
+
 **Decisión.** El responsable de producto fijó la fórmula, basada en cómo se mide SOC 2 (5 categorías, compuestas por controles, que se
 evalúan con tests en 5 dimensiones). Cada nivel cuenta lo cumplido contra el total del nivel y **se cumple solo al 100%**:
 
@@ -32,6 +34,8 @@ diagnóstico que se le muestra al cliente. Una categoría al 99% se ve como 99%,
 ---
 
 ## D68 · El motor de evaluación del comité es la regla del cálculo (2026-10-10)
+
+> **Reemplazada por D128 y D130 (2026-11-22).** La regla del cálculo es la hoja `MAP CALOR` de la VF18; las reglas `RN-xx` y `REQ-xxx` de la VF2 valen solo donde no chocan con ella. Se conservan la agregación por categoría y marco (RN-17 a RN-19), el semáforo y el tratamiento del error técnico (DEV-16).
 
 > **Ajustada por D96 (2026-10-27).** Cambian dos puntos: el 8 (la exclusión por activo la decide el `admin_empresa`, no el consultor) y el 11 (las evaluaciones del consultor y del auditor quedan en pausa).
 
@@ -86,5 +90,42 @@ preparación por severidad se escribe contra esta regla; `DT-65`, el calculador 
 **No cambia** ninguna regla de producto: son columnas que ya implicaban D65, D74 y D78.
 
 **Fuente:** MD-108; tickets MD-126, MD-127, MD-144, MD-150.
+
+---
+
+## D130 · El cumplimiento del control se calcula por requisitos, con un nivel de 0 a 5 (2026-11-22; reemplaza los estados del test y del control de D68)
+
+**Decisión** (`MAP CALOR`, secciones 2 a 5, 9 y 11; el detalle en §9):
+
+1. **Cadena**: activo → check (por activo), caso de muestra o documento → evidencia → test → requisito del control → control. La evaluación de cumplimiento **termina en el control** (P1 del libro); la categoría y el marco se agregan como antes (punto 5).
+2. **Estados por nivel**, los del libro: evidencia manual (cargada, vigente, vencida, devuelta) y automática (recibida, normalizada, vinculada, incompleta, desactualizada); check por activo (PASS, FAIL, FAIL con excepción aprobada, no aplica, sin datos); test (pendiente, correcto, observación, excepción, no aplica, vencido); requisito (cumple, no cumple, pendiente, vencido, no aplica).
+3. **Reglas por tipo de test** T-01 a T-07. En lo técnico **solo deciden los checks Directos** aplicables a la infraestructura del cliente, con el 100% de los activos en alcance con resultado (PR-03); un Complementario en falla es observación; una Dependencia toma la conclusión del control dueño sin reejecutarse. Los checks prueban solo los requisitos técnicos y nunca reemplazan uno documental u operativo (S-01 a S-05).
+4. **Control**: C% = requisitos que cumplen ÷ requisitos aplicables (los «no aplica» aprobados salen del denominador). **Nivel**: 0 No evaluado · 1 Ineficaz · 2 Débil · 3 Parcial · 4 Adecuado · 5 Sólido, con las reglas R1 a R6. **Cumple solo en Adecuado o Sólido** (el todo o nada se conserva), y el cumplimiento es definitivo con la aprobación final (D132). La escala es interna de Monkey (preparación) y no reemplaza la opinión del auditor (P7 del libro).
+5. **Lo que se conserva** (DEV-16): la agregación por categoría y marco (RN-17 a RN-19). En ella un control cuenta como cumplido solo en «Cumplimiento aprobado» (D132); pone su categoría en `NO CUMPLE` si tiene algún requisito que no cumple o vencido, y si no, en `EN EVALUACIÓN` mientras no esté aprobado. También se conservan el semáforo, la fecha de corte (D105) y el **error técnico** de un check: se reintenta tres veces y avisa (D76), y mientras tanto el check está «sin datos», que nunca es PASS.
+6. **Parámetros** PR-01 a PR-16, con los valores por defecto del libro, configurables y nunca escritos en el código (RC-19). Su alcance y quién los edita: `P48`.
+
+**Por qué.** Es el modelo del libro. El requisito del control hace explícito lo que antes se mezclaba entre «tests obligatorios» y «dimensiones exigidas».
+
+**Qué cambia.** §9 entero, `contracts/enums/cumplimiento.md` (estados nuevos), `contracts/cumplimiento/controles.md` y `resumen.md`. **Reemplaza** de D68 los estados y reglas del test y del control (`EFECTIVO`, `INCOMPLETO`, `SIN TESTS`…) y el avance por tests; de D62 solo queda el semáforo. Lo que el libro no define está en `P48`.
+
+**Fuente:** comité funcional, VF18 (`00_LEEME`, principios; `MAP CALOR`, secciones 2 a 5, 9 y 11; tabla 5 de `01_DESARROLLO`), 2026-11-22. Cómo entra el nivel en la agregación que se conserva (punto 5) lo derivó desarrollo de R4 y de la sección 14.2 del libro.
+
+---
+
+## D131 · Vigencia por periodicidad: ventanas de evidencia, alertas previas y un período auditado mínimo (2026-11-22; ajusta D87)
+
+**Decisión** (`MAP CALOR`, sección 6; PR-05 a PR-07 y PR-16; G-06, G-10 y G-11):
+
+1. **Ventanas.** Cada control se evalúa por ventanas de calendario según su periodicidad (diaria, semanal, mensual, bimestral, trimestral, semestral, anual, permanente o cuando sea requerido) (PR-07), y cada ventana exige su evidencia. Si una ventana cierra sin evidencia, el test y el requisito pasan a vencidos, el control baja de nivel y vuelve a «Incumplimiento» (G-06).
+2. **Alerta previa** al delegado y al responsable antes del cierre: 5 días en la mensual, 15 en la trimestral, 20 en la semestral, 30 en la anual, el mismo día en la diaria, 2 en la semanal y 10 en la bimestral (PR-06).
+3. **Lo permanente** se cumple con resultados automáticos de frescura de 24 h como máximo (PR-05): si la última recolección es más vieja, la evidencia queda desactualizada y el test, pendiente. **Lo que ocurre por evento** exige evidencia de cada evento del período o, si no hubo ninguno, una declaración trimestral de «sin ocurrencias» del responsable.
+4. **La periodicidad sugerida la puede cambiar el `admin_empresa`** por control, con una justificación escrita que queda en el rastro; Monkey recalcula las ventanas y ajusta la muestra de los tests operativos (G-10).
+5. **Período auditado.** Se configura al inicio, por servicio y marco; en SOC 2 dura **como mínimo 6 meses** (PR-16, configurable). Solo cuentan las ventanas que caen dentro, y una evidencia fechada fuera del período no cuenta (G-11). Monkey muestra dos vistas de cada control: el estado a la fecha (última ventana) y el del período (todas sus ventanas) (R6).
+
+**Por qué.** Responde la periodicidad que faltaba (`P22`, punto 2): ya es una columna por control y por requisito, configurable por el cliente; y lo automático se refresca a diario.
+
+**Qué cambia.** §9 y §7 (las ventanas son del control del cliente), `contracts/cumplimiento/resumen.md` (el mínimo del período). **Ajusta D87** (el período lo sigue declarando el `admin_empresa`, ahora con un mínimo) y el **punto 2 de D74** (lo vencido se mide por ventana). La fecha de corte no cambia (D105, DEV-16). En `P26` siguen abiertos el Tipo I y el período siguiente.
+
+**Fuente:** comité funcional, VF18 (`MAP CALOR`, secciones 5, 6 y 14.3), 2026-11-22.
 
 ---

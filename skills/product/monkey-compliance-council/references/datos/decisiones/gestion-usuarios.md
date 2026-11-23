@@ -29,6 +29,8 @@ Por qué Gestión de usuarios es como es. **Se consulta para reabrir, no para co
 
 ## D102 · Cadena de asignación: `admin_empresa` → `responsable` → `delegado`; el dueño de cada control es una persona (2026-11-03)
 
+> **Punto 8 reemplazado por D132; punto 2 ajustado y ampliada por D136 (2026-11-22).** La revisión ya no es por evidencia: el control lo aprueba primero el responsable y al final el `admin_empresa`. Solo `admin_monkey` y `admin_empresa` crean usuarios (el `responsable` ya no crea a sus delegados). Se agrega el rol `colaborador`.
+
 **Contexto.** Héctor Ríos trajo al equipo, el 2026-11-03, las respuestas del comité a `P38`. **Reemplaza a D98** (puntos 1, 2 y 6) y **ajusta D96** (puntos 5 y 6 del reparto por dimensión, y la validación en una sola revisión). Los términos cambian: el antiguo `funcional` es **`responsable`** y los miembros de su equipo son **`delegado`**. Los identificadores van en inglés.
 
 **Decisión.**
@@ -58,6 +60,8 @@ Por qué Gestión de usuarios es como es. **Se consulta para reabrir, no para co
 
 ## D103 · Monkey solo tiene `admin_monkey` y fija el cupo de usuarios de cada empresa (2026-11-03)
 
+> **Ajustada por D136 (2026-11-22).** Con la Tabla 2 de la VF18, `admin_monkey` también gestiona los usuarios de una empresa y ve su cumplimiento.
+
 **Contexto.** Héctor Ríos, 2026-11-03, con las respuestas del comité a `P40`. El modelo de negocio cobra por número de usuarios creados.
 
 **Decisión.**
@@ -73,6 +77,8 @@ Por qué Gestión de usuarios es como es. **Se consulta para reabrir, no para co
 ---
 
 ## D104 · El responsable vive en «Responsables» y su equipo de delegados lo crea él, no nace con su cuenta (2026-11-05)
+
+> **Ajustada por D136 (2026-11-22).** Con la Tabla 2 de la VF18 solo `admin_monkey` y `admin_empresa` crean usuarios: el `responsable` ya no crea a sus delegados; sigue delegando sus controles en ellos.
 
 **Contexto.** Héctor Ríos, 2026-11-05. El plan del sprint 3 (MD-188) decía que crear un `responsable` creaba también su equipo de delegados. No es lo que el comité pidió: se desvió al planificar el sprint. **Ajusta D102** (punto 3, grupos); no la reemplaza.
 

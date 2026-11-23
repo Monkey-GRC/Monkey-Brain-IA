@@ -1,5 +1,7 @@
 # Catálogo maestro · Modelo
 
+> **VF18 (D128): esto describe el código construido con el catálogo v1.** El modelo del catálogo v2 está en [§3](../../datos/modelo/03-catalogo-maestro.md) y [§11](../../datos/modelo/11-documentos.md) (D129): requisitos del control, la prueba de un control, documentos, procedimientos, categorías de integración, mapeo a marcos y el rol del check. Se reescribe con RC-01.
+
 Responde: **¿cómo se encadenan las piezas del catálogo?** Los diagramas campo por campo están en
 [`datos/modelo/03-catalogo-maestro.md`](../../datos/modelo/03-catalogo-maestro.md) §3.1 a §3.5 y **no se
 redibujan**. Aquí el mapa de las tres cadenas y la frontera con lo del cliente.

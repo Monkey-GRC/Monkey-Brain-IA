@@ -2,9 +2,114 @@
 
 > Índice de todos los enums: [`enums.md`](../enums.md). Por el cable viaja el **valor**; la etiqueta (es/en) la resuelve i18n. Formato: [`README.md`](../README.md#formato-de-un-enum).
 
-**Contenido:** [Observaciones del auditor](#observaciones-del-auditor) · [Controles y exclusiones](#controles-y-exclusiones) · [Riesgos y causas](#riesgos-y-causas) · [Evaluación y veredictos](#evaluación-y-veredictos) · [Estados del motor (D68)](#estados-del-motor-d68)
+**Contenido:** [Modelo de evaluación v2](#modelo-de-evaluación-v2-vf18-d130-a-d135--nuevas) · [Observaciones del auditor](#observaciones-del-auditor) · [Controles y exclusiones](#controles-y-exclusiones) · [Riesgos y causas](#riesgos-y-causas) · [Evaluación y veredictos](#evaluación-y-veredictos) · [Estados del motor (D68)](#estados-del-motor-d68)
 
 ---
+
+## Modelo de evaluación v2 (VF18, D130 a D135) — nuevas
+
+Las opciones son las de la tabla 8 de `01_DESARROLLO` y de `MAP CALOR`; los **valores** son propuesta de desarrollo y se
+fijan al construir el motor v2 (RC-06 a RC-09). **Ninguna existe todavía en el Backend.** Reemplazan a las del modelo
+de la VF2 marcadas abajo como reemplazadas.
+
+### `manual_evidence_state` · `automatic_evidence_state`
+**Dónde se usa:** el estado de una evidencia (§9). El de la manual se deriva de su ventana y de si fue devuelta; el de la automática, de su recolección.
+
+| `manual_evidence_state` | Etiqueta (es) |
+|---|---|
+| `loaded` | Cargada |
+| `current` | Vigente |
+| `expired` | Vencida |
+| `returned` | Devuelta |
+
+| `automatic_evidence_state` | Etiqueta (es) |
+|---|---|
+| `received` | Recibida |
+| `normalized` | Normalizada |
+| `linked` | Vinculada |
+| `incomplete` | Incompleta |
+| `stale` | Desactualizada |
+
+### `check_result`
+**Dónde se usa:** el resultado de un check en un activo (§9). Se deriva de `check_result_status` del motor y de las excepciones.
+
+| Valor | Etiqueta (es) | Desde el motor |
+|---|---|---|
+| `pass` | Cumple (PASS) | `passed` |
+| `fail` | No cumple (FAIL) | `failed` |
+| `fail_with_exception` | Falla con excepción aprobada | `failed` + excepción vigente (D135) |
+| `not_applicable` | No aplica | `not_applicable` |
+| `no_data` | Sin datos | `not_run`, o `invalid` tras los reintentos |
+
+### `test_status`
+**Dónde se usa:** el estado de una prueba (§9). Reemplaza a `test_state`.
+
+| Valor | Etiqueta (es) |
+|---|---|
+| `pending` | Pendiente |
+| `correct` | Correcto |
+| `observation` | Observación |
+| `exception` | Excepción |
+| `not_applicable` | No aplica |
+| `expired` | Vencido |
+
+### `requirement_status`
+**Dónde se usa:** el estado de un requisito del control (§9).
+
+| Valor | Etiqueta (es) |
+|---|---|
+| `compliant` | Cumple |
+| `non_compliant` | No cumple |
+| `pending` | Pendiente |
+| `expired` | Vencido |
+| `not_applicable` | No aplica |
+
+### `control_level`
+**Dónde se usa:** el nivel calculado de un control (§9). Reemplaza a `control_state`. **Cumple solo en `adequate` y `solid`.**
+
+| Valor | Etiqueta (es) | Valor de la escala |
+|---|---|---|
+| `not_evaluated` | No evaluado | 0 |
+| `ineffective` | Ineficaz | 1 |
+| `weak` | Débil | 2 |
+| `partial` | Parcial | 3 |
+| `adequate` | Adecuado | 4 |
+| `solid` | Sólido | 5 |
+
+### `control_management_state`
+**Dónde se usa:** la gestión del control (D132). **Solo `approved` cuenta como cumplido.**
+
+| Valor | Etiqueta (es) |
+|---|---|
+| `non_compliant` | Incumplimiento |
+| `in_progress` | En gestión |
+| `pending_approval` | Cumple – por aprobar |
+| `owner_approved` | Aprobado por el responsable |
+| `approved` | Cumplimiento aprobado |
+| `returned` | Devuelto |
+
+### `document_version_status`
+**Dónde se usa:** el estado de una versión de un documento de la empresa (§11, D133).
+
+| Valor | Etiqueta (es) |
+|---|---|
+| `draft` | Borrador |
+| `in_approval` | En aprobación |
+| `rejected` | Rechazado |
+| `approved` | Aprobado |
+| `current` | Vigente |
+| `renewal_due` | Por renovar |
+| `expired` | Vencido |
+| `archived` | Archivado |
+
+### `risk_zone`
+**Dónde se usa:** el apetito del riesgo (D134), leído por la zona de color de su celda. Reemplaza a `residual_acceptance`.
+
+| Valor | Etiqueta (es) | Qué significa |
+|---|---|---|
+| `acceptable` | Aceptable | Zonas verde y amarilla |
+| `tolerable` | Tolerable con tratamiento | Zona naranja: solo con un plan de tratamiento aprobado |
+| `unacceptable` | Inaceptable | Zona roja: exige tratamiento |
 
 ## Observaciones del auditor
 
@@ -32,6 +137,8 @@
 
 ### `control_type`
 **Columna:** `client_controls.type`
+
+> **Con la VF18 (D129)** sus valores pasan a ser los de `control_type` del catálogo ([`catalogo-maestro.md`](catalogo-maestro.md)): `manual`, `it_dependent_manual` y `automated`. `hybrid` y `technical_manual` los había derivado desarrollo (D4, D39) y se retiran con la carga de la v2.
 
 | Valor | Etiqueta (es) |
 |---|---|
@@ -99,6 +206,7 @@
 | `operations` | Operación |
 
 ### `risk_level`
+> **Con la VF18 (D134)** el nivel se lee por la **posición de la celda** en la matriz, no por rangos del valor. Los valores no cambian.
 **Columnas:** `client_risks.inherent_risk_level` y `residual_risks.residual_level` · Sí del Excel (matriz 5×5).
 
 | Valor | Etiqueta (es) | Puntaje |
@@ -109,6 +217,7 @@
 | `critical` | Crítico | 17–25 |
 
 ### `failure_category`
+> **Se retira con la VF18 (D129):** la reemplazan `cause_origin` y `cause_type` ([`catalogo-maestro.md`](catalogo-maestro.md)).
 **Columna:** `causes.failure_category` · **6 valores** · Sí del Excel (hoja *Causas*).
 
 | Valor | Etiqueta (es) |
@@ -143,6 +252,7 @@
 | `avoid` |
 
 ### `cause_control_effect`
+> **Se retira con la VF18 (D134):** el residual se calcula por cobertura y no usa el efecto de cada relación.
 **Columnas:** `cause_controls.effect` y `client_cause_controls.effect` (D75). Un control sin efecto definido no participa del residual.
 
 | Valor | Etiqueta (es) |
@@ -151,7 +261,8 @@
 | `impact` | Impacto |
 
 ### `residual_acceptance`
-**Dónde se usa:** el riesgo que queda frente al apetito (D75). El valor del apetito es un parámetro (inicial: 9 sobre 25); quién lo define está abierto (`P22`).
+> **Reemplazado por `risk_zone` (D134).**
+**Dónde se usa:** el riesgo que queda frente al apetito (D75). El valor del apetito era un parámetro (9 sobre 25, D75).
 
 | Valor | Etiqueta (es) |
 |---|---|
@@ -190,6 +301,7 @@
 | `non_compliant` | No cumple |
 
 ### `verdict_state`
+> **Reemplazado con la VF18 (D132):** la aprobación es del control (`control_management_state`).
 **Dónde se usa:** el estado combinado de un veredicto (`cumplimiento/veredictos.md`, D121). Se **deriva** de sus revisiones; no se guarda.
 
 | Valor | Etiqueta (es) | Qué significa |
@@ -199,6 +311,7 @@
 | `rejected` | Rechazado | Algún rechazo; no cuenta y se registra uno nuevo |
 
 ### `verdict_review_decision`
+> **Reemplazado con la VF18 (D132).**
 **Columna:** `test_verdict_reviews.decision` (D121).
 
 | Valor | Etiqueta (es) |
@@ -245,6 +358,7 @@ Los **estados que el motor calcula** en cada nivel (`modelo-datos.md` §9). Se *
 El cliente ve el estado cualitativo (Preparado, Casi listo, Requiere trabajo, Sin medir: `philosophy.md`) junto con su porcentaje de avance (D80); estos son los estados del motor, la **vista técnica** del auditor y del administrador de la empresa (D81, D96).
 
 ### `evidence_state`
+> **Reemplazado con la VF18 (D130, D132)** por `manual_evidence_state` y `automatic_evidence_state`.
 **Dónde se usa:** estado calculado de una evidencia (se combina de las revisiones de cada rol, D102).
 
 | Valor | Etiqueta (es) |
@@ -257,6 +371,7 @@ El cliente ve el estado cualitativo (Preparado, Casi listo, Requiere trabajo, Si
 | `not_applicable` | No aplica |
 
 ### `evidence_review`
+> **Se retira con la VF18 (D132):** la revisión por evidencia pasa a ser la aprobación del control.
 **Columna:** `evidence_reviews.review` (D84) · **Solo `human_validated` permite `compliant`; la IA nunca produce «cumple» (RN-03).**
 Una persona lo guarda solo como `pending_review` o `human_validated`; **`ai_prevalidated` lo deriva el servidor** (la entrega tiene `ai_verdict` y ninguna revisión humana) y nunca se acepta de un cliente.
 
@@ -267,6 +382,7 @@ Una persona lo guarda solo como `pending_review` o `human_validated`; **`ai_prev
 | `human_validated` | Validada por una persona |
 
 ### `reviewer_role`
+> **Se retira con la VF18 (D132).**
 **Columnas:** `evidence_reviews.reviewer_role` y `test_verdict_reviews.reviewer_role` (D102, que ajusta D96; D121) · **Una revisión por rol y entrega.** Si hay rechazo gana; con dos revisiones aprueban los dos. Sube el ejecutor, el dueño o el `admin_empresa`; el `auditor` la lee y no la revisa.
 
 | Valor | Etiqueta (es) | Qué significa |
@@ -275,6 +391,7 @@ Una persona lo guarda solo como `pending_review` o `human_validated`; **`ai_prev
 | `admin_empresa` | Administrador de la empresa | Puede revisar cualquier evidencia |
 
 ### `test_state`
+> **Reemplazado por `test_status` (D130).**
 **Dónde se usa:** estado de un test.
 
 | Valor | Etiqueta (es) |
@@ -291,6 +408,7 @@ Una persona lo guarda solo como `pending_review` o `human_validated`; **`ai_prev
 | `deactivated` | Desactivado |
 
 ### `control_state`
+> **Reemplazado por `control_level` y `control_management_state` (D130, D132).**
 **Dónde se usa:** estado de un control del cliente.
 
 | Valor | Etiqueta (es) |
@@ -315,6 +433,7 @@ Una persona lo guarda solo como `pending_review` o `human_validated`; **`ai_prev
 | `out_of_scope` | Fuera de alcance |
 
 ### `cause_state` y `risk_state`
+> **Se retiran con la VF18 (D134):** la mitigación se mide por cobertura verificada, no por un estado de todo o nada.
 **Dónde se usa:** mitigación (no es el riesgo que queda).
 
 | Enum | Valor | Etiqueta (es) |

@@ -24,7 +24,7 @@ que les corresponde.
 | Término | Tabla | Qué es |
 |---|---|---|
 | **Marco** | `frameworks` | El estándar contratado (en el MVP, solo SOC 2: D37). Contiene requisitos |
-| **Requisito** | `requirements` | El criterio del marco: código (`CC6.1`) + criterio + **puntos de enfoque** |
+| **Requisito** (del marco) | `requirements` | El criterio del marco: código (`CC6.1`) + criterio + **puntos de enfoque**. No confundir con el requisito del control |
 | **Punto de enfoque** | `points_of_focus` | Cada *point of focus* numerado de un requisito. **Es a él que se vincula el control**, no al requisito ni al marco |
 | **Criterio de confianza** | `trust_criteria` | Los TSC de SOC 2 (Seguridad, Disponibilidad, Confidencialidad, Integridad, Privacidad). Son catálogo: **clasifican los requisitos**. Qué criterios contrató un servicio es otra tabla (`service_trust_criteria`) y es lo que **filtra qué requisitos le aplican** |
 | **Regulación** | `regulations` | Ley aplicable por jurisdicción (Ley 1581, LGPD, GDPR). **No se puntúa** |
@@ -35,30 +35,36 @@ que les corresponde.
 |---|---|---|
 | **Control** | `controls` | La medida que ataca una causa. **Atómico**: no pertenece a ningún marco |
 | **Control del cliente** | `client_controls` | El control particularizado en el escenario: código propio (`C01`) e **interpretación** reescrita con sus herramientas reales |
-| **Riesgo** · **Causa** | `risks` · `causes` | El riesgo se origina en causas; las causas se mitigan con controles. Los tres niveles son `N:M` entre sí |
-| **Dimensión** | `control_dimensions` | Una de las 5 formas de evaluar un control (documental, servidores, bases de datos, aplicación, nube) — ver §2 |
+| **Requisito del control** | `control_requirements` | Cada punto de la columna L de un control (`IDA-11-L3`): lo mínimo que hay que probar de él. **Es la unidad de cálculo del cumplimiento** (D129, §9) |
+| **Riesgo** · **Causa** | `risks` · `causes` | El riesgo se origina en causas; las causas se mitigan con controles. Los tres niveles son `N:M` entre sí. La causa tiene origen y tipo (D129) |
+| **Dimensión** | `control_dimensions` | Una de las 9 formas de probar un control (documental, aplicación, servidores, BD, nube, red, endpoint, físico y ambiental, proceso) — ver §2 |
 | **Categoría** | `trust_criteria` | Una de las 5 categorías de SOC 2 (Seguridad, Disponibilidad, Integridad del procesamiento, Confidencialidad, Privacidad). Agrupa controles — ver §2 y §9 |
-| **Plan de testeo** | `test_plans` | Criterio de auditor: pasos **dependientes**, población y regla de muestreo |
-| **Test** | `tests` | Procedimiento de auditoría reutilizable (22 campos propios; la hoja trae 23 columnas y una es su vínculo con los controles). Pertenece a **una** dimensión |
-| **Check** | `checks` | La verificación atómica que ejecuta la sonda. Clave natural de tres partes: `platform` + `policy_id` + `check_id` |
+| **Test** (prueba) | `tests` | Lo que se ejecuta y cómo se concluye: paso a paso y criterios de correcto, excepción y observación. **Pertenece a un control** (o, la documental, a un documento) y a **una** dimensión; es documental, de población, operativo o técnico (D129) |
+| **Procedimiento estándar** | `standard_procedures` | Los pasos genéricos de un tipo de prueba (`PE-TEC-01`, `PE-MUE-01`…) |
+| **Check** | `checks` | La verificación atómica que ejecuta la sonda o el motor de nube. Clave: `platform` + `policy_id` + `check_id` |
+| **Rol del check** | `test_checks.role` | **Directo** (decide el cumplimiento), **Complementario** (solo observación) o **Dependencia** (toma la conclusión del control dueño) (D129) |
+| **Documento** | `documents` · los de la empresa | Política, procedimiento, manual, matriz o documento, con responsable, versiones, aprobación y aceptación del personal; su prueba documental es la `T-DOC` (§11, D133) |
+| **Nivel del control** | — | 0 No evaluado · 1 Ineficaz · 2 Débil · 3 Parcial · 4 Adecuado · 5 Sólido. Cumple solo en 4 o 5 (§9, D130) |
+| **Estado de gestión** | — | Incumplimiento, En gestión, Cumple – por aprobar, Aprobado por el responsable, **Cumplimiento aprobado** (el único que cuenta) y Devuelto (D132) |
+| **Ventana de vigencia** | — | El tramo de calendario (mes, trimestre, año…) en que un control debe tener su evidencia, según su periodicidad (D131) |
 | **Evaluación** | `evaluations` | Un test o check aplicado a **un activo**, con su resultado. **Inmutable** |
-| **Exclusión** | `exclusions` | Decisión de no medir un check, con justificación aprobada y vigencia |
+| **Excepción de un check** | `exclusions` | Riesgo aceptado por el `admin_empresa` sobre un FAIL de un check en un activo: cuenta como PASS marcado, con justificación y fecha de fin, 90 días como máximo (D135) |
 | **Evidencia requerida** / **entregada** | `evidence_requirements` / `evidence_submissions` | Qué se exige y quién responde / el archivo concreto, con hash de integridad |
 | **Auditoría** | — | El examen final que da la certificación del marco. En Monkey la empresa llama a un auditor y le crea un perfil `auditor` para que revise cómo lleva sus cuentas (D63, D96). El experto en compliance es el `admin_empresa` |
 | **Hallazgo** | `findings` | Una falla concreta que **detecta el sistema**: qué falló, en qué dimensión, sobre qué insumo |
 | **Observación del auditor** | `audit_observations` | Lo que escribe el rol `auditor` (observación, recomendación o solicitud de información) y que la empresa debe atender — §7.6. **No es un hallazgo** |
-| **Mitigación** · **Riesgo residual** | `mitigations` · `residual_risks` | Indicadores **separados** del cumplimiento (§9). La mitigación (causa, riesgo) y la fórmula del residual ya tienen reglas (D68, D75); faltan datos y quién define el apetito (`P22`) |
+| **Cobertura verificada** · **Riesgo residual** | `mitigations` · `residual_risks` | Indicadores **separados** del cumplimiento (§9): qué parte de las relaciones causa–control de un riesgo tiene su control cumpliendo, y cuánto baja por eso su probabilidad (D134) |
 | **Evaluación del servicio** | `service_frameworks` | Un servicio frente a un marco, en una versión, un período auditado y una fecha de corte (D68, REQ-004). No es `evaluations`, que son los resultados |
-| **Avance** · **Cobertura** · **Estado** | — | **Avance**: lo cumplido sobre el total del nivel. **Cobertura**: qué parte de lo aplicable ya se evaluó. **Estado**: si cumple (efectivo, cumple…); lo decide la regla «todo o nada», nunca el porcentaje (§9) |
+| **Avance** · **Cobertura** · **Estado** | — | **Avance**: lo cumplido sobre el total del nivel (en el control, el C%: requisitos que cumplen). **Cobertura**: qué parte de lo aplicable ya se evaluó. **Estado**: si cumple; lo decide la regla «todo o nada», nunca el porcentaje (§9) |
 | **Evaluación del auditor** | — | **En pausa (D96).** Emitiría su veredicto sobre una evaluación del servicio (`framework_assessments`, D77). Volverá según el Excel (`P35`) |
-| **Responsable por dimensión** | — | El `funcional` a quien se le asigna el trabajo de una dimensión (documental, aplicación, servidores, bases de datos o nube) en un servicio, con excepciones por control (D96, `modelo/05-usuarios.md`) |
+| **Responsable** · **Delegado** · **Colaborador** | — | El `responsable` responde por un control y da su primera aprobación; el `delegado` carga su evidencia; el `colaborador` solo lee y acepta los documentos que le asignan (D102, D132, D136) |
 | **Cobertura técnica** | — | Cuánto del scope se puede medir automáticamente. **Número aparte** del cumplimiento |
 
 ### De la capa técnica
 
 | Término | Tabla | Qué es |
 |---|---|---|
-| **Sonda / capacidad automática** | `automated_capabilities` | El mecanismo que evalúa sin intervención humana. Hay dos motores (D100): la sonda en servidores, BD y endpoints, y el motor de nube en AWS, Azure y GCP. **Nunca se nombra al proveedor frente al cliente** |
+| **Sonda / capacidad automática** | `automated_capabilities` | El mecanismo que evalúa sin intervención humana. Hay dos motores (D100): la sonda en servidores, BD y endpoints, y el motor de nube en las nubes y los SaaS (20 plataformas en la VF18). **Nunca se nombra al proveedor frente al cliente** (tabla 9 de la VF18, D128) |
 | **Plataforma de conexión** | `capability_platforms` | Lo que el cliente elige al conectar (D67): un proveedor de nube (AWS, Azure…), un sistema operativo (Linux, Windows…) o un motor de base de datos (PostgreSQL…). Tiene disponibilidad y logo; no es el hosting |
 | **Integración** | `integrations` | Una plataforma de un tercero con la que Monkey trabaja, de medición (`measurement`) o de gestión (`workflow`). Si tiene plataforma de conexión, toma de ella nombre, logo y disponibilidad. Lo que el cliente conectó **se deriva** de sus conexiones, no se guarda (D110) |
 | **Ejecución** | `executions` | Una corrida de la sonda sobre un activo. **No es una Evaluación** |

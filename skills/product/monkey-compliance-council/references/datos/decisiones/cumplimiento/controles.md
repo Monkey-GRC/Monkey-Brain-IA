@@ -30,3 +30,23 @@ Por qué este componente es como es. Lo vigente está en [`arquitectura/cumplimi
 **Qué cambia.** `contracts/cumplimiento/controles.md`, `evidencia.md` y `veredictos.md` (una línea cada uno), y una prueba e2e en MD-193 (`test/cumplimiento/control-baja.e2e-spec.ts`). Los criterios del comité sobre las observaciones de controles dados de baja siguen en `P37`.
 
 **Fuente:** Héctor Ríos (Rod), 2026-11-17, al cerrar MD-193; eligió «Historial legible».
+
+---
+
+## D132 · Gestión y aprobación del cumplimiento del control: aprueba primero el responsable y la aprobación final es del administrador (2026-11-22; reemplaza D121 y el punto 8 de D102)
+
+**Decisión** (`MAP CALOR`, sección 14; `Modelo de Gestión usuarios`, Tabla 2):
+
+1. **Estados de gestión del control**: Incumplimiento (estado inicial, ventana vencida o falla de un control automático) → En gestión → Cumple – por aprobar (Monkey calcula que el 100% de los requisitos cumple) → Aprobado por el responsable → **Cumplimiento aprobado**, el único que cuenta como cumplido. Devuelto (con motivo) vuelve a En gestión.
+2. **Quién hace qué** (G-01 a G-05): el `admin_empresa` asigna un responsable a cada control (el rol sugerido es solo una guía); el responsable puede delegarlo en un delegado de su equipo y sigue respondiendo por él; la evidencia la carga el delegado o, sin delegado, el responsable. Aprueba primero el responsable y después el `admin_empresa`. Si el `admin_empresa` es el responsable del control, su aprobación es la final.
+3. **La aprobación es del control, no de cada evidencia.** La matriz de la VF18 ya no tiene «Aprobar evidencia»: una evidencia manual cuenta si la cargó el delegado o el responsable, está vigente y no fue devuelta (§3.1 del libro). Un rechazo del responsable o del administrador devuelve el control con motivo, avisa al delegado y al responsable, y marca como devuelta la evidencia que lo causó.
+4. **Controles automáticos** (G-07): si un check Directo pasa de PASS a FAIL o cambia la parametrización evaluada, el control vuelve a Incumplimiento y se alerta; con la corrección y un nuevo PASS vuelve a «Cumple – por aprobar».
+5. Cada delegación, carga, aprobación, rechazo y alerta queda en el registro de auditoría (G-09).
+
+**Por qué.** Es el modelo del libro: separa lo que Monkey calcula (el nivel, D130) de lo que una persona aprueba. La IA nunca aprueba (regla 3).
+
+**Qué cambia.** §7 (estados de gestión y aprobaciones por control), `contracts/cumplimiento/controles.md`, `evidencia.md` y `veredictos.md`. **Reemplaza** D121 (el veredicto revisado en dos niveles) y el punto 8 de D102 (la revisión por evidencia); con D133, **reemplaza D88**. **Cierra `P34`**: que el administrador dueño de un control dé la aprobación final de lo suyo es la regla (G-05). Quién registra el resultado de una prueba operativa o técnica manual queda en `P48`.
+
+**Fuente:** comité funcional, VF18 (`MAP CALOR`, secciones 3.1, 6 y 14; `Modelo de Gestión usuarios`, Tabla 2), 2026-11-22.
+
+---

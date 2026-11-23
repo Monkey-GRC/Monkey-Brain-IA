@@ -7,6 +7,8 @@ type: contract
 
 # Integraciones
 
+> **VF18 (D128): este contrato describe la API construida con el catálogo v1.** Con la VF18 hay 14 categorías de integración (D129), los checks de GitHub que cuentan están en `TEST_CHECKS` (D129) y cada alerta de incumplimiento puede abrir un ticket en la herramienta conectada (D138).
+
 | | |
 |---|---|
 | **Qué es** | La sección **Integraciones** de toda la empresa (D110, MD-211): el catálogo de lo que se puede conectar y la lista de lo que el cliente ya conectó |
@@ -241,7 +243,7 @@ es y en) y el contenido del detalle por código (`integration.content.<code>.*`)
 | `github` | `measurement` | — | `coming_soon` | Mostrará cómo se revisan y aprueban los cambios en tu código, y las vulnerabilidades de sus dependencias. |
 | `jira` | `workflow` | — | `coming_soon` | Convertirá cada hallazgo en un ticket asignado y seguirá su avance hasta cerrarlo. |
 
-GitHub no tiene plataforma de conexión porque su categoría de activo y su mapeo a controles los decide el comité (P44,
+GitHub no tiene plataforma de conexión porque su categoría de activo y su mapeo a controles los decide el comité (P45; los checks que cuentan, D129,
 P45); el alcance de Jira, también (P46).
 
 ## Estado de implementación

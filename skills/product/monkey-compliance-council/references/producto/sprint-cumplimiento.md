@@ -36,11 +36,11 @@ El motor y sus reglas (los 8 casos C1 a C8, las simulaciones y las validaciones 
 
 | Ticket | Qué falta |
 |---|---|
-| **MD-151** mitigación y riesgo residual | **Sigue fuera.** El comité trae los estados de mitigación (RN-20, RN-21) y la fórmula del residual está adoptada (D75), pero falta el efecto (probabilidad o impacto) y la obligatoriedad de las 209 relaciones causa–control, y el detalle de la fórmula: `P22`, D76 |
+| **MD-151** mitigación y riesgo residual | **Sigue fuera.** El comité trae los estados de mitigación (RN-20, RN-21) y la fórmula del residual está adoptada (D75), y la VF18 la reemplazó por la cobertura verificada (D134): ya no falta ningún dato del comité |
 | Evaluación del auditor (D77, `framework_assessments`) | En pausa (`P35`); se retiró del Backend el 2026-10-28 (D96) |
 | Cargar `control_dimensions` desde la hoja del comité | `DT-69` |
 
-**Tickets nuevos que el motor pide y aún no se crean** (siguen la prioridad MUST, SHOULD o LATER de la hoja `REQUISITOS EVALUACIÓN MONKEY`; no se comprobó cuáles ya cubre el código): desactivación controlada de tests con justificación (REQ-019 a REQ-021), evidencias validadas por atributo y por una persona (REQ-014 a REQ-018), dimensión requerida sin test ⇒ control incompleto (REQ-022, REQ-023), vigencia y vencimiento automático (REQ-046, depende de `P22`) y reutilización de resultados entre marcos (REQ-013, REQ-033).
+**Tickets nuevos que el motor pide y aún no se crean** (siguen la prioridad MUST, SHOULD o LATER de la hoja `REQUISITOS EVALUACIÓN MONKEY`; no se comprobó cuáles ya cubre el código): desactivación controlada de tests con justificación (REQ-019 a REQ-021), evidencias validadas por atributo y por una persona (REQ-014 a REQ-018), dimensión requerida sin test ⇒ control incompleto (REQ-022, REQ-023), vigencia y vencimiento automático (REQ-046; la VF18 la define por ventanas, D131) y reutilización de resultados entre marcos (REQ-013, REQ-033).
 
 ## Qué quedó fuera (vuelve al backlog)
 

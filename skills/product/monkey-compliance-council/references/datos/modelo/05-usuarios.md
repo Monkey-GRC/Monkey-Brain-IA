@@ -11,7 +11,7 @@
 
 Definido por el comité en su modelo de gestión de usuarios (hoja «Modelo de Gestión usuarios» del TSC integral, ver §0), ajustado por D96 y rediseñado por D102 (2026-11-03): la cadena de asignación es `admin_empresa` → `responsable` → `delegado`. **Ante una duda de roles y permisos manda esa hoja.**
 
-### 5.1 Los roles (D96, D102)
+### 5.1 Los roles (D96, D102, D136)
 
 | Rol | Quién es | Alcance | MFA |
 |---|---|---|---|
@@ -20,14 +20,12 @@ Definido por el comité en su modelo de gestión de usuarios (hoja «Modelo de G
 | `responsable` | **Dueño** de los controles que el administrador le asigna; lidera un equipo | Solo **sus controles** (los suyos y los que ejecutan sus delegados). Sube evidencia, asigna ejecutor a su equipo y **revisa** lo que suben sus delegados | Sí |
 | `delegado` | Miembro del equipo de un `responsable`; **ejecuta** los controles que su responsable le asigna | Solo los controles en los que es ejecutor. Sube evidencia y registra resultados; no revisa | Sí |
 | `auditor` | Quien audita el cumplimiento de la empresa dentro de Monkey (suele ser una persona externa, pero su cuenta **pertenece a la empresa**) | Lectura de **todo** el cumplimiento de **todos** los servicios de su empresa, incluida la cadena (dueño y ejecutor de cada control) + módulo de auditoría. **Registra observaciones.** No califica por ahora (`P35`) | Sí |
+| `colaborador` | Empleados y contratistas que deben conocer los documentos de la empresa (D136) | Solo **los documentos que le asignan**: los lee y los acepta. No accede a controles, riesgos ni evidencia | Sí |
 
 **El `funcional` desapareció (D102):** su lugar lo ocupan el `responsable` (dueño) y el `delegado` (ejecutor). El «responsable» del modelo
 anterior, el cargo ante el auditor, se llama ahora **cargo de la organización** (§5.4).
 
-**Quién crea a quién.** `admin_monkey` registra la empresa y su clave de acceso, y con ella entra el primer `admin_empresa` (D43). Desde ahí,
-**la empresa crea a su gente**: el `admin_empresa` crea `responsable`, `delegado`, `auditor` y otros `admin_empresa`; un `responsable` puede crear
-`delegado` solo para su equipo. El `delegado` no crea a nadie. `admin_monkey` no crea ni desactiva cuentas de una empresa; sí restablece el segundo
-factor del `admin_empresa` (D94).
+**Quién crea a quién (D136).** `admin_monkey` registra la empresa y su clave de acceso, y con ella entra el primer `admin_empresa` (D43). Desde ahí **solo `admin_monkey` y `admin_empresa` crean, editan y desactivan usuarios y asignan roles** (Tabla 2 de la VF18): el `responsable` ya no crea a sus delegados, pero sigue **delegando** sus controles en un usuario de su equipo. `admin_monkey` restablece el segundo factor del `admin_empresa` (D94) y, con la VF18, también puede gestionar los usuarios de una empresa y ver su cumplimiento (§5.5).
 
 **Cupo de usuarios (D103).** `companies.max_users` lo fija `admin_monkey`. Cuentan las cuentas `active`, `pending` y `suspended` de cualquier rol; una
 `inactive` no. Al llegar al tope no se crea ni se reactiva a nadie (`USER_LIMIT_REACHED`).
@@ -37,13 +35,13 @@ factor del `admin_empresa` (D94).
 1. **Crea y desactiva** a su equipo (desactivar es la baja, `CC6.3`) y organiza los **grupos**.
 2. **Asigna el dueño de cada control**: a un `responsable` o a sí mismo. Es el único que lo hace y el único que lo reasigna. Un control sin dueño queda **«Sin asignar»**.
 3. **Ve todo**, incluido cuántos controles tiene cada persona y su avance (sin tope).
-4. **Revisa cualquier evidencia** y puede aprobarla o rechazarla encima de la revisión del responsable (ver abajo).
-5. **Da el veredicto** de las pruebas manuales que no son documentales, con el mismo flujo de dueño y ejecutor.
-6. **Decide las exclusiones** de un activo en una prueba (§7.2, D96).
+4. **Da la aprobación final del cumplimiento de cada control**, después de la del responsable; si él es el responsable, la suya es la única (D132).
+5. **Asigna el responsable de cada documento** y puede aprobar documentos (D133).
+6. **Decide las excepciones** de un check, con 90 días como máximo (D135), y cambia la periodicidad de un control con justificación (G-10).
 7. **Crea, edita y da de baja controles propios, riesgos y causas** directamente, con advertencia y confirmación (§7.1, `P33`). Dar de baja no borra.
 8. Responde las observaciones del auditor.
 
-Puede subir evidencia, pero **no es su foco**. Que quien sube también revise es un riesgo conocido (`P34`, `LATER`): ninguna persona revisa lo que subió ella misma, salvo el `admin_empresa` cuando es dueño del control y quien sube.
+Puede subir evidencia, pero **no es su foco**. Si es el responsable del control, su aprobación es la final (G-05, D132, que cerró `P34`).
 
 ### Grupos, dueño y ejecutor (D102)
 
@@ -220,9 +218,10 @@ erDiagram
 | Política | Valor | Por qué ese valor |
 |---|---|---|
 | Sesión | 30 min de inactividad, 8 h máximo | Reduce la ventana de una sesión robada |
-| Contraseña — longitud | 12+ caracteres | NIST SP 800-63 |
+| Contraseña — longitud | **15+ caracteres** (D137) | Tabla 3 de la VF18: lo que pasan los checks de las plataformas |
 | Contraseña — complejidad | mayúscula + minúscula + número + símbolo | Encarece la fuerza bruta |
-| Contraseña — expiración | No vence (D101). Cambio voluntario con contraseña actual + segundo factor; recuperación por correo + segundo factor | Fatiga de contraseñas (NIST SP 800-63B) |
+| Contraseña — historial | No reutilizar **las últimas 24** (D137) | Tabla 3 de la VF18 |
+| Contraseña — expiración | **60 días o menos** (D137, revierte D101 punto 1), con aviso previo. Cambio voluntario con contraseña actual + segundo factor; recuperación por correo + segundo factor | Tabla 4 de la VF18: Monkey aplica a sus cuentas lo que recomienda al implementador |
 | MFA | TOTP obligatoria para **todos los roles** (D66, D96, D102: se mantiene hasta que existan otras formas de ingreso). La persona puede **recordar un dispositivo 30 días**: ahí solo pide la contraseña; `admin_monkey` no (D123) | Protege el acceso crítico |
 | Cifrado en reposo | AES-256 (bcrypt+salt para contraseñas, secreto MFA cifrado) | Requisito NIST |
 | Cifrado en tránsito | TLS 1.3 + HSTS | Requisito PCI DSS |
@@ -246,51 +245,71 @@ La autorización se verifica **en cada request** (*"no confiar en el frontend"*)
 
 ### 5.5 Matriz de permisos
 
-Lo que puede hacer cada rol. Parte de las acciones de la hoja «Modelo de Gestión usuarios» del comité (Tabla 2) y se ajustó con D63 y D96. El comité confirmó el 2026-11-03 que no entregará el Excel de permisos por pantalla: esta matriz manda (D102).
+**Es la Tabla 2 de la hoja «Modelo de Gestión usuarios» de la VF18** (D136, RC-14): ✓ permitido · ⊗ permitido con
+restricción · vacío, prohibido. Las filas marcadas *(D…)* no están en la tabla del comité y se conservan de lo
+decidido antes, porque el libro no las define (DEV-16).
 
-| Acción | `admin_monkey` | `admin_empresa` | `responsable` | `delegado` | `auditor` |
-|---|---|---|---|---|---|
-| Crear empresa, archivarla y fijar su cupo de usuarios | ✓ | | | | |
-| Ver y editar la configuración de la empresa | ✓ | ✓ | | | |
-| Crear (invitar) `responsable`, `auditor` y otro `admin_empresa` | | ✓ | | | |
-| Crear (invitar) `delegado` | | ✓ | ✓ solo de su equipo | | |
-| Editar, desactivar y reactivar usuarios | | ✓ | | | |
-| Crear grupos de responsables y mover un delegado de equipo | | ✓ | | | |
-| Crear el equipo de delegados de un responsable | | ✓ | ✓ solo el suyo | | |
-| Asignar el dueño de un control (a un responsable o a sí mismo) y reasignarlo | | ✓ | | | |
-| Asignar el ejecutor de un control (un delegado de su equipo) | | | ✓ solo los suyos | | |
-| Ver la carga de trabajo de cada persona | | ✓ | | | |
-| Gestionar la MFA de un usuario | ✓ solo al `admin_empresa` | ✓ a su equipo | | | |
-| Crear control propio, riesgo o causa | | ✓ | | | |
-| Editar control, riesgo o causa | | ✓ | | | |
-| Dar de baja control, riesgo o causa (con confirmación) | | ✓ | | | |
-| Ver control y riesgo | | ✓ todos | ✓ solo los suyos | ✓ solo los que ejecuta | ✓ todos |
-| Ver la cadena (dueño y ejecutor de cada control) | | ✓ | ✓ solo la suya | | ✓ |
-| Subir evidencia | | ✓ | ✓ de sus controles | ✓ de los que ejecuta | |
-| **Revisar (aprobar o rechazar) evidencia** | | ✓ cualquiera | ✓ la de sus controles que no subió él | | |
-| Ver evidencia | | ✓ | ✓ de sus controles | ✓ de los que ejecuta | ✓ |
-| Dar el veredicto de una prueba manual que no es documental | | ✓ | ✓ de sus controles | ✓ registra, no revisa | |
-| Ejecutar o relanzar una prueba | | ✓ | ✓ solo la suya | ✓ solo la suya | solo lectura |
-| Decidir una exclusión (proponer y aprobar en un acto) | | ✓ | | | |
-| Ver las integraciones de la empresa, su estado y su detalle (D110) | | ✓ | | | ✓ solo lectura, las conectadas |
-| Ver el catálogo de integraciones y conectar una (D110) | | ✓ | | | |
-| Vista técnica (códigos, requisitos, todas las pruebas y resultados por check; D81) | | ✓ | | | ✓ |
-| Porcentaje de cumplimiento | | ✓ el de la empresa | ✓ el de lo suyo | ✓ el de lo suyo | ✓ |
-| Módulo de auditoría y registrar observaciones (§7.6) | | | | | ✓ |
-| Responder una observación | | ✓ | ✓ de su control | ✓ de los que ejecuta | |
-| Ver audit trail | ✓ | ✓ | limitado | limitado | ✓ |
-| Exportar reportes (PDF y Excel) | ✓ | ✓ | | | ✓ |
-| Crear API key y configurar conectores | ✓ | ✓ | | | |
-| Editar su propio perfil y configurar su propia MFA | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Módulo | Acción | `admin_monkey` | `admin_empresa` | `responsable` | `delegado` | `auditor` | `colaborador` |
+|---|---|---|---|---|---|---|---|
+| Empresas | Crear, suspender o eliminar empresa (y fijar su cupo, D103) | ✓ | | | | | |
+| Empresas | Ver y editar la configuración de la empresa | ✓ | ✓ | | | | |
+| Usuarios | Crear, editar, desactivar y reactivar usuarios; asignar roles | ✓ | ✓ | | | | |
+| Usuarios | Asignar controles a usuarios (el dueño de un control) | ✓ | ✓ | | | | |
+| Usuarios | Crear grupos y mover a alguien de equipo *(D102)* | | ✓ | | | | |
+| Usuarios | Ver la carga de trabajo de cada persona *(D122)* | | ✓ | | | | |
+| Controles | Crear y dar de baja un control | | ✓ | | | | |
+| Controles | Editar un control | | ✓ | ⊗ | | | |
+| Controles | Ver un control | ✓ | ✓ | ⊗ | ⊗ | ✓ | |
+| Controles | Delegar un control en un usuario de su equipo | | ✓ | ⊗ | | | |
+| Controles | Primera aprobación del cumplimiento del control | | ✓ | ⊗ | | | |
+| Controles | Aprobación final del cumplimiento del control | | ✓ | | | | |
+| Riesgos | Crear riesgo | | ✓ | | | | |
+| Riesgos | Editar riesgo | | ✓ | ⊗ | | | |
+| Riesgos | Ver riesgo | ✓ | ✓ | ⊗ | ⊗ | ✓ | |
+| Evidencia | Subir evidencia | | ✓ | ⊗ | ⊗ | | |
+| Evidencia | Ver evidencia | ✓ | ✓ | ⊗ | ⊗ | ✓ | |
+| Evidencia | Dar de baja una evidencia («eliminar»: nunca se borra) | | ✓ | | | | |
+| Evidencia | Decidir la excepción de un check *(D135)* | | ✓ | | | | |
+| Documentos | Asignar el responsable de un documento | ✓ | ✓ | | | | |
+| Documentos | Crear, importar o editar un documento y sus versiones | | ✓ | ⊗ | | | |
+| Documentos | Definir el flujo de aprobación; enviar o cancelar la solicitud | | ✓ | ⊗ | | | |
+| Documentos | Aprobar o rechazar un documento | | ✓ | ⊗ | | | |
+| Documentos | Definir quiénes deben aceptarlo | | ✓ | ⊗ | | | |
+| Documentos | Aceptar un documento asignado | | ✓ | ✓ | ✓ | | ✓ |
+| Documentos | Ver el documento vigente | ✓ | ✓ | ⊗ | ⊗ | ✓ | ⊗ |
+| Documentos | Ver el historial de versiones, aprobaciones y aceptaciones | ✓ | ✓ | ⊗ | | ✓ | |
+| Documentos | Archivar un documento | | ✓ | | | | |
+| Pruebas | Ejecutar o relanzar una prueba | | ✓ | ⊗ | ⊗ | ⊗ | |
+| Pruebas | Ver resultados de pruebas | ✓ | ✓ | ⊗ | ⊗ | ✓ | |
+| Auditoría | Módulo de auditoría y registrar observaciones (§7.6) | | | | | ✓ | |
+| Auditoría | Responder una observación *(D102)* | | ✓ | ✓ de su control | ✓ de lo que ejecuta | | |
+| Auditoría | Ver el registro de auditoría | ✓ | ✓ | ⊗ | | ✓ | |
+| Reportes | Exportar reportes de cumplimiento y el borrador SOC | ✓ | ✓ | | | ✓ | |
+| Reportes | Generar el tablero de cumplimiento | ✓ | ✓ | ⊗ | | ✓ | |
+| Reportes | Vista técnica (códigos, requisitos, pruebas y resultados por check) *(D81)* | | ✓ | | | ✓ | |
+| Integraciones | Crear o rotar API keys y configurar conectores | ✓ | ✓ | | | | |
+| Integraciones | Ver las integraciones de la empresa *(D110)* | | ✓ | | | ✓ solo lectura | |
+| Seguridad | Configurar políticas de seguridad | ✓ | ✓ | | | | |
+| Seguridad | Gestionar la MFA de un usuario | ✓ | ✓ | ⊗ su equipo | | | |
+| Cuenta | Editar su perfil y configurar su propia MFA | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 
-Cuatro cosas que se leen mal si no se dicen:
+**Las restricciones ⊗** (notas de la Tabla 2):
 
-- **`admin_monkey` no crea controles ni riesgos de un cliente**: administra la plataforma y el catálogo maestro, no el escenario de nadie. El Excel le marca algunas acciones de lectura sobre el cumplimiento (ver control, evidencia, riesgo); hasta que MD-146 defina su vista de solo lectura, los endpoints de Cumplimiento le responden `403`.
-- **`responsable` y `delegado` están siempre acotados a sus controles** (§5.1), sin dimensión. El Excel marcaba «editar control» y «editar riesgo» como ⊗ para el `funcional`; ninguno de los dos edita.
-- **El `auditor` ve toda su empresa** (D63), sin restricción de asignación. No valida: el estado de una prueba lo mueven las revisiones del `responsable`, del `admin_empresa` (o la sonda). Su calificación queda en pausa (`P35`).
-- **Nadie borra una evidencia**: las versiones nuevas no sobrescriben a las anteriores (REQ-018 del Excel). El Excel deja «eliminar evidencia» al administrador; aquí se traduce en una versión nueva o en una baja con rastro.
+- **Controles:** el `responsable` edita, aprueba y delega **solo los controles de los que es responsable**, y sube
+  evidencia en los suyos o en los que le delegaron. El `delegado` ve y carga evidencia **solo en los controles que su
+  responsable le delegó**; no aprueba ni delega.
+- **Documentos:** el `responsable` crea, edita, define el flujo, envía y define la aceptación **solo de los documentos
+  de los que es responsable**; aprueba **solo si el responsable del documento lo eligió como aprobador** (D-02,
+  D-03); ve los documentos de sus controles y los que le asignaron. El `colaborador` ve solo los que le asignaron.
+- **Lo demás** (riesgos, pruebas, registro de auditoría, tablero, MFA) se acota a los controles del `responsable` y a
+  lo delegado al `delegado`; el `auditor` ejecuta pruebas solo de lectura sobre lo que audita.
 
-No hay roles personalizados: los roles son fijos. La matriz sustituye al Excel de permisos por pantalla (`P3`): el comité confirmó el 2026-11-03 que no se espera (D102).
+Tres cosas que se leen mal si no se dicen:
+
+- **`admin_monkey` puede gestionar los usuarios de una empresa y ver su cumplimiento** (D136). Antes no entraba al
+  escenario de un cliente; el aislamiento por RLS tiene que admitir esa lectura sin abrir la escritura.
+- **Nadie borra una evidencia ni un control**: «eliminar» es dar de baja y el historial se conserva (D96, D119).
+- **No hay roles personalizados**: los seis roles son fijos.
 
 ### 5.6 Cómo el modelo de usuarios sostiene SOC 2
 

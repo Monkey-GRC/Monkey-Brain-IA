@@ -62,6 +62,7 @@ Rutas relativas a `skills/product/monkey-compliance-council/references/`. El rut
 | Saber qué existe de un módulo | `monkey-preflight <módulo>` y `arquitectura/README.md` (índice numerado) |
 | Tocar el schema o una entidad | `datos/modelo-datos.md` y solo el módulo que toques en `datos/modelo/` |
 | Tocar un cálculo o pantalla de cumplimiento | `datos/modelo/09-calculo-cumplimiento.md` (§9) |
+| Tocar el catálogo v2 o el módulo Documentos | `datos/modelo/00-fuentes.md` (la VF18), `03-catalogo-maestro.md` y `11-documentos.md` |
 | Tocar una migración, RLS, roles o `.env` | `datos/schema-implementacion.md` |
 | Diseñar texto o pantalla de usuario final | `producto/philosophy.md` y la skill `monkey-ui-copy` |
 | Decidir qué se construye ahora o después | `producto/mvp-roadmap.md` |

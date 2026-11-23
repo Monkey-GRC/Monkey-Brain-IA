@@ -1,5 +1,7 @@
 # Cumplimiento · Exclusiones
 
+> **VF18 (D128): esto describe el código construido con el catálogo v1.** Con la VF18 la exclusión de un activo pasa a ser la excepción de un check en un activo: cuenta como PASS marcado y dura 90 días como máximo (D135).
+
 Responde: **¿cómo se saca un activo de una prueba sin mentir sobre el cumplimiento?** Una exclusión dice «esta
 prueba no aplica a este activo, por esta razón, hasta esta fecha». No borra nada: **se superpone al leer**.
 

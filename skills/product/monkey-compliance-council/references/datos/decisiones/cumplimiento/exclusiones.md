@@ -4,6 +4,8 @@ Por qué este componente es como es. Lo vigente está en [`arquitectura/cumplimi
 
 ## D74 · Exclusiones de activos y controles vencidos (decisiones 3 y 7 del Excel, `P22`)
 
+> **Ajustada por D131 y D135 (2026-11-22).** El punto 1 pasa a ser la excepción de un check, que cuenta como PASS marcado y dura como máximo 90 días (D135); el punto 2, lo vencido, se mide por ventana de vigencia (D131).
+
 **Decisión.**
 1. **Exclusión de un activo** (decisión 3 de la hoja del comité): la **propone el consultor**, la **aprueba la empresa** y **vence con el período de evaluación** (A3) *(D78: quién propone y quién aprueba se invirtió)*. La justificación escrita es obligatoria (`exclusions.justification`); queda en el rastro. No se pide un documento adjunto
    en el MVP.
@@ -56,5 +58,22 @@ solo pregunta «quién autoriza» (decisión 3) y no fija quién propone, así q
 **Qué cambia.** `modelo/07-cumplimiento.md` (la tabla `exclusions`), `contracts/cumplimiento/exclusiones.md` (`awaiting_consultant`) y la migración `20261016130000_exclusions_and_service_period`. **Queda a cargo de la pantalla** de exclusiones (MD-169) el aviso y la casilla de contacto: a quién se contacta y cómo es el pendiente `P28`.
 
 **Fuente:** responsable de producto, 2026-10-16; D78.
+
+---
+
+## D135 · Excepción de un check: un FAIL con excepción aprobada cuenta como PASS, se muestra marcado y dura como máximo 90 días (2026-11-22; ajusta D74 y D96)
+
+**Decisión** (`MAP CALOR`, secciones 3.2 y 3.3; PR-04; RC-20):
+
+1. Un check que falla en un activo puede tener una **excepción formal**: el riesgo lo acepta el `admin_empresa`, con justificación y fecha de fin. Mientras está vigente, ese resultado **cuenta como PASS y se muestra marcado** («FAIL con excepción aprobada»); el activo sigue en el alcance y en la cobertura.
+2. **Dura como máximo 90 días** (PR-04, configurable). Al vencer, el resultado vuelve a ser FAIL.
+3. Se conserva lo de la exclusión de hoy: justificación, vigencia, quién la aprobó y el rastro; la propone y la decide el `admin_empresa` en un solo acto (D96, punto 7).
+4. **«No aplica».** Un test que no corresponde al alcance del cliente se marca «No aplica» con una justificación escrita que aprueba el `admin_empresa`, y sale del cálculo (§3.3 del libro). Un check cuya plataforma o política no existe en el alcance del cliente es «No aplica» sin trámite (§3.2).
+
+**Por qué.** Es la regla del libro: en lugar de sacar al activo del denominador (D74), lo mantiene en la cobertura y marca el FAIL aceptado, con un tope.
+
+**Qué cambia.** §7 (exclusiones), §9 y `contracts/cumplimiento/exclusiones.md`. **Ajusta el punto 1 de D74** (de excluir un activo de una prueba a exceptuar el check de un activo, con tope) y el punto 7 de D96 (la vigencia ya no es el período: es la fecha de fin, de 90 días como máximo). MD-170 (exceptuar un check) se construye con esta regla.
+
+**Fuente:** comité funcional, VF18 (`MAP CALOR`, secciones 3.2, 3.3 y 11; RC-20), 2026-11-22.
 
 ---

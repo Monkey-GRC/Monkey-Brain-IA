@@ -157,7 +157,7 @@ HU-CUM-32 (calificación del auditor) no tiene caso: está en pausa (D96, `P35`)
 | | |
 |---|---|
 | **Actor** | `responsable` dueño del control o `admin_empresa` |
-| **Precondición** | Hay una entrega; quien revisa no la subió (salvo el `admin_empresa` dueño, `P34`) |
+| **Precondición** | Hay una entrega; quien revisa no la subió (salvo el `admin_empresa` dueño, D132) |
 | **Postcondición** | Revisión de su rol creada o reemplazada; estado combinado; rastro; estado recalculado |
 
 **Flujo principal**
@@ -281,7 +281,7 @@ HU-CUM-32 (calificación del auditor) no tiene caso: está en pausa (D96, `P35`)
 **Flujos alternos**
 - 1a. Fuera de 1 a 5 → `422` (`number.range`); riesgo de baja → `409 RISK_INACTIVE`.
 - 3a. Fecha pasada → `422` (`date.past`); cargo de otra empresa → `404`.
-- 3b. El riesgo residual y las matrices dependen de `P22` (⚪).
+- 3b. El riesgo residual y las matrices siguen la regla de D134 (⚪, sin construir).
 
 ### CU-CUM-14 · Recalcular el cumplimiento al escribir un hecho
 

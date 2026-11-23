@@ -1,5 +1,7 @@
 # Cumplimiento
 
+> **VF18 (D128): esto describe el código construido con el catálogo v1.** Con la VF18 el cumplimiento se mide por **requisitos del control** con **nivel de 0 a 5**, se **aprueba por control** (responsable y luego `admin_empresa`), se evalúa por **ventanas de vigencia** y los documentos pasan a su propio [módulo](../documentos/README.md) (D129 a D135, [§9](../../datos/modelo/09-calculo-cumplimiento.md)).
+
 Responde: **¿cómo llega Monkey a decir «este control está efectivo» o «este marco no cumple»?** Es la regla de
 negocio central del producto. Léelo antes de tocar `features/compliance` o cualquier pantalla de Cumplimiento.
 
@@ -82,8 +84,8 @@ importa, el resto lo conecta con el mundo.
 | Rutas, cuerpos y errores | Índice y permisos comunes: `contracts/cumplimiento/README.md` · por componente: `controles.md` · `resumen.md` · `evidencia.md` · `veredictos.md` · `observaciones.md` · `exclusiones.md` · `riesgos.md` (todos en `contracts/cumplimiento/`) · y los cargos: `contracts/onboarding/cargos-responsables.md` |
 | Valores de los enums | [`contracts/enums/cumplimiento.md`](../../../../../../contracts/enums/cumplimiento.md) |
 | La definición funcional del cálculo | `datos/modelo/09-calculo-cumplimiento.md` (§9) · `datos/modelo/07-cumplimiento.md` (§7) |
-| Decisiones (`D-n`) | [`datos/decisiones/cumplimiento/README.md`](../../datos/decisiones/cumplimiento/README.md): `D33` · `D62` · `D65` · `D68` · `D74` · `D75` · `D76` · `D78` · `D79` · `D80` · `D83` · `D85` · `D87` · `D88` |
-| Pendientes del comité (`P-n`) | [`datos/pendientes/cumplimiento.md`](../../datos/pendientes/cumplimiento.md): `P22` · `P26` · `P27` · `P33` · `P37` · `P43` — **si sigue abierto, se pregunta** |
+| Decisiones (`D-n`) | [`datos/decisiones/cumplimiento/README.md`](../../datos/decisiones/cumplimiento/README.md): `D33` · `D62` · `D65` · `D68` · `D74` · `D75` · `D76` · `D78` · `D79` · `D80` · `D83` · `D85` · `D87` · `D88` · `D130` · `D131` · `D132` · `D134` · `D135` |
+| Pendientes del comité (`P-n`) | [`datos/pendientes/cumplimiento.md`](../../datos/pendientes/cumplimiento.md): `P26` · `P27` · `P33` · `P37` · `P43` · `P48` — **si sigue abierto, se pregunta** |
 | Requisitos de seguridad | ninguno propio. Los que le aplican viven en su capacidad: [`plataforma.md`](../../seguridad/plataforma.md) (archivos), [`roles-permisos.md`](../../seguridad/roles-permisos.md) (quién valida) y [`trazabilidad.md`](../../seguridad/trazabilidad.md) (inmutabilidad) |
 | Deuda vigente (6 `DT-n`) | [`deuda-tecnica/cumplimiento.md`](../../deuda-tecnica/cumplimiento.md) |
 

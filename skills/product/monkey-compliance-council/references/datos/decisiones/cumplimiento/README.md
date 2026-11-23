@@ -6,12 +6,12 @@ Por qué Cumplimiento es como es, partido por componente porque el módulo es gr
 
 | # | Componente | Decisiones |
 |---|---|---|
-| 1 | [Motor](motor.md) | `D62` · `D68` · `D79` |
-| 2 | [Controles](controles.md) | `D65` |
-| 3 | [Resumen](resumen.md) | `D87` · `D105` |
-| 4 | [Veredictos](veredictos.md) | `D85` · `D88` |
-| 5 | [Exclusiones](exclusiones.md) | `D74` · `D78` · `D83` |
-| 6 | [Riesgos](riesgos.md) | `D33` · `D75` · `D76` |
+| 1 | [Motor](motor.md) | `D62` · `D68` · `D79` · `D130` · `D131` |
+| 2 | [Controles](controles.md) | `D65` · `D119` · `D132` |
+| 3 | [Resumen](resumen.md) | `D87` · `D105` · `D118` |
+| 4 | [Veredictos](veredictos.md) | `D85` · `D88` · `D121` |
+| 5 | [Exclusiones](exclusiones.md) | `D74` · `D78` · `D83` · `D135` |
+| 6 | [Riesgos](riesgos.md) | `D33` · `D75` · `D76` · `D134` |
 
 ## Del módulo entero
 

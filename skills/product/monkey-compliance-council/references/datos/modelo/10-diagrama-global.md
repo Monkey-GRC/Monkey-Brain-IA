@@ -5,6 +5,8 @@
 
 ## 10. Diagrama global
 
+Con el catálogo v2 de la VF18 (D129): requisitos del control, la prueba que pertenece a su control, documentos (§11), procedimientos, categorías de integración y el rol del check.
+
 ```mermaid
 erDiagram
     companies ||--o{ access_keys : "se accede con"
@@ -47,19 +49,21 @@ erDiagram
     client_controls ||--o| client_control_assignments : "asignado a"
     client_controls ||--o{ action_plans : "remediado con"
     controls ||--o{ control_dimensions : "se evalua en"
-    controls ||--o{ control_measurements : "se califica con"
-    controls ||--o{ test_plans : "se prueba segun"
-    client_controls ||--o{ evidence_requirements : "exige"
-    controls ||--o{ control_evidence_templates : "pide"
-    evidence_templates ||--o{ control_evidence_templates : "pedida por"
+    controls ||--|{ control_requirements : "se prueba con"
+    control_requirements }o--|{ tests : "probado por"
+    controls ||--o{ tests : "es dueno de"
+    controls }o--o{ documents : "depende de"
+    documents ||--|| tests : "su T-DOC"
+    documents ||--o{ company_documents : "plantilla de"
+    company_documents ||--|{ document_versions : "tiene"
+    client_controls ||--o{ evidence_requirements : "exige (por requisito del control)"
     client_controls ||--o{ client_control_dimensions : "se evalua en"
-    client_controls ||--o{ client_control_tests : "se verifica con"
-    tests ||--o{ client_control_tests : "verifica a"
-    controls }o--o{ tests : "se verifica con"
-    controls }o--o{ policies : "depende de"
+    standard_procedures ||--o{ tests : "guia"
+    integration_categories ||--o{ tests : "aporta evidencia a"
+    controls ||--o{ control_framework_mappings : "responde a"
 
-    tests }o--o{ checks : "ejecuta"
-    tests ||--o{ exclusions : "excluye"
+    tests }o--o{ checks : "se automatiza con (rol: directo, complementario, dependencia)"
+    checks ||--o{ exclusions : "exceptuado en un activo (D135)"
     tests ||--o{ evaluations : "aplicado en"
     checks ||--o{ evaluations : "aplicado en"
     monitoring_domains }o--o{ requirements : "cubre"

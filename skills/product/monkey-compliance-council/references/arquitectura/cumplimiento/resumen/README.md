@@ -1,5 +1,7 @@
 # Cumplimiento · Resumen
 
+> **VF18 (D128): esto describe el código construido con el catálogo v1.** Con la VF18 un control cuenta como cumplido solo con «Cumplimiento aprobado» y el período auditado dura 6 meses como mínimo (D130 a D132).
+
 Responde: **¿cómo se obtiene el estado de un marco completo y de sus categorías?** Es la pantalla de entrada a
 Cumplimiento: un bloque por marco contratado, con sus categorías, su avance y lo que falla.
 

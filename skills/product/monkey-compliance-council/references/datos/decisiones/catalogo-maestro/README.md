@@ -1,6 +1,14 @@
 # Decisiones — Catálogo maestro
 
-Por qué Catálogo maestro es como es. **Se consulta para reabrir, no para construir**: lo vigente está en [`arquitectura/catalogo-maestro/`](../../arquitectura/catalogo-maestro/README.md) y en `datos/modelo/`. Índice de todas las decisiones: [`README.md`](README.md).
+Por qué Catálogo maestro es como es. **Se consulta para reabrir, no para construir**: lo vigente está en [`arquitectura/catalogo-maestro/`](../../../arquitectura/catalogo-maestro/README.md) y en `datos/modelo/`. Índice de todas las decisiones: [`README.md`](../README.md).
+
+## Por componente
+
+| # | Componente | Decisiones |
+|---|---|---|
+| 9.1 | [Marcos](marcos.md) | `D37` · `D50` |
+
+## Del módulo entero
 
 ## D26 · Tipos enum en `snake_case`
 
@@ -10,6 +18,7 @@ generado no cambia. Cierra lo que estaba abierto en la bitácora de la reconstru
 
 **Por qué:** la convención de identificadores del modelo es `snake_case` sin excepción, y las tablas
 estaban vacías: es el momento más barato, antes de que haya seeds y funciones escritas a mano.
+
 
 ---
 
@@ -24,6 +33,7 @@ del cliente. `service_risks` desaparece (`client_risks` ya lleva el servicio).
 tablas apuntaban directo al catálogo global: editar habría cambiado el riesgo de todos los
 clientes. Lo que un cliente cambia solo lo ve él.
 
+
 ---
 
 ## D32 · Las `N:M` de dominios de monitoreo, explícitas
@@ -36,7 +46,6 @@ son tablas puente propias (`monitoring_domain_requirements`, `monitoring_domain_
 primera con una tabla implícita de Prisma (`_MonitoringDomainToRequirement`, columnas `A`/`B`, sin
 `id`) que rompe la convención de tablas puente.
 
----
 
 ---
 
@@ -64,7 +73,6 @@ migración sin pérdida de datos.
 
 **Fuente:** decisión de Héctor, 2026-09-29.
 
----
 
 ---
 
@@ -92,11 +100,12 @@ deja trazable de qué archivo salió.
 **Fuente:** `assets/TSC INTERGRAL SOC 2 DETALLADO VF.xlsx`, hojas *Controles Monkey* y *Tabla controles
 SOC 2*. Decisión de Héctor, 2026-09-30.
 
----
 
 ---
 
 ## D36 · Controles del cliente completos, clonado y plantillas de evidencia
+
+> **Ajustada por D129 (2026-11-22).** Las plantillas de evidencia se reemplazan por los documentos y los requisitos del control del catálogo v2.
 
 **Decisión** (precisa D3, D28 y D30):
 1. **El cliente crea, edita y elimina controles**, así que todo lo que se mide cuelga de
@@ -123,29 +132,6 @@ Un control propio no tiene punto de enfoque, así que no cierra ningún requisit
 
 **Fuente:** decisión de Héctor, 2026-09-30.
 
----
-
----
-
-## D37 · El MVP contempla solo SOC 2
-
-**Decisión:** el MVP trabaja únicamente con **SOC 2**. ISO 27001, SOC 1, PCI DSS, HIPAA, NIST CSF y el resto
-quedan para fases posteriores (`mvp-roadmap.md`: ISO 27001 pasa a la Fase 1).
-
-**Qué implica:**
-- `frameworks` tiene una sola fila (`soc2`, versión 2017) y el selector de marco del Componente 2 sale de esa
-  tabla, no de una lista fija: un marco no sembrado no se puede elegir (la FK de `service_frameworks` lo
-  rompería).
-- El modelo sigue siendo multi-framework por diseño (el control es atómico): no se construye nada que
-  impida sumar marcos después, pero tampoco se siembra ni se ofrece ninguno.
-- No cambia `services.previous_certification` (es lo que el cliente ya tuvo, no lo que contrata) ni el
-  catálogo `regulations` (leyes aplicables, no se puntúan: D10).
-- `frameworks.type` conserva sus 4 valores; en el MVP solo se usa `attestation`.
-
-**Por qué:** un selector con seis marcos y un catálogo con uno es una trampa: elegir cualquiera de los otros
-cinco fallaba o dejaba al cliente sin nada que clonar. **Fuente:** decisión de Héctor, 2026-09-30.
-
----
 
 ---
 
@@ -188,13 +174,12 @@ solo guardaba una); el dominio pasa al control (D35).
 
 **Fuente:** perfilado de `TSC INTERGRAL SOC 2 DETALLADO VF.xlsx` del 2026-09-30. Decisión de Héctor.
 
----
-
----
 
 ---
 
 ## D39 · Dimensiones por control y políticas del catálogo (cierra P10)
+
+> **Reemplazada por D129 (2026-11-22).** Las nueve dimensiones vienen explícitas por control en la VF18, el tipo es del control y `policies` se reemplaza por los documentos.
 
 **Decisión:**
 1. **Una dimensión aplica a un control si el control tiene al menos una prueba de esa dimensión.** Se deriva de
@@ -228,7 +213,6 @@ el comité (igual que D30). Si el comité define otra cosa, se corrige con una v
 **Fuente:** decisión de Héctor, 2026-10-01. Implementación: migración `catalog_policies_as_templates`;
 `Backend/prisma/seed/` (`deriveControlDimensions`, `testKind`, `parsePolicyLine`).
 
----
 
 ---
 
@@ -263,45 +247,6 @@ causa→control; sumar Disponibilidad agrega 6 controles.
 **Fuente:** decisión de Héctor, 2026-10-01. Implementación: `Backend/src/features/onboarding/` y
 `npm run clone:verify`.
 
----
-
----
-
-## D50 · Todos los marcos se ofrecen, solo SOC 2 se contrata; cada marco con sus categorías
-
-**Decisión** (comité, correcciones del 2026-10-05; categorías confirmadas por Carlos). Cuatro puntos:
-
-1. **Se ofrecen 7 marcos y solo SOC 2 se puede contratar.** Monkey Admin y la pantalla del servicio muestran todos como
-   gancho comercial (SOC 2, ISO 27001, HIPAA, GDPR, PCI DSS, NIST CSF y SOC 1, en orden de demanda), pero **solo se habilita lo
-   que está construido** (hoy, SOC 2) y, en el servicio, lo que la empresa contrató. Si el cliente toca un marco que no tiene
-   contratado, no se selecciona: se abre un aviso que lo invita a hablar con mercadeo (mock, DT-41).
-2. **`catalog.frameworks.availability`** (`available` | `coming_soon`, migración `20261005220000_correcciones_onboarding_d50_d51`): `soc2` es `available`; los otros seis se
-   siembran con `npm run reference:load` como `coming_soon` y **sin requisitos ni controles**. El registro de empresa rechaza un
-   `coming_soon` con `409 FRAMEWORK_NOT_AVAILABLE`. `GET /v1/catalogs/frameworks` los trae todos, con `availability`.
-3. **Qué marcos y por qué esos.** Los más demandados hoy: SOC 2 es el estándar del SaaS B2B; ISO 27001 es la expansión más
-   común (32 % de los clientes de Drata con SOC 2 la suman), seguida de HIPAA (20 %) y GDPR (19 %); PCI DSS lo exigen fintech y
-   pagos; NIST CSF es el marco de referencia citado en Colombia; SOC 1 es el hermano financiero de SOC 2. Los siete tienen ficha
-   en `frameworks/*.md`. Se dejan fuera CIS Controls (vetado) y FedRAMP, CMMC, DORA y NIS2 (nicho o de otra región).
-4. **Categorías: cada marco usa las suyas (opción 2).** ISO 27001:2022 se organiza en 4 temas, PCI DSS en 12 requisitos y NIST
-   CSF 2.0 en 6 funciones; forzarlas a las 5 categorías de SOC 2 (seguridad, disponibilidad, confidencialidad, integridad,
-   privacidad) distorsiona la cobertura y la lectura del auditor, y ISO ni siquiera tiene un tema «disponibilidad». Es coherente
-   con el principio de que el **control es atómico e independiente del marco**: los controles no cambian, solo cómo se agrupan
-   los requisitos de cada marco. **La base actual no permite la opción 1** ni sin migrar: `requirements.trust_criterion_id` es una
-   FK a un enum de 5 valores.
-
-**Qué no se hizo y por qué:** no se migró el schema. Con SOC 2 como único marco construido, generalizar `trust_criteria` a
-dominios por marco sería un cambio grande sin uso. Queda como **DT-38**, y se hace al sembrar el primer marco que no sea SOC 2:
-`trust_criteria` → dominios con `framework_id`, `code`, `name` e `is_mandatory`, y `service_trust_criteria` →
-`service_framework_domains` (la regla «seguridad siempre» pasa a ser `is_mandatory` del dominio).
-
-**La pantalla del marco:** el texto dice **consultoría**, no auditoría (Monkey acompaña al cliente; no audita). Cada categoría de
-SOC 2 trae qué significa y qué se revisará (sin códigos técnicos, `philosophy.md`). Si el cliente no selecciona todas las
-categorías, se le avisa que lo recomendable es cubrirlas todas; si decide continuar, se respeta.
-
-**Fuente:** correcciones del comité del 2026-10-05; Carlos confirmó la opción 2 y la lista de marcos. Demanda: Drata (clientes con
-SOC 2), ACC 2025, guías sectoriales de cumplimiento.
-
----
 
 ---
 
@@ -316,5 +261,50 @@ SOC 2), ACC 2025, guías sectoriales de cumplimiento.
 **Qué cambia.** Columna `tests.display_description` (migración `20261016120000_test_display_description`), el seed (`display-names.ts`, validador `[confidencialidad]`, `catalog:load` y `catalog:verify`), el campo `display_description` en `technical.tests` de `contracts/cumplimiento/controles.md`, y `03-catalogo-maestro.md`. **Pendiente de operar:** aplicar la migración y correr `catalog:load` en cada entorno.
 
 **Fuente:** Carlos Castaño, 2026-10-16.
+
+
+---
+
+## D128 · La VF18 es la fuente maestra y el catálogo v2; donde lo construido difiere, se adapta al libro (2026-11-22)
+
+**Decisión.**
+
+1. **`assets/TSC INTERGRAL SOC 2 DETALLADO VF18_DEV.xlsx` reemplaza a la VF2** como fuente maestra (§0). Es la **versión 2 del catálogo** y no tiene equivalencia de códigos con la v1 (DEV-02): los controles se renombraron, se fusionaron y se crearon nuevos. Los códigos del libro son claves de negocio estables y no se regeneran (DEV-03).
+2. **Gana el libro.** Donde lo construido o una decisión anterior difiere, se hace como dice el libro y la decisión anterior se marca reemplazada, sin reabrir la discusión. Lo que el libro no define se mantiene como está (DEV-16). Solo se pregunta lo que el libro no define o donde se contradice a sí mismo (`P48` a `P50`).
+3. **El modelo de evaluación es la hoja `MAP CALOR`** (secciones 2 a 14). Reemplaza como regla a las hojas `MODELO EVALUACIÓN MONKEY` y `REQUISITOS EVALUACIÓN MONKEY` de la VF2 (D68): sus reglas `RN-xx` y `REQ-xxx` valen solo donde no chocan con `MAP CALOR` (tabla 5 de `01_DESARROLLO`). El detalle está en §9 (D130).
+4. **Datos de la v1: reset total del entorno de desarrollo.** Es la respuesta de desarrollo a DEV-02 («el desarrollo propone al comité cómo tratarlos antes de migrar»): las empresas que existen son de prueba, así que se **recrea la base** (migraciones, catálogo v2 y `admin_monkey` con el script de bootstrap) y se limpian, fuera de la base, los archivos de evidencia y los agentes de la sonda de esas empresas. Se hace **cuando el cargador del catálogo v2 esté listo** (RC-01), no antes, para no dejar el sistema sin catálogo. Se recrea la base entera porque el registro de auditoría es inmutable (D41) y no se borra fila a fila. Si el comité pide otra cosa, se hace como diga.
+5. **Las tablas del catálogo no se versionan fila a fila todavía.** Con el reset, la v2 reemplaza a la v1 y no conviven; `catalog_versions` sigue diciendo contra qué versión se mide cada servicio × marco y cada evaluación (A4). Versionar fila a fila hará falta cuando haya clientes reales y llegue una v3: entre v1 y v2 se repiten códigos con otro significado (`R001`–`R010`, `F001`–`F056`, `CHG-1`, `CPL-2`…).
+6. **Marca blanca.** Los textos del libro que nombran a los proveedores se muestran al cliente con la tabla 9 de `01_DESARROLLO`: «la sonda», «el agente de la sonda», «evaluación de configuración de la sonda», «módulo» e «inventario de la sonda», «el motor de nube»; la fuente principal se dice «Sonda», «Motor de nube» o «Sonda y motor de nube», y los «Posible Checks …» de la columna L, «Verificaciones automáticas de la sonda / del motor de nube». **Nunca se muestran**: la columna Herramienta de `TEST_CHECKS`, las hojas de catálogo de checks ni el bloque de motor interno de `Activos del Servicio (SCOPE)`. El panel interno sí los nombra (D70 se mantiene).
+
+**Por qué.** El comité tiene la última palabra (CLAUDE.md, «Precedencia») y el libro trae su propia guía de integración. Con datos solo de prueba, el reset es más simple y más seguro que mantener dos catálogos o mover datos sin equivalencias: cargar la v2 encima de la v1 dejaría evidencias y resultados apuntando a controles con otro significado.
+
+**Qué cambia.** §0 y §9, `manifest.json`, `assets/README.md`, las decisiones D129 a D138 y los documentos que citan el catálogo v1. Los requerimientos `RC-01` a `RC-21` se construyen en tickets aparte, después de la documentación (MD-490).
+
+**Fuente:** comité funcional, `assets/TSC INTERGRAL SOC 2 DETALLADO VF18_DEV.xlsx` (hojas `00_LEEME` y `01_DESARROLLO`), entregado el 2026-11-22; Héctor Ríos (Rod), 2026-11-22: el reset total del entorno de desarrollo y «se hace como lo quiera el comité».
+
+
+---
+
+## D129 · El catálogo v2: requisitos del control, la prueba pertenece a un control, nueve dimensiones explícitas, documentos y rol del check (2026-11-22; reemplaza D39)
+
+**Decisión** (tablas 3, 7 y 8 de `01_DESARROLLO`; las tablas, en §3):
+
+1. **Requisito del control** (`catalog.control_requirements`): cada punto de la columna L de `Controles Monkey` (576, hoja `REQUISITOS`), con tipo (documental, población, operativo o técnico), documentos, pruebas, periodicidad sugerida y obligatoriedad. Es **la unidad de cálculo** del cumplimiento del control (D130). Se llama así para no confundirlo con `catalog.requirements`, que es el criterio del marco (`CC6.1`).
+2. **La prueba pertenece a un control** (430, `T-<control>-nn`) **o a un documento** (42, `T-DOC-…`), con los campos de la hoja `TEST`: tipo, dimensión, qué asegura, por qué importa, fuente principal, procedimiento estándar, paso a paso, cuándo es correcta, excepción u observación, evidencia a guardar, nivel, frecuencia o muestra, integración sugerida y automatización. `control_tests` deja de ser un N:M libre. Los 23 campos de la hoja `Pruebas` de la v1 se retiran.
+3. **Nueve dimensiones**, explícitas por control (columnas «TEST …» de `Controles Monkey`): documental, aplicación, servidores, BD, nube y las nuevas **red, endpoint, físico y ambiental, y proceso**. Ya no se derivan de las pruebas. Endpoint y dispositivo de red siguen siendo además tipos de activo.
+4. **Del control**: el tipo (manual, manual dependiente de TI o automático: dice cómo opera y no cambia el cálculo), la periodicidad sugerida (9 valores) y el rol responsable sugerido (cargos, en texto). La columna «EVALUACIÓN DE CONTROL» es un resultado por cliente y no se carga.
+5. **Documentos** (`catalog.documents`, 42) reemplazan a `policies` (D39, punto 4) y a `evidence_templates` (D36): tipo, contenido mínimo exigido, periodicidad de revisión, roles sugeridos, origen, aceptación sugerida, su prueba documental y sus 228 vínculos con controles. Su flujo por empresa es D133.
+6. **Entidades nuevas**: los procedimientos estándar de prueba (`PE-…`, 8), las categorías de integración (14) y el mapeo de cada control a requisitos de marco (`MAPEO_MARCOS`, hoy solo SOC 2).
+7. **Rol del check** en `catalog.test_checks`: Directo, Complementario o Dependencia, con su objetivo común y su condición de aplicación. Los 4.684 vínculos entran con procedencia `committee_ratified` (DEV-12): ya no son propuestas de desarrollo (D56). Un check se identifica por plataforma y check ID en el motor de nube y por política y check ID en la sonda (DEV-11); `TEST_CHECKS` trae el **nombre** de la política y el cruce con `sca_policies` se hace por ese nombre. Las filas con check ID `N/A` son módulos de la sonda o puntajes globales, no checks (`P49`).
+8. **Causas**: el origen (interno o externo) y el tipo (18 valores) reemplazan a `failure_category`; no hay nombre corto y se muestra la descripción. Los vínculos riesgo–causa (551) y causa–control (771) salen de la hoja `Causas` y no tienen código.
+9. **Riesgos** con probabilidad e impacto inherentes. En el libro son texto («4 - Probable»): se carga el número inicial. Cómo se usan: D134.
+10. **Catálogos de checks**: la sonda en 4.14.7 (11.352 checks, 77 políticas) y el motor de nube en 5.45.0 con **20 plataformas** (1.621 checks), no solo AWS y GCP. Antes de cargar se miden las diferencias con lo cargado (DEV-15). Los títulos y las remediaciones en español que trae el libro para la sonda reemplazan a las traducciones de desarrollo donde existan; el resto sigue la regla de D90.
+
+**Por qué.** Es la estructura que define el libro. D39 derivó dimensiones y tipos porque el material anterior no los traía.
+
+**Qué cambia.** §2, §3, §8, `contracts/catalogo-maestro.md` y `contracts/enums/catalogo-maestro.md`. **Cierra** `P15` (solo cuenta lo que está en `TEST_CHECKS`), `P44` (34 vínculos de GitHub) y los puntos 1 y 2 de `P9`; ratifica `P10` (el tipo viene del libro). Ajusta D33, D35, D36, D38, D40, D55 y D56. Las deudas DT-69, DT-76 y DT-80 se cierran cuando se cargue la v2 (RC-01).
+
+**Fuente:** comité funcional, VF18 (hojas `01_DESARROLLO`, `Controles Monkey`, `REQUISITOS`, `TEST`, `TEST_CHECKS`, `Documentos`, `Causas`, `Riesgos`, `PROCEDIMIENTOS`, `INTEGRACIONES`, `MAPEO_MARCOS`, `Checks Wazuh` y `Checks prowler`), 2026-11-22.
+
 
 ---

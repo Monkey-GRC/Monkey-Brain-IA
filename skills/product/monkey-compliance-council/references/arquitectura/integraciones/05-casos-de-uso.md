@@ -129,9 +129,9 @@ también puede el `auditor`). Los casos CU-INT-05 y CU-INT-06 están por constru
 |---|---|
 | **Actor** | `admin_empresa` |
 | **Precondición** | Por decidir: categoría de activo, qué es el activo y canal de conexión (P45) |
-| **Postcondición** | Por decidir: qué checks cuentan y a qué pruebas y controles van (P44) |
+| **Postcondición** | Cuentan los 34 vínculos de GitHub de `TEST_CHECKS` (D129); la categoría de activo, por decidir (P45) |
 
-**Flujo principal:** no se escribe hasta que el comité cierre P44 y P45 (regla 5 de `CLAUDE.md`). Hoy GitHub está en el
+**Flujo principal:** no se escribe hasta que el comité cierre P45 (regla 5 de `CLAUDE.md`). Hoy GitHub está en el
 catálogo como `coming_soon` y no se puede conectar (D110 punto 6).
 
 **Lo que ya está fijado:** sin la cadena check → prueba → control ratificada, un resultado no cuenta (D56); si se usa

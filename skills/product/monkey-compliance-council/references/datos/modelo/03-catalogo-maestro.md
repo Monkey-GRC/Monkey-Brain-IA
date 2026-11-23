@@ -1,16 +1,20 @@
 # Modelo de datos — §3 Catálogo maestro
 
-> Parte de [`modelo-datos.md`](../modelo-datos.md) (índice). **Qué responde:** Marcos, requisitos, controles, tests, riesgos y causas; versionado y clonado. **Léelo:** Antes de tocar el catálogo, el control atómico o el clonado.
+> Parte de [`modelo-datos.md`](../modelo-datos.md) (índice). **Qué responde:** Marcos, requisitos, controles, requisitos del control, pruebas, checks, documentos, riesgos y causas; versionado y clonado. **Léelo:** Antes de tocar el catálogo, el control atómico o el clonado.
 > Los números de sección (§) se conservan: cualquier cita a «§3» apunta aquí.
 
 ## 3. Catálogo maestro
 
-**Qué es:** todo lo que Monkey administra y que existe **antes de que haya un solo cliente**
-— los marcos con sus requisitos, los controles, los tests, los checks de la sonda, y el
-catálogo base de riesgos y causas. Lo cura el equipo de Monkey desde Monkey Admin.
+**Qué es:** todo lo que Monkey administra y que existe **antes de que haya un solo cliente**: los marcos con sus
+requisitos, los controles con sus requisitos del control, las pruebas y los checks que las automatizan, los
+documentos sugeridos y el catálogo base de riesgos y causas. Lo cura el equipo de Monkey desde Monkey Admin.
 
-**Por qué importa:** cuando un cliente contrata un marco, no se le inventa nada: hereda este
-catálogo y lo particulariza. Y como el catálogo cambia con el tiempo, se versiona.
+**Por qué importa:** cuando un cliente contrata un marco no se le inventa nada: hereda este catálogo y lo
+particulariza. Y como el catálogo cambia con el tiempo, se versiona.
+
+**La fuente es la VF18 del comité, catálogo v2** (D128, D129). La tabla 7 de su hoja `01_DESARROLLO` mapea cada
+columna del libro a una tabla de aquí; los nombres de las tablas nuevas son propuesta de desarrollo y se fijan en
+el contrato de la carga (RC-01). Totales y reglas de integridad que la carga valida: §0.
 
 ### 3.1 El marco y sus requisitos
 
@@ -29,8 +33,8 @@ erDiagram
         uuid id PK
         uuid framework_id FK
         uuid trust_criterion_id FK
-        string code "CC6.1"
-        string tsc_category "nombre largo de la categoria TSC (20 valores)"
+        string code "TSC Ref: CC6.1"
+        string tsc_category "Categoria TSC (nombre largo)"
         text criterion
     }
     points_of_focus {
@@ -55,21 +59,23 @@ erDiagram
     trust_criteria ||--o{ requirements : "clasifica"
 ```
 
-**El punto de enfoque es el punto de anclaje.** No se cuelga nada del marco ni del requisito
-directamente: el control se vincula al **punto de enfoque**, que es el nivel de detalle
-donde el estándar dice qué se espera.
+**Sin cambios en la v2:** 61 criterios TSC y 302 puntos de enfoque (`8_MATRIZ_MAESTRA`). **El punto de enfoque es
+el punto de anclaje**: el control se vincula al punto de enfoque, no al marco ni al requisito. Cada punto de enfoque
+tiene al menos un control (`IN-01`).
 
-### 3.2 El control y su desacople del marco
+### 3.2 El control, sus requisitos y su desacople del marco
 
 ```mermaid
 erDiagram
     controls {
         uuid id PK
-        string code "CAP-1, GOV-11"
+        string code "IDA-11, GOB-7"
         string name
         text description
-        string domain "uno de 27, valor literal del comite"
-        string source_ref "vanta:CAP-1"
+        string domain "uno de 25, valor literal del comite"
+        enum type "manual|it_dependent_manual|automated"
+        enum periodicity "sugerida; el cliente la cambia (G-10)"
+        text suggested_owner_role "2-3 cargos alternativos, guia (IN-09)"
     }
     point_of_focus_controls {
         uuid id PK
@@ -79,121 +85,124 @@ erDiagram
     control_dimensions {
         uuid id PK
         uuid control_id FK
-        enum dimension "policy|server|database|app|cloud"
-        enum type "manual|automated|hybrid|technical_manual"
-        boolean requires_probe
-        boolean requires_ai
-        boolean requires_compliance_confirmation
-        text reason_not_applicable "nullable"
+        enum dimension "9 valores (§2)"
     }
-    control_measurements {
+    control_requirements {
         uuid id PK
         uuid control_id FK
-        enum dimension
-        decimal weight "lineal por default"
-        string formula
+        string code "IDA-11-L3"
+        int point_number "Punto L"
+        text text
+        enum type "documentary|population|operational|technical"
+        enum periodicity "sugerida"
+        boolean is_mandatory
     }
-    policies {
+    control_requirement_tests {
         uuid id PK
-        string name "unico; plantilla, la aprobacion es del cliente (D39)"
+        uuid control_requirement_id FK
+        uuid test_id FK
     }
-    control_policies {
+    control_requirement_documents {
         uuid id PK
-        uuid control_id FK
-        uuid policy_id FK
-        boolean requires_employee_acceptance
+        uuid control_requirement_id FK
+        uuid document_id FK
     }
-    evidence_templates {
-        uuid id PK
-        string code "DOC-001"
-        text description
-        enum dimension "policy por defecto"
-    }
-    control_evidence_templates {
+    control_documents {
         uuid id PK
         uuid control_id FK
-        uuid evidence_template_id FK
-        int sequence "orden en el control"
-        uuid test_id FK "nullable: prueba documental a la que sirve el documento; null = sugerencia sin asignar (D88)"
+        uuid document_id FK
+    }
+    control_framework_mappings {
+        uuid id PK
+        uuid control_id FK
+        string framework_code
+        string requirement_ref "A1.1 POC 1"
+        enum relation_type "direct"
+        text justification
     }
     controls ||--o{ point_of_focus_controls : "satisface"
     points_of_focus ||--o{ point_of_focus_controls : "satisfecho por"
     controls ||--o{ control_dimensions : "se evalua en"
-    controls ||--o{ control_measurements : "se califica con"
-    controls ||--o{ control_policies : "depende de"
-    policies ||--o{ control_policies : "sustenta"
-    controls ||--o{ control_evidence_templates : "pide"
-    evidence_templates ||--o{ control_evidence_templates : "pedida por"
+    controls ||--|{ control_requirements : "se prueba con"
+    control_requirements ||--|{ control_requirement_tests : "probado por"
+    control_requirements ||--o{ control_requirement_documents : "pide"
+    controls ||--|{ control_documents : "depende de"
+    controls ||--o{ control_framework_mappings : "responde a"
 ```
 
-**El desacople es la regla estructural del modelo:** el control **no pertenece a ningún
-marco**. Se vincula a puntos de enfoque (`N:M` vía `point_of_focus_controls`), y son los
-requisitos los que pertenecen al marco. Datos reales que lo exigen: `MON-4` satisface `A1.1`,
-`CC7.2` y `PI1.3` a la vez; la suma de controles por categoría TSC da 131 sobre 118 reales
-*"porque varios controles sirven a varias categorías"*; y un solo check trae mapeo a **20
-referencias** simultáneas.
+**El desacople es la regla estructural del modelo:** el control **no pertenece a ningún marco**. Se vincula a
+puntos de enfoque (`N:M`): en la hoja `Controles Monkey` cada fila es la combinación control + criterio + punto
+de enfoque, y el control se repite con los mismos datos (114 controles en 472 filas; `IN-08` exige que coincidan).
+`control_framework_mappings` (`MAPEO_MARCOS`) registra a qué requisito de cada marco responde cada control: hoy
+solo SOC 2 (472 filas, todas directas) y, después, ISO 27001 y los demás. Así una evidencia sirve en todos los
+marcos donde el control aplica (P2 del libro).
 
-**El dominio es del control, no del requisito, y son 27** (`controls.domain`, valor literal del
-comité: "Gestión de Activos", "Monitoreo Continuo"…). En el Excel el dominio **cambia dentro de un mismo
-requisito en 41 de los 61**, por eso no puede colgar del requisito; y no se deriva del prefijo del código
-porque `AST` tiene dos dominios (D35). Prefijos de código: `AST`, `BCD`, `CAP`, `CFG`, `CHG`,
-`CPL`, `DCH`, `GOV`, `HRS`, `IAC`/`IAO`, `IRO`, `MON`, `NET`, `SAT`, `TDA`…). Los más
-cargados: Privacidad 17, Gobierno 13, Identificación y Autenticación 13.
+**El requisito del control es la unidad de cálculo** (D129, §9). Son los puntos de la columna L («Documentos /
+evidencias documentales requeridas»), uno por fila en la hoja `REQUISITOS`: 576, todos obligatorios, de cuatro
+tipos (232 documentales, 244 operativos, 97 técnicos y 3 de población). Cada uno tiene al menos un test (`IN-04`).
+**No confundirlo con `requirements`**, que es el criterio del marco.
 
-**Un control depende de políticas y documentos**, no solo de tests: *"el control depende de
-la aprobación de la política"*. Los documentos son `evidence_templates` (el comité vincula 89 a 67 de
-los 119 controles, 50 documentos distintos; uno sirve a varios controles) y son de donde se
-clonan las evidencias requeridas del cliente (§3.5, §7.3, D36).
+**Del control:** el **dominio** (25 valores literales; es del control, no del requisito), el **tipo** (64 manuales,
+12 manuales dependientes de TI, 38 automáticos: dice cómo opera y **no cambia el cálculo**), la **periodicidad
+sugerida** (40 permanentes, 36 cuando sea requerido, 28 anuales, 4 semestrales, 3 mensuales, 3 trimestrales) y el
+**rol responsable sugerido**, que es solo una guía: cada empresa asigna a sus usuarios (G-01). Las **dimensiones**
+vienen explícitas en las columnas «TEST …» de la hoja: el control aplica las que dicen «Definido» (las 114
+aplican la documental). La columna «EVALUACIÓN DE CONTROL» es un resultado por cliente y no se carga.
 
-> **Procedencia:** el catálogo de controles fue **extraído de Vanta** (119 registros,
-> 25 ago 2026) y ampliado con los TEST y el mapeo propios. `CPL-1` es el único sin asignar
-> porque **es la Descripción del Sistema**, no un control medible.
+**Prefijos de código de la v2:** `ACT`, `AEV`, `CAP`, `CFG`, `CHG`, `CIF`, `CLI`, `CNT`, `CON`, `CPL`, `DCL`, `EQU`,
+`FIS`, `GOB`, `IDA`, `INC`, `MNT`, `MOV`, `OPS`, `PRV`, `RED`, `RIE`, `RRH`, `TER`, `TRD`, `VUL`. No tienen equivalencia
+oficial con los de la v1 (DEV-02).
 
-### 3.3 Tests, checks y plan de testeo
+**Un control depende de sus documentos.** Los 42 documentos del catálogo y sus 228 vínculos con controles están en
+§11 (`catalog.documents`, D133): reemplazan a `policies` y a `evidence_templates` de la v1. Cada documento tiene su
+prueba documental (`IN-05`).
+
+### 3.3 Pruebas, procedimientos, integraciones y checks
 
 ```mermaid
 erDiagram
-    test_plans {
-        uuid id PK
-        uuid control_id FK
-        text description
-        json steps "dependientes, en orden"
-        string population
-        string sampling_rule
-        enum origin "predefined|custom"
-    }
     tests {
         uuid id PK
-        string code "T-DOC-001, T-SRV-007"
-        enum dimension "una sola"
-        string name "nombre del comite"
-        string display_name "nombre neutro que ve el cliente; nunca nombra al proveedor (D70)"
-        string display_name_en "el mismo nombre en inglés; nulo si falta (MD-211, DT-100)"
-        text display_description "descripcion corta que ve el cliente: el objetivo del comite, reescrito si nombra al proveedor (D82)"
-        text objective
-        string type "texto libre del comite"
-        string tool "INTERNO: nombra al proveedor"
-        string population
-        string period
-        text population_size "texto, no entero"
-        text suggested_sample_size "texto, no entero"
-        string selection_method
-        text evidence_to_request
-        text prerequisites
-        json step_by_step
-        json attributes_to_validate
-        text compliance_criterion
-        text exceptions "que se considera excepcion"
-        text exceptions_handling "que hacer con ellas"
+        string code "T-IDA-11-04, T-DOC-POL001"
+        uuid control_id FK "nullable: las T-DOC son del documento"
+        int requirement_point "Punto de L"
+        enum type "documentary|population|operational|technical"
+        enum dimension "9 valores"
+        string display_name "nombre neutro que ve el cliente (D70)"
+        string display_name_en "nulo si falta (P50)"
+        text display_description "D82"
+        text objective "Que se asegura"
+        text why_it_matters
+        enum primary_source "document|manual|probe|cloud_engine|probe_and_cloud_engine|integration"
+        uuid standard_procedure_id FK
+        text step_by_step
+        text correct_if
+        text exception_if
+        text observation_if
         text evidence_to_retain
-        text automated_coverage
-        text complementary_manual_validation
-        text limitations
+        enum level "design|implementation|effectiveness|implementation_and_effectiveness"
+        text frequency_sample "texto"
+        uuid integration_category_id FK "nullable"
+        enum automation "manual|semi_automated|automated"
     }
-    control_tests {
+    standard_procedures {
         uuid id PK
+        string code "PE-TEC-01"
+        string name
+        text when_used
+        text generic_steps
+        text typical_evidence
+    }
+    integration_categories {
+        uuid id PK
+        string name "Proveedores de identidad, Ticketing..."
+        text example_tools
+        text evidence_provided
+    }
+    integration_category_controls {
+        uuid id PK
+        uuid integration_category_id FK
         uuid control_id FK
-        uuid test_id FK
     }
     checks {
         uuid id PK
@@ -204,23 +213,20 @@ erDiagram
         string title_en
         text condition
         text remediation
+        text remediation_es
         text verification_rule
-        enum origin "cis_native|monkey_policy|auditor_criterion|engine_native"
-        string mapping_provenance
-        enum mapping_confidence
-        uuid sca_policy_id FK "nullable, la política SCA que lo contiene"
-        string service_name "solo nube"
-        string resource_type "solo nube"
         string engine_severity "solo nube"
-        json categories "solo nube"
+        uuid sca_policy_id FK "nullable"
     }
     test_checks {
         uuid id PK
         uuid test_id FK
         uuid check_id FK
-        enum provenance "engine_native|monkey_proposed|committee_ratified"
-        enum confidence "nullable"
-        text rationale
+        enum role "direct|complementary|dependency"
+        text common_objective
+        uuid owner_control_id FK "nullable: el dueno de una dependencia"
+        text applies_when
+        enum provenance "committee_ratified en la v2"
     }
     check_mappings {
         uuid id PK
@@ -228,69 +234,64 @@ erDiagram
         string framework_code
         string framework_version
         string requirement_code
-        enum provenance "engine_native|monkey_proposed|committee_ratified"
+        enum provenance
     }
     sca_policies {
         uuid id PK
         string platform
         string benchmark
-        string sca_id "cis_alma_linux_8"
+        string sca_id
         string yaml_file
         int check_count
     }
-    controls ||--o{ test_plans : "se prueba segun"
-    controls ||--o{ control_tests : "se verifica con"
-    tests ||--o{ control_tests : "verifica a"
-    tests ||--o{ test_checks : "ejecuta"
-    checks ||--o{ test_checks : "ejecutado por"
+    controls ||--o{ tests : "se prueba con"
+    standard_procedures ||--o{ tests : "guia"
+    integration_categories ||--o{ tests : "aporta evidencia a"
+    integration_categories ||--o{ integration_category_controls : "alimenta"
+    tests ||--o{ test_checks : "se automatiza con"
+    checks ||--o{ test_checks : "usado por"
     checks ||--o{ check_mappings : "mapea a"
     sca_policies ||--o{ checks : "contiene"
 ```
 
-**`tests` es `N:M` con `controls`, y es deliberado.** `T-DOC-001` sirve a 103 controles: los 118
-controles asignados y los 61 TEST producen **284 asignaciones** control↔TEST (de 1 a 7 pruebas por control,
-2,4 de media). Modelarlo `N:1` duplicaría 61 tests en cientos de filas.
+**La prueba pertenece a un control** (D129): 430 pruebas `T-<control>-nn`, una o varias por requisito, y 42
+documentales `T-DOC-…`, **una por documento**, que no llevan control y se vinculan por el documento. En total 472:
+43 documentales (las 42 `T-DOC` más `T-OPS-1-01`), 38 de población, 237 operativas y 154 técnicas. Por dimensión:
+proceso 275, documental 43, nube 36, BD 29, servidores 28, aplicación 23, red 22, endpoint 12, físico y ambiental 4.
+`control_tests` (N:M de la v1) se retira: la relación es `tests.control_id` y, para lo que prueba cada una,
+`control_requirement_tests`.
 
-**La fuente de esas 284 es la hoja *Pruebas*** (columna *Controles relacionados*), que cubre las 61 pruebas
-y los 118 controles. La matriz *Análisis TEST x Control* trae 248, de las que 27 citan `T-APP-001…006`, que
-no existen en *Pruebas* — la propia hoja marca *"FALTAN 6"* — y contiene las otras 221 (D38). Por eso hoy
-**la dimensión Aplicación no tiene ninguna prueba definida** (P9).
+**Procedimientos estándar** (`PROCEDIMIENTOS`, 8): `PE-DOC-01` documental, `PE-POB-01` población, `PE-TEC-01`
+check automático, `PE-TEC-02` técnico manual, `PE-MUE-01` muestra operativa, `PE-ACC-01` listado de accesos,
+`PE-EXC-01` evaluación de fallos e `PE-INT-01` evidencia por integración. **Categorías de integración**
+(`INTEGRACIONES`, 14): proveedores de identidad, RR. HH., verificación de antecedentes, capacitación, control de
+versiones, ticketing, MDM, escáneres de vulnerabilidades, logs y SIEM, gestores de contraseñas, nube, DLP,
+finanzas y CRM, y consentimiento y cookies; cada una con los controles que alimenta y la evidencia que aporta.
 
-**Las pruebas son texto interno.** Nombran al proveedor del motor de monitoreo en 15 de sus 23 columnas
-(`tool`, `automated_coverage`, `limitations`, `prerequisites`, `step_by_step`…) e incluso en 4 nombres:
-ninguno de esos textos sale tal cual a la UI, a un reporte ni a un texto generado por IA (D70). Los campos
-`population_size` y `suggested_sample_size` son **texto** porque en el Excel son frases ("Por determinar con
-base en el inventario de proveedores"; "N<5 → 100%; si no, 10% de la población (mín. 5, máx. 25)"), no
-enteros: el muestreo se guarda como dato y su cálculo se construye después (D8).
+**Las pruebas son texto interno.** 126 de las 472 nombran a los proveedores de la sonda o del motor de nube en
+algún campo: nada de eso sale tal cual a la UI, a un reporte ni a un texto generado por IA. El cliente ve el nombre y
+la descripción neutros que escribe Monkey (D70, D82) y la tabla 9 de `01_DESARROLLO` (D128). La columna `Estado`
+de la hoja `TEST` no se carga.
 
-**Checks del motor de nube (D56).** El catálogo del motor por plataforma (AWS: 662 checks; GCP: 110, `cruce-nube-gcp.md`) se carga con `origin = engine_native`,
-`platform = aws | gcp` y `policy_id = cloud_configuration` (el motor no agrupa en «políticas»; una constante conserva la clave de tres
-partes). **El mapeo a SOC 2 no es check → requisito**: es check → **prueba** → control → punto de enfoque → requisito. El motor aporta
-su propio check → requisito (`check_mappings`, `engine_native`, con el id normalizado: `cc_6_6` → `CC6.6`), que **no decide**. El
-eslabón check → prueba (`test_checks`) lo asigna el comité; hasta que lo ratifique, Monkey lo **propone** (`monkey_proposed`) desde las
-categorías del motor y los atributos de cada prueba T-CLD, y la confianza sube a `high` solo si el requisito SOC 2 que cita el motor
-es alcanzable desde la prueba propuesta (dos fuentes independientes coinciden). **Un check sin prueba no se inventa: queda como
-cobertura no alcanzada.** Gana siempre `committee_ratified`.
+**El rol del check** (D129, `TEST_CHECKS`, 4.684 vínculos para 117 pruebas): **Directo** (1.728: decide el
+cumplimiento), **Complementario** (2.001: solo observación) o **Dependencia** (955: toma la conclusión del control
+dueño, `owner_control_id`, sacado del objetivo común «dueño CIF-3»; `IN-06` exige que el check sea Directo en el
+dueño). `applies_when` dice cuándo aplica («Cliente conecta AWS», «Agente con la política …»). **Un mismo check es
+Directo en un solo control** (`IN-07`). Todos entran como `committee_ratified` (DEV-12): ya no hay propuestas de
+desarrollo ni confianza calculada (D56). Diecinueve vínculos tienen check ID `N/A`: son módulos de la sonda o
+puntajes globales, no checks, y cómo se evalúan está en `P49`.
 
-**La clave natural del check es de tres partes** (`platform` + `policy_id` + `check_id`) y el
-catálogo es grande: **77 políticas, 11.352 checks, 18 plataformas** (Windows 8 políticas de
-10 a Server 2025, macOS 12, Ubuntu 6, Debian 7, RHEL 6, más motores: PostgreSQL, MySQL, SQL
-Server, Oracle, MongoDB, Apache, NGINX, IIS). El mapeo es **por política** (decisión D6): si
-un activo corre una política sin mapeo, ese control queda **sin medir** para ese activo — no
-se inventan equivalencias.
+**La clave del check** es plataforma + check ID en el motor de nube y política + check ID en la sonda (DEV-11); en
+el modelo, `platform` + `policy_id` + `check_id`. `TEST_CHECKS` trae el **nombre** de la política y el cruce con
+`sca_policies` se hace por ese nombre. Los catálogos: la **sonda 4.14.7** (11.352 checks, 77 políticas, 18
+plataformas, con título en español para todos y remediación en español para 218) y el **motor de nube 5.45.0**
+(1.621 checks en 20 plataformas: AWS, Azure, Microsoft 365, GCP, Kubernetes, Alibaba Cloud, Google Workspace,
+Oracle Cloud, OpenStack, Cloudflare, Okta, E2E Networks, GitHub, Huawei Cloud, Vercel, Linode, MongoDB Atlas,
+STACKIT, NHN Cloud y Scaleway, con su severidad). Ambos traen columnas de mapeo a otros marcos, que van a
+`check_mappings`. **Solo cuenta para el cumplimiento un check vinculado en `TEST_CHECKS`**: lo demás es catálogo.
 
-**El muestreo es dato, no texto** (decisión D8): *"N<5 → 100%; si no, 10% de la población
-(mín. 5, máx. 25)"*. El cálculo de la muestra concreta se construye después; los campos se
-guardan ahora.
-
-**Cinco estados del check de la sonda** (distintos de los 4 del resultado de evaluación): `passed`, `failed`, `invalid`, `not_applicable` (llega como
-`result` vacío) y `not_run`.
-
-> **Cuidado con la palabra "prueba", que son tres cosas distintas:** los **61 TEST** de
-> Monkey (`tests`), las **107 pruebas vinculadas** de Vanta y los **11.352 checks** de la
-> sonda (`checks`). Más 89 vínculos a documentos (50 documentos distintos) y 16 vínculos a 10 políticas del catálogo de origen.
->
-> **`ChecklistOs` se elimina** del schema y se reemplaza por `sca_policies` + `checks`.
+**Cinco estados del check de la sonda** tal como llegan: `passed`, `failed`, `invalid`, `not_applicable` y `not_run`.
+Cómo se convierten en los estados del libro (PASS, FAIL, FAIL con excepción, No aplica, Sin datos): §9.
 
 ### 3.4 Riesgos y causas (catálogo base)
 
@@ -302,23 +303,22 @@ erDiagram
         string name
         text description
         enum trust_criterion "categoria del riesgo, 11 valores: NO son los 5 TSC"
-        json potential_impact "lista tipificada"
-        int likelihood "nullable: el catalogo no lo trae"
-        int impact "nullable"
-        int inherent_risk_value "nullable"
-        enum inherent_risk_level "nullable: low|moderate|high|critical"
+        json potential_impact "tipos de perdida"
+        int likelihood "inherente, 1-5"
+        int impact "inherente, 1-5"
+        int inherent_risk_value "1-25"
+        enum inherent_risk_level "por posicion en la matriz (D134)"
         boolean is_active
     }
     causes {
         uuid id PK
         string code "F001"
-        string name
-        enum failure_category "human_resource|processes|information_technology|infrastructure|external|governance"
+        enum origin "internal|external"
+        enum cause_type "18 valores"
         text description
     }
     risk_causes {
         uuid id PK
-        string code "RC001"
         uuid risk_id FK
         uuid cause_id FK
     }
@@ -326,8 +326,6 @@ erDiagram
         uuid id PK
         uuid cause_id FK
         uuid control_id FK
-        boolean is_mandatory "si es No, no cuenta para mitigar la causa (D75)"
-        enum effect "probability|impact; sin efecto no participa del residual"
     }
     risks ||--o{ risk_causes : "originado por"
     causes ||--o{ risk_causes : "origina"
@@ -335,32 +333,22 @@ erDiagram
     controls ||--o{ cause_controls : "mitiga"
 ```
 
-**Los tres niveles se reutilizan**, y por eso las tres relaciones son `N:M`: 10 riesgos y 56
-causas en el catálogo, unidos por 92 relaciones riesgo↔causa, y una causa como `F001`
-apunta a cuatro controles distintos (209 aristas causa→control en total, sobre los 118 controles). **Diez de
-las 56 causas no pertenecen a ningún riesgo** en la hoja del comité (F003, F004, F016, F020, F026, F034,
-F042, F045, F053, F054): se cargan tal cual, sin asociar (P9).
+**Los tres niveles se reutilizan** y las relaciones son `N:M`: 10 riesgos y **100 causas** unidos por **551
+relaciones** riesgo↔causa, y **771** causa→control. Todas las causas tienen riesgo y control, y todos los controles
+tienen causa (`IN-02`, `IN-03`). La fuente de verdad de los dos vínculos es la hoja `Causas`; las relaciones ya no
+tienen código. La causa tiene **origen** (84 internas, 16 externas) y **tipo** (18 valores: humano, procesos y
+métodos, tecnológico…), y no tiene nombre corto: se muestra la descripción. `cause_controls` ya no lleva efecto ni
+obligatoriedad: el residual se calcula por cobertura (D134).
 
-**El riesgo cuelga del servicio, no del marco** (ver §7.2). Un riesgo no es "de SOC 2": es
-del negocio del cliente, y los controles que lo mitigan sirven a los marcos que sea.
+**El riesgo trae su valoración inherente** (D134): probabilidad e impacto (en el libro son texto, «4 - Probable»: se
+carga el número), su valor y su **nivel según la posición en la matriz**, no por rangos. Llega prellenada al
+asistente de riesgos del servicio, donde el cliente la confirma o la ajusta. La categoría del riesgo
+(`trust_criterion`) tiene **11 valores** — Confidencialidad, Integridad, Disponibilidad, Privacidad, Cumplimiento,
+Seguridad, Continuidad, Terceros, Fraude, Reputación y Operación —, que **no son los 5 TSC** (D33); los 10 riesgos
+usan siete. `potential_impact` son solo **tipos de pérdida** (comentario de la hoja `Riesgos`).
 
-**El catálogo trae los riesgos sin evaluar.** La hoja *Riesgos* del comité define 10 riesgos con
-su categoría e impactos potenciales, pero deja **probabilidad, impacto y nivel vacíos**: los
-evalúa cada cliente sobre la matriz 5×5 (probabilidad × impacto: Bajo 1-4, Moderado 5-9, Alto
-10-16, Crítico 17-25). Por eso esos cuatro campos son opcionales, y la categoría del riesgo
-(`trust_criterion`) tiene **11 valores** — Confidencialidad, Integridad, Disponibilidad,
-Privacidad, Cumplimiento, Seguridad, Continuidad, Terceros, Fraude, Reputación y Operación—,
-que **no son los 5 TSC** de §3.1 pese al nombre de la columna (D33). Las causas se agrupan en 6
-categorías de falla: recurso humano, procesos, tecnología de información, infraestructura,
-externos y gobierno.
-
-**Este catálogo es solo la plantilla.** Ningún cliente trabaja sobre `risks` ni `causes`: al
-elegir marco se **copian** a `client_risks` y `client_causes` (§7.2) y ahí el cliente los
-edita, agrega o elimina. Lo que un cliente cambie **solo lo ve él**; el catálogo y los demás
-clientes no se enteran (decisión D28).
-
-> "Riesgo residual" es un término del dominio y **se muestra** en la superficie (D80), explicado: es el riesgo que
-> queda después del tratamiento, medido aparte del cumplimiento (D75).
+**El riesgo cuelga del servicio, no del marco** (§7.2), y **este catálogo es solo la plantilla**: al elegir marco se
+copia a `client_risks` y `client_causes`, y lo que un cliente cambie solo lo ve él (D28).
 
 ### 3.5 Versionado del catálogo y qué se clona
 
@@ -368,7 +356,7 @@ clientes no se enteran (decisión D28).
 erDiagram
     catalog_versions {
         uuid id PK
-        int number
+        int number "la VF18 es la 2"
         date published_at
         text change_summary
         uuid published_by FK "nullable: la carga inicial la hace un script"
@@ -377,37 +365,33 @@ erDiagram
     }
 ```
 
-**El catálogo se versiona y cada fila de `evaluations` guarda contra qué versión se midió**
-(decisión A4). Sin eso, un histórico no es comparable y un número entregado a un auditor
-puede cambiar solo — ya pasó una vez con la reclasificación de 223 checks.
+**El catálogo se versiona y cada evaluación guarda contra qué versión se midió** (A4). **La v2 no convive con la
+v1** (D128): el entorno de desarrollo se recrea y la v2 se carga sola, porque los datos que había son de prueba.
+Las filas del catálogo todavía no llevan versión propia; hará falta cuando haya clientes reales y llegue una v3,
+porque entre versiones se repiten códigos con otro significado.
 
 **Qué se clona al escenario del cliente y qué no:**
 
 | Elemento | ¿Se clona? |
 |---|---|
-| `controls` → `client_controls` | **Sí**, tabla propia: el cliente reescribe su interpretación (D3), **crea controles propios** (`control_id` nulo) y los **da de baja** (`is_active`). Ver D36 |
-| `control_dimensions` → `client_control_dimensions` | **Sí** (D36): un control propio declara las suyas y cualquiera puede justificar `reason_not_applicable` |
-| `risks` y `causes` → `client_risks` y `client_causes` | **Sí, en dos momentos distintos**, y con tablas propias del cliente (D28). El set base se clona **automáticamente** al elegir marco en el Componente 2 (§6.2), junto con sus relaciones (`client_risk_causes`, `client_cause_controls`); la **personalización** pasa después, en el módulo de Cumplimiento (§7.2), sin bloquear nada. Editar una copia jamás toca el catálogo ni a otro cliente |
-| **`requirements` y `points_of_focus`** | **No se clonan — se referencian con FK real.** Viven en la misma base; `client_controls` y `service_frameworks` apuntan directo a ellos. Es texto de un estándar, no hace falta copiarlo |
-| `evidence_templates` → `evidence_requirements` | **Sí** (D36): cada plantilla ligada al control se clona por control del cliente, con `source_ref` = código de la plantilla, responsable vacío y el `test_id` de la asignación (D88; hoy nulo en las 89 del Excel: quedan como sugerencia y no cuentan para ninguna prueba). La evidencia de un control propio la define el cliente |
-| `tests` | **No: se referencian con FK real** (`evaluations.test_id`, `exclusions.test_id`). El cliente no reescribe un test |
-| `control_tests` → `client_control_tests` | **Sí** (D36): se copia el **vínculo** control ↔ test, no el test. Lo necesita un control propio y es lo que "cambiar los tests de un control requiere aceptación" (abajo) da por hecho |
-| `control_measurements` | **No** (D2: peso lineal, sin configuración). Ausencia de fila = peso 1. Si D2 se revisa, se clonan entonces |
+| `controls` → `client_controls` | **Sí**: el cliente reescribe su interpretación (D3), crea controles propios, los da de baja y **cambia la periodicidad** con justificación (G-10). Ver §7 |
+| `control_requirements` → los requisitos del control del cliente | **Sí**, por control del cliente: ahí viven su periodicidad configurada y su «No aplica» con justificación aprobada (§7). Reemplazan a `evidence_requirements`, que nacían de plantillas |
+| `control_dimensions` → `client_control_dimensions` | **Sí** (D36) |
+| `documents` → los documentos de la empresa | **Sí, por empresa y no por servicio**: un documento sirve a varios controles y servicios, con un responsable, versiones, aprobación y aceptación (§11, D133) |
+| `risks` y `causes` → `client_risks` y `client_causes` | **Sí**, con sus relaciones, al elegir marco; la valoración inherente llega prellenada (D134) |
+| `requirements`, `points_of_focus` y `tests` | **No: se referencian con FK real.** El cliente no reescribe un estándar ni una prueba |
+| `test_checks`, procedimientos, categorías de integración, mapeo a marcos | **No**: son catálogo y se leen |
 
 **Qué se propaga solo y qué requiere aceptación del `admin_empresa` (D96):**
 
 | Tipo de cambio en el catálogo | Se propaga solo | Requiere aceptación |
 |---|---|---|
-| Corrección de redacción de un control | ✅ | |
-| Control nuevo agregado al catálogo | ✅ | |
-| Cambio en cómo se mide un control (peso, dimensiones, tests) | | ✅ |
-| Control que se elimina del catálogo | | ✅ |
-| Cambio en la procedencia o confianza del mapeo de un check | | ✅ |
+| Corrección de redacción | ✅ | |
+| Control nuevo | ✅ | |
+| Cambio en cómo se mide un control (requisitos, pruebas, dimensiones, rol de un check) | | ✅ |
+| Control que se elimina | | ✅ |
 
-**Y un control nuevo no baja el % del cliente a mitad de camino.** Entra a contar desde el
-**siguiente periodo de evaluación** — el número del periodo en curso no se toca, aunque el
-catálogo ya haya cambiado. Por eso `catalog_versions` guarda si cada cambio se propagó solo o
-quedó pendiente de aceptación, y `service_frameworks` sabe desde qué periodo aplica cada
-versión.
+**Un control nuevo no baja el porcentaje a mitad de camino:** entra a contar desde el **siguiente período de
+evaluación**.
 
 ---

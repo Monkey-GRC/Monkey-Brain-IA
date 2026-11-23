@@ -1,5 +1,7 @@
 # Cumplimiento · Veredictos
 
+> **VF18 (D128): esto describe el código construido con el catálogo v1.** Con la VF18 la revisión en dos niveles pasa al control (D132) y la prueba documental se resuelve en el módulo Documentos (D133).
+
 Responde: **¿cómo se resuelve una prueba manual que no se respalda con un documento?** Con el veredicto de una
 persona: el `admin_empresa` declara si la prueba cumple o no, y esa declaración se guarda como un hecho inmutable.
 

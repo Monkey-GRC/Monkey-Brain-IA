@@ -1,5 +1,7 @@
 # Cumplimiento · Motor
 
+> **VF18 (D128): esto describe el código construido con el catálogo v1.** El motor v2 cambia la cadena: activo → check → evidencia → prueba → **requisito del control** → control, con **nivel de 0 a 5**, reglas T-01 a T-07, ventanas de vigencia y estados de gestión (D130 a D132, [§9](../../../datos/modelo/09-calculo-cumplimiento.md)). Se reescribe con RC-06.
+
 Responde: **¿qué pieza convierte los hechos en «cumple» o «no cumple»?** Es el corazón del producto y la parte más
 fácil de probar: `Backend/src/features/compliance/domain/engine/` y `domain/controls/control-readout.ts`.
 

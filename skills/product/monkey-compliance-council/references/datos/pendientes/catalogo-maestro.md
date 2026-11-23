@@ -2,22 +2,13 @@
 
 Preguntas abiertas que afectan a [Catálogo maestro](../../arquitectura/catalogo-maestro/README.md). **Si una sigue aquí, no se resuelve por cuenta propia: se pregunta.** Tablero y reglas: [`README.md`](README.md).
 
-## P9 · Datos del Excel que hay que corregir o confirmar
+## P9 · Tipos de pérdida de un riesgo escritos de dos formas en el libro
 
-Inconsistencias **dentro del propio archivo del comité**, que el seed carga tal cual sin adivinar (D38):
+**Estado:** abierto desde 2026-10-17; revisado contra la VF18 el 2026-11-22. Los dos primeros puntos (las pruebas de aplicación inexistentes y las causas sin riesgo) los cerró la VF18: hay 23 pruebas de la dimensión Aplicación y las 100 causas tienen riesgo y control (D129).
 
-- **Pruebas de aplicación.** La matriz *Análisis TEST x Control* asigna a 17+5+1+2+1+1 = 27 pares control↔prueba
-  seis pruebas `T-APP-001…006` que no existen en la hoja *Pruebas* (la hoja marca *"FALTAN 6"*), y la hoja
-  *Pruebas* tiene seis sin usar en la matriz: `T-SRV-011…014`, `T-BD-009` y `T-BD-010`. Sus controles coinciden
-  en 94-100%, así que probablemente son las mismas pruebas con otro código y otra dimensión. **Hoy la
-  dimensión Aplicación no tiene ninguna prueba.** ¿Son pruebas de aplicación (se recodifican a `T-APP` y
-  `app`) o de servidores/BD (se corrige la matriz)?
-- **Diez causas sin riesgo.** F003, F004, F016, F020, F026, F034, F042, F045, F053 y F054 no aparecen en ninguna
-  de las 92 relaciones riesgo↔causa. ¿A qué riesgo(s) pertenecen o se descartan?
+- **Tipos de pérdida de un riesgo.** La hoja *Riesgos* usa «Interrupción de la operación» en R003 y R004 e «Interrupción o cierre de la operación» en R005 y R009, y el comentario de la columna `Impacto_Potencial` solo lista el segundo. ¿Son el mismo tipo de pérdida? El contrato los trata como uno solo (`operation_interruption`): **decisión de desarrollo del 2026-10-17**, que el comité ratifica al revisar el libro.
 
-- **Tipos de pérdida de un riesgo.** La hoja *Riesgos* usa «Interrupción de la operación» en dos riesgos e «Interrupción o cierre de la operación» en otros dos. ¿Son el mismo tipo de pérdida? El contrato los trata como uno solo (`operation_interruption`): **decisión de desarrollo del 2026-10-17**; el comité lo ratifica al revisar el Excel.
-
-**Qué depende:** la dimensión Aplicación del cálculo (§2, §9) qué causas ve el cliente al clonar (§7.2) y los valores de `loss_type`.
+**Qué depende:** los valores de `loss_type`.
 
 ---
 
@@ -35,3 +26,16 @@ tienen guías de uso: logo oficial sin modificar, espacio libre mínimo, a veces
 **Procedencia hoy** (`DT-68`): colecciones de iconos de marca, no los kits de cada proveedor. Simple Icons: Linux, HP (para HP-UX), PostgreSQL, MySQL, Oracle, MongoDB, GitHub y Jira (estos dos, MD-211) · Devicon: AWS, Azure, GCP, SQL Server y un icono genérico de Unix (para Solaris) · Logos: Microsoft (para Microsoft 365), la «G» de Google (para Google Workspace), Windows, AIX y Apple (para macOS). Cinco son una sustitución por la marca dueña del producto, no el logo propio de ese producto.
 
 **Qué depende:** los logos de `Frontend-Platform` (`logo_key`, D67) y la publicación del marketplace.
+
+---
+
+## P50 · Quién traduce al inglés el contenido del catálogo v2
+
+**Estado:** abierto desde 2026-11-22. El requerimiento RC-21 de la VF18 lo deja «por decidir».
+
+1. El libro está solo en español (114 controles, 576 requisitos, 472 pruebas, 42 documentos, 100 causas, 10 riesgos) y la aplicación maneja español e inglés (D111). ¿Quién escribe el inglés y quién lo revisa? *Propuesta: desarrollo lo traduce con IA y marca su procedencia, como D90 con los checks, y el comité lo revisa.*
+2. Mientras no esté, ¿el catálogo v2 se muestra en español también con la aplicación en inglés, como hoy (DT-100)?
+
+**Qué depende:** mostrar el catálogo v2 en inglés; DT-100.
+
+---

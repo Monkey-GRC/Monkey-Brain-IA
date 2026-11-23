@@ -32,7 +32,7 @@ construir.
 | HU-CT-11 | Que el servidor pase solo a «Conectado» y se relea | `admin_empresa` | ✅ | D113 punto 13 |
 | HU-CT-12 | Comprobar ahora un servidor | `admin_empresa` | ✅ | D113 punto 13, `ASSET_NOT_VALIDATED` |
 | HU-CT-13 | Que los resultados de un servidor solo lleguen a su empresa | `admin_empresa` | ✅ | D113 punto 3, D54, SEG-45 |
-| HU-CT-14 | Que la medición mueva el estado de mis controles | `admin_empresa` | 🟡 | D56, D68, D113 punto 2, DT-50, P15 |
+| HU-CT-14 | Que la medición mueva el estado de mis controles | `admin_empresa` | 🟡 | D56, D68, D113 punto 2, DT-50, D129 |
 | HU-CT-15 | Que Monkey lea mi nube sin escribir en ella ni guardar secretos de más | `admin_empresa` | 🟡 | D57, D58, D112, SEG-26, SEG-46, SEG-47, SEG-48, SEG-78 |
 | HU-CT-16 | No ver nunca el nombre del proveedor de un motor | Persona de la empresa | 🟡 | D70, D100, SEG-39 |
 | HU-CT-17 | Que solo se ofrezca medir lo que tiene prueba | `admin_empresa` | ✅ | D71 punto 3, D113 punto 7 |
@@ -152,7 +152,7 @@ qué evidencia se necesita y su impacto **para** priorizar y repartir el trabajo
   `Accept-Language`.
 - Si un texto lo redacta la IA, `is_ai_generated` es `true` con su `ai_confidence`, siempre.
 - Un hallazgo sin redacción propia trae los campos `null` y una corrección neutra: nunca el texto crudo del motor.
-- Los checks sin prueba asignada no generan hallazgos hasta que el comité responda (`P15`).
+- Solo cuentan los checks vinculados en `TEST_CHECKS` de la VF18, con su rol (D129); los demás no generan hallazgos.
 
 ### HU-CT-08 · Consultar la vista técnica por comprobación y recurso
 
@@ -244,7 +244,7 @@ conectado sin esperar a la siguiente lectura automática.
 ### HU-CT-14 · Que la medición mueva el estado de mis controles
 
 > 🟡 **Parcial:** la nube y la sonda ya escriben `evaluations` al cerrar una corrida, pero en producción solo cuentan
-> los vínculos ratificados por el comité, y las asignaciones de nube y de servidores siguen propuestas (`P15`, D113
+> los vínculos ratificados por el comité, y las asignaciones de nube y de servidores siguen propuestas hasta cargar la VF18, que las trae ratificadas (D129, D113
 > punto 12); `invalid` se guarda como `pending` (DT-50).
 
 **Como** `admin_empresa`, **quiero** que el resultado de cada medición actualice el estado de mis controles **para** que
@@ -258,7 +258,7 @@ el cumplimiento refleje lo que de verdad se midió.
 - Solo cuentan los checks ratificados por el comité; una prueba sin ningún check ratificado no escribe nada y queda
   pendiente (D56).
 - Un check que el motor no devuelve es `not_applicable`, no «no ejecutado» (D56 punto 2).
-- ⚪ Los checks sin prueba y las pruebas sin checks no cuentan hasta que el comité responda (`P15`); cómo cuenta un
+- ⚪ Los checks sin prueba y las pruebas sin checks no cuentan: solo cuentan los vínculos de `TEST_CHECKS` de la VF18 (D129); cómo cuenta un
   check que falla en varios recursos y si un servidor de la nube es también un activo servidor siguen abiertos
   (`P14` B2, B4).
 - ⚪ Un resultado que la sonda no pudo decidir se distingue de «no medido» (DT-50).

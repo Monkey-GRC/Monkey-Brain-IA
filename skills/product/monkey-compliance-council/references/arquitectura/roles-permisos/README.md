@@ -23,8 +23,8 @@ y las políticas RLS que leen `app.user_role`. Sin tablas propias.
 | Valores de los enums | [`contracts/enums/roles-permisos.md`](../../../../../../contracts/enums/roles-permisos.md) |
 | Los 4 roles, su alcance y la matriz de permisos | `datos/modelo/05-usuarios.md` §5.1 y §5.5 |
 | Permisos por pantalla | `P3`, cerrada por D102 (2026-11-03): el comité no entregará el Excel; manda la matriz de `datos/modelo/05-usuarios.md` §5.5 |
-| Decisiones (`D-n`) | [`datos/decisiones/roles-permisos.md`](../../datos/decisiones/roles-permisos.md): `D63` · `D64` · `D77` · `D81` · `D84` · `D96` |
-| Pendientes del comité (`P-n`) | [`datos/pendientes/roles-permisos.md`](../../datos/pendientes/roles-permisos.md): `P34` · `P35` · `P36` (`P3` cerrada por D102) — **si sigue abierto, se pregunta** |
+| Decisiones (`D-n`) | [`datos/decisiones/roles-permisos.md`](../../datos/decisiones/roles-permisos.md): `D63` · `D64` · `D77` · `D81` · `D84` · `D96` · `D136` |
+| Pendientes del comité (`P-n`) | [`datos/pendientes/roles-permisos.md`](../../datos/pendientes/roles-permisos.md): `P35` · `P36` (`P3` cerrada por D102 y `P34` por D132) — **si sigue abierto, se pregunta** |
 | Requisitos de seguridad | [`seguridad/roles-permisos.md`](../../seguridad/roles-permisos.md): `SEG-20` · `SEG-21` · `SEG-22` · `SEG-54` · `SEG-66` · `SEG-67` · `SEG-70` (`SEG-55`, `SEG-56`, `SEG-58` y `SEG-61` retirados por D96) |
 | Código | `Backend/src/common/guards`, `common/decorators`, `common/tenancy` |
 | Deuda vigente (1 `DT-n`: `DT-112`) | [`deuda-tecnica/roles-permisos.md`](../../deuda-tecnica/roles-permisos.md) |

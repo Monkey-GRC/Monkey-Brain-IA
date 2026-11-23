@@ -2,7 +2,7 @@
 
 Responde: **¿con qué plataformas de terceros trabaja Monkey, cómo se conectan y cómo se suma una nueva sin tocar el
 resto del sistema?** Decisión: [D110](../../datos/decisiones/integraciones.md). Contrato:
-[`contracts/integraciones.md`](../../../../../../contracts/integraciones.md). Pendientes: [P44, P45, P46](../../datos/pendientes/integraciones.md).
+[`contracts/integraciones.md`](../../../../../../contracts/integraciones.md). Pendientes: [P45, P46](../../datos/pendientes/integraciones.md) (P44 la cerró D129).
 
 ## Qué es una integración
 
@@ -63,7 +63,7 @@ instalación por cliente y por corrida, igual que STS en AWS.
 
 ## Qué falta decidir
 
-- [P44](../../datos/pendientes/integraciones.md#p44--qué-checks-de-github-cuentan-y-a-qué-pruebas-y-controles-van): qué checks de GitHub cuentan y a qué controles van.
+- ~~P44~~ (cerrada por D129): los checks de GitHub que cuentan son los 34 vínculos de `TEST_CHECKS` de la VF18.
 - [P45](../../datos/pendientes/integraciones.md#p45--en-qué-categoría-de-activo-entra-github): la categoría de activo de GitHub.
 - [P46](../../datos/pendientes/integraciones.md#p46--qué-hace-la-integración-con-jira): qué hace Jira (remediación, evidencia o ambas).
 

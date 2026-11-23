@@ -11,7 +11,7 @@ applies_to: backend
 > **Antes de escribir una línea, lee** `arquitectura/control-tecnico/motores/prowler.md` y `D53`–`D58` y `D100`
 > (`../product/monkey-compliance-council/references/datos/`), `SEG-26`, `SEG-46`, `SEG-47` y `deuda-tecnica/control-tecnico.md`
 > (`DT-43`, `DT-44`, `DT-45`, `DT-50`, `DT-52`). Prowler maneja **todo lo de la nube** (AWS, Azure, GCP y demás); la sonda (Wazuh) es otro
-> motor, con `add-wazuh-integration.md`. Lo que siga abierto en `P14` (B a E) y `P15` **se pregunta, no se resuelve**.
+> motor, con `add-wazuh-integration.md`. Lo que siga abierto en `P14` (B, C y E) y `P49` **se pregunta, no se resuelve**; qué checks cuentan lo dice `TEST_CHECKS` de la VF18 (D129).
 
 Esto **no** es una feature con endpoints de cara al cliente. La nube vive en tres piezas ya construidas; extiéndelas, no las rodees:
 
@@ -50,4 +50,4 @@ Esto **no** es una feature con endpoints de cara al cliente. La nube vive en tre
 
 - Pruebas del caso de uso con puertos falsos, del parser con salida real y del trabajador contra Docker (como las de `src/runner/`).
 - Confirma que ninguna pantalla, error, correo ni texto de IA nombra al proveedor (SEG-39, D70).
-- Cierra o actualiza lo relacionado en el mismo PR: `DT-n`, `SEG-n`, contrato y `P14`/`P15`.
+- Cierra o actualiza lo relacionado en el mismo PR: `DT-n`, `SEG-n`, contrato y `P14`/`P49`.

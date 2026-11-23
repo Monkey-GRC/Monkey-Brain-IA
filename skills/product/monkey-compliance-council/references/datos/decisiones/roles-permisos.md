@@ -159,3 +159,28 @@ estados distintos; el veredicto general completa lo que hoy es solo prueba por p
 **Fuente:** Carlos Castaño, 2026-10-27; hoja «Modelo de Gestión usuarios» del TSC integral.
 
 ---
+
+## D136 · Seis roles: se agrega `colaborador`, y la matriz de permisos es la Tabla 2 de la VF18 (2026-11-22; amplía D102 y ajusta D102, D103 y D104)
+
+**Decisión** (`Modelo de Gestión usuarios`, Tablas 1 y 2; RC-13 y RC-14):
+
+1. **Roles**: `admin_monkey`, `admin_empresa`, `responsable`, `delegado`, `auditor` y el nuevo **`colaborador`**: empleados y contratistas que deben conocer los documentos. **Lee y acepta los documentos que le asignan; no accede a controles, riesgos ni evidencia.** La cadena de asignación `admin_empresa` → `responsable` → `delegado` de D102 se mantiene.
+2. **MFA obligatoria para los seis roles** (D66, D94).
+3. **La matriz de permisos es la Tabla 2** y reemplaza a la de §5.5. Lo que cambia frente a lo construido:
+   - **Solo `admin_monkey` y `admin_empresa` crean, editan, desactivan usuarios y asignan roles.** El `responsable` ya no crea a sus delegados (ajusta el punto 2 de D102 y D104); sigue **delegando** un control en un usuario de su equipo.
+   - **`admin_monkey` gestiona usuarios de una empresa** (crear, editar, desactivar, asignar roles y controles), asigna el responsable de un documento y **ve** controles, riesgos, evidencia, documentos, resultados de pruebas, el registro de auditoría y los tableros, y exporta reportes. Hoy no entraba al cumplimiento de un cliente (D103, §5.1): ajusta D103 y responde en parte `P47`.
+   - El `responsable` **edita sus controles y sus riesgos** (⊗), da la **primera aprobación** del cumplimiento, gestiona la MFA de su equipo (⊗) y ve el registro de auditoría de lo suyo (⊗). La aprobación final es solo del `admin_empresa` (D132).
+   - El `delegado` ve y carga evidencia solo en lo que le delegaron, ejecuta sus pruebas (⊗) y **no ve** el tablero ni el registro de auditoría.
+   - El `auditor` ejecuta pruebas con restricción (⊗) y sigue siendo el único con el módulo de auditoría.
+   - **Módulo Documentos** (D133): asignar responsable; crear, importar y versionar; definir el flujo; enviar o cancelar; aprobar o rechazar; definir la aceptación; aceptar; ver el vigente y el historial; archivar. El `responsable` actúa sobre los documentos de los que es responsable y aprueba solo si lo eligieron como aprobador; el `colaborador` ve solo los documentos que le asignan.
+   - Se quita «Aprobar evidencia»: la aprobación es del control (D132).
+4. **«Eliminar» se sigue leyendo como dar de baja**, sin borrar (evidencia y controles): las versiones y el historial son inmutables (D96, D119).
+5. **El cupo de usuarios** (`companies.max_users`, D103) cuenta a todos los roles de la empresa, también al colaborador: el libro no lo cambia (DEV-16).
+
+**Por qué.** Es la matriz del comité. El módulo Documentos necesita que el personal que no trabaja en controles pueda aceptar las políticas sin ver lo demás.
+
+**Qué cambia.** §5.1 y §5.5, `contracts/enums/roles-permisos.md`, `contracts/gestion-usuarios.md`, el RLS y los roles de base de datos (`schema-implementacion.md`: `admin_monkey` lee datos de una empresa) y los requisitos de seguridad de roles cuando se construya (RC-13, RC-14). Confirma `P38` (D102).
+
+**Fuente:** comité funcional, VF18 (`Modelo de Gestión usuarios`, Tablas 1 y 2), 2026-11-22; Héctor Ríos (Rod), 2026-11-22: «se hace como lo quiera el comité». Los puntos 4 y 5 los dejó desarrollo según DEV-16.
+
+---

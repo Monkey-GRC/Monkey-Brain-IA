@@ -20,7 +20,7 @@ Parches vigentes de [Catálogo maestro](../arquitectura/catalogo-maestro/README.
 
 - **Qué está parchado:** Controles, requisitos, puntos de enfoque, riesgos, causas y evidencias requeridas tienen un solo texto, en español: con la aplicación en inglés, Cumplimiento los muestra en español. Solo las 11 pruebas de nube tienen nombre en inglés (`catalog.tests.display_name_en`, MD-211), escrito por desarrollo y sin revisar (como DT-21).
 - **Por qué:** El Excel del comité trae un solo idioma y el modelo guarda un texto por fila; traducir todo el catálogo excedía MD-211.
-- **Qué lo cierra:** MD-212: el contenido del catálogo en inglés con su procedencia (como D90 con los checks), servido según `Accept-Language`, y la revisión del inglés por el comité (DT-21).
+- **Qué lo cierra:** MD-212: el contenido del catálogo en inglés con su procedencia (como D90 con los checks), servido según `Accept-Language`, y la revisión del inglés por el comité (DT-21). Con la VF18 aplica al catálogo v2 y quién lo traduce está en `P50`.
 
 ### DT-69 · Las dimensiones de cada control no coinciden con las que define el comité
 
@@ -28,7 +28,7 @@ Parches vigentes de [Catálogo maestro](../arquitectura/catalogo-maestro/README.
 
 - **Qué está parchado:** D39 derivó las dimensiones de cada control de las pruebas y sembró **210** filas en `control_dimensions` (118 documentales, 43 de servidores, 18 de bases de datos, 31 de nube, ninguna de aplicación). El comité las define en la hoja `Controles Monkey`, columnas L a P (D68): **191** (118, 25, 17 y 31; aplicación «NO APLICA» en los 118 controles). La hoja `Análisis TEST x Control` da otra cifra y las dos hojas no coinciden en 6 celdas (IAC-1, IAC-7, IAC-8, IAC-9, IAC-12 en servidores y MON-3 en bases de datos)
 - **Por qué:** Se derivaron de las pruebas antes de que el comité entregara el motor de evaluación (D68). Una dimensión de más o de menos cambia qué controles quedan `INCOMPLETO`
-- **Qué lo cierra:** Cargar `control_dimensions` desde `Controles Monkey` L a P, reconciliar las 6 celdas con el comité y actualizar `catalog:verify`
+- **Qué lo cierra:** la carga del catálogo v2 (RC-01): la VF18 trae las 9 dimensiones explícitas por control (D129); `catalog:verify` valida los totales de la tabla 10
 
 ## Registro de empresa, contrato de marcos (D47) y activación de la cuenta (D51)
 

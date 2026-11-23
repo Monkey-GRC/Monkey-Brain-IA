@@ -20,7 +20,7 @@ Entrega sus resultados a Cumplimiento como `evaluations` (inmutables); no los in
 | Valores de los enums | [`contracts/enums/control-tecnico.md`](../../../../../../contracts/enums/control-tecnico.md) |
 | Entidades | `datos/modelo/08-control-tecnico.md` §8 |
 | Decisiones (`D-n`) | [`datos/decisiones/control-tecnico.md`](../../datos/decisiones/control-tecnico.md): `D48` · `D53` · `D54` · `D56` · `D57` · `D58` · `D70` · `D71` · `D90` · `D100` |
-| Pendientes del comité (`P-n`) | [`datos/pendientes/control-tecnico.md`](../../datos/pendientes/control-tecnico.md): `P14` · `P15` — **si sigue abierto, se pregunta** |
+| Pendientes del comité (`P-n`) | [`datos/pendientes/control-tecnico.md`](../../datos/pendientes/control-tecnico.md): `P14` · `P49` — **si sigue abierto, se pregunta** |
 | Deuda vigente (20 `DT-n`) | [`deuda-tecnica/control-tecnico.md`](../../deuda-tecnica/control-tecnico.md) |
 | Requisitos de seguridad | [`seguridad/control-tecnico.md`](../../seguridad/control-tecnico.md): `SEG-26` · `SEG-29` · `SEG-39` · `SEG-45` · `SEG-46` · `SEG-47` · `SEG-48` · `SEG-49` · `SEG-50` · `SEG-51` |
 

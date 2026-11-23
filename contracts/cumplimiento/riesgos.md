@@ -7,6 +7,8 @@ type: contract
 
 # Cumplimiento — riesgos y causas
 
+> **VF18 (D128): este contrato describe la API construida con el catálogo v1.** Con la VF18 el nivel inherente sale de la **posición en la matriz**, la valoración del catálogo llega prellenada, el residual se calcula por **cobertura verificada** y el efecto y la obligatoriedad de cada relación causa–control se retiran (D134). Se reescribe antes de construir RC-10 y RC-11.
+
 | | |
 |---|---|
 | **Estado** | **ACORDADO** (2026-10-17); construida: riesgos, causas, vínculos, evaluación 5×5 y tratamiento (MD-122 y MD-123) |
@@ -16,7 +18,7 @@ type: contract
 
 **Qué es.** Al contratar un marco, cada servicio recibe **su propia copia** de los riesgos y causas del catálogo (D28): editarla no cambia el catálogo ni a otra empresa. Un *riesgo* es la probabilidad y el impacto de que algo ocurra o se pierda si una persona lo materializa; una *causa* es el riesgo materializado; un *control* es el paso a paso que lo evita o lo mitiga (vocabulario del comité, D76).
 
-**Fuera de este contrato.** La **mitigación** (estados de causa y riesgo) y el **riesgo residual** con sus dos matrices son vista del `admin_empresa` y del `auditor` y esperan los datos y la fórmula del comité (`P22`, MD-151): cuando existan, se agregan como campos opcionales de la respuesta, sin romper nada de lo de aquí.
+**Fuera de este contrato.** La **mitigación** (estados de causa y riesgo) y el **riesgo residual** con sus dos matrices son vista del `admin_empresa` y del `auditor` y tienen ya su regla (D134, RC-11) y no están construidos: cuando existan, se agregan como campos opcionales de la respuesta, sin romper nada de lo de aquí.
 
 ## Quién puede qué
 
@@ -148,7 +150,7 @@ type: contract
 ```
 
 > - `controls[].code` es **el código que identifica al control y se muestra siempre** (D80): el del catálogo (`IAC-12`) o el propio (`C01`). Igual que en [`controles.md`](controles.md).
-> - `controls[].is_mandatory` y `effect` vienen del catálogo; **hoy solo 9 relaciones los traen**, el resto viaja con `effect: null` (`P22`) y todavía no participa de ningún cálculo.
+> - `controls[].is_mandatory` y `effect` vienen del catálogo; **hoy solo 9 relaciones los traen**, el resto viaja con `effect: null`; con la VF18 el efecto y la obligatoriedad se retiran (D134).
 > - Con `?view=technical` cada riesgo, causa y control agrega `technical` con sus códigos del catálogo (`catalog_code`).
 
 ### POST /v1/services/{service_id}/risks — Crear un riesgo propio
@@ -467,7 +469,7 @@ Todos con el mismo sobre (`conventions.md`); `message` es la clave i18n del erro
 
 ## Preguntas abiertas
 
-- **`effect` e `is_mandatory`** de las 209 relaciones causa–control: `P22`.
+- **`effect` e `is_mandatory`** de las relaciones causa–control: se retiran con la VF18 (D134).
 - **Tipos de pérdida** (`potential_impact`): el Excel trae «Interrupción de la operación» e «Interrupción o cierre de la operación»; el contrato las trata como un solo valor (decisión de desarrollo del 2026-10-17; el comité lo ratifica, `P9`).
 - **Edición por `responsable` y `delegado`:** resuelta por D102 (la matriz de §5.5 manda; solo lectura). `P3` cerrada.
 
@@ -482,7 +484,7 @@ Todos con el mismo sobre (`conventions.md`); `message` es la clave i18n del erro
 **Construido: MD-122** (riesgos, causas y vínculos; 2026-10-14) y **MD-123** (evaluación 5×5, historial y tratamiento; 2026-10-16).
 - El impacto potencial se guarda como el **texto del comité** (`["Reputacional", …]`) y la API lo convierte a `loss_type` en los dos sentidos; un texto que no se reconoce se omite en la respuesta, no se pierde.
 - Dar de baja dos veces es idempotente (`204`).
-- `is_mandatory` y `effect` del vínculo causa–acción viven en `client_cause_controls`; hoy `effect` es `null` en todas las que vienen del catálogo (`P22`).
+- `is_mandatory` y `effect` del vínculo causa–acción viven en `client_cause_controls`; hoy `effect` es `null` en todas las que vienen del catálogo; se retiran con la VF18 (D134).
 - **La evaluación** vive en `client_risks` (`likelihood`, `impact`, `inherent_risk_value`, `inherent_risk_level`) y cada llamada deja una fila de auditoría `client_risk.evaluate` con lo anterior y lo nuevo: de ahí sale el historial. La base impone la forma (`client_risks_evaluation_shape`): o los cuatro campos son nulos, o probabilidad e impacto van de 1 a 5 con el valor y el nivel que les corresponden. Si el cliente manda `inherent_risk_value` o `inherent_risk_level`, se ignoran.
 - **El tratamiento** vive en `risk_treatments`, una fila por decisión (`created_by`, `created_at`); la vigente es la última. `responsible_id` apunta a `organization_responsibles` (el cargo, D30) y es `RESTRICT`: un cargo que responde de un tratamiento no se puede quitar (`409 RESPONSIBLE_IN_USE`). La migración `20261016120000_risk_evaluation_and_treatment` repunta la clave desde `users` y se detiene si hay filas.
 - `due_date` se compara con el día UTC de hoy: hoy vale, ayer no.
