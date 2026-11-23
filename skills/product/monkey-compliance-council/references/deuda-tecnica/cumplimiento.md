@@ -4,6 +4,14 @@ Parches vigentes de [Cumplimiento](../arquitectura/cumplimiento/README.md). Tabl
 
 ## Transversal
 
+### DT-114 · Las pruebas manuales y la aprobación del control usan la evidencia v1 mientras no existan la gestión ni Documentos
+
+🟠 Importante
+
+- **Qué está parchado:** el motor v2 (MD-498) decide las pruebas manuales (documental, población, operativa y técnica manual) con la evidencia que se sube hoy para esa prueba (`evidence_requirements` y la combinación de sus revisiones): validada → Correcto, rechazada → Excepción, sin entrega o sin revisar → Pendiente, fuera de su ventana → Vencido. En las pruebas manuales no documentales también decide un veredicto aprobado (D85, D121), para no romper el endpoint de veredictos. Y en el marco y la categoría un control cuenta como cumplido con nivel Adecuado o Sólido, sin el estado «Cumplimiento aprobado» que exige §9
+- **Por qué:** el resultado de una prueba manual lo registra el responsable (D140) dentro de la gestión del control (RC-07), y la prueba documental se decide con el módulo Documentos (RC-09, T-01); ninguno existe todavía. Sin el puente, todas las pruebas manuales quedarían Pendientes y ningún control avanzaría (decidido con Rod el 2026-11-23)
+- **Qué lo cierra:** MD-504 (gestión y aprobación del control: el rollup cuenta solo «Cumplimiento aprobado») y MD-506 (Documentos: T-01 con el documento vigente, aprobado y aceptado)
+
 ### DT-71 · La lectura de controles fija valores que el modelo ya prevé
 
 🟠 Importante

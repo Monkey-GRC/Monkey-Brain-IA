@@ -7,7 +7,57 @@ type: contract
 
 # Cumplimiento — controles
 
-> **VF18 (D128): este contrato describe la API construida con el catálogo v1.** Con la VF18 el control se mide por **requisitos del control**, con un **nivel de 0 a 5** y **estados de gestión** con dos aprobaciones (D130, D132), y sus pruebas le pertenecen (D129). Se reescribe antes de construir RC-06 y RC-07.
+> **VF18 (D128).** Con la VF18 el control se mide por **requisitos del control**, con un **nivel de 0 a 5** y **estados de gestión** con dos aprobaciones (D130, D132), y sus pruebas le pertenecen (D129). **El motor v2 (MD-498) ya calcula todo lo de esta API** y agrega sus campos sin quitar los viejos: ver [Motor v2](#motor-v2-md-498-campos-nuevos-y-compatibilidad). Los estados de gestión llegan con RC-07 (MD-504).
+
+## Motor v2 (MD-498): campos nuevos y compatibilidad
+
+Desde MD-498 el cálculo sale del motor v2 (§9, D130). **Los campos de abajo se agregan; ninguno de los existentes se quita** hasta que las pantallas v2 (MD-499) dejen de leerlos. Los viejos se derivan del motor nuevo, así que dicen lo mismo con otra forma.
+
+**Qué cambia de significado en los campos que ya existen** (lista, detalle y `failing_controls` del resumen):
+
+| Campo | Desde MD-498 |
+|---|---|
+| `progress` | `{ done, total }` = requisitos del control en Cumple ÷ requisitos aplicables (los No aplica salen). Es el **C%** (R4) |
+| `coverage` | `{ measured, applicable }` = requisitos ya decididos (Cumple, No cumple o Vencido) ÷ aplicables |
+| `readiness` | El semáforo sobre ese avance (§9): `ready` solo si el control cumple (Adecuado o Sólido) y no hay nada pendiente |
+| `technical.control_state` | Derivado del nivel: `effective` si Adecuado o Sólido · `ineffective` si algún requisito No cumple · `expired` si alguno está Vencido · `no_tests` si no tiene requisitos aplicables · si no, `evaluating` |
+| `technical.tests[].state` | `test_state` derivado de `test_status`: `correct` y `observation` → `compliant` · `exception` → `non_compliant` · `expired` → `expired` · `not_applicable` → `not_applicable` · `pending` → `pending` |
+| `failing[]` | Los activos de los checks Directos en FAIL y las pruebas en Excepción o Vencidas |
+
+**Campos nuevos, solo en la vista técnica** (`?view=technical`, `auditor` y `admin_empresa`; §9: los niveles y los requisitos son vista técnica):
+
+| Campo | Tipo | Qué es |
+|---|---|---|
+| `technical.level` | enum `control_level` | Nivel sugerido por el motor (R1 a R6) |
+| `technical.level_value` | integer 0–5 | El valor de la escala |
+| `technical.complies` | boolean | `true` solo en `adequate` y `solid` (R4) |
+| `technical.c_percent` | number \| null | C% con dos decimales; `null` si no hay requisitos aplicables |
+| `technical.requirements[]` (solo en el detalle) | objeto | `id`, `code` (`IDA-11-L3`), `text`, `type`, `periodicity`, `status` (enum `requirement_status`) y `tests[]` |
+| `…requirements[].tests[]` | objeto | `test_id`, `test_code`, `display_name`, `status` (enum `test_status`), `window_end` (fecha de cierre de la ventana actual o `null`) y, en las técnicas, `checks: { direct_pass, direct_fail, direct_exception, no_data, complementary_fail }` y `asset_coverage: { with_result, in_scope }` |
+
+```json
+"technical": {
+  "control_state": "ineffective",
+  "level": "partial",
+  "level_value": 3,
+  "complies": false,
+  "c_percent": 80.0,
+  "requirements": [
+    {
+      "id": "a41e…", "code": "IAC-12-L2", "text": "Los accesos privilegiados se revisan cada trimestre.",
+      "type": "operational", "periodicity": "quarterly", "status": "non_compliant",
+      "tests": [ { "test_id": "21ab…", "test_code": "T-IAC-12-02", "display_name": "Revisión de accesos privilegiados", "status": "exception", "window_end": "2026-12-31", "checks": null, "asset_coverage": null } ]
+    }
+  ]
+}
+```
+
+**Reglas del motor v2 que se ven en la API:**
+- **Requisitos del control del cliente** (`client_control_requirements`): se copian del catálogo al clonar el servicio, uno por requisito del control, con su periodicidad. Un control propio no tiene requisitos del catálogo: se mide con su evidencia como un requisito documental único.
+- **Pruebas técnicas** (T-04): solo deciden los checks **Directos** que aplican; un Complementario en FAIL da Observación; una Dependencia toma el estado de la prueba del control dueño. Un activo en alcance sin resultado deja la prueba **Pendiente** mientras su ventana está abierta y en **Excepción** al cerrarla (D140). Los vínculos «N/A» de módulos y puntajes se evalúan con D141 y D146.
+- **Pruebas manuales — puente hasta MD-504 y MD-506** (`DT-114`): la prueba toma el estado de la evidencia que se sube hoy para ella: validada → Correcto · rechazada → Excepción · sin entrega o sin revisar → Pendiente · fuera de su ventana → Vencido.
+- **Ventanas** (D131, D140): calendario según la periodicidad del requisito (o, si no tiene, la de su control); la anual son 12 meses desde la última evidencia válida. La periodicidad que configura la empresa llega con MD-500.
+- **Parámetros** PR-01 a PR-05 y el umbral de D146: los lee el motor de la configuración, con los valores por defecto del libro (§9); nunca están escritos en el código.
 
 | | |
 |---|---|
@@ -358,6 +408,8 @@ Crear, editar dimensiones o dar de baja altera lo que se mide y deja además un 
 ---
 
 ## Estado de implementación
+
+**Construido (MD-498, 2026-11-23): el motor v2.** Lista, detalle y creación calculan con requisitos del control, pruebas con `test_status` y nivel 0–5 ([Motor v2](#motor-v2-md-498-campos-nuevos-y-compatibilidad); `domain/engine/v2/`, `domain/controls/control-readout.ts`). Pruebas: las `*.spec.ts` de `engine/v2/` (en especial `engine.acceptance.spec.ts`) y `control-readout.spec.ts`. **Sin construir de esto:** los estados de gestión y «Cumplimiento aprobado» (MD-504, `DT-114`); el resultado de una prueba manual y la prueba documental con el módulo Documentos (MD-504 y MD-506, `DT-114`); la periodicidad que configura la empresa y las ventanas cerradas con el nivel Sólido por período (MD-500); los parámetros PR-01 a PR-05 y D146 desde una tabla, hoy con los valores por defecto del libro (MD-495); y el retiro de `client_control_tests`, que otras lecturas aún usan (MD-509, `DT-113`).
 
 **Construido (MD-166, 2026-10-30): los códigos en la vista de negocio (D80).** `code` (el del catálogo `IAC-12` o el propio `C01`) y `requirement_codes` salen en la lista, el detalle y la creación de un control, para todos los roles que los leen (`admin_empresa`, `responsable`, `delegado` y `auditor`); `own_code` sigue siendo solo la numeración de los propios. `technical` conserva únicamente `points_of_focus`, `control_state`, `tests_count` y, en el detalle, `tests`: **`control_code` y `requirement_codes` ya no viajan allí.** Cada causa de `causes` en el detalle lleva también su `code`. Pruebas: `controles.e2e-spec.ts`, `cambios.e2e-spec.ts` y `riesgos.e2e-spec.ts`.
 

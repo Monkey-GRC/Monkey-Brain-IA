@@ -9,7 +9,7 @@
 ## Modelo de evaluación v2 (VF18, D130 a D135) — nuevas
 
 Las opciones son las de la tabla 8 de `01_DESARROLLO` y de `MAP CALOR`; los **valores** son propuesta de desarrollo y se
-fijan al construir el motor v2 (RC-06 a RC-09). **Ninguna existe todavía en el Backend.** Reemplazan a las del modelo
+fijan al construir el motor v2 (RC-06 a RC-09). **Construidos con MD-498 (2026-11-23), con estos mismos valores:** `check_result`, `test_status`, `requirement_status` y `control_level` (`Backend/src/features/compliance/domain/engine/v2/types.ts`; `control_level` y `requirement_status` salen en la vista técnica de la lista, el detalle y el resumen). **Aún no existen en el Backend:** `manual_evidence_state`, `automatic_evidence_state` (MD-506), `control_management_state` (MD-504) y `document_version_status` (MD-506). Reemplazan a las del modelo
 de la VF2 marcadas abajo como reemplazadas.
 
 ### `manual_evidence_state` · `automatic_evidence_state`
