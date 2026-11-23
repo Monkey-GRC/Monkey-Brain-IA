@@ -220,3 +220,4 @@ quedan aquí:
 | D136 | Seis roles: se agrega `colaborador` y la matriz de permisos es la Tabla 2 de la VF18: solo `admin_monkey` y `admin_empresa` crean usuarios, y `admin_monkey` ve el cumplimiento de una empresa *(amplía D102; ajusta D102, D103 y D104)* | [roles-permisos](roles-permisos.md) |
 | D137 | Contraseñas según la Tabla 3 de la VF18: 15 caracteres, historial de 24 y vencimiento a los 60 días *(revierte el punto 1 de D101)* | [autenticacion](autenticacion.md) |
 | D138 | Alertas por evento, tickets opcionales y el mensaje de brecha de un check | [notificaciones](notificaciones.md) |
+| D139 | La carga del catálogo v2: aditiva con puentes, dominio por fila, nombre neutro derivado y vínculos «N/A» sin efecto | [catalogo-maestro](catalogo-maestro/README.md) |

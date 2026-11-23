@@ -1,6 +1,6 @@
 # Catálogo maestro · Flujos
 
-> **VF18 (D128): esto describe el código construido con el catálogo v1.** La carga del catálogo v2 sigue el **orden de la tabla 10 de `01_DESARROLLO`** (matriz y mapeo a marcos, riesgos, causas, documentos, procedimientos e integraciones, controles, requisitos, pruebas, catálogos de checks, `TEST_CHECKS`, parámetros, roles y formularios) y valida sus totales y las reglas `IN-01` a `IN-10` ([§0](../../datos/modelo/00-fuentes.md)). Se escribe con RC-01.
+> **VF18 (D128): esto describe el código construido con el catálogo v1.** La carga del catálogo v2 sigue el **orden de la tabla 10 de `01_DESARROLLO`** (matriz y mapeo a marcos, riesgos, causas, documentos, procedimientos e integraciones, controles, requisitos, pruebas, catálogos de checks, `TEST_CHECKS`, parámetros, roles y formularios) y valida sus totales y las reglas `IN-01` a `IN-10` ([§0](../../datos/modelo/00-fuentes.md)). La carga (RC-01, MD-491) está construida: `catalog:extract` (libro → `prisma/seed/data/catalog-v2.json`), `catalog:load` y `catalog:verify`, con la lógica en `prisma/seed/catalog/`. Los flujos de abajo siguen siendo los de la v1.
 
 Responde: **¿cómo llega una opción al formulario del cliente y cómo se mantiene el catálogo?**
 
@@ -51,7 +51,7 @@ ser del clonado ([contexto del servicio](../onboarding/contexto-servicio/02-mode
 
 ```mermaid
 flowchart LR
-    r["npm run reference:load<br/>regulaciones, marcos, capacidades"] --> c["npm run catalog:load<br/>catálogo SOC 2"]
+    r["npm run reference:load<br/>regulaciones, marcos, capacidades"] --> c["npm run catalog:load<br/>catálogo v2 (VF18)"]
     c --> v["npm run catalog:verify<br/>solo compara, no escribe"]
 ```
 

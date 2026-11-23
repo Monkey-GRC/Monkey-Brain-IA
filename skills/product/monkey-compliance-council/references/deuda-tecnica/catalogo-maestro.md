@@ -22,13 +22,21 @@ Parches vigentes de [Catálogo maestro](../arquitectura/catalogo-maestro/README.
 - **Por qué:** El Excel del comité trae un solo idioma y el modelo guarda un texto por fila; traducir todo el catálogo excedía MD-211.
 - **Qué lo cierra:** MD-212: el contenido del catálogo en inglés con su procedencia (como D90 con los checks), servido según `Accept-Language`, y la revisión del inglés por el comité (DT-21). Con la VF18 aplica al catálogo v2 y quién lo traduce está en `P50`.
 
+### DT-113 · Transición del catálogo v1 al v2: tablas v1 vacías, puentes y Admin en solo lectura
+
+🟠 Importante
+
+- **Qué está parchado:** con la carga v2 (MD-491, D139) siguen en el schema, vacías o nulas, las tablas y columnas de la v1 (`policies`, `control_policies`, `evidence_templates`, `control_evidence_templates`, `control_measurements`, `test_plans`, los textos v1 de `tests`, `causes.name`/`failure_category`, `risk_causes.code`). La carga alimenta puentes para el código v1: `control_tests`, `control_dimensions.type` derivado del tipo del control, y el clonado crea los requerimientos de evidencia desde `control_documents`. La escritura de Monkey Admin responde `409 CATALOG_READ_ONLY`; sus casos de uso y DTOs v1 siguen detrás del guard. Conviven dos enums de tipo de control (`control_type` v1 del cliente y `catalog.control_type` v2, servido como `catalog_control_type`) y la causa guarda su origen en `cause_origin`. Las pruebas de proceso, físico, red y endpoint no tienen sobre qué medirse
+- **Por qué:** retirar la v1 obligaba a rehacer clonado, motor, evidencia, riesgos y Admin en el mismo ticket y a adelantar el diseño de RC-06 a RC-09 (D139)
+- **Qué lo cierra:** las fases 2 y 3 de la VF18 (`producto/mvp-roadmap.md`): el motor v2 (RC-06, RC-08) y la gestión y Documentos (RC-07, RC-09) leen las tablas v2, el clonado copia requisitos del control y dimensiones v2, se reescribe la administración del catálogo v2, y una migración retira lo v1 y renombra los enums
+
 ### DT-69 · Las dimensiones de cada control no coinciden con las que define el comité
 
 🟠 Importante
 
 - **Qué está parchado:** D39 derivó las dimensiones de cada control de las pruebas y sembró **210** filas en `control_dimensions` (118 documentales, 43 de servidores, 18 de bases de datos, 31 de nube, ninguna de aplicación). El comité las define en la hoja `Controles Monkey`, columnas L a P (D68): **191** (118, 25, 17 y 31; aplicación «NO APLICA» en los 118 controles). La hoja `Análisis TEST x Control` da otra cifra y las dos hojas no coinciden en 6 celdas (IAC-1, IAC-7, IAC-8, IAC-9, IAC-12 en servidores y MON-3 en bases de datos)
 - **Por qué:** Se derivaron de las pruebas antes de que el comité entregara el motor de evaluación (D68). Una dimensión de más o de menos cambia qué controles quedan `INCOMPLETO`
-- **Qué lo cierra:** la carga del catálogo v2 (RC-01): la VF18 trae las 9 dimensiones explícitas por control (D129); `catalog:verify` valida los totales de la tabla 10
+- **Qué lo cierra:** la carga del catálogo v2 (RC-01): la VF18 trae las 9 dimensiones explícitas por control (D129); `catalog:verify` valida los totales de la tabla 10. **Hecho en el catálogo (MD-491)**; falta que el clonado al cliente copie las dimensiones v2 en lugar del puente (`DT-113`)
 
 ## Registro de empresa, contrato de marcos (D47) y activación de la cuenta (D51)
 

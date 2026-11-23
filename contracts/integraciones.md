@@ -194,7 +194,7 @@ Todos los campos del ítem del catálogo (`code`, `name`, `logo_key`, `purpose`,
 | `prerequisites` | string[] | Lo que necesita antes de conectar. Vacío en `coming_soon` |
 | `permissions` | array | Lo que Monkey pide en la plataforma: `name`, `detail`, `scope` (el identificador técnico del permiso tal como lo ve el cliente en su plataforma, o `null`) y `access` (`read` · `write`). Vacío en `coming_soon` |
 | `resource_types` | enum `resource_kind`[] | Los tipos de recurso que descubre (sin `other`). Vacío si no descubre recursos |
-| `coverage` | objeto \| null | Lo que alimenta en el cumplimiento, **derivado del catálogo** (ver abajo). `null` si todavía no tiene checks cargados |
+| `coverage` | objeto \| null | Lo que alimenta en el cumplimiento, **derivado del catálogo** (ver abajo). `null` si todavía no tiene checks cargados o si la integración es `coming_soon` (MD-491) |
 | `security` | array | Cómo protege Monkey la conexión: `topic` (enum `integration_security_topic`) y `text`. **Solo lo verificado** (un `SEG-n` en ✅ o una decisión construida); nada de lo planificado. Vacío en `coming_soon` |
 | `capabilities` | string[] | Qué aporta, en pocas palabras (p. ej. «Evaluación continua de la configuración») |
 | `works_with` | string[] | En qué partes de Monkey se usa (p. ej. «Cumplimiento») |

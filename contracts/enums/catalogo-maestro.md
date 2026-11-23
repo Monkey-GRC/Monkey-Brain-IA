@@ -3,8 +3,8 @@
 > Índice de todos los enums: [`enums.md`](../enums.md). Por el cable viaja el **valor**; la etiqueta (es/en) la resuelve i18n. Formato: [`README.md`](../README.md#formato-de-un-enum).
 
 **Catálogo v2 (VF18, D129).** Las opciones salen de la tabla 8 de la hoja `01_DESARROLLO` y de las listas de validación
-del libro; los **valores** en inglés son propuesta de desarrollo (D26) y se fijan al construir la carga (RC-01). Las
-listas marcadas **«nueva»** todavía no existen en el Backend.
+del libro; los **valores** en inglés son propuesta de desarrollo (D26) y están fijados en la carga (RC-01, MD-491). Las
+listas marcadas **«nueva»** son las que trajo la VF18; ya existen en el Backend (`prisma/schema/catalog/`).
 
 ## `dimension`
 **Columna:** `control_dimensions.dimension`, `tests.dimension` · **Qué es:** las 9 dimensiones en que se prueba un control (§2). Cuatro son nuevas (RC-05).
@@ -95,7 +95,7 @@ listas marcadas **«nueva»** todavía no existen en el Backend.
 **Interno (nunca al cliente):** la columna «Herramienta» de `TEST_CHECKS` no es un enum de la API: se deduce de la plataforma del check (D128).
 
 ## `cause_origin` (nueva) · `cause_type` (nueva)
-**Columnas:** `causes.origin`, `causes.cause_type` · Reemplazan a `failure_category` (D129).
+**Columnas:** `causes.cause_origin`, `causes.cause_type` · Reemplazan a `failure_category` (D129).
 
 | `cause_origin` | Etiqueta (es) |
 |---|---|
