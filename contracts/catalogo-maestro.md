@@ -7,11 +7,14 @@ type: contract
 
 # Monkey Admin — catálogo maestro
 
-> **VF18 (D128): este contrato describe la API construida con el catálogo v1.** Con el catálogo v2 (D129) cambian las entidades que administra Monkey Admin: requisitos del control, pruebas de un control, documentos (en lugar de políticas y plantillas de evidencia), procedimientos, categorías de integración, mapeo a marcos y el rol de cada check. Se reescribe antes de construir la carga (RC-01) y la administración del catálogo v2.
+> **VF18 (D128): la API de abajo es la del catálogo v1.** La **carga del catálogo v2** (RC-01, MD-491) está en
+> [Carga del catálogo v2](#carga-del-catálogo-v2-rc-01) y fija las tablas y columnas nuevas. Mientras no se reescriba la
+> administración del catálogo v2, **la escritura desde Monkey Admin queda bloqueada** (ver
+> [Transición](#transición-admin-en-solo-lectura)); la lectura sigue con la forma v1.
 
 | | |
 |---|---|
-| **Estado** | **PROPUESTA** (2026-10-17). Construidas la lectura y la escritura del backend (2026-10-17); faltan los formularios de Monkey Admin → ver [Estado de implementación](#estado-de-implementación) |
+| **Estado** | **PROPUESTA** (2026-10-17). Construidas la lectura y la escritura del backend (2026-10-17); faltan los formularios de Monkey Admin. **Carga del catálogo v2 (RC-01) construida** (MD-491, 2026-11-23, ramas sin integrar); Admin en solo lectura hasta reescribirla → ver [Estado de implementación](#estado-de-implementación) |
 | **App** | Monkey Admin |
 | **Quién** | Solo `admin_monkey`; cualquier otro rol recibe `403` |
 | **Entidades** | Todo el schema `catalog` (`modelo-datos.md` §3) |
@@ -55,6 +58,73 @@ Con SOC 2: 5 criterios de confianza · 61 requisitos · 302 puntos de enfoque ·
 
 ---
 
+## Carga del catálogo v2 (RC-01)
+
+**Fuente:** `assets/TSC INTERGRAL SOC 2 DETALLADO VF18_DEV.xlsx` (§0). **Comandos:** `catalog:extract` (libro → JSON con
+su `sha256`), `catalog:load` (dry-run; `--apply` escribe) y `catalog:verify`. La carga es **una transacción**, en el
+orden de la tabla 10 de `01_DESARROLLO`, solo inserta, y publica `catalog_versions.number = 2`. Estrategia **aditiva**
+(Rod, 2026-11-23): las tablas y columnas de la v1 se conservan y quedan vacías o nulas tras el reset; se retiran cuando
+las fases 2 y 3 reescriban el código que las usa (DT abierta en el cierre).
+
+### Tablas y columnas (schema `catalog`)
+
+| Tabla | Hoja | Columnas v2 | Notas |
+|---|---|---|---|
+| `controls` | `Controles Monkey` | `type` (enum de base `catalog.control_type`, con 3 valores; se sirve en `/catalogs/catalog_control_type` porque `control_type` es el catálogo v1 de 4 valores del control del cliente, que se renombra en la fase 2), `periodicity` (`periodicity`), `suggested_owner_role` (texto) | `domain` queda nulo en la v2 |
+| `point_of_focus_controls` | `Controles Monkey` | `domain` (texto literal, uno de 25) | **El dominio es de la fila**, no del control: 61 controles tienen 2 a 4 dominios según el punto de enfoque (Rod, 2026-11-23). 472 filas |
+| `control_dimensions` | `Controles Monkey`, columnas «TEST …» = «Definido» | `dimension` (`dimension`, 9 valores) | Las banderas y el `type` de la v1 quedan como puente (abajo) |
+| `control_requirements` | `REQUISITOS` | `code` (`ID_Requisito`), `control_id`, `point_number` (Punto L), `text`, `type` (`requirement_type`), `periodicity`, `is_mandatory`, `assembly_note` (Observación de armado, interno) | 576 |
+| `control_requirement_tests` | `REQUISITOS.ID_Test` | `control_requirement_id`, `test_id` | 862 (629 de pruebas de control + 233 T-DOC). **Reemplaza a `tests.requirement_point`**: 161 pruebas cubren varios puntos |
+| `control_requirement_documents` | `REQUISITOS.ID_Documento` | `control_requirement_id`, `document_id` | |
+| `tests` | `TEST` | `control_id` (nulo en las T-DOC), `type` (`test_type`), `dimension`, `objective`, `why_it_matters`, `primary_source` (`test_primary_source`), `standard_procedure_id`, `step_by_step` (texto), `correct_if`, `exception_if`, `observation_if`, `evidence_to_retain`, `level` (`test_level`), `frequency_sample` (texto), `integration_category_id`, `automation` (`test_automation`), `display_name`, `display_name_reviewed` (bool), `display_description` | 472. Los 16 textos de la v1 pasan a aceptar nulo. `Estado` no se carga |
+| `integration_category_procedures` | `INTEGRACIONES` | `integration_category_id`, `standard_procedure_id` | N:M: una categoría cita uno o varios procedimientos («PE-INT-01; PE-ACC-01»); reemplaza a un `procedure_code` en la categoría |
+| `standard_procedures` | `PROCEDIMIENTOS` | `code`, `name`, `when_used`, `generic_steps`, `typical_evidence` | 8 |
+| `integration_categories` · `integration_category_controls` | `INTEGRACIONES` | `name`, `example_tools`, `evidence_provided` · `integration_category_id`, `control_id` | 14 categorías, 64 vínculos. **No son** `catalog.integrations` (D110) |
+| `documents` · `control_documents` | `Documentos` | Los de §11.1 (`code`, `type`, `name`, `description`, `minimum_content`, `review_periodicity`, `suggested_approver_role`, `suggested_owner_role`, `origin`, `suggested_acceptance`, `test_id`) · `control_id`, `document_id` | 42 documentos, 228 vínculos. Las tablas de la empresa (§11.2) son de RC-09 |
+| `control_framework_mappings` | `MAPEO_MARCOS` | `control_id`, `framework_code`, `requirement_ref`, `relation_type` (`direct`), `justification` | 472 |
+| `test_checks` | `TEST_CHECKS` | `role` (`check_role`), `common_objective`, `owner_control_id`, `applies_when`, `module_ref`; `provenance = committee_ratified` | 4.684. `check_id` acepta nulo **solo** en los 19 vínculos «N/A» (módulo o puntaje global, `P49`), que guardan `module_ref` y el motor ignora; un CHECK exige uno de los dos. `confidence` y `rationale` quedan nulos |
+| `causes` | `Causas` | `cause_origin` (`cause_origin`), `cause_type` (`cause_type`) — la columna no es `origin` porque `causes.origin` ya es el `catalog_origin` (comité o Admin) | 100. `name` y `failure_category` quedan nulos |
+| `risk_causes` · `cause_controls` | `Causas` | — | 551 y 771. `risk_causes.code` queda nulo |
+| `risks` | `Riesgos` | `likelihood`, `impact` (el número de «4 - Probable»), `inherent_risk_value`, `inherent_risk_level` (el nivel del libro) | 10 |
+| `checks` | Las dos hojas de catálogo de checks (sonda y motor de nube, §0) | sin cambios de estructura | Sonda 4.14.7 (11.352, idéntica en contenido a la cargada) y motor de nube 5.45.0 (1.621 en 20 plataformas). Clave: plataforma + check ID (nube) y política + check ID (sonda); en `TEST_CHECKS` la política llega por **nombre** y se cruza con `sca_policies` |
+
+En `tenant.client_causes`: `origin` y `cause_type`, y `name`/`failure_category` aceptan nulo.
+
+### El nombre que ve el cliente (D70, D82)
+
+La hoja `TEST` no trae nombre neutro. La carga lo **deriva** (Rod, 2026-11-23): en una `T-DOC`, el nombre del documento;
+en una prueba de control, el texto de su requisito o, si ese texto es «Posible Checks …», el objetivo. Se aplica la
+tabla 9 de `01_DESARROLLO`, se valida que no nombre a ningún proveedor (SEG-39) y queda `display_name_reviewed = false`
+hasta que Monkey lo revise. `display_description` es el objetivo, reescrito con la tabla 9 donde nombra al proveedor.
+`display_name_en` queda nulo (`P50`).
+
+### Puentes con el código v1
+
+Para que crear empresa → contratar SOC 2 → clonar → medir siga funcionando hasta las fases 2 y 3:
+
+| Lo que usa el código v1 | Cómo lo alimenta la carga v2 |
+|---|---|
+| `control_tests` | La columna «Test» de `Controles Monkey` (658 pares = 430 por `tests.control_id` + 228 T-DOC por `control_documents`); el verificador comprueba que coincidan |
+| `control_dimensions.type` | Del tipo del control: `manual` → `manual`, `automated` → `automated`, `it_dependent_manual` → `hybrid`; banderas en `false` |
+| `evidence_requirements` del cliente | El clonado los crea desde `control_documents` + `documents.test_id` (uno por documento y control, dimensión documental), en lugar de las plantillas de evidencia |
+| Decisión del escaneo | Solo los vínculos `role = direct` deciden una prueba (RC-04) |
+
+### Validación (`catalog:verify` y el extractor)
+
+- **Totales de la tabla 10** (§0), exactos.
+- **Reglas `IN-01` a `IN-10`**. Avisos conocidos que no fallan: `IN-07` en VUL-1/VUL-2 («Detección de vulnerabilidades») y
+  el tipo de pérdida de R003/R004 (`P9`, se carga literal).
+- Cada vínculo de `TEST_CHECKS` cruza con su check, salvo los 19 «N/A».
+- Marca blanca: ningún `display_name` ni `display_description` nombra al proveedor.
+- Base frente a JSON, fila por fila, y los puentes.
+
+## Transición: Admin en solo lectura
+
+Desde MD-491 y hasta que se reescriba la administración del catálogo v2, **toda la escritura** de este contrato
+(`POST`, `PATCH`, `DELETE` de elementos y vínculos) responde **`409 CATALOG_READ_ONLY`**: el catálogo v2 solo lo cambia
+la carga. La lectura sigue con la forma v1; las listas de plantillas de evidencia quedan vacías y los campos v1 que la
+v2 no trae llegan en `null`.
+
 ## Lectura
 
 | | |
@@ -69,12 +139,12 @@ Cada ítem trae `origin` (enum `catalog_origin`) e `is_active`.
 |---|---|
 | `GET /v1/catalog/frameworks` | Marcos: `id`, `code`, `name`, `version`, `type`, `availability` y **conteos** (requisitos, controles, pruebas). Los controles son los vinculados a algún requisito: en SOC 2, **118** de los 119 del catálogo |
 | `GET /v1/catalog/frameworks/{id}` | El marco con sus criterios de confianza y requisitos (`code`, `criterion`, `controls_count`) |
-| `GET /v1/catalog/frameworks/{id}/controls` | Controles del marco. Filtros: `search`, `domain`, `requirement_code`, `has_evidence_template`, `is_active`. Cada uno: `code`, `name`, `domain`, `dimensions`, `tests_count`, `evidence_templates_count` |
+| `GET /v1/catalog/frameworks/{id}/controls` | Controles del marco. Filtros: `search`, `domain` (coincide con cualquiera de sus dominios), `requirement_code`, `has_evidence_template`, `is_active`. Cada uno: `code`, `name`, `domains[]` (distintos, en el orden de sus puntos de enfoque; MD-491), `domain` (el primero de `domains`, o `null`), `dimensions`, `tests_count`, `evidence_templates_count` |
 | `GET /v1/catalog/frameworks/{id}/points-of-focus?requirement_code=` | Apoyo para elegir a qué se vincula un control: `{ items: [{ id, framework_code, requirement_code, number, description, controls_count }] }` |
 | `GET /v1/catalog/controls` | Controles de todo el catálogo, con los mismos filtros, más `framework_id` y `unlinked=true` (los que no cuelgan de ningún requisito: **CPL-1**, o uno recién creado sin vincular). Sin esto un control nuevo desaparecería de la lista del marco |
 | `GET /v1/catalog/controls/{id}` | Detalle: descripción, `source_ref`, puntos de enfoque (`id`, requisito y número; el `id` es el que se usa para desvincularlo), dimensiones, pruebas, plantillas de evidencia (con su `sequence`), políticas y causas que lo mitigan |
 | `GET /v1/catalog/risks` · `/risks/{id}` | Riesgos globales; el detalle trae sus causas |
-| `GET /v1/catalog/causes` · `/causes/{id}` | Causas globales; el detalle trae sus riesgos y controles |
+| `GET /v1/catalog/causes` · `/causes/{id}` | Causas globales; el detalle trae sus riesgos y controles. La causa v2 no tiene nombre corto: `name` llega con la descripción (MD-491) |
 | `GET /v1/catalog/tests` · `/tests/{id}` | Pruebas; el detalle trae los campos del comité, `display_name`, `display_description` y los controles que la usan |
 | `GET /v1/catalog/evidence-templates` · `/evidence-templates/{id}` | Plantillas de evidencia (`code`, `description`, `dimension`) y a cuántos controles sirven |
 
@@ -154,6 +224,7 @@ Los selects del formulario (`dimension`, `control_type`, `risk_criterion`, `fail
 | 409 | `CODE_ALREADY_EXISTS` | `code` repetido |
 | 409 | `LINK_ALREADY_EXISTS` | El vínculo ya existe |
 | 409 | `CATALOG_ITEM_IN_USE` | Dar de baja o desenlazar lo que otro elemento activo necesita |
+| 409 | `CATALOG_READ_ONLY` | Cualquier escritura mientras dure la transición al catálogo v2 (MD-491) |
 | 422 | `VALIDATION_FAILED` | `required`, `enum.invalid`, `uuid.invalid`, `text.names_provider`, `code.dimension_mismatch`, `dimension.not_in_control`, `sequence.range` |
 
 ## Preguntas abiertas

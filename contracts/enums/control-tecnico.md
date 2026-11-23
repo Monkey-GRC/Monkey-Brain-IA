@@ -13,7 +13,7 @@
 | `not_measured` | Sin medir | Aún no hay medición |
 
 ## `readiness_area`
-**Dónde se usa:** agrupación en lenguaje de negocio de las pruebas de nube. *Propuesta de desarrollo.*
+**Dónde se usa:** agrupación en lenguaje de negocio de las pruebas de nube. *Propuesta de desarrollo.* Con el catálogo v2 (MD-491) cuentan las pruebas de dimensión `cloud` con vínculos `direct`, agrupadas por el prefijo de su control: `IDA` → `identity_access`; `RED`, `CIF` y `CNT` → `data_network`; el resto → `logging_backup`. El agrupamiento no está en el libro y falta ratificarlo con el comité.
 
 | Valor | Etiqueta (es) |
 |---|---|

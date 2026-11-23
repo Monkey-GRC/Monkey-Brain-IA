@@ -156,6 +156,8 @@ fase usa lo de la anterior:
 | 4 · Riesgo | RC-11 (cobertura y residual) | D134 construida | Los niveles de RC-06 |
 | Aparte | RC-15 (contraseñas, D137); RC-21 (idioma, `P50`) | | |
 
+**Fase 1, avance (MD-491, 2026-11-23):** construidos RC-05, RC-12, RC-03, RC-02, RC-04 y RC-01: el schema v2 aditivo, la carga y la verificación de la VF18 (D139); la v1 sigue en el schema hasta las fases 2 y 3 (`DT-113`). Quedan de la fase 1 RC-16 (la tabla 9 ya se aplica a los nombres neutros de las pruebas), RC-19 y RC-10. Ejecutar las plataformas nuevas del motor de nube y de la sonda va en un ticket aparte.
+
 Las pantallas de Cumplimiento cambian casi todas (nivel, requisitos, aprobaciones, ventanas); se diseñan con
 `monkey-ui-copy` y el sistema de diseño en cada fase.
 

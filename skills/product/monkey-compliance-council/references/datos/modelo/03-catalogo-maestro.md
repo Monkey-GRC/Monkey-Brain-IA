@@ -13,8 +13,8 @@ documentos sugeridos y el catálogo base de riesgos y causas. Lo cura el equipo 
 particulariza. Y como el catálogo cambia con el tiempo, se versiona.
 
 **La fuente es la VF18 del comité, catálogo v2** (D128, D129). La tabla 7 de su hoja `01_DESARROLLO` mapea cada
-columna del libro a una tabla de aquí; los nombres de las tablas nuevas son propuesta de desarrollo y se fijan en
-el contrato de la carga (RC-01). Totales y reglas de integridad que la carga valida: §0.
+columna del libro a una tabla de aquí; los nombres de las tablas nuevas están fijados en
+el contrato de la carga ([`catalogo-maestro.md`](../../../../../../contracts/catalogo-maestro.md#carga-del-catálogo-v2-rc-01), RC-01, MD-491). Totales y reglas de integridad que la carga valida: §0.
 
 ### 3.1 El marco y sus requisitos
 
@@ -72,7 +72,7 @@ erDiagram
         string code "IDA-11, GOB-7"
         string name
         text description
-        string domain "uno de 25, valor literal del comite"
+        string domain "nulo en la v2: el dominio es de la fila (point_of_focus_controls)"
         enum type "manual|it_dependent_manual|automated"
         enum periodicity "sugerida; el cliente la cambia (G-10)"
         text suggested_owner_role "2-3 cargos alternativos, guia (IN-09)"
@@ -81,6 +81,7 @@ erDiagram
         uuid id PK
         uuid point_of_focus_id FK
         uuid control_id FK
+        string domain "uno de 25, valor literal del comite"
     }
     control_dimensions {
         uuid id PK
@@ -142,10 +143,10 @@ evidencias documentales requeridas»), uno por fila en la hoja `REQUISITOS`: 576
 tipos (232 documentales, 244 operativos, 97 técnicos y 3 de población). Cada uno tiene al menos un test (`IN-04`).
 **No confundirlo con `requirements`**, que es el criterio del marco.
 
-**Del control:** el **dominio** (25 valores literales; es del control, no del requisito), el **tipo** (64 manuales,
+**Del control:** el **tipo** (64 manuales,
 12 manuales dependientes de TI, 38 automáticos: dice cómo opera y **no cambia el cálculo**), la **periodicidad
 sugerida** (40 permanentes, 36 cuando sea requerido, 28 anuales, 4 semestrales, 3 mensuales, 3 trimestrales) y el
-**rol responsable sugerido**, que es solo una guía: cada empresa asigna a sus usuarios (G-01). Las **dimensiones**
+**rol responsable sugerido**, que es solo una guía: cada empresa asigna a sus usuarios (G-01). El **dominio** (25 valores literales) **es de la fila** control + punto de enfoque, no del control: 61 controles tienen 2 a 4 dominios distintos y `IN-08` no exige que coincidan (MD-491). Las **dimensiones**
 vienen explícitas en las columnas «TEST …» de la hoja: el control aplica las que dicen «Definido» (las 114
 aplican la documental). La columna «EVALUACIÓN DE CONTROL» es un resultado por cliente y no se carga.
 
@@ -165,7 +166,6 @@ erDiagram
         uuid id PK
         string code "T-IDA-11-04, T-DOC-POL001"
         uuid control_id FK "nullable: las T-DOC son del documento"
-        int requirement_point "Punto de L"
         enum type "documentary|population|operational|technical"
         enum dimension "9 valores"
         string display_name "nombre neutro que ve el cliente (D70)"
@@ -226,6 +226,7 @@ erDiagram
         text common_objective
         uuid owner_control_id FK "nullable: el dueno de una dependencia"
         text applies_when
+        string module_ref "solo los 19 N/A, check_id nulo (P49)"
         enum provenance "committee_ratified en la v2"
     }
     check_mappings {
@@ -259,7 +260,8 @@ documentales `T-DOC-…`, **una por documento**, que no llevan control y se vinc
 43 documentales (las 42 `T-DOC` más `T-OPS-1-01`), 38 de población, 237 operativas y 154 técnicas. Por dimensión:
 proceso 275, documental 43, nube 36, BD 29, servidores 28, aplicación 23, red 22, endpoint 12, físico y ambiental 4.
 `control_tests` (N:M de la v1) se retira: la relación es `tests.control_id` y, para lo que prueba cada una,
-`control_requirement_tests`.
+`control_requirement_tests` (161 pruebas cubren varios puntos de L, así que no cabe en una columna). Mientras el
+código v1 siga vivo, la carga alimenta `control_tests` como puente (`contracts/catalogo-maestro.md`, MD-491).
 
 **Procedimientos estándar** (`PROCEDIMIENTOS`, 8): `PE-DOC-01` documental, `PE-POB-01` población, `PE-TEC-01`
 check automático, `PE-TEC-02` técnico manual, `PE-MUE-01` muestra operativa, `PE-ACC-01` listado de accesos,
@@ -279,7 +281,7 @@ dueño, `owner_control_id`, sacado del objetivo común «dueño CIF-3»; `IN-06`
 dueño). `applies_when` dice cuándo aplica («Cliente conecta AWS», «Agente con la política …»). **Un mismo check es
 Directo en un solo control** (`IN-07`). Todos entran como `committee_ratified` (DEV-12): ya no hay propuestas de
 desarrollo ni confianza calculada (D56). Diecinueve vínculos tienen check ID `N/A`: son módulos de la sonda o
-puntajes globales, no checks, y cómo se evalúan está en `P49`.
+puntajes globales, no checks, y cómo se evalúan está en `P49`. Se cargan con `check_id` nulo y `module_ref`, sin efecto en el cálculo (MD-491).
 
 **La clave del check** es plataforma + check ID en el motor de nube y política + check ID en la sonda (DEV-11); en
 el modelo, `platform` + `policy_id` + `check_id`. `TEST_CHECKS` trae el **nombre** de la política y el cruce con

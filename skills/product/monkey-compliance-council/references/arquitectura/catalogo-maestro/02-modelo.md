@@ -1,6 +1,6 @@
 # Catálogo maestro · Modelo
 
-> **VF18 (D128): esto describe el código construido con el catálogo v1.** El modelo del catálogo v2 está en [§3](../../datos/modelo/03-catalogo-maestro.md) y [§11](../../datos/modelo/11-documentos.md) (D129): requisitos del control, la prueba de un control, documentos, procedimientos, categorías de integración, mapeo a marcos y el rol del check. Se reescribe con RC-01.
+> **VF18 (D128): esto describe el código construido con el catálogo v1.** El modelo del catálogo v2 está en [§3](../../datos/modelo/03-catalogo-maestro.md) y [§11](../../datos/modelo/11-documentos.md) (D129): requisitos del control, la prueba de un control, documentos, procedimientos, categorías de integración, mapeo a marcos y el rol del check. La carga (RC-01, MD-491) ya existe: las tablas v2 conviven con las v1 (que quedan vacías hasta las fases 2 y 3); los nombres finales están en [`contracts/catalogo-maestro.md`](../../../../../../contracts/catalogo-maestro.md#carga-del-catálogo-v2-rc-01) y en `Backend/prisma/schema/catalog/`.
 
 Responde: **¿cómo se encadenan las piezas del catálogo?** Los diagramas campo por campo están en
 [`datos/modelo/03-catalogo-maestro.md`](../../datos/modelo/03-catalogo-maestro.md) §3.1 a §3.5 y **no se

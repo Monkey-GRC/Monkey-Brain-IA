@@ -44,7 +44,7 @@ La vista técnica de un control: los tests que lo verifican, **todos con su esta
 | `test_id`, `test_code` | uuid, string | El código (`T-DOC-001`) solo va en la vista técnica |
 | `display_name` | string | El nombre neutro (D70); el texto del comité no sale |
 | `dimension` | enum `dimension` | |
-| `type` | enum `control_type` | Cómo se resuelve su dimensión en este control: `manual`, `automated`, `hybrid` o `technical_manual` |
+| `type` | enum `test_type` \| null | El tipo de la prueba en el catálogo v2: `documentary`, `population`, `operational` o `technical` (MD-491; antes era el `control_type` de su dimensión) |
 | `is_mandatory`, `is_active` | boolean | |
 | `shared_with[]` | `{ id, code }` | Los **otros** controles vigentes del servicio que llevan el test (D85); su veredicto vale en todos. **Siempre vacío en un test documental** (D88) |
 | `state` | enum `test_state` | Un test documental sale de las evidencias de este control (D88), no es fijo `pending` |

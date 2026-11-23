@@ -85,7 +85,7 @@ migración sin pérdida de datos.
    humano, y lo dice en `change_summary`. No se crean usuarios ni empresas falsas.
 3. **Se siembran 119 controles**, incluido CPL-1 ("Descripción del Sistema"), que queda sin puntos de
    enfoque (en el producto lo cubre `system_descriptions`). Son **729 relaciones**, no 658.
-4. **Estrategia:** el Excel se convierte a un JSON versionado (`prisma/seed/data/soc2-catalog.json`,
+4. **Estrategia:** el Excel se convierte a un JSON versionado (`prisma/seed/data/soc2-catalog.json` (v1; borrado en MD-491, hoy `catalog-v2.json`),
    con el sha256 del archivo de origen); el seed lee ese JSON. Valida antes de escribir, inserta en una
    sola transacción, **solo agrega lo que falta**, aborta con diff si una fila existente difiere y no
    borra nada. Un cambio al catálogo entra por una versión nueva (A4/D33), no por recarga.
@@ -308,3 +308,19 @@ causa→control; sumar Disponibilidad agrega 6 controles.
 
 
 ---
+
+## D139 · La carga del catálogo v2: aditiva con puentes, dominio por fila, nombre neutro derivado y vínculos «N/A» sin efecto (2026-11-23)
+
+**Decisión.**
+
+1. **Estrategia aditiva con puentes.** El schema v2 se agrega sin retirar las tablas y columnas de la v1, que quedan vacías o nulas tras el reset. La carga alimenta además lo que usa el código v1: `control_tests` (la columna «Test» de `Controles Monkey`), `control_dimensions.type` (del tipo del control) y, en el clonado, los requerimientos de evidencia desde los documentos. Mientras dure, la escritura del catálogo desde Monkey Admin responde `409 CATALOG_READ_ONLY`. La v1 se retira cuando las fases 2 y 3 reescriban el código que la usa (`DT-113`).
+2. **El dominio es de la fila control + punto de enfoque** (`point_of_focus_controls.domain`), no del control: 61 controles tienen 2 a 4 dominios en el libro y `IN-08` no exige que coincidan. La API del Admin devuelve `domains[]` y `domain` como el primero.
+3. **El nombre neutro de la prueba (D70) lo deriva la carga:** en una `T-DOC`, el nombre del documento; en una prueba de control, el texto de su requisito, o el objetivo si ese texto es «Posible Checks …». Se aplica la tabla 9, se valida SEG-39 y queda `display_name_reviewed = false` hasta que Monkey lo revise.
+4. **Los 19 vínculos de `TEST_CHECKS` con check ID «N/A»** se cargan con `check_id` nulo y `module_ref`, sin efecto en el cálculo hasta que el comité resuelva `P49`.
+5. **Las plataformas del motor de nube y las políticas de la sonda quedan íntegras en el catálogo** (las 20 y las 77); **ejecutarlas** (adaptador, conexión y credenciales) para las que hoy no se ejecutan va en un ticket aparte. Hoy se ejecutan AWS, GCP y la sonda en Linux y Windows.
+
+**Por qué.** Retirar la v1 ahora obligaba a rehacer el clonado, el motor, la evidencia, los riesgos y el Admin (3 a 4 semanas) y a decidir antes de tiempo el diseño de RC-06 a RC-09. Los puentes mantienen el recorrido crear empresa → contratar SOC 2 → clonar → medir funcionando con la v2. Los otros tres puntos son lo que el libro dice o lo que no define.
+
+**Qué cambia.** §3 (dominio, `control_requirement_tests`, `module_ref`), `contracts/catalogo-maestro.md` («Carga del catálogo v2» y «Transición»), `contracts/cumplimiento/veredictos.md`, `contracts/integraciones.md` y `contracts/enums/control-tecnico.md`.
+
+**Fuente:** Héctor Ríos (Rod), 2026-11-23, en MD-491.

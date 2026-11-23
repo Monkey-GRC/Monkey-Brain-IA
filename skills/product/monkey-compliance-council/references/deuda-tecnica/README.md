@@ -30,7 +30,7 @@ la cierra). Los ID (`DT-n`) no se reutilizan. Si una deuda depende del comité, 
 | Archivo | Fichas | El módulo que tendría que arreglarlo |
 |---|---|---|
 | [`autenticacion.md`](autenticacion.md) | 3 | [Autenticación](../arquitectura/autenticacion/README.md) |
-| [`catalogo-maestro.md`](catalogo-maestro.md) | 5 | [Catálogo maestro](../arquitectura/catalogo-maestro/README.md) |
+| [`catalogo-maestro.md`](catalogo-maestro.md) | 6 | [Catálogo maestro](../arquitectura/catalogo-maestro/README.md) |
 | [`control-tecnico.md`](control-tecnico.md) | 20 | [Control técnico](../arquitectura/control-tecnico/README.md) |
 | [`cumplimiento.md`](cumplimiento.md) | 6 | [Cumplimiento](../arquitectura/cumplimiento/README.md) |
 | [`empresas.md`](empresas.md) | 5 | [Empresas](../arquitectura/empresas/README.md) |
@@ -95,6 +95,7 @@ Limitan el producto o al equipo.
 | [DT-63](onboarding.md#dt-63--un-activo-descubierto-no-se-puede-editar) | Un activo descubierto no se puede editar | [Onboarding](onboarding.md) |
 | [DT-66](control-tecnico.md#dt-66--el-estado-de-preparación-de-un-activo-se-calcula-por-severidad) | El estado de preparación de un activo se calcula por severidad | [Control técnico](control-tecnico.md) |
 | [DT-69](catalogo-maestro.md#dt-69--las-dimensiones-de-cada-control-no-coinciden-con-las-que-define-el-comité) | Las dimensiones de cada control no coinciden con las que define el comité | [Catálogo maestro](catalogo-maestro.md) |
+| [DT-113](catalogo-maestro.md#dt-113--transición-del-catálogo-v1-al-v2-tablas-v1-vacías-puentes-y-admin-en-solo-lectura) | Transición del catálogo v1 al v2: tablas v1 vacías, puentes y Admin en solo lectura | [Catálogo maestro](catalogo-maestro.md) |
 | [DT-100](catalogo-maestro.md#dt-100--el-catálogo-del-comité-solo-está-en-español) | El catálogo del comité solo está en español | [Catálogo maestro](catalogo-maestro.md) |
 | [DT-71](cumplimiento.md#dt-71--la-lectura-de-controles-fija-valores-que-el-modelo-ya-prevé) | La lectura de controles fija valores que el modelo ya prevé | [Cumplimiento](cumplimiento.md) |
 | [DT-76](cumplimiento.md#dt-76--las-plantillas-de-evidencia-del-catálogo-no-dicen-a-qué-prueba-sirve-cada-documento-y-el-estado-documental-por-control-se-apartó-de-rn-13) | Las plantillas de evidencia del catálogo no dicen a qué prueba sirve cada documento, y el estado documental por control se apartó de RN-13 | [Cumplimiento](cumplimiento.md) |
