@@ -20,7 +20,7 @@ Parches vigentes de [Catálogo maestro](../arquitectura/catalogo-maestro/README.
 
 - **Qué está parchado:** Controles, requisitos, puntos de enfoque, riesgos, causas y evidencias requeridas tienen un solo texto, en español: con la aplicación en inglés, Cumplimiento los muestra en español. Solo las 11 pruebas de nube tienen nombre en inglés (`catalog.tests.display_name_en`, MD-211), escrito por desarrollo y sin revisar (como DT-21).
 - **Por qué:** El Excel del comité trae un solo idioma y el modelo guarda un texto por fila; traducir todo el catálogo excedía MD-211.
-- **Qué lo cierra:** MD-212: el contenido del catálogo en inglés con su procedencia (como D90 con los checks), servido según `Accept-Language`, y la revisión del inglés por el comité (DT-21). Con la VF18 aplica al catálogo v2 y quién lo traduce está en `P50`.
+- **Qué lo cierra:** MD-212: el contenido del catálogo en inglés con su procedencia (como D90 con los checks), servido según `Accept-Language`, y la revisión del inglés por el comité (DT-21). Con la VF18 aplica al catálogo v2: lo traduce desarrollo con IA y lo revisa el comité (D142, MD-513).
 
 ### DT-113 · Transición del catálogo v1 al v2: tablas v1 vacías, puentes y Admin en solo lectura
 

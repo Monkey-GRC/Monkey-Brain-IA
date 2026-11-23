@@ -82,7 +82,7 @@ las fases 2 y 3 reescriban el código que las usa (DT abierta en el cierre).
 | `integration_categories` · `integration_category_controls` | `INTEGRACIONES` | `name`, `example_tools`, `evidence_provided` · `integration_category_id`, `control_id` | 14 categorías, 64 vínculos. **No son** `catalog.integrations` (D110) |
 | `documents` · `control_documents` | `Documentos` | Los de §11.1 (`code`, `type`, `name`, `description`, `minimum_content`, `review_periodicity`, `suggested_approver_role`, `suggested_owner_role`, `origin`, `suggested_acceptance`, `test_id`) · `control_id`, `document_id` | 42 documentos, 228 vínculos. Las tablas de la empresa (§11.2) son de RC-09 |
 | `control_framework_mappings` | `MAPEO_MARCOS` | `control_id`, `framework_code`, `requirement_ref`, `relation_type` (`direct`), `justification` | 472 |
-| `test_checks` | `TEST_CHECKS` | `role` (`check_role`), `common_objective`, `owner_control_id`, `applies_when`, `module_ref`; `provenance = committee_ratified` | 4.684. `check_id` acepta nulo **solo** en los 19 vínculos «N/A» (módulo o puntaje global, `P49`), que guardan `module_ref` y el motor ignora; un CHECK exige uno de los dos. `confidence` y `rationale` quedan nulos |
+| `test_checks` | `TEST_CHECKS` | `role` (`check_role`), `common_objective`, `owner_control_id`, `applies_when`, `module_ref`; `provenance = committee_ratified` | 4.684. `check_id` acepta nulo **solo** en los 19 vínculos «N/A» (módulo o puntaje global), que guardan `module_ref`; el motor evalúa los 16 de módulo (pasan sin hallazgos críticos ni altos abiertos) y los 3 puntajes, que pasan con 80 % o más (D141, D146); un CHECK exige uno de los dos. `confidence` y `rationale` quedan nulos |
 | `causes` | `Causas` | `cause_origin` (`cause_origin`), `cause_type` (`cause_type`) — la columna no es `origin` porque `causes.origin` ya es el `catalog_origin` (comité o Admin) | 100. `name` y `failure_category` quedan nulos |
 | `risk_causes` · `cause_controls` | `Causas` | — | 551 y 771. `risk_causes.code` queda nulo |
 | `risks` | `Riesgos` | `likelihood`, `impact` (el número de «4 - Probable»), `inherent_risk_value`, `inherent_risk_level` (el nivel del libro) | 10 |
@@ -96,7 +96,7 @@ La hoja `TEST` no trae nombre neutro. La carga lo **deriva** (Rod, 2026-11-23): 
 en una prueba de control, el texto de su requisito o, si ese texto es «Posible Checks …», el objetivo. Se aplica la
 tabla 9 de `01_DESARROLLO`, se valida que no nombre a ningún proveedor (SEG-39) y queda `display_name_reviewed = false`
 hasta que Monkey lo revise. `display_description` es el objetivo, reescrito con la tabla 9 donde nombra al proveedor.
-`display_name_en` queda nulo (`P50`).
+`display_name_en` queda nulo hasta la traducción con IA revisada por el comité (D142).
 
 ### Puentes con el código v1
 

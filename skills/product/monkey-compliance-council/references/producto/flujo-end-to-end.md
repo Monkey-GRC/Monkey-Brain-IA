@@ -129,7 +129,7 @@ En cualquier momento (no es un paso del onboarding): `admin_empresa`, que es el 
 - Organiza al equipo en **grupos** y asigna a cada control un **dueño**: un `responsable` (o él mismo). Un control sin dueño queda «Sin asignar». Cada `responsable` lidera un equipo de `delegado` y les asigna, de sus controles, los que deben **ejecutar**; si no tiene equipo, ejecuta él.
 - Cada persona ve solo lo suyo, en «Mi trabajo»: el ejecutor sube la evidencia y arregla lo que falle; el `responsable` dueño **revisa** lo de su equipo y el `admin_empresa` puede revisar cualquiera (cumple, o rechaza con motivo; si revisan los dos, aprueban los dos). El veredicto de lo manual sigue el mismo flujo.
 - El `auditor` lo crea la empresa cuando va a certificarse, para que revise cómo lleva sus cuentas: queda como usuario de **su empresa**, ve todo el cumplimiento con la vista técnica y escribe observaciones (D63). No valida ni califica por ahora. Al terminar, la empresa lo desactiva.
-**Lo que falta cerrar:** nada de la cadena de asignación (D102 cierra `P38` y `P3`); las notificaciones son `P39`.
+**Lo que falta cerrar:** nada de la cadena de asignación (D102 cierra `P38` y `P3`); las notificaciones las decidió D143 (por construir, MD-69).
 
 **Entidades:** `users`, `user_control_assignments`,
 `audit_observations` (§7.6).

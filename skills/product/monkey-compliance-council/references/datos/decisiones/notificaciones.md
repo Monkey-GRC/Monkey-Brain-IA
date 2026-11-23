@@ -15,3 +15,20 @@ Por qué Notificaciones es como es. **Se consulta para reabrir, no para construi
 **Qué cambia.** El sistema de notificaciones (MD-69), `arquitectura/notificaciones/` y `contracts/integraciones.md`. Responde los eventos y los destinatarios de `P39` (siguen abiertos el canal, la frecuencia y el centro de notificaciones) y el punto 1 de `P46` (los tickets son para remediar; la categoría Ticketing además aporta evidencia). La prioridad de un check de la sonda, que no trae severidad, queda en `P49`.
 
 **Fuente:** comité funcional, VF18 (`MAP CALOR`, secciones 6, 8, 13 y 14; hoja `INTEGRACIONES`), 2026-11-22.
+
+---
+
+## D143 · Canal, frecuencia y centro de notificaciones (2026-11-23; cierra P39)
+
+**Decisión** (lo que D138 y D131 no definieron: puntos 1, 4 y 5 de `P39`):
+
+1. **Canal:** cada aviso sale **en la app y por correo**, con el mismo proveedor de los correos transaccionales que ya salen.
+2. **Frecuencia:** en la app, **al instante**; por correo, **un resumen diario**. Cada persona puede apagar el correo; los avisos de la app no se apagan.
+3. **Centro de notificaciones:** una campana con **leído y no leído** y un **historial de 90 días**.
+4. Los eventos y quién recibe cada uno son los de D138; los recordatorios de vencimiento, los de D131 (PR-06). El texto sigue la plantilla de 7 campos y nunca nombra al proveedor de la sonda ni de la nube.
+
+**Por qué.** Eran las preguntas técnicas que quedaban de `P39`; el comité ya había definido qué se avisa y a quién.
+
+**Qué cambia.** `arquitectura/notificaciones/` (historias y casos de uso dejan de estar bloqueados), el sistema de notificaciones (MD-69) y los avisos de RC-08, RC-09 y RC-17 (MD-500, MD-506, MD-508). Necesita un planificador para el resumen diario y una tabla de notificaciones.
+
+**Fuente:** Héctor Ríos (Rod), 2026-11-23, como decisión de desarrollo, para no bloquear la VF18. **No es una decisión del comité.**

@@ -99,7 +99,7 @@ causa→control completa (`Causas` columna G: las 56 causas, **209 relaciones**)
 
 **Por qué.** El libro responde `P22` con una regla más simple que la de D75: cobertura verificada contra dos umbrales.
 
-**Qué cambia.** §7.2 y §9, `contracts/cumplimiento/riesgos.md` y `contracts/enums/cumplimiento.md`. **Reemplaza D75** y las reglas RN-20 a RN-24; ajusta D33 y D76 (las matrices siguen siendo la lectura de la evolución; la mitigación ahora se mide por cobertura). **Cierra `P22`** (los puntos 1 y 3; el 2 lo cierra D131). Qué es el plan de tratamiento y quién lo aprueba queda en `P48`. Los riesgos ya evaluados no se recalculan: el reset de D128 los borra.
+**Qué cambia.** §7.2 y §9, `contracts/cumplimiento/riesgos.md` y `contracts/enums/cumplimiento.md`. **Reemplaza D75** y las reglas RN-20 a RN-24; ajusta D33 y D76 (las matrices siguen siendo la lectura de la evolución; la mitigación ahora se mide por cobertura). **Cierra `P22`** (los puntos 1 y 3; el 2 lo cierra D131). El plan de tratamiento lo define D140. Los riesgos ya evaluados no se recalculan: el reset de D128 los borra.
 
 **Fuente:** comité funcional, VF18 (`MAP CALOR`, sección 10, la matriz y sus etiquetas; hoja `Riesgos`; RC-10 y RC-11), 2026-11-22. Que los valores del catálogo lleguen prellenados al asistente lo derivó desarrollo de DEV-16.
 

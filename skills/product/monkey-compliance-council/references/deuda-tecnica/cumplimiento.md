@@ -18,7 +18,7 @@ Parches vigentes de [Cumplimiento](../arquitectura/cumplimiento/README.md). Tabl
 
 - **Qué está parchado:** una exclusión aprobada «vence» solo al leerse (`is_expired`, y el activo vuelve a contar), pero nada escribe el `compliance_events` de ese cambio. `contracts/cumplimiento/exclusiones.md` pide el evento al aprobar **o vencer**; hoy solo se escribe al aprobar.
 - **Por qué:** no hay un proceso periódico en el Backend (el trabajador de nube solo ejecuta pruebas); MD-144 se construyó sin él.
-- **Qué lo cierra:** un proceso diario que marque las exclusiones que acaban de vencer y escriba su evento (con idempotencia: una vez por exclusión) —y que, si el vencimiento mueve el estado de un control, deje también su evento `control.state` (D91, `DT-79`)—, o decidir que el vencimiento derivado basta y quitarlo del contrato. Se decide al tener el período del servicio (`P26`). Ticket: MD-171.
+- **Qué lo cierra:** un proceso diario que marque las exclusiones que acaban de vencer y escriba su evento (con idempotencia: una vez por exclusión) —y que, si el vencimiento mueve el estado de un control, deje también su evento `control.state` (D91, `DT-79`)—, o decidir que el vencimiento derivado basta y quitarlo del contrato. Se decide al tener el período del servicio (D145). Ticket: MD-171.
 
 ### DT-73 · `evaluations.result` no distingue `error` ni `excluded`
 

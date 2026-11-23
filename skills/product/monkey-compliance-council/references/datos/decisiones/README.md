@@ -221,3 +221,10 @@ quedan aquí:
 | D137 | Contraseñas según la Tabla 3 de la VF18: 15 caracteres, historial de 24 y vencimiento a los 60 días *(revierte el punto 1 de D101)* | [autenticacion](autenticacion.md) |
 | D138 | Alertas por evento, tickets opcionales y el mensaje de brecha de un check | [notificaciones](notificaciones.md) |
 | D139 | La carga del catálogo v2: aditiva con puentes, dominio por fila, nombre neutro derivado y vínculos «N/A» sin efecto | [catalogo-maestro](catalogo-maestro/README.md) |
+| D140 | El motor v2: activo sin resultado, quién registra una prueba manual, el evaluador es el responsable, los planes, parámetros iguales para todos y ventana anual de 12 meses *(cierra P48)* | [cumplimiento/motor](cumplimiento/motor.md) |
+| D141 | Los módulos de la sonda pasan sin hallazgos críticos ni altos; la detección de vulnerabilidades es Directo solo en VUL-1; la brecha de la sonda se prioriza por la criticidad del activo *(cierra P49 salvo el umbral de los puntajes; ajusta D7 y D139)* | [control-tecnico](control-tecnico.md) |
+| D142 | El catálogo v2 lo traduce desarrollo con IA y lo revisa el comité; mientras tanto se muestra en español *(cierra P50)* | [catalogo-maestro](catalogo-maestro/README.md) |
+| D143 | Notificaciones en la app al instante y por correo en resumen diario; campana con leído y no leído e historial de 90 días *(cierra P39; decisión de desarrollo)* | [notificaciones](notificaciones.md) |
+| D144 | Jira lo conecta el `admin_empresa` con una cuenta de servicio; el ticket se crea desde el control o la brecha *(cierra P46; decisión de desarrollo)* | [integraciones](integraciones.md) |
+| D145 | Solo SOC 2 Tipo II; al terminar un período se abre el siguiente y el anterior queda como histórico *(cierra P26; D87 deja de ser provisional; decisión de desarrollo)* | [cumplimiento/resumen](cumplimiento/resumen.md) |
+| D146 | Los tres puntajes globales de la VF18 pasan con 80 % o más, configurable *(cierra P49; decisión de desarrollo)* | [control-tecnico](control-tecnico.md) |

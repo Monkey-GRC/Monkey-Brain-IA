@@ -29,7 +29,7 @@ rectangle "Monkey · Integraciones" {
   usecase "CU-INT-02\nExplorar el catálogo\npara agregar" as CU2
   usecase "CU-INT-04\nConectar una integración\na un servicio" as CU4
   usecase "CU-INT-05\nConectar GitHub\n(por construir: P44, P45)" as CU5
-  usecase "CU-INT-06\nLlevar el trabajo a Jira\n(por construir: P46)" as CU6
+  usecase "CU-INT-06\nLlevar el trabajo a Jira\n(por construir: D144)" as CU6
 }
 
 Lector --> CU1

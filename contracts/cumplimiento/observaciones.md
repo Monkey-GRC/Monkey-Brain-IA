@@ -214,4 +214,4 @@ Dos reglas que salían de otros documentos y quedan cerradas: el veredicto exige
 
 Pruebas: `test/cumplimiento/observaciones.e2e-spec.ts`, el bloque final de `veredictos.e2e-spec.ts` y `src/features/compliance/domain/observations/observation-lifecycle.spec.ts`.
 
-**Fuera de alcance, a propósito:** las pantallas (los permisos por pantalla ya no se esperan: D102) y el aviso a la empresa de que tiene una observación nueva (el sistema de correos y notificaciones no existe todavía, `P39`; mientras tanto la empresa la ve al entrar al servicio y en «Mi trabajo»).
+**Fuera de alcance, a propósito:** las pantallas (los permisos por pantalla ya no se esperan: D102) y el aviso a la empresa de que tiene una observación nueva (el sistema de correos y notificaciones no existe todavía; se decidió en D143 y lo construye MD-69; mientras tanto la empresa la ve al entrar al servicio y en «Mi trabajo»).

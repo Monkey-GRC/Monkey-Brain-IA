@@ -41,7 +41,7 @@ con sus causas. Retirar un riesgo no retira sus causas ni sus controles (D93).
 celda en la matriz; el residual, de la **cobertura verificada** (relaciones causa–control cuyo control cumple) contra los
 umbrales de 60% y 85%, que bajan la probabilidad uno o dos niveles; el impacto no se reduce; y el apetito se lee por
 **zonas de color** (naranja, tolerable solo con plan de tratamiento aprobado). La valoración inherente viene del
-catálogo y llega prellenada al asistente. Qué es el plan de tratamiento y quién lo aprueba sigue en `P48`.
+catálogo y llega prellenada al asistente. El plan de tratamiento lleva qué se hará, quién y para cuándo; lo registra el responsable y lo aprueba el `admin_empresa` (D140).
 
 ## Qué posee
 
@@ -57,7 +57,7 @@ Código: `compliance/presentation/risks/` (`risks.controller.ts` y `risk-assessm
 | Las tablas y sus columnas | `datos/modelo/07-cumplimiento.md` §7.2 |
 | El catálogo base de riesgos y causas | `datos/modelo/03-catalogo-maestro.md` §3.4 · [`../../catalogo-maestro/`](../../catalogo-maestro/README.md) |
 | Decisiones | D28, D33, D74, D75, D76, D89, D93 |
-| Pendiente | `P48` (qué es el plan de tratamiento y quién lo aprueba); la regla del riesgo es D134 |
+| Decisiones | La regla del riesgo es D134; el plan de tratamiento, D140 |
 
 ## Contenido
 

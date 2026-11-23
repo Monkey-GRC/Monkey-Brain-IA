@@ -85,7 +85,7 @@ Hay que conseguirlos o dejar de citarlos:
 
 | Documento | Quién lo cita | Qué se pierde |
 |---|---|---|
-| Las hojas de trabajo interno del comité | `01_DESARROLLO` (DEV-01), `MAP CALOR` (`IN-06` cita la «regla 17» e `IN-07` la «regla 16») y `REQUISITOS` («regla 2») | El texto de esas reglas. Lo que exigen se lee en `IN-06`, `IN-07` y en la columna «Observación de armado» (`P48`) |
+| Las hojas de trabajo interno del comité | `01_DESARROLLO` (DEV-01), `MAP CALOR` (`IN-06` cita la «regla 17» e `IN-07` la «regla 16») y `REQUISITOS` («regla 2») | El texto de esas reglas. Lo que exigen se lee en `IN-06`, `IN-07` y en la columna «Observación de armado»; el comité no las entregará (D140) |
 | `prompt-user-management-model-monkey.md` | El resumen del modelo de usuarios, como el técnico de 2.500+ líneas | Ahí estaban respondidas: qué pasa si un `admin_empresa` se va, qué pasa con los datos si el cliente cancela, si los auditores externos necesitan MFA, cómo se revoca acceso de inmediato, y la matriz exhaustiva de permisos (la de §5.5 es el resumen) |
 | `docs/plan-mapeo-cis-soc2.md` | El código de `monkey-cis-sync` | El plan del mapeo CIS↔SOC 2 |
 | `Diseño Funcional APP` | La hoja de roles del archivo maestro | El detalle del modelo de accesos inicial |

@@ -21,7 +21,7 @@ esta sección (D110 punto 5). **Estado** de cada historia: ✅ construida · �
 | HU-INT-07 | Revisar como auditor solo lo que la empresa tiene conectado | `auditor` | ✅ | D110 punto 5 |
 | HU-INT-08 | Saber qué integraciones vienen pronto, sin poder conectarlas aún | `admin_empresa` | ✅ | D110 punto 6, D67 |
 | HU-INT-09 | Conectar la organización de GitHub de mi empresa | `admin_empresa` | ⚪ | P45, D129 |
-| HU-INT-10 | Llevar el trabajo de cumplimiento a Jira | por decidir (P46) | ⚪ | P46 |
+| HU-INT-10 | Llevar el trabajo de cumplimiento a Jira | `admin_empresa` · `responsable` · `delegado` | ⚪ | D138, D144 |
 
 **Fuera de las historias:** la interfaz única de conector (conectar, validar, credencial temporal, ejecutar, normalizar;
 D110 punto 7) no es una capacidad que vea una persona: se construye con la primera integración nueva que se conecte de
@@ -154,7 +154,7 @@ entra GitHub, qué es el activo y con qué canal se conecta (P45), los decide el
 **Como** persona de la empresa que gestiona el trabajo de cumplimiento, **quiero** llevarlo a Jira **para** seguirlo en la
 herramienta que ya usa mi equipo.
 
-⚪ **Bloqueada por P46.** El comité decide si es solo remediación o también evidencia, quién la conecta y con qué
+⚪ **Decidida (D138, D144), por construir en MD-508.** El comité decide si es solo remediación o también evidencia, quién la conecta y con qué
 permisos, y desde qué pantallas y qué roles se crea un ticket. Lo que ya está fijado:
 
 - Jira no mide nada: es una integración de flujo de trabajo (`workflow`, D110 punto 1).

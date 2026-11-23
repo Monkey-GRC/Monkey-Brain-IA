@@ -7,7 +7,7 @@ type: contract
 
 # Cumplimiento — pruebas y veredictos
 
-> **VF18 (D128): este contrato describe la API construida con el catálogo v1.** Con la VF18 los estados de una prueba son Pendiente, Correcto, Observación, Excepción, No aplica y Vencido (D130), y la revisión en dos niveles del veredicto pasa al control (D132). Quién registra el resultado de una prueba manual está en `P48`. Se reescribe antes de construir RC-06 y RC-07.
+> **VF18 (D128): este contrato describe la API construida con el catálogo v1.** Con la VF18 los estados de una prueba son Pendiente, Correcto, Observación, Excepción, No aplica y Vencido (D130), y la revisión en dos niveles del veredicto pasa al control (D132). El resultado de una prueba manual lo registra el responsable (D140). Se reescribe antes de construir RC-06 y RC-07.
 
 | | |
 |---|---|

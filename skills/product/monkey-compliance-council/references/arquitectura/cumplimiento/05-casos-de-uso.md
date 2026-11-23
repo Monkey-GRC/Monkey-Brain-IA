@@ -245,7 +245,7 @@ HU-CUM-32 (calificación del auditor) no tiene caso: está en pausa (D96, `P35`)
 - 2a. Ya respondida → `409 OBSERVATION_NOT_OPEN`; una de servicio completo, si no es `admin_empresa` → `403`.
 - 3a. No queda conforme → la devuelve a abierta (conserva la última respuesta) y se repite desde 2.
 - 3b. Otro que no es su autor → `403`; cerrar una abierta → `409 INVALID_TRANSITION`; tocar una cerrada → `409 OBSERVATION_CLOSED`.
-- La empresa no recibe aviso (`P39`). Pantallas por construir (🟡).
+- La empresa no recibe aviso todavía (D143, MD-69). Pantallas por construir (🟡).
 
 ### CU-CUM-12 · Gestionar riesgos y causas
 

@@ -11,7 +11,7 @@ type: contract
 
 | | |
 |---|---|
-| **Estado** | **ACORDADO** (2026-10-17; D80 el 2026-10-15). El período y la fecha de corte (`P26`) se definen de forma provisional con D87 (2026-10-20). Reescrito por D96 (2026-10-27): la evaluación del auditor está en pausa. D102 (2026-11-03) limita el resumen de un `responsable` o `delegado` a **sus controles** |
+| **Estado** | **ACORDADO** (2026-10-17; D80 el 2026-10-15). El período y la fecha de corte se definen con D87 (2026-10-20), definitiva desde D145. Reescrito por D96 (2026-10-27): la evaluación del auditor está en pausa. D102 (2026-11-03) limita el resumen de un `responsable` o `delegado` a **sus controles** |
 | **App** | Monkey Platform |
 | **Entidades** | `service_frameworks` (la evaluación del servicio; `framework_assessments`, §7.5, queda sin uso por D96) |
 | **Tickets** | MD-137, MD-138, MD-139, MD-168 (MD-155, las evaluaciones, en pausa) · sprint 3: MD-193 |
@@ -258,7 +258,7 @@ Todos con el mismo sobre (`conventions.md`); `message` es la clave i18n del erro
 
 ## Preguntas abiertas
 
-- **`P26`:** respondida **provisionalmente** (D87). Falta que el comité ratifique: si se vende SOC 2 **Tipo I**, qué pasa cuando **llega el período siguiente** (hoy una sola fila por servicio y marco) y el nombre («fecha de corte» aquí, «fecha de evaluación» en el Excel).
+- ~~`P26`~~ cerrada por D145: solo Tipo II; al terminar un período se abre el siguiente y el anterior queda como histórico (hoy hay una sola fila por servicio y marco: cambia con MD-500).
 - **`P35`:** la calificación del auditor (en pausa).
 - **Mitigación y riesgo residual:** no están aquí; entran con D134 (RC-11) como campos opcionales.
 

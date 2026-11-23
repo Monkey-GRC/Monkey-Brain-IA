@@ -54,3 +54,19 @@ Por qué este componente es como es. Lo vigente está en [`arquitectura/cumplimi
 **Qué cambia.** `contracts/cumplimiento/resumen.md` (Reglas) y el Backend en MD-193.
 
 **Fuente:** Héctor Ríos (Rod), 2026-11-17, al planificar MD-193; eligió la opción A: «solo las categorías donde tiene controles».
+
+---
+
+## D145 · Solo SOC 2 Tipo II y el período siguiente se abre solo (2026-11-23; cierra P26 y deja D87 como definitiva)
+
+**Decisión** (lo que seguía abierto de `P26`):
+
+1. **Por ahora no se vende SOC 2 Tipo I**: con el mínimo de 6 meses del período auditado (D131, PR-16) no encaja una fecha puntual. Solo Tipo II.
+2. **Al terminar un período se abre solo el siguiente**, con la misma duración; el anterior queda cerrado como histórico, sin cambios.
+3. D87 (el `admin_empresa` declara el período; la fecha de corte es «hoy» hasta que se congela) deja de ser provisional.
+
+**Por qué.** Era lo que faltaba para construir el período auditado de RC-08.
+
+**Qué cambia.** `service_frameworks` pasa a guardar un período por fila con su histórico (hoy una sola fila por servicio y marco), `contracts/cumplimiento/resumen.md` y `exclusiones.md`, y MD-500.
+
+**Fuente:** Héctor Ríos (Rod), 2026-11-23, como decisión de desarrollo, para no bloquear la VF18. **No es una decisión del comité.**

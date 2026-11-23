@@ -41,7 +41,7 @@ Las opciones que no son del catálogo (tamaño de empresa, industria…) viven e
 | Valores y etiquetas de cada enum | `contracts/enums.md` |
 | Qué exige cada marco | [`marcos/`](marcos/README.md) (este módulo) |
 | Decisiones (`D-n`) | [`datos/decisiones/catalogo-maestro/`](../../datos/decisiones/catalogo-maestro/README.md): `D26` · `D28` · `D32` · `D34` · `D35` · `D36` · `D38` · `D39` · `D40` · `D82` · `D128` · `D129` · `D139`; marcos: `D37` · `D50` |
-| Pendientes del comité (`P-n`) | [`datos/pendientes/catalogo-maestro.md`](../../datos/pendientes/catalogo-maestro.md): `P9` · `P21` · `P50` — **si sigue abierto, se pregunta** |
+| Pendientes del comité (`P-n`) | [`datos/pendientes/catalogo-maestro.md`](../../datos/pendientes/catalogo-maestro.md): `P9` · `P21` — **si sigue abierto, se pregunta** |
 | Código | `Backend/src/features/catalogs` y `catalog-admin` |
 | Deuda vigente (6 `DT-n`) | [`deuda-tecnica/catalogo-maestro.md`](../../deuda-tecnica/catalogo-maestro.md) |
 | Requisitos de seguridad (`SEG-n`) | ninguno propio: le aplican los de [`seguridad/plataforma.md`](../../seguridad/plataforma.md) y [`aislamiento-tenant.md`](../../seguridad/aislamiento-tenant.md) (solo `admin_monkey` escribe el catálogo) |

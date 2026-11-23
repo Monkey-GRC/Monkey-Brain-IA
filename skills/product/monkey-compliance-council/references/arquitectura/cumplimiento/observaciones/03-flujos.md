@@ -13,7 +13,7 @@ sequenceDiagram
     participant E as admin_empresa, responsable o delegado del control
     AU->>API: escribe una observación sobre un control o una evidencia
     API->>DB: inserta open + insertAuditLog (misma transacción)
-    Note over E: hoy se entera entrando a mirar: no hay aviso (P39)
+    Note over E: hoy se entera entrando a mirar: no hay aviso (D143, por construir)
     E->>API: responde con una nota y, si hace falta, una evidencia del mismo servicio
     API->>DB: pasa a answered, guarda quién y cuándo
     AU->>API: la cierra, o la devuelve a open si no queda conforme
