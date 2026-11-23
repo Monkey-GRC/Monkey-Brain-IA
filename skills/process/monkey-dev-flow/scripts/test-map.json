@@ -22,6 +22,8 @@
     },
     "paths": {
       "src/runner/": ["test/control-tecnico/runner.e2e-spec.ts", "test/control-tecnico/escaneo.e2e-spec.ts"],
+      "src/features/compliance/domain/": ["test/control-tecnico/api.e2e-spec.ts", "test/control-tecnico/escaneo.e2e-spec.ts"],
+      "src/features/compliance/infrastructure/shared/": ["test/control-tecnico/api.e2e-spec.ts", "test/control-tecnico/escaneo.e2e-spec.ts"],
       "src/common/": ["test/aislamiento", "test/auditoria/audit-atomica.e2e-spec.ts"],
       "src/infrastructure/": ["test/aislamiento", "test/auditoria/audit-atomica.e2e-spec.ts"],
       "prisma/": ["test/aislamiento/rls-cobertura.e2e-spec.ts", "test/aislamiento/rls-comportamiento.e2e-spec.ts"],
