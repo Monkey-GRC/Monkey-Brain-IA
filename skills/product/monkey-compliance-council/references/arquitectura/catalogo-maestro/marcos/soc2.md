@@ -40,5 +40,15 @@ población y muestreo (10%, mínimo 5, máximo 25 casos), y las tres banderas po
 dimensión (requiere sonda / requiere IA / confirmación de cumplimiento).
 
 Ese archivo es un desglose de ejemplo con dos requisitos (CC6.1 y CC6.3), no el
-catálogo completo: la carga del catálogo de requisitos TSC sigue pendiente. Ver
-`../../../datos/modelo-datos.md` §3.1 y §3.2.
+catálogo completo.
+
+**El catálogo completo es la VF18 del comité** (catálogo v2, D128, D129): los 61
+criterios TSC y sus 302 puntos de enfoque, **114 controles** en 472 filas
+(control + criterio + punto de enfoque), **576 requisitos del control**, **472
+pruebas** (una por documento o de un control), 42 documentos, 4.684 vínculos
+prueba–check con su rol, 10 riesgos y 100 causas. El mapeo de cada control a SOC 2
+está en `MAPEO_MARCOS` y deja el lugar para ISO 27001 y los demás marcos. La
+escala de 0 a 5 de Monkey mide **preparación**: no reemplaza la opinión del
+auditor SOC 2 (P7 del libro). El período auditado de un Tipo II dura en Monkey
+**6 meses como mínimo** (PR-16). Ver `../../../datos/modelo/03-catalogo-maestro.md`
+y `09-calculo-cumplimiento.md`.

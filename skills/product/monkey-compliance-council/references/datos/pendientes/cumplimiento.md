@@ -2,35 +2,6 @@
 
 Preguntas abiertas que afectan a [Cumplimiento](../../arquitectura/cumplimiento/README.md). **Si una sigue aquí, no se resuelve por cuenta propia: se pregunta.** Tablero y reglas: [`README.md`](README.md).
 
-## P22 · Motor de evaluación: lo que falta para calcular el riesgo
-
-**Estado:** abierto desde 2026-10-10; revisado a fondo contra el Excel el 2026-10-13 (D76). De las diez «decisiones pendientes» del prototipo, **siete están cerradas** (D74, D75, D76) y lo que sigue abierto son **tres datos y una entrega**.
-Solo afectan al **motor de riesgos** (MD-151, fuera del sprint); el cálculo del cumplimiento (§9) no depende de ellas.
-
-**Vocabulario del comité** (D76): *riesgo* es la probabilidad y el impacto de que algo ocurra o se pierda si alguien lo materializa · *causa* es aquello por lo que el riesgo se materializa · *control* es el paso a paso que lo evita o lo mitiga ·
-la **matriz inherente** muestra cada riesgo antes de aplicar controles y la **matriz residual**, después. **Las matrices son la lectura de la evolución, no el criterio de mitigación**: eso lo dicen los controles y sus tests.
-
-**1. De cada relación causa–control, ¿el control es obligatorio y reduce la probabilidad o el impacto?** *(decisión 9; es lo único que bloquea el riesgo residual)*
-*Lo que ya está:* la hoja `Causas`, columna «Controles_Aplicables», tiene **las 56 causas con sus controles: 209 relaciones**. Eso está completo.
-*Lo que falta:* para cada una de esas 209, dos datos que la fórmula necesita: si el control es **obligatorio** para esa causa, y si al funcionar hace el riesgo **menos probable** o **menos grave**. Hoy solo lo tienen las **9** del ejemplo del prototipo (bloque G).
-*Por qué importa:* sin el efecto, la fórmula del residual (D75) no puede aplicarse a casi ningún riesgo.
-
-**2. ¿Cada cuánto se reevalúa cada control, y puede bajarse la frecuencia de lo automático?** *(decisión 5)*
-*Lo que ya está:* la regla, que el comité confirmó: **manda la periodicidad del control** (si se revisa cada 3 meses, sus checks se evalúan cada 3 meses); las comprobaciones automáticas corren con la frecuencia de su conexión (`AC-01` cada 6-24 h, el resto continuas). El período de prueba de cada test está en `Pruebas` columna I.
-*Lo que falta:* la periodicidad **no es un campo del catálogo**: está en prosa, en la descripción de **18 de los 119 controles**. Hace falta como **columna por control** para poder programarla. Y una respuesta a la objeción de desarrollo: **reevaluar a diario todo lo automático genera una carga alta** de peticiones sobre la infraestructura del cliente y sobre la sonda; ¿se puede bajar esa frecuencia por control o por conexión?
-
-**3. ¿Quién fija y aprueba el apetito de riesgo?** *(decisión 2)*
-*Lo que ya está:* el valor inicial, **9 sobre 25**, que propone el comité y ya usamos (D75); y para qué sirve: leer la matriz residual, no declarar un riesgo mitigado (D76).
-*Lo que falta:* quién lo fija y quién lo aprueba — ¿Monkey para todos, cada empresa o cada servicio? — y si cambia según el tipo de riesgo.
-
-**Lo que el comité va a entregar** *(no son preguntas; se espera el archivo)*
-- **Un Excel con el detalle completo de la fórmula de cumplimiento**, entre el **14 y el 15 de octubre de 2026**. Hasta recibirlo no se construye el motor de riesgos; si contradice algo de §9, manda ese archivo.
-- **Los criterios** que guíen al cliente al poner la probabilidad y el impacto de cada riesgo (decisión 8). Quién los pone ya está decidido: **el cliente** (D33, D76), y las escalas de 1 a 5 ya están descritas en la hoja `Riesgos`.
-
-**Qué depende:** el riesgo residual y las dos matrices (MD-151) esperan el dato 1 y el Excel que viene. La periodicidad (2) condiciona cuándo se marca algo vencido y la carga sobre la sonda.
-
----
-
 ## P26 · Quién define el período auditado y la fecha de corte de una evaluación
 
 **Estado:** abierto desde 2026-10-14 (MD-108). El motor no ejecuta sin los cinco datos de la evaluación: servicio, marco, versión, **período auditado** y **fecha de corte** (REQ-004, §9). `service_frameworks` tiene `period_start`, `period_end` y `cutoff_date` (columnas desde MD-144), pero ningún formulario ni endpoint las llena: el onboarding solo pide un `evaluation_period` de texto.
@@ -40,9 +11,10 @@ la **matriz inherente** muestra cada riesgo antes de aplicar controles y la **ma
 
 **Respuesta provisional (D87, 2026-10-20):** se adoptaron las dos recomendaciones para poder construirlo (el criterio de desarrollo no sustituye al comité): `admin_empresa` declara el período; la fecha de corte es «hoy» mientras se monitorea y se congela al emitir una evaluación. Inicio y fin pueden coincidir (Tipo I). **Sigue abierto para el comité:** si se vende Tipo I, qué pasa al llegar el período siguiente (hoy una sola fila por servicio y marco) y el nombre (el Excel dice «fecha de evaluación»).
 
+**Lo que respondió la VF18 (D131, 2026-11-22):** el período auditado se configura al inicio, por servicio y marco, y en SOC 2 dura **como mínimo 6 meses** (PR-16, configurable); solo cuentan las ventanas y las evidencias que caen dentro (G-11). La fecha de corte no la define el libro y sigue siendo «hoy» (D105). **Sigue abierto:** si se vende Tipo I (con el mínimo de 6 meses no cabría una fecha puntual) y qué pasa al llegar el período siguiente.
+
 **Qué depende:** el resumen del servicio (MD-137), las evaluaciones del servicio (en pausa, D96) y la vigencia de las exclusiones (MD-144). Sin período la API responde `not_measured` y `409 EVALUATION_NOT_DEFINED`, también al proponer una exclusión (MD-144). **MD-168 está construido (2026-10-20, D87)**: `PUT …/evaluation-period`.
 
----
 
 ---
 
@@ -56,7 +28,6 @@ la **matriz inherente** muestra cada riesgo antes de aplicar controles y la **ma
 
 **Qué depende:** la lista de controles (MD-120) y el resumen (MD-140) para cualquier marco que no sea SOC 2. Para el MVP (solo SOC 2) no bloquea nada. Si se adopta la recomendación, el contrato de controles añade domain a cada ítem.
 
----
 
 ---
 
@@ -70,7 +41,6 @@ la **matriz inherente** muestra cada riesgo antes de aplicar controles y la **ma
 
 **Qué depende:** las pantallas de edición del administrador. No bloquea la API.
 
----
 
 ---
 
@@ -87,6 +57,7 @@ la **matriz inherente** muestra cada riesgo antes de aplicar controles y la **ma
 
 **Qué depende:** nada del código inmediato; el comportamiento actual está en `contracts/cumplimiento/veredictos.md` y `modelo/07-cumplimiento.md` §7.6. Si el PO cambia alguna respuesta, se ajusta el contrato y la prueba que la cubre (`test/cumplimiento/observaciones.e2e-spec.ts`, `veredictos.e2e-spec.ts`). Es `LATER`.
 
+
 ---
 
 ## P43 · Qué muestra «Lo que requiere atención» del Inicio
@@ -102,5 +73,22 @@ la **matriz inherente** muestra cada riesgo antes de aplicar controles y la **ma
 7. **¿El texto «en qué falla / qué hacer»** de la plantilla de 7 campos?
 
 **Qué depende:** ampliar el contrato del dashboard y esa tabla; no bloquea.
+
+
+---
+
+## P48 · El motor v2: lo que la VF18 no define o donde se contradice
+
+**Estado:** abierto desde 2026-11-22 (D128). El resto del modelo de evaluación del libro está decidido (D130 a D135).
+
+1. **Un activo en alcance sin resultado.** La regla T-04 dice que es excepción; la sección 3.2 dice «pendiente o en excepción de cobertura». ¿Cuándo es cada uno? (¿pendiente mientras la ventana está abierta y excepción al cerrarla?)
+2. **Quién registra el resultado de una prueba manual** (operativa, de población o técnica manual: correcto, observación o excepción). ¿El delegado o el responsable al cargar su evidencia, o el responsable al aprobar el control?
+3. **R5: ¿quién es «el evaluador»** que puede cambiar el nivel sugerido de un control, con justificación y aprobación del administrador?
+4. **El plan de remediación** que pide el nivel Parcial (uno por cada excepción) y **el plan de tratamiento aprobado** de la zona naranja del riesgo: ¿qué datos lleva cada uno, quién lo registra y quién lo aprueba? Hoy existen `action_plans` y `risk_treatments`.
+5. **Los parámetros PR-01 a PR-16**: ¿son valores de Monkey para todos, de cada empresa o de cada servicio, y quién los edita? El libro solo dice que el `admin_empresa` cambia la periodicidad de un control (G-10).
+6. **La ventana anual**: ¿«año del período» o «12 meses desde la última ejecución»? El libro da las dos.
+7. **Las reglas 2, 16 y 17** que citan `REQUISITOS`, `IN-07` e `IN-06` no vienen en la copia del libro (DEV-01). ¿Se entregan, o basta con lo que dicen `IN-06` e `IN-07`?
+
+**Qué depende:** el motor v2 (RC-06, RC-08, RC-11 y RC-19).
 
 ---

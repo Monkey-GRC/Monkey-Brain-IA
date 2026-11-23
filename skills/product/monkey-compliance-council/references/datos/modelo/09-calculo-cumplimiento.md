@@ -1,188 +1,234 @@
 # Modelo de datos — §9 El cálculo
 
-> Parte de [`modelo-datos.md`](../modelo-datos.md) (índice). **Qué responde:** Cómo se deriva el cumplimiento: activo → test → control → categoría → marco, sus estados y sus reglas. **Léelo:** Antes de tocar cualquier cálculo, estado o pantalla de porcentaje.
+> Parte de [`modelo-datos.md`](../modelo-datos.md) (índice). **Qué responde:** Cómo se deriva el cumplimiento: activo → check → evidencia → test → requisito del control → control → categoría → marco, y cómo se evalúa el riesgo. **Léelo:** Antes de tocar cualquier cálculo, estado o pantalla de porcentaje.
 > Los números de sección (§) se conservan: cualquier cita a «§9» apunta aquí.
 
 ## 9. Cómo se calcula el cumplimiento
 
-Regla del **comité** (hoja `MODELO EVALUACIÓN MONKEY` y `REQUISITOS EVALUACIÓN MONKEY` de la VF2, D68). Ante una duda de cálculo, manda esta sección. **Reemplaza la
-agregación de D62**: lo que se conserva y lo que cambia está en D68. Las reglas del comité se citan por su número (`RN-xx`, `REQ-xxx`) para poder volver al Excel.
+Regla del **comité**: la hoja `MAP CALOR` de la VF18 (secciones 2 a 14), D128 y D130. Ante una duda de cálculo, manda esta sección; ante una diferencia con el libro, manda el libro. Las reglas se citan por su código del libro para poder volver a él: estados por nivel (§3.x del libro), reglas de prueba `T-01` a `T-07`, nivel del control `R1` a `R6`, suficiencia `S-01` a `S-05`, parámetros `PR-01` a `PR-16`, gestión `G-01` a `G-11` y documentos `D-01` a `D-15`. Las reglas `RN-xx` y `REQ-xxx` de la VF2 valen **solo donde no contradicen** a `MAP CALOR` (tabla 5 de `01_DESARROLLO`); lo que se conserva de ellas está dicho abajo. Lo que el libro no define o donde se contradice está en `P48`.
 
-### Los principios
+### Los principios (`00_LEEME`, P1 a P7)
 
-1. **La ausencia de evidencia, de ejecución o de activos nunca es cumplimiento** (REQ-001, RN-25). Lo que no tiene datos queda `PENDIENTE`, `SIN ACTIVOS` o `SIN TESTS`.
-2. **Todo o nada** (REQ-002): un solo incumplimiento confirmado impide el cumplimiento del nivel de arriba.
-3. **El porcentaje informa, no decide** (REQ-003): el **avance** muestra el progreso y el **estado** dice si cumple. Un control con 4 de 5 tests cumplidos está al 80% y es `NO EFECTIVO`.
-4. **Cobertura y conformidad son dos números** (RN-06): cuánto de lo aplicable ya se evaluó y cuánto de lo evaluado cumple. Nunca se muestran como uno.
+1. **Dos evaluaciones con la misma información**: el cumplimiento de cada control (¿cumple al 100%?) y la mitigación de los riesgos del servicio (inherente frente a residual). **La evaluación de cumplimiento termina en el control**; la categoría y el marco se agregan encima (DEV-16).
+2. **La unidad de cumplimiento es el control**, y es transversal: responde a varios puntos de enfoque y criterios de SOC 2 y, en el futuro, a requisitos de otros marcos (`MAPEO_MARCOS`). Una evidencia se carga una vez y sirve en todos los marcos donde el control aplica.
+3. **Lo mínimo que se prueba de un control son sus requisitos** (los puntos de la columna L de `Controles Monkey`). Cada requisito está probado por al menos un test.
+4. **Nada se da por cumplido sin evidencia vigente.** La ausencia de datos, una recolección fallida o una evidencia vencida nunca equivalen a PASS ni a «Correcto» (RN-25 se conserva).
+5. **En lo técnico solo deciden los checks Directos** aplicables a la infraestructura del cliente. Los Complementarios generan observaciones; los de Dependencia toman la conclusión del control dueño y no se vuelven a ejecutar.
+6. **El objetivo es el 100%** por control: todos los requisitos aplicables cumplidos, en todos los activos en alcance, con evidencia vigente en cada ventana del período.
+7. **La escala es interna de Monkey** (preparación, *readiness*) y no reemplaza la opinión del auditor SOC 2.
 
-### Los niveles
+Y dos que ya regían y siguen: **el porcentaje informa, el estado decide** (un control al 80% no cumple), y **la unidad de medida es el par servicio × marco**: no existe un porcentaje de la empresa.
 
-```
-1. ACTIVO      un resultado por test: CUMPLE · NO CUMPLE · PENDIENTE · ERROR · EXCLUIDO                          (RN-05)
-2. TEST        un estado por test, calculado de sus activos (automatizado) o de sus evidencias (documental)      (RN-06 a RN-11, RN-01 a RN-04)
-3. CONTROL     EFECTIVO solo si todos sus tests obligatorios, vigentes y aplicables CUMPLEN y no le falta una dimensión   (RN-12 a RN-16)
-4. CATEGORÍA   CUMPLE solo si todos sus controles aplicables son EFECTIVOS                                       (RN-17, RN-18)
-5. MARCO       CUMPLE solo si todos los controles únicos de las categorías en alcance son EFECTIVOS            (RN-19)
-```
+### La cadena
 
-Lateral, con las mismas reglas de «todo o nada»: **CAUSA** (`MITIGADA` solo si todos sus controles mitigantes obligatorios son efectivos, RN-20) y **RIESGO** (`MITIGADO` solo si todas
-sus causas aplicables están mitigadas, RN-21). **La mitigación es distinta del nivel de riesgo que queda** (residual, más abajo).
-
-**La dimensión** (documental, servidores, bases de datos, aplicación, nube) **ya no es un nivel con estado propio**: es el eje que dice sobre qué activos corre cada test (§2). Pero **sigue
-siendo obligatoria**: una dimensión que el control exige y que se queda sin ningún test vigente deja al control `INCOMPLETO` (RN-14), nunca cumplido. Qué dimensiones exige un
-control sale de la hoja `Controles Monkey` del comité (columnas L a P: con test = la exige, «NO APLICA» = no la exige, con su razón).
-
-### Las reglas R-01 a R-12 de la fórmula anterior
-
-Otros documentos citan estas reglas (las del Excel del 9 de octubre y de D62). Esto es lo que pasó con cada una:
-
-| Regla anterior | Hoy |
+| Evaluación | Cadena |
 |---|---|
-| R-01 cumplimiento solo sobre el scope del servicio | **Se conserva** |
-| R-02 cada control define sus dimensiones y activos | **Se conserva** (las dimensiones, de `Controles Monkey`) |
-| R-03 manual: la evidencia sustenta, el `admin_empresa` evalúa | **Se conserva**; la evaluación del auditor (D77) está en pausa (D96) |
-| R-04 automático: la sonda entrega, Monkey interpreta | **Se conserva** (lectura de la sonda, más abajo) |
-| R-05, R-06, R-08, R-09, R-10 (dimensión que cumple, solo se mide lo que tiene resultado, % del control, de la categoría y del marco) | **Reemplazadas** por las reglas de abajo (D68) |
-| R-07 `not_applicable` se excluye | **Se conserva**: un test `NO APLICA` no cuenta para el control |
-| R-11 mitigación, indicador separado | **Se conserva**, con sus estados (RN-20, RN-21) |
-| R-12 riesgo residual, cálculo separado | **Se conserva** como principio; el cálculo es el de arriba (D75) |
+| Cumplimiento | Activo → check (por activo), caso de muestra o documento → evidencia → test → **requisito del control** → control (fin de la cadena) → categoría → marco |
+| Riesgo | Control (su nivel) → causa → riesgo → posición inherente y residual en la matriz |
 
-### Los estados por nivel
+El **requisito del control** (`control_requirements`, D129) es cada punto de la columna L: no confundir con el requisito del marco (`requirements`, `CC6.1`), que sirve para trazar y reportar.
 
-Los valores y sus etiquetas están en `contracts/enums.md` («Estados de evaluación»). En lenguaje del comité:
+### Los estados por nivel (§3 del libro)
 
-| Nivel | Estados |
+Los valores y sus etiquetas viven en `contracts/enums/cumplimiento.md`.
+
+**Evidencia.**
+
+| Tipo | Estados | Cuenta para el test cuando… |
+|---|---|---|
+| Manual (la carga el delegado o el responsable) | Cargada → Vigente → Vencida; Devuelta (con motivo) si el responsable o el administrador rechaza el cumplimiento por ella | La cargó el delegado o el responsable del control, está dentro de su ventana de vigencia y no está devuelta. El cumplimiento del control exige además las aprobaciones de D132 |
+| Automática (integración, sonda, motor de nube) | Recibida → Normalizada → Vinculada, Incompleta o Desactualizada | Está vinculada, completa y su fecha está dentro de la frescura (PR-05, 24 h) |
+
+**Check técnico, por activo.**
+
+| Estado | Significado | Efecto |
+|---|---|---|
+| PASS | El activo cumple la condición del check | Suma al test |
+| FAIL | No cumple y no tiene excepción aprobada | Si el check es Directo, excepción del test; si es Complementario, observación |
+| FAIL con excepción aprobada | Hay una excepción formal vigente (D135) | Cuenta como PASS mientras esté vigente; se muestra marcado |
+| No aplica | La plataforma o la política del check no existe en el alcance del cliente | No entra en el cálculo |
+| Sin datos | Debería aplicar y no hay resultado (activo sin agente o sin conexión, recolección fallida, permisos) | Nunca es PASS: el test queda pendiente o en excepción de cobertura (`P48`, punto 1) |
+
+De la lectura de los motores: `passed` → PASS · `failed` → FAIL (o FAIL con excepción, si la hay) · `not_applicable` → No aplica · `not_run` → Sin datos. **El error técnico se conserva** (DEV-16): un resultado `invalid` se reintenta al menos tres veces y, si sigue fallando, se avisa para revisión (D76); mientras tanto el check está **Sin datos**. Una corrida que no llegó a la cuenta del cliente (D57) no guarda resultados.
+
+**Test.**
+
+| Estado | Regla |
 |---|---|
-| Evidencia | CUMPLE · NO CUMPLE · PENDIENTE · EN REVISIÓN · EVIDENCIA VENCIDA · NO APLICA |
-| Activo | CUMPLE · NO CUMPLE · PENDIENTE · ERROR · EXCLUIDO |
-| Test | CUMPLE · NO CUMPLE · PENDIENTE · EN EVALUACIÓN · EN REVISIÓN · VENCIDO · ERROR · SIN ACTIVOS · NO APLICA · DESACTIVADO |
-| Control | EFECTIVO · NO EFECTIVO · VENCIDO · ERROR · INCOMPLETO · EN EVALUACIÓN · SIN TESTS |
-| Categoría y marco | CUMPLE · NO CUMPLE · EN EVALUACIÓN · SIN CONTROLES · FUERA DE ALCANCE |
-| Causa | MITIGADA · NO MITIGADA · EN EVALUACIÓN · SIN CONTROLES |
-| Riesgo | MITIGADO · NO MITIGADO · EN EVALUACIÓN · SIN CAUSAS |
+| Pendiente | No tiene evidencia suficiente en la ventana actual |
+| Correcto | Se cumple su criterio «Correcto si» (hoja `TEST`) con evidencia vigente |
+| Observación | Se cumple el objetivo, pero se da su criterio «Observación si» o falla un check Complementario |
+| Excepción | Se da su criterio «Excepción si», falla un check Directo sin excepción aprobada o hay una brecha de cobertura de activos |
+| No aplica | No corresponde al alcance del cliente; exige justificación escrita aprobada por el `admin_empresa` (D135) |
+| Vencido | Tenía evidencia y terminó su ventana sin una nueva válida |
 
-Colores estándar (REQ-048): verde cumple · rojo no cumple · amarillo pendiente · naranja incompleto, error o vencido · gris no aplica o fuera de alcance.
+**Requisito del control.**
 
-### Las reglas
-
-**Test automatizado** (RN-05 a RN-11): *aplicables* = totales − excluidos; *evaluados* = conformes + no conformes; *pendientes* = aplicables − conformes − no conformes − con error;
-*cobertura* = evaluados / aplicables; *conformidad* = conformes / evaluados. El estado, **en este orden**:
-
-| Si… | Estado |
+| Estado | Regla |
 |---|---|
-| aplicables ≤ 0 | `SIN ACTIVOS` |
-| hay algún no conforme (prevalece sobre error y pendientes) | `NO CUMPLE` |
-| hay algún error técnico | `ERROR` |
-| ninguno evaluado | `PENDIENTE` |
-| faltan activos por evaluar | `EN EVALUACIÓN` |
-| si no | `CUMPLE` — **solo con el 100% de los activos aplicables evaluados y conformes** |
+| Cumple | Todos sus tests están en Correcto u Observación, y vigentes |
+| No cumple | Al menos un test está en Excepción |
+| Pendiente | Al menos un test está Pendiente y ninguno en Excepción |
+| Vencido | Al menos un test está Vencido |
+| No aplica | Todos sus tests están en No aplica, con la justificación aprobada |
 
-Cuarenta y cinco de cincuenta conformes y cinco sin evaluar **no es CUMPLE**: es `EN EVALUACIÓN` (RN-10). Un activo excluido sale del universo aplicable (RN-05).
+### Las reglas por tipo de test (§4 del libro)
 
-**Test documental** (RN-01 a RN-04, REQ-014 a REQ-018): admite varias evidencias; cada una se valida por **atributo** (tipo de documento, fecha dentro del período, vigencia, aprobación,
-firma o autorización, contenido obligatorio). Algún atributo en «No» ⇒ `NO CUMPLE`; vigencia en «No» ⇒ `EVIDENCIA VENCIDA`; algún atributo vacío ⇒ `PENDIENTE`. **Solo una evidencia
-validada por una persona puede ser `CUMPLE`**: la pre-validada por IA queda `EN REVISIÓN` (RN-03). El test documental agrega sus evidencias con la prioridad
-`NO CUMPLE` > `VENCIDA` > `EN REVISIÓN` > `PENDIENTE` > `CUMPLE`; sin evidencias es `PENDIENTE`. Cada evidencia conserva origen, fecha, responsable, versión y hash, y una versión nueva
-**no sobrescribe** la anterior (en el cálculo cuenta la **más reciente** de cada requerimiento).
-**Un test documental se calcula por control (D88):** sus evidencias son las que la persona entregó PARA ESE TEST en ese control (`test_id` igual); un documento que el catálogo sugiere sin prueba (`test_id` nulo) y las de otro control o de otra prueba nunca cuentan. La validación del `admin_empresa` es el veredicto (no hay un segundo paso). Esto ajusta RN-13 para lo documental: el resultado sigue siendo único por
-test × **control** × período × versión, porque el documento cambia de un control a otro.
-**Relación control–test** (RN-12, REQ-019 a REQ-021): es N:M y lleva *obligatorio*, *vigente*, fecha de alta y de baja, y justificación. Un test no obligatorio, no vigente o `NO APLICA`
-**no cuenta** para el control; desactivarlo exige justificación y deja rastro. **Agregar un test obligatorio nuevo** lo hace entrar `PENDIENTE` y puede volver no efectivo a un control que era efectivo.
+| Regla | Tipo | Qué se exige |
+|---|---|---|
+| T-01 | Documental (`T-DOC`, `PE-DOC-01`) | El documento está Vigente en Monkey (o Aprobado con la aceptación en plazo), aprobado por todos los aprobadores de su flujo, dentro de su periodicidad de revisión, con todo su contenido mínimo, aceptado por los usuarios asignados y coherente con lo que muestran los demás tests (D133). Falta de aprobación, vencimiento o un elemento del contenido mínimo: Excepción. Aceptación incompleta fuera de plazo: Observación |
+| T-02 | Población (`PE-POB-01`) | La población del período (inventario de activos de ACT-3, usuarios, cambios…) está completa y conciliada con la fuente. **Una población incompleta invalida los tests de muestra y técnicos que dependen de ella** |
+| T-03 | Operativo (`PE-MUE-01`) | Se revisa la muestra de «Frecuencia / muestra». Cualquier caso que no cumpla es excepción. **Monkey no aplica tolerancias**: si se amplía la muestra, todos los casos adicionales deben cumplir |
+| T-04 | Técnico (`PE-TEC-01`) | (a) Solo los checks **Directos** que aplican a las plataformas y políticas del cliente. (b) Cobertura de activos = activos en alcance con resultado ÷ activos en alcance; debe ser 100% (PR-03). (c) Correcto = 100% de cobertura y 100% de Directos en PASS (o FAIL con excepción). (d) Excepción = un Directo en FAIL sin excepción, o un activo en alcance sin resultado. (e) Observación = solo fallan Complementarios |
+| T-05 | Técnico sin check aplicable | Si un requisito técnico no tiene ningún Directo aplicable a la infraestructura del cliente, **no pasa a No aplica**: se prueba con `PE-TEC-02` (técnico manual: exportación de configuración o consulta, con su evidencia) |
+| T-06 | Dependencia | El test toma la conclusión del test dueño (el control del «Objetivo común», p. ej. «dueño CIF-3»), con su fecha, sin reejecutarse. Si el dueño está en Excepción, el dependiente también |
+| T-07 | Integración (`PE-INT-01`) | La evidencia de una integración (identidad, RR. HH., ticketing, MDM…) cuenta solo si está completa para el período y vinculada al test. Si la integración falla, el test queda Pendiente, nunca Correcto |
 
-**Control** (RN-14 a RN-16): *T* = sus tests obligatorios, vigentes y aplicables; *D* = las dimensiones que exige sin ningún test vigente. El estado, en este orden:
-`SIN TESTS` (|T| + |D| = 0) · `NO EFECTIVO` (algún test no cumple) · `VENCIDO` · `ERROR` · `INCOMPLETO` (|D| > 0) · `EN EVALUACIÓN` (algo pendiente, en evaluación o en revisión) · `EFECTIVO`.
-**Avance** = tests que cumplen / (|T| + |D|). Se informa junto con la lista de **los tests que impiden la efectividad** (REQ-026).
+### El control: porcentaje y nivel (§5 del libro)
 
-**Categoría** (RN-17, RN-18): `FUERA DE ALCANCE` si no está elegida (no afecta); `SIN CONTROLES` si no tiene; `NO CUMPLE` si algún control es `NO EFECTIVO` o `VENCIDO`; `EN EVALUACIÓN` si alguno
-no es efectivo; `CUMPLE` si todos son efectivos. En SOC 2, **Seguridad (Criterios Comunes) siempre está en alcance**, aunque no se seleccione.
+**C% del control** = requisitos en Cumple ÷ requisitos aplicables × 100. Los requisitos en No aplica, con su justificación aprobada, salen del denominador. Primero se comprueba **No evaluado** (ningún requisito tiene evidencia todavía); si no, se asigna el primer nivel cuya regla se cumpla, en este orden: Sólido, Adecuado, Parcial, Débil, Ineficaz.
 
-**Marco** (RN-19, REQ-030 a REQ-033): se evalúa sobre los **controles únicos** de las categorías en alcance: un control compartido entre categorías **cuenta una sola vez**. Mismo criterio que la categoría.
-Reporta **cinco indicadores separados**: *avance* = efectivos / controles únicos, *cobertura* = (efectivos + no efectivos + vencidos) / controles únicos, el *estado*, la lista de controles incumplidos y la de
-pendientes. El estado de un control se **reutiliza** entre marcos del mismo servicio cuando coinciden alcance, período y versión.
+| Nivel | Valor | Regla | ¿Cumple? |
+|---|---|---|---|
+| No evaluado | 0 | Ningún requisito tiene evidencia todavía (estado inicial) | No |
+| Ineficaz | 1 | C% < 40% (PR-02), o no hay ninguna ejecución válida del control en el período | No |
+| Débil | 2 | 40% ≤ C% < 75% (PR-01), o el documento base del control falta, está vencido o no está aprobado (tope R2) | No |
+| Parcial | 3 | 75% ≤ C% < 100%, el documento base aprobado y vigente, y un plan de remediación registrado por cada excepción | No |
+| Adecuado | 4 | C% = 100%: todos los requisitos cumplen y están vigentes; puede tener observaciones | **Sí** |
+| Sólido | 5 | Adecuado, sin observaciones, con 100% de cobertura de activos y evidencia en todas las ventanas del período (o evidencia automática continua) | **Sí** |
 
-**La evaluación** (REQ-004, REQ-005): se define por **servicio + marco + versión + período auditado + fecha de corte**; sin esos cinco datos no se ejecuta ni se reutiliza un resultado. Solo se evalúan los
-marcos **contratados** (D47) y las categorías en alcance. Un resultado se calcula **una vez** por test × servicio × período × versión y lo consumen todos los controles que usan ese test (RN-13).
+- **R1.** Un check Directo en FAIL es excepción; uno Complementario en FAIL, observación.
+- **R2.** El test documental no sube el nivel por sí solo, pero si el documento base falta, está vencido o no está aprobado, **el nivel máximo es Débil**.
+- **R3.** La escala es interna de Monkey; no reemplaza la opinión del auditor.
+- **R4.** **Un control cumple solo en Adecuado o Sólido.** Cualquier requisito Pendiente, Vencido o No cumple impide el 100%. El cumplimiento es definitivo solo con la aprobación final (D132).
+- **R5.** El evaluador puede cambiar el nivel sugerido solo con justificación escrita y aprobación del `admin_empresa`; Monkey guarda los dos, el sugerido y el final (quién es el evaluador: `P48`).
+- **R6.** Dos vistas del mismo control: **a la fecha** (la última ventana) y **del período** (todas las ventanas del período auditado). El período cumple solo si cada ventana tuvo evidencia válida.
 
-**Exclusiones de activos** (REQ-008): excluir un activo exige **justificación, aprobador y vigencia**; sin los tres no se puede, y queda en el rastro. La propone y la decide el `admin_empresa` en un solo acto (D96). Cambia el denominador del test solo así: *un check que sale por omisión es un agujero*.
+**El avance de un control es su C%**, y se muestra junto al nivel y a la lista de requisitos que impiden el 100% (REQ-026 se conserva).
 
-**Riesgo inherente** (RN-22): probabilidad × impacto (1 a 25): Bajo 1–4 · Moderado 5–9 · Alto 10–16 · Crítico 17–25.
-**Riesgo residual** (RN-23, D75): para un riesgo, *Cp* son los controles únicos con efecto «probabilidad» vinculados a sus causas aplicables y *Ci* los de efecto «impacto». La reducción de la probabilidad es
-`redondear hacia abajo(efectivos de Cp ÷ |Cp| × máximo de probabilidad)` (cero si no hay controles) y la del impacto es igual con *Ci*. El residual es `inherente − reducción`, **nunca menos de 1**, y su valor es probabilidad × impacto,
-siempre menor o igual que el inherente. **Solo los controles efectivos reducen** (los pendientes reducen 0) y no se pondera por la solidez del control. Los parámetros son **configurables, nunca escritos en el código**:
-máximo 2 puntos en probabilidad y 1 en impacto. El residual es **aceptable** si su valor es menor o igual que el **apetito**, cuyo valor inicial es 9 sobre 25 (RN-24). Los controles efectivos no implican un residual aceptable.
-Por riesgo se muestra qué controles lo mitigan, cuáles reducen probabilidad y cuáles impacto, la reducción aplicada y si la lectura es *confirmada*, *provisional* o *con controles fallidos* (REQ-041). La **matriz inherente** (antes de aplicar controles) y la **matriz residual** (después) son el mapa de calor 5×5 con la posición de cada riesgo (REQ-042). **Son la lectura de la evolución, no el criterio de mitigación**: si un riesgo está mitigado lo dicen sus controles y sus tests (RN-20, RN-21, D76).
-**Es vista del `admin_empresa` y del `auditor` (D96).** **No se construyen todavía** (MD-151, fuera del sprint): la relación causa→control ya está completa en el Excel (209 relaciones), pero falta el **efecto (probabilidad o impacto) y la obligatoriedad** de cada una, el comité entregará el detalle de la fórmula y la probabilidad y el impacto de cada riesgo los pone el cliente (`P22`, D76).
+### La suficiencia de la prueba técnica (§9 del libro)
+
+Los checks prueban **solo los requisitos técnicos** («Verificaciones automáticas…»); nunca reemplazan un requisito documental u operativo.
+
+| Regla | Cuándo | Qué hace Monkey |
+|---|---|---|
+| S-01 Técnico suficiente | El control solo tiene requisitos técnicos y sus Directos aplicables cubren todo el objetivo en todas sus dimensiones | Los Directos deciden el control; no pide carga manual |
+| S-02 Técnico + manual | Tiene requisitos técnicos y otros documentales u operativos | Los checks deciden solo el requisito técnico; los demás exigen su evidencia |
+| S-03 Técnico parcial | Los Directos cubren solo parte de los activos o de las dimensiones | El requisito técnico queda Pendiente hasta completarlo con `PE-TEC-02` |
+| S-04 Complementarios | El control tiene checks Complementarios | No dan OK solos ni reemplazan un Directo; si fallan, observación; si pasan, evidencia de apoyo |
+| S-05 Solo manual | No tiene requisitos técnicos | Se evalúa con documentos, poblaciones y muestras |
+
+En el catálogo v2: de 114 controles, **47 tienen requisitos técnicos y todos llevan además requisitos documentales u operativos (S-02)**; los otros 67 son solo manuales (S-05). Ninguno es S-01. 117 de las 154 pruebas técnicas tienen checks vinculados; el resto se prueba a mano (T-05).
+
+### Vigencia y vencimiento (§6 del libro, D131)
+
+Cada control se evalúa por **ventanas de calendario** según su periodicidad (la sugerida en la columna X o la que configure el `admin_empresa` con justificación, G-10). Al cerrar una ventana sin evidencia: test → Vencido, requisito → Vencido, el control baja de nivel y vuelve a **Incumplimiento**, con alerta al delegado, al responsable y al administrador.
+
+| Periodicidad | Ventana | Alerta previa (PR-06) | Al cerrar sin evidencia |
+|---|---|---|---|
+| Diario · Semanal · Mensual · Bimensual | Día · semana · mes · bimestre calendario | El mismo día · 2 · 5 · 10 días antes | Vencido |
+| Trimestral · Semestral | Trimestre (ene–mar…) · semestre calendario | 15 · 20 días antes | Vencido |
+| Anual | Año del período (o 12 meses desde la última ejecución: `P48`) | 30 días antes | Vencido |
+| Permanente | Continua: resultados automáticos con frescura ≤ PR-05; lo manual del control, con la periodicidad de su documento | Cuando la última recolección supera PR-05 | Evidencia → Desactualizada; test → Pendiente |
+| Cuando sea requerido | Por evento: evidencia de cada evento del período, o una declaración trimestral de «sin ocurrencias» del responsable | 15 días antes del cierre del trimestre | Evento sin evidencia → Excepción; sin declaración → Vencido |
+
+**El período auditado** (G-11) se configura por servicio y marco y en SOC 2 dura **como mínimo 6 meses** (PR-16): solo cuentan las ventanas que caen dentro, y una evidencia fechada fuera no cuenta. La fecha de corte sigue siendo «hoy» (D105).
+
+### La gestión del control (§14 del libro, D132)
+
+Sobre el nivel calculado corre la **gestión**: Incumplimiento → En gestión → Cumple – por aprobar → Aprobado por el responsable → **Cumplimiento aprobado**; Devuelto vuelve a En gestión. **Solo «Cumplimiento aprobado» cuenta como cumplido.** Monkey nunca aprueba: lo hacen el responsable y, al final, el `admin_empresa` (o solo él, si es el responsable). Si un check Directo pasa a FAIL o la evidencia automática se desactualiza, el control vuelve a Incumplimiento (G-07).
+
+### Categoría y marco (se conservan, DEV-16)
+
+La agregación de la VF2 se conserva (RN-17 a RN-19), con el control del modelo nuevo como entrada (D130):
+
+- **Categoría**: `FUERA DE ALCANCE` si no está elegida; `SIN CONTROLES` si no tiene; `CUMPLE` si todos sus controles aplicables están en **Cumplimiento aprobado**; `NO CUMPLE` si alguno tiene un requisito en No cumple o Vencido; si no, `EN EVALUACIÓN`. En SOC 2, **Seguridad (Criterios Comunes) siempre está en alcance**.
+- **Marco**: se evalúa sobre los **controles únicos** de las categorías en alcance (un control compartido cuenta una vez), con el mismo criterio. Informa por separado el avance (controles aprobados ÷ controles únicos), la cobertura, el estado y las listas de incumplidos y pendientes.
+- **La evaluación** se define por servicio + marco + versión del catálogo + período auditado + fecha de corte (REQ-004, REQ-005); solo se evalúan los marcos contratados (D47). Un resultado se reutiliza entre los marcos del mismo servicio cuando coinciden alcance, período y versión.
+
+### El riesgo (§10 del libro, D134)
+
+| Elemento | Regla |
+|---|---|
+| Inherente | Probabilidad × impacto del riesgo. No cambia con los controles. Viene del catálogo y el cliente lo confirma o lo ajusta en el asistente del servicio |
+| Nivel | **Por la posición de la celda en la matriz**, no por rangos del valor (la matriz está en D134): verde Bajo, amarillo Moderado, naranja Alto, rojo Crítico |
+| Cobertura verificada | Relaciones causa–control del riesgo cuyo control cumple (Adecuado o Sólido) ÷ total de relaciones × 100. Un control con excepciones abiertas no cuenta |
+| Avance de implementación | Relaciones cuyo control tiene tests ejecutados ÷ total. **Nunca reduce el riesgo** |
+| Eficacia de controles | Controles vinculados que cumplen ÷ controles vinculados |
+| Residual | Cobertura ≥ PR-09 (85%): la probabilidad baja 2 niveles · entre PR-08 (60%) y PR-09: baja 1 · menos: no se mueve. Mínimo 1. **El impacto no se reduce** (PR-10) |
+| Apetito | Verde y amarillo: aceptable · naranja: tolerable solo con plan de tratamiento aprobado · rojo: inaceptable, exige tratamiento |
+| Explicación | Si el riesgo se mueve: «Cambió porque se corrigieron y verificaron las condiciones de seguridad asociadas a sus causas», y los controles que lo explican. Si no: la cobertura actual, el umbral que falta y los controles pendientes con más relaciones |
+
+La **matriz inherente** y la **residual** muestran la posición de cada riesgo antes y después de los controles. Son vista del `admin_empresa` y del `auditor` (D96). Las causas y los riesgos ya no tienen un estado de mitigación de todo o nada (RN-20 y RN-21 reemplazadas).
+
+### Los parámetros (§11 del libro)
+
+**Configurables y nunca escritos en el código** (RC-19). Quién los edita y si son por empresa o por servicio: `P48`.
+
+| ID | Parámetro | Por defecto |
+|---|---|---|
+| PR-01 | Umbral de C% para Parcial | 75% |
+| PR-02 | Umbral de C% para Débil | 40% |
+| PR-03 | Cobertura de activos exigida en los tests técnicos | 100% |
+| PR-04 | Duración máxima de la excepción de un check | 90 días |
+| PR-05 | Frescura máxima de la evidencia automática | 24 horas |
+| PR-06 | Alerta previa por periodicidad (días) | Mensual 5 · Trimestral 15 · Semestral 20 · Anual 30 · Diario 0 · Semanal 2 · Bimensual 10 |
+| PR-07 | Ventanas de vigencia | Calendario |
+| PR-08 | Cobertura de riesgo para mitigación parcial (−1 en probabilidad) | 60% |
+| PR-09 | Cobertura de riesgo para mitigación demostrada (−2 en probabilidad) | 85% |
+| PR-10 | Reducción de impacto | Desactivada |
+| PR-11 | Pasos máximos de aprobación por documento | 5 |
+| PR-12 | Aprobadores máximos por paso | 3 |
+| PR-13 | Aprobación por quien envía el documento | No permitida como único aprobador |
+| PR-14 | Plazo para aceptar un documento asignado | 30 días desde la asignación |
+| PR-15 | Aceptación exigida para que el test documental sea Correcto | 100% de los usuarios asignados dentro del plazo |
+| PR-16 | Duración mínima del período auditado (SOC 2) | 6 meses |
 
 ### El ejemplo resuelto
 
-Los 8 casos del comité son la prueba del motor (REQ-051). Con 50 servidores aplicables:
+Un test técnico con 50 servidores en alcance y sus checks Directos (T-04):
 
 | Caso | Situación | Estado del test |
 |---|---|---|
-| C1 | 45 conformes, 5 no conformes | `NO CUMPLE` (conformidad 90%) |
-| C2 | 45 conformes y 5 sin evaluar | `EN EVALUACIÓN` (cobertura 90%) |
-| C3 | 50 de 50 conformes | `CUMPLE` |
-| C4 | 48 conformes y 2 con error técnico | `ERROR` |
-| C5 | 3 excluidos autorizados y 47 conformes | `CUMPLE` |
-| C6 | sin activos aplicables | `SIN ACTIVOS` |
-| C7 | ninguno evaluado | `PENDIENTE` |
-| C8 | 45 conformes, 3 no conformes, 2 con error | `NO CUMPLE` (prevalece el incumplimiento) |
+| C1 | 45 en PASS y 5 en FAIL | Excepción |
+| C2 | 45 en PASS y 5 sin resultado | Excepción por cobertura según T-04(d), o Pendiente (`P48`, punto 1) |
+| C3 | 50 de 50 en PASS | Correcto |
+| C4 | 48 en PASS y 2 con error técnico (sin datos tras los reintentos) | Igual que C2 |
+| C5 | 47 en PASS y 3 en FAIL con excepción aprobada vigente | Correcto (los 3 se muestran marcados) |
+| C6 | Ningún check Directo aplica a su infraestructura | No es No aplica: se prueba a mano con `PE-TEC-02` (T-05) |
+| C7 | Ningún resultado todavía | Pendiente |
+| C8 | 45 en PASS, 3 en FAIL y 2 sin resultado | Excepción (prevalece la falla) |
+| C9 | 50 en PASS y falla un check Complementario | Observación |
 
-Hacia arriba: un control con 4 de 5 tests cumplidos está al **80% y es `NO EFECTIVO`**; una categoría con 19 de 20 controles efectivos, al **95% y `NO CUMPLE`**; un marco con una categoría que no cumple, `NO CUMPLE`.
-Una causa con 1 de 3 controles no efectivo es `NO MITIGADA` y un riesgo con 1 de 3 causas no mitigadas es `NO MITIGADO`. Corregir todos los activos recupera el cumplimiento; **un único activo** que vuelva a fallar,
-o quede pendiente o en error, vuelve a romperlo. Las simulaciones 1 a 6 y las validaciones V01 a V15 de la hoja son también casos de aceptación.
+Hacia arriba: un control con 4 de 5 requisitos cumplidos está al **80% y en Parcial** (o en Débil si su documento base no está aprobado): **no cumple**. Con los 5 cumplidos está en Adecuado, pero solo cuenta como cumplido cuando lo aprueban el responsable y el administrador. Una categoría con 19 de 20 controles aprobados está al 95% y no cumple.
 
-### Lo que estas reglas zanjan
+### Qué ve cada rol, y el semáforo (se conservan)
 
-- **El cumplimiento es binario en cada nivel** y el avance es el diagnóstico. Una categoría al 95% está fallando; la certificación existe solo cuando todo cumple.
-- **Lo pendiente bloquea.** Lo sin medir no se ignora ni se da por cumplido: mantiene al nivel en `EN EVALUACIÓN`. La cobertura se muestra al lado, siempre.
-- **Los controles propios del cliente cuentan** (§7.1).
-- **Peso igual** en todos los niveles: un control vale lo mismo que otro y no se pondera por riesgo ni por número de activos (B1, D2).
-- **No hay porcentaje de la empresa.** La unidad es el par **(servicio × marco)**; con 3 servicios con SOC 2 hay 3 resultados y ninguno se promedia con otro. **La interfaz nunca muestra un
-  número único de «cumplimiento de la empresa»: no existe.**
-- **El requisito es binario** (B2): se cumple cuando todos sus controles cumplen. Sirve para la trazabilidad y el reporte del auditor; **no participa del avance**.
-- **El error técnico no es un incumplimiento.** Un activo con `ERROR` deja al test en `ERROR` hasta una reejecución exitosa; no se convierte en cumplido (RN-09). **Se reintenta al menos tres veces**; si al tercero sigue fallando, queda en `ERROR` y **se avisa para revisión** (D76). Una corrida que **no llegó** a la cuenta
-  del cliente (D57) no guarda resultados: ese cumplimiento sigue `PENDIENTE`. En la lectura de la sonda: `passed` → `CUMPLE`, `failed` → `NO CUMPLE`, `invalid` → `ERROR`, `not_run` → `PENDIENTE`.
-
-### Qué ve cada rol, y el semáforo
-
-Los estados de arriba (efectivo, incompleto, vencido…) y las listas de controles son **la vista técnica**: es la pantalla de los roles `auditor` y `admin_empresa` (D81, D96). **El cliente** (`admin_empresa`, `responsable`, `delegado`)
-ve por defecto la vista de negocio (REQ-049): el semáforo cualitativo primero, y en qué falla y su avance (`philosophy.md`).
+Los niveles, los requisitos y las listas de controles son **la vista técnica**: la de `auditor` y `admin_empresa` (D81, D96). El `responsable` y el `delegado` ven lo suyo, en qué falla y su avance (D118, `philosophy.md`). El semáforo cualitativo sigue igual (D62, DEV-16):
 
 | Semáforo | Cuándo (sobre el avance del nivel) |
 |---|---|
-| **Preparado** | el estado es `CUMPLE`/`EFECTIVO` y **no hay nada pendiente** |
-| **Casi listo** | avance de 80% a menos de 100%, o todo lo medido cumple pero algo sigue pendiente |
-| **Requiere trabajo** | avance menor de 80% |
-| **Sin medir** | no hay nada con resultado todavía: es un hueco de cobertura, no un fallo |
+| **Preparado** | Cumple y **no hay nada pendiente** |
+| **Casi listo** | Avance de 80% a menos de 100%, o todo lo medido cumple pero algo sigue pendiente |
+| **Requiere trabajo** | Avance menor de 80% |
+| **Sin medir** | No hay nada con resultado todavía: es un hueco de cobertura, no un fallo |
 
-Un activo se lee con la misma regla sobre sus tests con resultado cumplidos / sus tests con resultado (el comité no lo define; sigue la lectura de D62, `DT-66`).
-**La cobertura va siempre al lado del avance**, como número aparte: «100% de lo medido · cobertura 40%» nunca se presenta como Preparado.
+Un activo se lee con la misma regla sobre sus tests con resultado (`DT-66`). **La cobertura va siempre al lado del avance**, como un número aparte.
 
-### La evaluación del auditor — en pausa (D96)
-
-El cálculo de Monkey es el único veredicto por ahora. La evaluación que el auditor emitiría sobre los mismos datos (D68 punto 11, D77) **está en pausa**: la calificación del auditor (certificar o no) se retoma después, según el Excel y sin cambiar el estado calculado (`P35`). Donde el Excel dice «validada por auditor» (RN-03) se entiende **«validada por una persona»**: hoy, el `admin_empresa`.
 ### Cómo se guarda
 
-El cumplimiento de un marco **se deriva** recorriendo requisitos → controles y **nunca se almacena como atributo del marco**. El comité pide recálculo incremental por eventos y un rastro de cada cambio
-de estado (REQ-043, REQ-044): se cumple con el historial inmutable de evaluaciones y de eventos (§7.4, D91): cada cambio de estado de un control deja un evento con el estado anterior y el nuevo, y lo que el motor materialice es un registro de **esa evaluación en esa fecha**, reconstruible, no una columna del marco.
+El cumplimiento de un marco **se deriva** y **nunca se almacena como atributo del marco**. Cada cambio de estado de un control deja un evento inmutable con el estado anterior y el nuevo (REQ-043, REQ-044, D91); cada aprobación, devolución y cambio de periodicidad queda en el registro de auditoría (G-09, G-10). Lo que el motor materialice es un registro de **esa evaluación en esa fecha**, reconstruible.
 
 ### La trazabilidad de una falla
 
-Modelo de navegación del producto, con **responsable y tratamiento en cada nivel**. Es lo que se le muestra a `admin_empresa`, `responsable` y `delegado` (en qué falla y su avance, cada uno de lo suyo); los códigos técnicos solo los ve el auditor (D63):
+Cada falla lleva a quien debe atenderla y a cómo se cierra:
 
-| Nivel | Lleva a | Responsable | Tratamiento |
-|---|---|---|---|
-| Test → Activo | el control | Responsable del activo | Tratamiento |
-| **Control** | la categoría | Responsable parametrizado | **Plan de acción** |
-| Categoría → Marco del servicio | — | Responsable de cumplimiento | Seguimiento |
-| **Causa → Riesgo** | el servicio | Responsable de riesgo | **Mitigación / riesgo residual** |
-
-### Cuánto se puede automatizar hoy
-
-De los 61 TEST: **13 tienen checks automáticos**. Los **26 documentales** no los tendrán nunca (son revisión con IA) y los **11 de nube no tienen ninguno** todavía (decisión D13).
-`T-SRV-001` concentra 10.909 de los 11.352 checks. **El avance se lee siempre junto a la cobertura** (qué parte ya tiene resultado). El comité señala además que **no existe un test de redes**
-(2.181 checks de red están asignados a `T-SRV-001`, y no hay plataformas de dispositivos de red).
+| Nivel | Responsable | Tratamiento |
+|---|---|---|
+| Check Directo en FAIL de un activo | Delegado o responsable del control | Mensaje de brecha con la remediación; se cierra con un nuevo PASS del mismo check en el mismo activo (D138) |
+| Requisito o test en excepción | Responsable del control | Evidencia nueva, o plan de remediación por excepción (nivel Parcial) |
+| Control | Responsable y `admin_empresa` | Aprobación del cumplimiento (D132) |
+| Riesgo | `admin_empresa` | Tratamiento si queda en zona naranja o roja (D134) |
 
 > El cumplimiento del marco se **deriva** recorriendo requisitos → controles; nunca se almacena como columna del marco.
 

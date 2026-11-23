@@ -25,20 +25,25 @@ desnudos y códigos técnicos sin explicar.
 - Estado cualitativo: **Preparado** (100 %), **Casi listo** (80 % o más), **Requiere trabajo** (menos), **Sin medir**.
 - Se muestra a la vez que el **porcentaje de avance**, y con la **cobertura al lado** («de lo medido» y cuánto se midió).
 - Nunca un porcentaje solo. Nunca uno de «toda la empresa»: la unidad es **servicio × marco**.
-- El porcentaje **informa, no decide**: el estado se calcula aparte (`arquitectura/cumplimiento/motor/`).
+- El porcentaje **informa, no decide**: el estado se calcula aparte (§9). En un control, el porcentaje es su C% (requisitos que
+  cumplen) y va junto a su **nivel** (de No evaluado a Sólido, VF18) y a su estado de gestión; el nivel es **preparación**, no la
+  opinión del auditor, y solo «Cumplimiento aprobado» cuenta como cumplido (D130, D132).
 
 ## 3. Quién ve qué
 
 - **Vista técnica** (estados del motor, pruebas, puntos de enfoque, matrices): `auditor` y `admin_empresa` (D81, D96), mientras
   (D102: el comité no entregará el Excel por pantalla). No es un modo ni un botón: es lo que ese rol ve.
 - El `responsable` y el `delegado` ven la vista de negocio de **sus controles**, con el vocabulario y los códigos del dominio, y el avance de lo suyo (nunca el de la empresa).
-- El `admin_empresa` es el experto en compliance de su empresa y quien valida; el `responsable` es dueño de sus controles y el `delegado` los ejecuta (D102);
-  el `auditor` revisa y no califica por ahora (D96).
+- El `admin_empresa` es el experto en compliance de su empresa y da la aprobación final; el `responsable` es dueño de sus controles y da la primera
+  aprobación, y el `delegado` carga la evidencia (D102, D132); el `colaborador` solo ve y acepta los documentos que le asignan (D136); el `auditor`
+  revisa y no califica por ahora (D96).
 
 ## 4. Lo que el texto nunca hace
 
 - **No nombra al proveedor** de la sonda ni del motor de nube. Se dice «sonda», «capacidad automática» o «evaluación
-  automática». Aplica a pantallas, correos, notificaciones, reportes y texto generado por IA. Los hooks de `.claude/` lo
+  automática», con las equivalencias de la tabla 9 de la VF18 (`producto/philosophy.md`, D128): «evaluación de configuración de la
+  sonda», «Verificaciones automáticas de la sonda / del motor de nube»… Aplica a pantallas, correos, notificaciones, reportes y texto
+  generado por IA. Los hooks de `.claude/` lo
   comprueban en `Frontend-Platform`, `contracts/`, el i18n del Backend y los correos.
 - **La IA no certifica cumplimiento.** No presenta una inferencia como hecho verificado sin mostrar la evidencia, y
   etiqueta siempre lo que ella generó.

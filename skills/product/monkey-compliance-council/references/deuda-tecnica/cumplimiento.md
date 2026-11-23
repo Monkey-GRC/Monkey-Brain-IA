@@ -42,7 +42,7 @@ Parches vigentes de [Cumplimiento](../arquitectura/cumplimiento/README.md). Tabl
 
 - **Qué está parchado:** las 89 asignaciones control↔documento del Excel no dicen a qué prueba sirve cada documento, así que llegan con `test_id` nulo (D88): se muestran como **sugerencia** y **no cuentan para ninguna prueba**; la evidencia que sí cuenta es la que la persona sube bajo cada prueba. Además D88 calcula una prueba documental **por control** (revisión de lo entregado para ella), lo que se aparta de RN-13 y del punto 1 de D85, que el comité fijó por prueba y servicio.
 - **Por qué:** el Excel no trae ese vínculo y un documento distinto en cada control no se puede validar una sola vez para todo el servicio; desarrollo lo decidió con autorización del responsable de producto (2026-10-22).
-- **Qué lo cierra:** que el comité defina, para cada asignación, a qué prueba (diseño u operación) sirve el documento y se cargue `catalog.control_evidence_templates.test_id` (o se afine en Monkey Admin) —entonces el documento deja de ser sugerencia y pasa a ser el lugar de esa prueba—, y que ratifique el ajuste a RN-13 para lo documental.
+- **Qué lo cierra:** la carga del catálogo v2 (RC-01) y el módulo Documentos (RC-09): la VF18 trae una prueba documental por documento y el documento se resuelve con su flujo, así que las plantillas de evidencia desaparecen (D129, D133).
 
 ## Funcionalidad que el brain menciona y aún no tiene contrato
 
@@ -52,4 +52,4 @@ Parches vigentes de [Cumplimiento](../arquitectura/cumplimiento/README.md). Tabl
 
 - **Qué está parchado:** `catalog.tests.type` es texto libre del comité («Manual», «Mixta», «Prueba de diseño…»), así que no sirve para saber si una prueba la resuelve una persona. El veredicto (MD-155) usa el tipo de la **dimensión del control** (`client_control_dimensions.type`): `manual` y `technical_manual` admiten veredicto; `automated` e `hybrid`, no (`409 TEST_NOT_MANUAL`). *(La otra mitad de esta deuda, exigir la razón cuando el control de origen tiene observaciones abiertas, la cerró MD-154: `422 closure_reason.required`.)*
 - **Por qué:** es el único dato estructurado que distingue lo manual de lo medido.
-- **Qué lo cierra:** que el comité clasifique cada prueba como manual o automática (o fijar el criterio y normalizar `tests.type`).
+- **Qué lo cierra:** la carga del catálogo v2 (RC-01): cada prueba de la VF18 trae su tipo (documental, población, operativo o técnico) y su automatización (D129).

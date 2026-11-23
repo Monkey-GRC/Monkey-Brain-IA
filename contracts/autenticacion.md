@@ -7,6 +7,8 @@ type: contract
 
 # Auth — canje de la clave, login y sesión
 
+> **VF18 (D128): este contrato describe la API construida con el catálogo v1.** Con la VF18 la contraseña pide **15 caracteres**, **no repite las últimas 24** y **vence a los 60 días** (D137, revierte D101 punto 1). Se ajusta antes de construir RC-15.
+
 | | |
 |---|---|
 | **Qué es** | Login con JWT y refresh, **segundo factor TOTP obligatorio** (D94), canje de la clave de acceso, activación de cuentas y contraseña |

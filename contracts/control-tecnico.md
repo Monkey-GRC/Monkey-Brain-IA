@@ -7,6 +7,8 @@ type: contract
 
 # Control Técnico — operación continua
 
+> **VF18 (D128): este contrato describe la API construida con el catálogo v1.** Con la VF18 los catálogos son los de la sonda 4.14.7 y del motor de nube 5.45.0 con 20 plataformas, solo cuentan los vínculos de `TEST_CHECKS` con su rol, y la evidencia automática vence a las 24 horas (D129, D131).
+
 | | |
 |---|---|
 | **Estado** | **PROPUESTA** (2026-10-08), parcialmente construida → ver [Estado de implementación](#estado-de-implementación) |
@@ -540,7 +542,7 @@ La sonda **no avisa** cuando un servidor se conecta: Monkey tiene que ir a leerl
 |---|---|
 | **Qué texto redacta cada hallazgo** (`finding.*`) y quién lo revisa antes de llegar al cliente | ❌ `P14` E2. Mientras tanto, los campos pueden venir `null` |
 | **Las áreas** (`identity_access`, `data_network`, `logging_backup`) y su mapeo a las pruebas | ◐ Propuesta de desarrollo; falta ratificar con el comité |
-| **Hallazgos para checks sin prueba asignada** | ✅ No cuentan hasta que el comité responda (`P15`) |
+| **Hallazgos para checks sin prueba asignada** | ✅ No cuentan: solo cuentan los vínculos de `TEST_CHECKS` (D129) |
 
 ---
 

@@ -23,7 +23,7 @@ sequenceDiagram
     R->>DB: ¿hay observaciones abiertas del auditor? si sí, exige motivo de cierre
     R->>DB: busca todos los controles del servicio que llevan esta prueba y los activos de su dimensión
     R->>E: captureControlStates (foto ANTES)
-    R->>DB: crea el veredicto del test en el servicio (`pending`; aprobado de nacimiento si lo registra el `admin_empresa`, P34)
+    R->>DB: crea el veredicto del test en el servicio (`pending`; aprobado de nacimiento si lo registra el `admin_empresa`, D121)
     R->>DB: lee la foto DESPUÉS para devolver el estado de la prueba
     R->>DB: insertAuditLog (rastro de auditoría)
     R->>E: recordControlStateChanges (foto DESPUÉS, compara, escribe eventos)

@@ -125,7 +125,7 @@ sus pasos solo recogen lo ya decidido.
 3. El sistema genera el aviso con la plantilla de 7 campos de `producto/philosophy.md`, sin nombrar proveedores (SEG-39).
 
 **Abierto en `P39`:** qué eventos notifican (2), quién recibe cada uno (3), canal (1), frecuencia (4) y recordatorios (6,
-que además dependen de `P22` punto 2). Un resumen periódico necesita un planificador que hoy no existe.
+cuya periodicidad y días de aviso ya definió D131). Un resumen periódico necesita un planificador que hoy no existe.
 
 ### CU-NOT-06 · Consultar mis avisos y preferencias ⚪
 

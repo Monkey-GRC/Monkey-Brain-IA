@@ -7,6 +7,8 @@ type: contract
 
 # Cumplimiento — pruebas y veredictos
 
+> **VF18 (D128): este contrato describe la API construida con el catálogo v1.** Con la VF18 los estados de una prueba son Pendiente, Correcto, Observación, Excepción, No aplica y Vencido (D130), y la revisión en dos niveles del veredicto pasa al control (D132). Quién registra el resultado de una prueba manual está en `P48`. Se reescribe antes de construir RC-06 y RC-07.
+
 | | |
 |---|---|
 | **Estado** | **ACORDADO** (D96), construido (2026-10-28, B66 y MD-177). **D102 y D121 cambian quién da y quién revisa el veredicto** (ver [Veredicto en dos niveles](#veredicto-en-dos-niveles-d102-d121)), construido en MD-194 (2026-11-17) |
@@ -200,7 +202,7 @@ El veredicto de una prueba manual **no documental** sigue el mismo flujo que la 
 
 | | |
 |---|---|
-| **Registrar** | `POST …/verdicts` (arriba). Lo registra el ejecutor, el dueño o el `admin_empresa`. Nace `pending` y **todavía no cuenta**. Si lo registra el `admin_empresa`, nace con su aprobación y cuenta al instante (P34 sigue abierta: queda en el rastro quién registró y quién aprobó, y el auditor es el contrapeso) |
+| **Registrar** | `POST …/verdicts` (arriba). Lo registra el ejecutor, el dueño o el `admin_empresa`. Nace `pending` y **todavía no cuenta**. Si lo registra el `admin_empresa`, nace con su aprobación y cuenta al instante (queda en el rastro quién registró y quién aprobó; con la VF18 la aprobación es del control, D132) |
 | **Revisar** | `PUT /v1/verdicts/{id}/review` (abajo). Lo revisa el dueño, si no lo registró él, y el `admin_empresa` siempre. Una revisión por rol y veredicto: un segundo `PUT` del mismo rol reemplaza la suya |
 | **Estado** (`verdict_state`) | **Algún rechazo → `rejected`**; sin rechazos y con al menos una aprobación → `approved`; sin revisión → `pending`. Un rechazo posterior a una aprobación la anula |
 | **Qué cuenta** | El estado del test sale del **último veredicto registrado** del test en el servicio: si está `approved`, cuenta su `result`; si está `pending` o `rejected`, el test queda `pending` (no cuenta como cumplido, §9). Rechazado ⇒ se registra uno nuevo; el anterior se conserva |

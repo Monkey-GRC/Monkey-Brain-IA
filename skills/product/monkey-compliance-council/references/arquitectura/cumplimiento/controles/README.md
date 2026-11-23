@@ -1,5 +1,7 @@
 # Cumplimiento · Controles
 
+> **VF18 (D128): esto describe el código construido con el catálogo v1.** Con la VF18 cada control muestra su C%, su nivel y su estado de gestión, y su detalle lista los requisitos que impiden el 100% (D130, D132).
+
 Responde: **¿cómo se lee el estado de los controles de un servicio?** Es la pantalla principal del módulo: la lista
 de controles, su detalle y las pruebas de cada uno. También el alta y la baja de un control propio de la empresa.
 

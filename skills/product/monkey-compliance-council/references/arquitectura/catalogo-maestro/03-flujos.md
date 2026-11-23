@@ -1,5 +1,7 @@
 # Catálogo maestro · Flujos
 
+> **VF18 (D128): esto describe el código construido con el catálogo v1.** La carga del catálogo v2 sigue el **orden de la tabla 10 de `01_DESARROLLO`** (matriz y mapeo a marcos, riesgos, causas, documentos, procedimientos e integraciones, controles, requisitos, pruebas, catálogos de checks, `TEST_CHECKS`, parámetros, roles y formularios) y valida sus totales y las reglas `IN-01` a `IN-10` ([§0](../../datos/modelo/00-fuentes.md)). Se escribe con RC-01.
+
 Responde: **¿cómo llega una opción al formulario del cliente y cómo se mantiene el catálogo?**
 
 ## 1 · Una opción en un formulario

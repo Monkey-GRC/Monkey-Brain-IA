@@ -7,6 +7,8 @@ type: contract
 
 # Cumplimiento — controles
 
+> **VF18 (D128): este contrato describe la API construida con el catálogo v1.** Con la VF18 el control se mide por **requisitos del control**, con un **nivel de 0 a 5** y **estados de gestión** con dos aprobaciones (D130, D132), y sus pruebas le pertenecen (D129). Se reescribe antes de construir RC-06 y RC-07.
+
 | | |
 |---|---|
 | **Estado** | **ACORDADO**, reescrito por D96 (2026-10-27): no hay propuestas que aprobar, el `admin_empresa` cambia directo. Listar, ver, crear, editar y dar de baja están construidos (2026-10-28). **D102** cambia el alcance por dimensión por **dueño y ejecutor** (por construir en el sprint 3, MD-193) |

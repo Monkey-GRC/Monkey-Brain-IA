@@ -14,7 +14,7 @@ entrega resultados crudos que Monkey traduce a su modelo. Wazuh (`wazuh.md`) es 
 |---|---|
 | Imagen `toniblyx/prowler` fijada por versión (hoy `5.44.0`); el trabajador se niega a arrancar con `latest`. Un escaneo completo de AWS (655 checks, 2 regiones) tarda unos 2 minutos. | D55, D57 |
 | El motor omite los checks sin recursos: de 655 ejecutados, 139 devolvieron filas. **Lo que no devuelve es `not_applicable`**, no «no ejecutado». | D56, `cruce-nube-aws.md` |
-| Catálogo cargado: 662 checks, 3.413 mapeos del motor a los 6 marcos ofrecidos, 569 asignaciones propuestas a las 11 pruebas `T-CLD`. 104 checks no encajan en ninguna prueba (`P15`). | D56 |
+| Catálogo cargado: 662 checks, 3.413 mapeos del motor a los 6 marcos ofrecidos, 569 asignaciones propuestas a las 11 pruebas `T-CLD`. 104 checks no encajan en ninguna prueba. **Con la VF18 (D129)** el catálogo pasa a la 5.45.0 con 1.621 checks en 20 plataformas y los vínculos ratificados de `TEST_CHECKS` reemplazan a estas propuestas. | D56, D129 |
 | GCP: escaneado a mano con la misma versión (110 checks, 21 hallazgos en un proyecto de pruebas sin recursos); la salida tiene el mismo formato y el parser la acepta. Catálogo con 98 de 110 checks asignados a pruebas `T-CLD` (`monkey_proposed`). Azure: sin probar (`P14` C5). | `cruce-nube-gcp.md` |
 
 ## Reglas que no se rompen
@@ -38,4 +38,4 @@ entrega resultados crudos que Monkey traduce a su modelo. Wazuh (`wazuh.md`) es 
 | ¿Cómo se guarda en el modelo (recurso hijo, procedencia, ejecuciones)? | `D56`, `modelo/08-control-tecnico.md` |
 | ¿Cómo se ejecuta y con qué aislamiento? | `D57` y `Backend/src/runner/` |
 | ¿Qué falta o está parchado? | `deuda-tecnica/control-tecnico.md` (DT-43, DT-44, DT-45, DT-50, DT-52) |
-| ¿Qué sigue abierto? | `P14` (unidad de evaluación, conexión, catálogo y legal; el rol de cada motor se cerró en D100) y `P15` (checks sin prueba) |
+| ¿Qué sigue abierto? | `P14` (unidad de evaluación, conexión y legal; el rol de cada motor se cerró en D100 y el catálogo en D129) y `P49` (puntajes globales que la VF18 marca como Directos) |

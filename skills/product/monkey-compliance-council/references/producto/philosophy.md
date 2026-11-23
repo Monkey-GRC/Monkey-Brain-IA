@@ -51,7 +51,7 @@ Diez pasos, cada uno con una sola pregunta o acción clara, con el vocabulario d
 6. La IA analiza automáticamente (con progreso narrado)
 7. La IA identifica riesgos (con su impacto de negocio explicado desde el primer momento)
 8. La IA propone qué framework(s) perseguir primero, con una razón concreta
-9. La IA muestra el nivel de preparación (el estado cualitativo: Preparado = 100%, Casi listo = 80% o más, Requiere trabajo = menos, **junto con** el porcentaje de avance y la cobertura — nunca el porcentaje solo)
+9. La IA muestra el nivel de preparación (el estado cualitativo: Preparado = 100%, Casi listo = 80% o más, Requiere trabajo = menos; en un control, su nivel de 0 a 5 de la VF18, de No evaluado a Sólido, que es **preparación** y no la opinión del auditor, **junto con** el porcentaje de avance y la cobertura — nunca el porcentaje solo)
 10. Comienza el monitoreo continuo, con la primera acción del día ya sugerida
 
 ## El dashboard responde 4 preguntas, nunca es una hoja de cálculo
@@ -82,6 +82,21 @@ Prowler) es confidencial frente al cliente final.** En la superficie del product
 Prowler, ni de ningún proveedor por su nombre. Aplica a pantallas, notificaciones,
 reportes exportables y cualquier texto que genere la IA. El proveedor es un
 atributo interno del modelo (`modelo-datos.md` §8), no una etiqueta de interfaz.
+
+**Cómo se dice cada cosa (tabla 9 de la VF18, D128):**
+
+| En el material interno | Lo que ve el cliente |
+|---|---|
+| El agente o el motor de servidores | «la sonda» · «el agente de la sonda» |
+| Su evaluación de configuración | «evaluación de configuración de la sonda» |
+| Sus módulos (inventario y otros) | «módulo de la sonda» · «inventario de la sonda» |
+| El motor de la nube | «el motor de nube» |
+| Fuente principal de una prueba | «Sonda» · «Motor de nube» · «Sonda y motor de nube» |
+| Los «posibles checks» de un requisito | «Verificaciones automáticas de la sonda» · «… del motor de nube» |
+| Título y remediación de un check | Traducidos, sin nombrar al proveedor |
+
+Nunca se muestran la herramienta de cada vínculo prueba–check, los catálogos de
+checks ni el bloque de motor interno de los escenarios de activos.
 
 Es coherente con el resto de esta constitución: al usuario final no se le expone la
 plomería. Pero aquí no es solo simplicidad, es una decisión comercial explícita.

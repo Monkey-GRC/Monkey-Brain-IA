@@ -28,6 +28,8 @@ Por qué este componente es como es. Lo vigente está en [`arquitectura/cumplimi
 
 ## D88 · Una prueba documental se valida en su control, con la evidencia que la persona sube para ESA prueba (2026-10-22; ajusta D85 y cierra P25)
 
+> **Reemplazada por D132 y D133 (2026-11-22).** La prueba documental es una por documento y se resuelve con su flujo de aprobación y aceptación (D133); la aprobación es del control, no de cada evidencia (D132).
+
 > **Ajustada por D96 (2026-10-27).** Quien valida es el `admin_empresa` (no el consultor); la evidencia de una prueba la sube el `funcional` responsable de su dimensión. Se mantiene todo lo demás: se valida en el control, con la evidencia de esa prueba.
 
 **Decisión.**
@@ -51,6 +53,8 @@ Por qué este componente es como es. Lo vigente está en [`arquitectura/cumplimi
 ---
 
 ## D121 · El veredicto manual se registra y se revisa en dos niveles, como la evidencia (2026-11-17; Héctor Ríos; *concreta D102*)
+
+> **Reemplazada por D132 (2026-11-22).** La aprobación en dos niveles pasa al control completo: primero el responsable y la final, el `admin_empresa`.
 
 **Decisión.**
 1. **Registrar:** el ejecutor, el dueño o el `admin_empresa` registran el veredicto de una prueba manual no documental (`POST …/verdicts`). Nace `pending` y no cuenta.

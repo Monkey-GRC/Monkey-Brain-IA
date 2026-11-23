@@ -138,13 +138,29 @@ lo que el comité entregó sobre usuarios está transcrito en `modelo-datos.md` 
 
 ## 9. Medición de cumplimiento
 
-Con Servicio, Scope, catálogo clonado y (opcionalmente) Cumplimiento personalizado, el
-motor deriva el cumplimiento por par Servicio × Marco, recorriendo
-Requisito → PuntoDeEnfoque → Control, nunca como atributo del marco ni como número de
-empresa completa. Con las reglas del comité (D68): un estado por nivel (activo → test → control → categoría → marco), «todo o nada», y lo pendiente bloquea el cumplimiento.
-La evaluación del auditor (D77) está en pausa (D96): hoy el único veredicto es el cálculo de arriba, con la validación del `admin_empresa`.
+Con servicio, activos, catálogo clonado y responsables asignados, el motor deriva el cumplimiento por par servicio ×
+marco, **nunca** como atributo del marco ni como número de la empresa completa. Con la VF18 (D128, D130) la cadena es
+activo → check → evidencia → prueba → **requisito del control** → control: el control cumple solo con el 100% de sus
+requisitos (nivel Adecuado o Sólido) y cuenta como cumplido solo cuando lo aprueban el responsable y el
+`admin_empresa` (D132). Las ventanas de vigencia de cada periodicidad hacen que el cumplimiento se mantenga, no que
+se gane una vez (D131).
 
-**Fuente:** `modelo-datos.md` §9 (D68, el motor del comité; reemplaza la agregación de D62).
+**El recorrido del implementador**, tal como lo describe el comité (`MAP CALOR`, sección 7):
+
+1. Completar el contexto de la empresa y del servicio en alcance.
+2. Registrar los activos y su escenario (`AC-01` a `AC-06`): eso define qué checks aplican.
+3. El `admin_empresa` asigna un responsable a cada control (guiado por el rol sugerido); el responsable puede delegarlo.
+4. Conectar las integraciones (la sonda, el motor de nube, identidad, RR. HH., ticketing, MDM…).
+5. Crear o importar los documentos, aprobarlos y asignarlos para aceptación (módulo Documentos, D133) → pruebas `T-DOC`.
+6. Ejecutar las pruebas de población: inventario, usuarios, cambios del período.
+7. Revisar las pruebas técnicas y corregir cada FAIL de un check Directo con su mensaje de brecha (D138).
+8. Cargar la evidencia operativa de la muestra en cada ventana.
+9. El responsable aprueba el cumplimiento del control y después el `admin_empresa` da la aprobación final.
+10. Atender las alertas de vencimiento para mantener el 100%.
+
+La evaluación del auditor (D77) está en pausa (D96): la escala de Monkey es de preparación y no reemplaza su opinión.
+
+**Fuente:** `modelo-datos.md` §9 (D130; reemplaza el motor de D68) y §11.
 
 ## Resumen visual
 

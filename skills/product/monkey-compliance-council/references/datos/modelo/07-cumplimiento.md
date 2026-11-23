@@ -16,6 +16,22 @@ que termina el onboarding ya tiene
 cumplimiento midiéndose con el catálogo por defecto; este módulo es donde lo afina, sin
 límite de tiempo. Lo usa `admin_empresa`.
 
+### 7.0 Lo que cambia con la VF18 (catálogo v2)
+
+> **Lo de abajo describe lo construido con el catálogo v1.** La VF18 (D128) cambia lo siguiente; el cálculo está en §9 y los
+> documentos en §11. Los nombres de las tablas nuevas son propuesta de desarrollo y se fijan en el contrato de cada RC.
+>
+> | Hoy (v1) | Con la VF18 |
+> |---|---|
+> | `evidence_requirements`, clonadas de plantillas de evidencia | **Requisitos del control del cliente**, uno por `control_requirements` y control del cliente, con su periodicidad configurada y su «No aplica» justificado y aprobado (D129, RC-02). Los documentos son de la empresa (§11) |
+> | `client_control_tests` (N:M control ↔ test) | Se retira: la prueba pertenece a su control (D129) |
+> | Revisión de cada evidencia por rol (`evidence_reviews`, D102) y del veredicto en dos niveles (`test_verdict_reviews`, D121) | **La aprobación es del control** (D132): estados de gestión y dos aprobaciones (responsable y, al final, `admin_empresa`), con motivo al devolver. La evidencia que causa una devolución queda «devuelta». Quién registra el resultado de una prueba manual: `P48` |
+> | La evidencia vale si cae en el período (C1) | Además, **por ventana** de la periodicidad del control o del requisito (D131); el `admin_empresa` cambia la periodicidad con justificación (G-10). El período auditado dura 6 meses como mínimo |
+> | `exclusions`: un activo sale del denominador de una prueba hasta el fin del período | **Excepción de un check en un activo**: cuenta como PASS marcado, con fecha de fin de 90 días como máximo (D135) |
+> | `client_cause_controls.is_mandatory` y `effect`; `residual_parameters` | Se retiran: el residual sale de la cobertura verificada y de PR-08 a PR-10; el apetito, de las zonas de color (D134) |
+> | `client_risks` sin valoración hasta que el cliente la pone | La valoración inherente del catálogo llega prellenada al asistente (D134) |
+> | Sin alertas | Alertas por evento y tickets opcionales (D138) |
+
 ### 7.1 El control del cliente
 
 ```mermaid
@@ -162,7 +178,7 @@ erDiagram
     residual_parameters {
         uuid id PK
         uuid tenant_id FK
-        uuid service_id FK "nullable: por servicio o global, aun abierto (P22)"
+        uuid service_id FK "nullable (D75; se retira con D134)"
         int max_probability_reduction "2 por defecto (D75)"
         int max_impact_reduction "1 por defecto"
         int risk_appetite "9 de 25 por defecto"
@@ -307,13 +323,13 @@ plantilla, `sequence` = su orden en el control y `validity_within_period` = el p
 **La evidencia es válida si cae dentro del periodo de evaluación** del marco (decisión C1), no
 por una fecha de caducidad fija.
 
-**La evidencia de una prueba documental es de esa prueba en su control (D88).** La persona sube su documento bajo la prueba y el servidor lo guarda en el requerimiento de esa prueba (`evidence_requirements.test_id`), que crea en la primera entrega. `test_id` nulo es un documento que el catálogo
+**La evidencia de una prueba documental es de esa prueba en su control (D88; reemplazada por D133: con la VF18 la prueba documental es una por documento, §11).** La persona sube su documento bajo la prueba y el servidor lo guarda en el requerimiento de esa prueba (`evidence_requirements.test_id`), que crea en la primera entrega. `test_id` nulo es un documento que el catálogo
 sugiere para el control sin decir a qué prueba sirve (las 89 asignaciones del Excel): no cuenta para ninguna prueba. El estado de la prueba en ese control sale solo de lo entregado para ella (§9); el de un requerimiento, de su **entrega más reciente**.
 **La exclusión la propone y la decide el `admin_empresa` en un solo acto, y vence** (D96, que reemplaza a D78). Una
 exclusión sin justificación aprobada no cambia el denominador — y un check que sale por
 omisión es un agujero, no una exclusión.
 
-**La evidencia la sube el ejecutor, el dueño o el `admin_empresa`; la revisa el `responsable` dueño (si no la subió él) y el `admin_empresa` siempre puede** (D102); el `auditor` la lee, no la revisa. **Cada entrega tiene a lo sumo una revisión por rol** (`evidence_submission_id` + `reviewer_role` único). El estado que consume el motor sale de combinarlas: **si hay algún rechazo, rechazada; si no hay rechazos y hay al menos una validación, validada** (con dos revisiones, aprueban las dos); sin revisión, pendiente. Una revisión no se edita: se rehace con una entrega nueva. Una entrega es histórico: la app solo la inserta y la lee (sin `UPDATE` ni `DELETE`) y `(evidence_requirement_id, version)` es único (MD-126). La IA puede sugerir un veredicto (`ai_verdict`),
+**La evidencia la sube el ejecutor, el dueño o el `admin_empresa`; la revisa el `responsable` dueño (si no la subió él) y el `admin_empresa` siempre puede** (D102; con la VF18 la aprobación pasa al control, D132); el `auditor` la lee, no la revisa. **Cada entrega tiene a lo sumo una revisión por rol** (`evidence_submission_id` + `reviewer_role` único). El estado que consume el motor sale de combinarlas: **si hay algún rechazo, rechazada; si no hay rechazos y hay al menos una validación, validada** (con dos revisiones, aprueban las dos); sin revisión, pendiente. Una revisión no se edita: se rehace con una entrega nueva. Una entrega es histórico: la app solo la inserta y la lee (sin `UPDATE` ni `DELETE`) y `(evidence_requirement_id, version)` es único (MD-126). La IA puede sugerir un veredicto (`ai_verdict`),
 siempre etiquetado como generado por IA, pero **nunca cierra un control**.
 
 ### 7.4 Evaluaciones y hallazgos (el histórico)
@@ -414,11 +430,13 @@ causa— en `new_value`. Lo escribe, en la misma transacción, la escritura que 
 test manual, la entrega de una evidencia, la validación del administrador, decidir una exclusión y lo que mide la
 sonda. Si lo causa el sistema (la sonda), `user_id`, `ip_address` y `user_agent` van nulos.
 
-**Las vulnerabilidades son solo insumo en el MVP** (decisión D7): alimentan los hallazgos de
+**Las vulnerabilidades son solo insumo en el MVP** (decisión D7; con la VF18, la detección de vulnerabilidades es check Directo de VUL-1 y VUL-2, `P49`): alimentan los hallazgos de
 los controles de gestión de vulnerabilidades y parches (`CC7.1` / `A.8.8`). El módulo con
 vida propia no entra al MVP.
 
 ### 7.4b Veredicto en dos niveles (D102, D121)
+
+> **Reemplazado por D132** con la VF18: la revisión en dos niveles pasa al control completo (7.0).
 
 El veredicto de una prueba manual **no documental** se registra y se revisa como la evidencia.
 
@@ -427,7 +445,7 @@ El veredicto de una prueba manual **no documental** se registra y se revisa como
 | `test_verdicts` | `id`, `tenant_id` (RLS), `service_id`, `client_control_id` (control de origen), `test_id`, `result` (`verdict_result`), `note`, `closure_observation_reason`, `registered_by` (FK `users`), `registered_at` | Inmutable: nunca se edita ni se borra. El **último** registrado de un test en un servicio decide el estado del test |
 | `test_verdict_reviews` | `id`, `tenant_id` (RLS), `test_verdict_id`, `reviewer_role` (`reviewer_role`), `decision` (`verdict_review_decision`), `note`, `reviewed_by` (FK `users`), `reviewed_at` | Única por (`test_verdict_id`, `reviewer_role`); un segundo `PUT` del mismo rol la reemplaza. `note` obligatoria al rechazar |
 
-**Estado (`verdict_state`, derivado):** algún rechazo → `rejected`; al menos una aprobación sin rechazos → `approved`; ninguna → `pending`. Solo un veredicto `approved` cuenta en el motor (§9): da su `result` a todos los controles del servicio que llevan el test (D85). Si lo registra el `admin_empresa`, nace con su aprobación (P34). Las evaluaciones manuales que ya existían en `evaluations` se migran como veredictos aprobados por quien las dio (no hay empresas reales, D102).
+**Estado (`verdict_state`, derivado):** algún rechazo → `rejected`; al menos una aprobación sin rechazos → `approved`; ninguna → `pending`. Solo un veredicto `approved` cuenta en el motor (§9): da su `result` a todos los controles del servicio que llevan el test (D85). Si lo registra el `admin_empresa`, nace con su aprobación. Las evaluaciones manuales que ya existían en `evaluations` se migran como veredictos aprobados por quien las dio (no hay empresas reales, D102).
 
 ### 7.5 La IA y el veredicto
 

@@ -1,5 +1,7 @@
 # Resultado del escaneo de AWS contra el catálogo
 
+> **Superado por la VF18 (D129).** Los vínculos prueba–check de la nube los trae el comité ratificados, con su rol, en `TEST_CHECKS` (1.176 del motor de nube en 20 plataformas); estas asignaciones propuestas por desarrollo dejan de usarse al cargar la v2 (RC-01). Se conserva como historia del cruce.
+
 **Estado:** 2026-10-08. Interno: nombra al motor y **nada de esto sale al cliente** (D70, P14 D3). Las decisiones que salen de aquí
 están en `D53` y `D56` (`datos/decisiones/control-tecnico.md`); el modelo, en `modelo-datos.md` §3.3 y §8. Este archivo solo guarda lo
 **medido**. Los datos crudos están en `assets/soc2/` (no versionado: contienen una cuenta real).

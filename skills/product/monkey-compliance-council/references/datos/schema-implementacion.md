@@ -400,6 +400,8 @@ La 17 quedó reemplazada en parte por la 20 (`find_login_candidates` se recrea c
 
 Código, comandos y garantías: `Backend/prisma/seed/README.md`. Por qué se hizo así: D35, D38 y D39.
 
+> VF18 (D128): estas cifras son las del catálogo v1 construido; el v2 las reemplaza (D129).
+
 Excel → JSON versionado (con el sha256 del Excel) → una transacción que **solo inserta lo que falta**,
 aborta con diff si una fila existente difiere y no borra nada → `verify` (solo lectura). Cifras (medidas, D38): 1 marco · 5 criterios ·
 61 requisitos · 302 puntos de enfoque · 119 controles (118 asignados) · 729 relaciones · 10 riesgos · 56 causas · 92

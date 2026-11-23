@@ -20,7 +20,7 @@ esta sección (D110 punto 5). **Estado** de cada historia: ✅ construida · �
 | HU-INT-06 | Conectar una integración disponible a uno de mis servicios | `admin_empresa` | ✅ | D110, D89 |
 | HU-INT-07 | Revisar como auditor solo lo que la empresa tiene conectado | `auditor` | ✅ | D110 punto 5 |
 | HU-INT-08 | Saber qué integraciones vienen pronto, sin poder conectarlas aún | `admin_empresa` | ✅ | D110 punto 6, D67 |
-| HU-INT-09 | Conectar la organización de GitHub de mi empresa | `admin_empresa` | ⚪ | P44, P45, D56 |
+| HU-INT-09 | Conectar la organización de GitHub de mi empresa | `admin_empresa` | ⚪ | P45, D129 |
 | HU-INT-10 | Llevar el trabajo de cumplimiento a Jira | por decidir (P46) | ⚪ | P46 |
 
 **Fuera de las historias:** la interfaz única de conector (conectar, validar, credencial temporal, ejecutar, normalizar;
@@ -142,7 +142,7 @@ podré conectar y planear.
 **Como** administrador, **quiero** conectar GitHub **para** que Monkey muestre cómo se revisan y aprueban los cambios en el
 código y las vulnerabilidades de sus dependencias.
 
-⚪ **Bloqueada por P44 y P45.** Qué checks cuentan y a qué pruebas y controles van (P44), y en qué categoría de activo
+⚪ **Bloqueada por P45** (P44 la cerró D129). Qué checks cuentan y a qué pruebas y controles van (P44), y en qué categoría de activo
 entra GitHub, qué es el activo y con qué canal se conecta (P45), los decide el comité. Lo que ya está fijado:
 
 - Sin la cadena check → prueba → control ratificada, un resultado de GitHub **no cuenta** (D56).

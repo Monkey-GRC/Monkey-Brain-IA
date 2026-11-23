@@ -1,5 +1,7 @@
 # Resultado del escaneo de GCP contra el catálogo
 
+> **Superado por la VF18 (D129).** Los vínculos prueba–check de la nube los trae el comité ratificados, con su rol, en `TEST_CHECKS`; estas asignaciones propuestas por desarrollo dejan de usarse al cargar la v2 (RC-01). Se conserva como historia del cruce.
+
 **Estado:** 2026-11-12. Interno: nombra al motor y **nada de esto sale al cliente** (D70, P14 D3). Es el par de
 [`cruce-nube-aws.md`](cruce-nube-aws.md) para Google Cloud: el modelo y las reglas son los mismos (D53, D56); este archivo solo
 guarda lo **medido** y las reglas de mapeo propias de GCP. Los datos crudos están en `assets/soc2/scan-gcp/` (no versionado:
@@ -77,14 +79,14 @@ la prueba; el mapeo del motor solo corrobora.
 
 **98 de 110 checks** tienen prueba. Un check puede alimentar más de una prueba, así que las filas no suman 110.
 
-**Los 12 sin prueba** (van a `P15`): parámetros de SQL Server y MySQL (`local_infile`, `external_scripts`, `trace`,
+**Los 12 sin prueba** (con la VF18 cuentan solo los vínculos de `TEST_CHECKS`, D129): parámetros de SQL Server y MySQL (`local_infile`, `external_scripts`, `trace`,
 `user_connections`, `user_options`), comportamiento de VMs (`automatic_restart`, `on_host_maintenance_migrate`,
 `preemptible_vm_disabled`, `shielded_vm_enabled`, `suspended_without_persistent_disks`), ciclo de vida de buckets y contactos
 esenciales de la organización.
 
 ## Pendiente
 
-- **Ratificar** las asignaciones de GCP y decidir los 12 sin prueba (`P15`).
+- ~~Ratificar las asignaciones de GCP y decidir los 12 sin prueba~~: lo resolvió la VF18 (D129), que trae los vínculos ratificados.
 - **Escanear con recursos reales** (VMs, SQL, buckets): requiere facturación en el proyecto de pruebas.
 - **Pantallas** del flujo de conexión (hechas en MD-214: asistente a pantalla completa; GCP es `available`).
 - **Azure:** sin probar (`P14` C5).

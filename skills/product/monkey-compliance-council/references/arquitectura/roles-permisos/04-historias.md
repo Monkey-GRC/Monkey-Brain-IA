@@ -79,7 +79,7 @@ nuestra información no la vea ni la toque nadie de fuera.
 - Soy el único que asigna y reasigna el dueño de un control, a un `responsable` o a mí mismo (D102 punto 6), el único que
   decide una exclusión (SEG-67) y el único que crea, edita o da de baja controles, riesgos y causas (§5.5, D96 punto 8).
 - Puedo revisar cualquier evidencia y cualquier veredicto, también lo que subí yo cuando soy dueño del control (SEG-67).
-  Que en ese caso me califique a mí mismo es la pregunta abierta `P34`: no se resuelve aquí.
+  En ese caso mi aprobación es la final (G-05, D132).
 - Respondo las observaciones del auditor, pero no puedo escribirlas, editarlas ni cerrarlas (`403 FORBIDDEN`, SEG-70).
 
 ### HU-ROL-05 · Ver y tocar solo los controles de los que soy dueño

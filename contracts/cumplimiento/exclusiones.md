@@ -7,6 +7,8 @@ type: contract
 
 # Cumplimiento — exclusiones
 
+> **VF18 (D128): este contrato describe la API construida con el catálogo v1.** Con la VF18 la exclusión de un activo pasa a ser la **excepción de un check en un activo**, que cuenta como PASS marcado y dura 90 días como máximo (D135). Se reescribe antes de construir RC-20.
+
 | | |
 |---|---|
 | **Estado** | **ACORDADO** (D96), construido (2026-10-28, B66) |

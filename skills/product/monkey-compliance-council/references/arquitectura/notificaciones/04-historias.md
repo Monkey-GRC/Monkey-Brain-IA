@@ -26,7 +26,7 @@ que envía ([`empresas`](../../../../../../contracts/empresas.md), [`gestion-usu
 | HU-NOT-08 | Enterarme de que mi evidencia fue validada o rechazada | `responsable` · `delegado` · `admin_empresa` | ⚪ | P39 |
 | HU-NOT-09 | Enterarme de que un control dejó de cumplir o la evaluación automática falló | `admin_empresa` · `responsable` · `delegado` | ⚪ | P39, D70 |
 | HU-NOT-10 | Enterarme de una observación nueva del auditor | `responsable` · `delegado` | ⚪ | P39, D102 punto 9 |
-| HU-NOT-11 | Recibir recordatorios antes de que algo venza | `admin_empresa` · `responsable` · `delegado` | ⚪ | P39 punto 6, P22 punto 2 |
+| HU-NOT-11 | Recibir recordatorios antes de que algo venza | `admin_empresa` · `responsable` · `delegado` | ⚪ | D131, D138, P39 |
 | HU-NOT-12 | Ver mis avisos en un centro de notificaciones dentro de la app | Persona de Platform | ⚪ | P39 punto 5 |
 | HU-NOT-13 | Elegir cómo y cada cuánto recibo los avisos | Persona de Platform | ⚪ | P39 punto 4 |
 | HU-NOT-14 | Enterarme a tiempo de que una empresa archivada está por borrarse | `admin_monkey` | ⚪ | D97, DT-83 |
@@ -140,7 +140,7 @@ pudo correr **para** actuar antes de una auditoría.
 
 **Como** persona a cargo de un control, **quiero** un recordatorio antes de que venza **para** no perder el plazo.
 
-- Depende de la periodicidad de los controles (`P22` punto 2) y de `P39` punto 6, ambas abiertas.
+- La periodicidad y los días de aviso ya están definidos (D131, PR-06); el canal sigue en `P39`.
 - Necesita un planificador, que hoy no existe (README de este módulo).
 
 ### HU-NOT-12 · Ver mis avisos en un centro de notificaciones dentro de la app

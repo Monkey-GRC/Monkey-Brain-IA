@@ -11,19 +11,20 @@
   "assumedLayout": "sibling directory of the code repo(s) it applies to (e.g. Monkey/Backend/ next to Monkey/Monkey-Brain-IA/)",
   "entrypoint": "CLAUDE.md",
   "sources": {
-    "note": "Fuente maestra del comite. NO es material de apoyo: es la fuente de verdad funcional. Las demas fuentes que el comite entrego ya estan transcritas en references/ y sus archivos se retiraron el 2026-09-26 para no tener dos versiones de la misma verdad: donde quedo cada una esta en modelo-datos.md seccion 0.",
+    "note": "Fuente maestra del comite. NO es material de apoyo: es la fuente de verdad funcional. Las demas fuentes que el comite entrego ya estan transcritas en references/ y sus archivos se retiraron para no tener dos versiones de la misma verdad: donde quedo cada una esta en modelo/00-fuentes.md. Que es cada archivo de assets/: assets/README.md.",
     "index": "skills/product/monkey-compliance-council/references/datos/modelo-datos.md#0-fuentes",
     "files": [
       {
         "id": "tsc-integral-soc2",
-        "path": "assets/TSC INTERGRAL SOC 2 DETALLADO VF2.xlsx",
+        "path": "assets/TSC INTERGRAL SOC 2 DETALLADO VF18_DEV.xlsx",
         "primary": true,
-        "description": "VF2 (2026-10-10), FUENTE MAESTRA; reemplaza a la VF del 2026-09-15, cuyas hojas no cambiaron. FUENTE MAESTRA. 17 hojas anteriores: modelo RBAC (4 roles, matriz de permisos, 12 politicas de seguridad), contexto de empresa y de servicio, activos del scope + catálogo de conexiones AC-01..AC-06, 10 riesgos (metodología 5x5), 56 causas con 92 relaciones riesgo-causa, 119 controles de catálogo (118 asignados; CPL-1 es la Descripcion del Sistema) sobre 302 puntos de enfoque (729 relaciones), 61 requisitos TSC, 61 TEST de 23 campos con 228 asignaciones control-TEST, y 11.352 checks de 77 politicas SCA sobre 18 plataformas con 20 referencias de mapeo. IMPORTANTE: estas cifras salen de los datos crudos de las hojas, NO de la hoja Resumen, que quedo desactualizada (declara 658 relaciones). NUEVAS en VF2: 'MODELO EVALUACIÓN MONKEY' (prototipo del motor de cumplimiento y de riesgos: reglas RN-01..RN-25, 8 casos, 15 validaciones, 10 decisiones pendientes), 'REQUISITOS EVALUACIÓN MONKEY' (REQ-001..REQ-051) y 'PROMPT DESARROLLO MONKEY' (referencia, no se adopta: D68).",
+        "description": "VF18 (2026-11-22), FUENTE MAESTRA y catálogo v2 (D128); reemplaza a la VF2 y a la VF, sin equivalencia de códigos. Empieza por 00_LEEME (orden y ámbito de cada hoja) y 01_DESARROLLO (guía de integración: DEV-01..16, RC-01..21, mapa al modelo, listas de valores, marca blanca, orden de carga). MAP CALOR trae el modelo de evaluación (secciones 2 a 14, PR-01..16, IN-01..10, D-01..15, G-01..11). Totales: 114 controles en 472 filas, 61 criterios TSC, 302 puntos de enfoque, 576 requisitos del control, 472 pruebas, 4.684 vínculos prueba-check con rol, 42 documentos, 100 causas, 10 riesgos, 551 riesgo-causa, 771 causa-control, 228 control-documento; 11.352 checks de la sonda (4.14.7) y 1.621 del motor de nube (5.45.0, 20 plataformas). Detalle y dónde quedó cada hoja: modelo/00-fuentes.md.",
         "consumedBy": [
-          "skills/product/monkey-compliance-council/references/datos/modelo-datos.md",
-          "skills/product/monkey-compliance-council/references/producto/philosophy.md",
+          "skills/product/monkey-compliance-council/references/datos/modelo/00-fuentes.md",
+          "skills/product/monkey-compliance-council/references/datos/modelo/03-catalogo-maestro.md",
+          "skills/product/monkey-compliance-council/references/datos/modelo/09-calculo-cumplimiento.md",
           "skills/product/monkey-compliance-council/references/arquitectura/catalogo-maestro/marcos/soc2.md",
-          "skills/product/monkey-compliance-council/references/datos/modelo/09-calculo-cumplimiento.md"
+          "skills/product/monkey-compliance-council/references/producto/philosophy.md"
         ]
       },
       {

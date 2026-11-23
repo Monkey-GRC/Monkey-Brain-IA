@@ -7,6 +7,8 @@ type: contract
 
 # Cumplimiento — evidencias
 
+> **VF18 (D128): este contrato describe la API construida con el catálogo v1.** Con la VF18 la evidencia se exige **por requisito del control** y por **ventana de vigencia** (D129, D131), y ya no se revisa una por una: **se aprueba el control** (D132). Los documentos pasan a su propio módulo (D133). Se reescribe antes de construir RC-02, RC-07 y RC-08.
+
 | | |
 |---|---|
 | **Estado** | **ACORDADO**, reescrito por D96 (2026-10-27) y ajustado por D102 (2026-11-03: quién sube, quién revisa y cómo se combinan las revisiones; construido en MD-194). Construido: listar, subir, versiones y descargar (MD-126), la revisión del `admin_empresa` (MD-127, 2026-10-28), la combinación de revisiones del dueño y del `admin_empresa` (MD-194, ver «Estado de implementación») y agregar una evidencia propia (D88) |
@@ -27,7 +29,7 @@ type: contract
 | Quién revisa | **El `responsable` dueño** (cuando subió su delegado) **y el `admin_empresa` puede revisar cualquiera**, aprobándola o rechazándola con motivo |
 | Una revisión por rol | **Cada entrega admite a lo sumo una revisión por rol** |
 | Cómo se combinan | **Si revisaron los dos, deben haber aprobado los dos; cualquier rechazo gana. Si revisó solo uno y aprobó, está aprobada.** Sin revisión, pendiente |
-| Revisar lo propio | Nadie revisa lo que subió él mismo, **salvo el `admin_empresa` cuando es dueño del control y también quien sube** (`P34`) |
+| Revisar lo propio | Nadie revisa lo que subió él mismo, **salvo el `admin_empresa` cuando es dueño del control y también quien sube** (D132: su aprobación es la final) |
 | `auditor` | La lee y no la revisa |
 | IA | Puede sugerir; **nunca aprueba ni cierra nada** |
 
@@ -343,7 +345,7 @@ La persona lee lo que pide la prueba y sube su documento **bajo ella**, en un so
 |---|---|
 | **Quién** | El `responsable` dueño del control (lo que no subió él) · el `admin_empresa` (cualquiera). `delegado`, `auditor` y `admin_monkey`, `403`; un `responsable` sobre una entrega de un control que no es suyo, `403` |
 | **Éxito** | `200` con la revisión y el `evidence_state` calculado |
-| **Errores** | `403 FORBIDDEN` (rol que no revisa, control que no es suyo, o revisar lo que subió uno mismo; el `admin_empresa` sí puede revisar lo suyo, `P34`) · `404` (la entrega no existe para esta empresa) · `422 note.required` · `422 enum.invalid` |
+| **Errores** | `403 FORBIDDEN` (rol que no revisa, control que no es suyo, o revisar lo que subió uno mismo; el `admin_empresa` sí puede revisar lo suyo, D132) · `404` (la entrega no existe para esta empresa) · `422 note.required` · `422 enum.invalid` |
 
 Los seis atributos de una evidencia y la revisión por una persona (RN-01 a RN-03). **De estas revisiones sale el estado de las pruebas documentales a las que sirve la evidencia, en su control (D88): no hay un segundo paso de veredicto.** El rol de la revisión lo pone el servidor desde quien llama (`reviewer_role = responsable` o `admin_empresa`); el cuerpo no lo lleva. Cada entrega tiene a lo sumo **una revisión por rol** y `PUT` la crea o la reemplaza (queda en el rastro).
 
@@ -362,8 +364,8 @@ Los seis atributos de una evidencia y la revisión por una persona (RN-01 a RN-0
 - **Validar** es `human_validated` con los atributos en `true`.
 - **Rechazar** es dejar algún atributo en `false`: la prueba no cumple y quien subió rehace con una versión nueva.
 - **Cómo se combinan:** algún rechazo (de cualquiera de los dos roles) → rechazada; sin rechazos y al menos una validación → validada; si revisan los dos, deben validar los dos.
-- **Nadie revisa lo que subió él mismo**, salvo el `admin_empresa` dueño del control (`P34`).
-- Quien subió y quien revisó quedan en el rastro, con su nombre (`P34`).
+- **Nadie revisa lo que subió él mismo**, salvo el `admin_empresa` dueño del control (D132).
+- Quien subió y quien revisó quedan en el rastro, con su nombre.
 
 ---
 
@@ -419,7 +421,7 @@ Todos con el mismo sobre (`conventions.md`); `message` es la clave i18n del erro
 
 ## Preguntas abiertas
 
-- **`P34`:** quien sube la evidencia y quien la valida son la misma persona (acotada por D102: solo queda el caso del `admin_empresa` dueño).
+- ~~`P34`~~ cerrada por D132: si el `admin_empresa` es el responsable del control, su aprobación es la final.
 - Las 89 plantillas del catálogo llegan **como sugerencia** (`test: null`, no cuentan para ninguna prueba) porque el Excel no dice a qué prueba sirve cada documento; asignarlas es contenido de catálogo (D88, `DT-76`).
 - Los tipos permitidos y el tope de 25 MB están **confirmados** (2026-10-17, SEG-60).
 

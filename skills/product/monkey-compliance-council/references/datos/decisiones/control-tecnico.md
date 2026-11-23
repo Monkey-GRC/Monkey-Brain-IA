@@ -69,6 +69,8 @@ indexador ni dashboard cabe). `MANUAL → not_run` ya lo maneja el modelo y no r
 
 ## D56 · El control técnico de la nube en el modelo: recurso hijo, procedencia del mapeo y checks sin filas (2026-10-08)
 
+> **Ajustada por D129 (2026-11-22).** Los vínculos prueba–check de la VF18 entran como `committee_ratified`, con su rol (Directo, Complementario o Dependencia).
+
 **Decisión** (Héctor, 2026-10-08; desarrollo; **pendiente de ratificar con el comité**). Concreta D53 en el schema y fija cómo entra
 el motor de nube al modelo sin romper el control atómico (el control no cuelga de un motor ni de un marco).
 

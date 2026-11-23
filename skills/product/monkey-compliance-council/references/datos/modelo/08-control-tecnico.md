@@ -140,6 +140,8 @@ cumplimiento por marco.
 
 **Dos motores con roles distintos (D100, cierra P14 A1; acota el «validador único» del comité):** Prowler maneja todo lo de la nube (AWS, Azure, GCP y demás; D53–D58, `arquitectura/control-tecnico/motores/prowler.md`) y Wazuh sigue con servidores, BD y endpoints: configuración (SCA), monitoreo de amenazas en tiempo real y respuesta ante incidentes (`arquitectura/control-tecnico/motores/wazuh.md`). La verificación de D48 (la sonda solo ingiere registros de la nube) ya lo anticipaba. `automated_capabilities.provider` los distingue.
 
+**Con la VF18 (D129):** el catálogo de la sonda es el de la versión 4.14.7 (11.352 checks) y el del motor de nube el de la 5.45.0, con **20 plataformas** (nubes y SaaS) y no solo AWS y GCP. Qué checks cuentan lo dice `TEST_CHECKS`, con el **rol** de cada uno: solo los **Directos** aplicables deciden el cumplimiento (§9). La evidencia automática vale si su última recolección tiene **24 horas o menos** (PR-05); si es más vieja, el test queda pendiente y el control deja de contar como cumplido hasta la nueva recolección (G-07).
+
 **Vínculo activo ↔ agente (D113, aprobada el 2026-11-18; construido).** Antes `assets` no sabía qué agente de la sonda era. La tabla `asset_agents` (`tenant`, con RLS) lo enlaza:
 
 | Campo | Qué guarda |

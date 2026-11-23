@@ -118,6 +118,6 @@ El comité no los dijo; salen de mi lectura y están escritos así en D102 y en 
 
 - Un grupo de responsables sin nombre se crea solo («Responsables»); el administrador puede crear más.
 - El `admin_empresa` sin delegados propios: él es dueño y ejecutor de lo que se asigna a sí mismo.
-- El `admin_empresa` dueño que sube su propia evidencia se la revisa él mismo (`P34`, sigue abierto).
+- El `admin_empresa` dueño que sube su propia evidencia se la revisa él mismo (su aprobación es la final, D132).
 - No se puede fijar `max_users` por debajo de las cuentas que ya cuentan.
 - La respuesta de crear un usuario ya no trae el código (como la clave de una empresa, D99).

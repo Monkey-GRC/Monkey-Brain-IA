@@ -7,6 +7,8 @@ type: contract
 
 # Monkey Admin — catálogo maestro
 
+> **VF18 (D128): este contrato describe la API construida con el catálogo v1.** Con el catálogo v2 (D129) cambian las entidades que administra Monkey Admin: requisitos del control, pruebas de un control, documentos (en lugar de políticas y plantillas de evidencia), procedimientos, categorías de integración, mapeo a marcos y el rol de cada check. Se reescribe antes de construir la carga (RC-01) y la administración del catálogo v2.
+
 | | |
 |---|---|
 | **Estado** | **PROPUESTA** (2026-10-17). Construidas la lectura y la escritura del backend (2026-10-17); faltan los formularios de Monkey Admin → ver [Estado de implementación](#estado-de-implementación) |

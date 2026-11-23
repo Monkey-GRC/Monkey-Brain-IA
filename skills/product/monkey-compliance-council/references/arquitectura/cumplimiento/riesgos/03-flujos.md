@@ -49,7 +49,7 @@ Un servicio **sin riesgos vigentes** no se bloquea. El detalle está en
 ## 4 · Tratamiento
 
 `POST` y `GET /v1/risks/:id/treatments` registran qué se decidió hacer con el riesgo. El **riesgo residual** que
-debería salir de ahí todavía no se calcula: falta el efecto de cada relación causa–control (`P22` punto 1).
+debería salir de ahí todavía no se calcula: con la VF18 se calcula por cobertura verificada, sin el efecto de cada relación (D134), y falta construirlo (RC-11).
 
 ## 5 · Causas
 

@@ -7,6 +7,8 @@ type: contract
 
 # Equipo — invitar, activar, agrupar y asignar controles
 
+> **VF18 (D128): este contrato describe la API construida con el catálogo v1.** Con la VF18 hay un sexto rol, **`colaborador`**, y **solo `admin_monkey` y `admin_empresa` crean usuarios**: el `responsable` ya no crea a sus delegados (D136). Se ajusta antes de construir RC-13 y RC-14.
+
 | | |
 |---|---|
 | **Estado** | **ACORDADO** (2026-11-03, D102 y D103; reemplaza el reparto por dimensión de D96 y D98). **En construcción en el sprint 3** (ver [Estado de implementación](#estado-de-implementación)) |
@@ -584,4 +586,4 @@ Notificaciones (`P39`), ausencias y delegación temporal, reparto equitativo aut
 
 ## Preguntas abiertas
 
-`P34` (quien sube y quien revisa son la misma persona; solo queda el caso del `admin_empresa` dueño) y `P35` (calificación del auditor) no bloquean este corte. `P39` (notificaciones) tampoco: el correo de invitación sí entra.
+`P35` (calificación del auditor) no bloquean este corte. `P39` (notificaciones) tampoco: el correo de invitación sí entra.

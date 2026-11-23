@@ -36,6 +36,8 @@ Preguntas abiertas que afectan a [Gestión de usuarios](../../arquitectura/gesti
 4. **Más roles administrativos:** cuáles, con qué permisos y quién los crea. D117 deja el rol como campo; hasta que se decida, solo existe `admin_monkey`.
 5. **Corregir nombre o correo antes del canje de la clave y más de un correo administrativo** siguen en [`P2`](empresas.md#p2--el-flujo-de-la-clave-de-acceso--5-detalles-sin-definir) (c y e); se responden allí, no aquí.
 
-**Qué depende:** no bloquea. Los puntos 1 y 2 ampliarían `contracts/gestion-usuarios.md` y `contracts/empresas.md`, y el 4 pide una `D` nueva.
+**Lo que respondió la VF18 (D136, 2026-11-22):** el punto 1 y parte del 2. La Tabla 2 deja a `admin_monkey` crear, editar y desactivar usuarios de una empresa, asignar roles y controles, y ver sus controles, riesgos, evidencia, documentos, el registro de auditoría y los tableros. Siguen abiertos el rol de soporte separado (2), la exportación y las acciones en lote (3) y otros roles administrativos (4).
+
+**Qué depende:** no bloquea. Los puntos que siguen ampliarían `contracts/gestion-usuarios.md` y `contracts/empresas.md`, y el 4 pide una `D` nueva.
 
 ---

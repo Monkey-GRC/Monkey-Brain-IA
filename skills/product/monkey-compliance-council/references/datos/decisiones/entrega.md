@@ -31,6 +31,8 @@ sale de un síntoma real: la base de dev tenía 3 migraciones aplicadas que el r
 
 ## D55 · Entorno de desarrollo del control técnico: motor de nube y manager en la VPS (2026-10-08)
 
+> **Ajustada por D129 (2026-11-22).** La VF18 trae los catálogos de la sonda 4.14.7 y del motor de nube 5.45.0: antes de cargarlos se miden las diferencias (DEV-15).
+
 **Decisión** (Héctor, 2026-10-08; desarrollo; **pendiente de ratificar**; no cambia el modelo de datos). Lo verificado:
 
 1. **Motor de nube:** contenedor efímero (`toniblyx/prowler:5.44.0`) en la VPS de desarrollo, con 2 GB de memoria y 2 CPU. Un escaneo

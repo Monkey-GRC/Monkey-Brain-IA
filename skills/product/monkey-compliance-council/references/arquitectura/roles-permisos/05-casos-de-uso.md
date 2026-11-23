@@ -109,7 +109,7 @@ persona de Platform puede pedir la vista técnica (CU-ROL-03), pero solo la obti
 - 2b. Es un `responsable` y el control no es suyo → `403 FORBIDDEN` (SEG-67).
 - 3a. El `responsable` subió o registró él lo que intenta revisar → `403` (SEG-67,
   `contracts/cumplimiento/veredictos.md`).
-- 3b. El `admin_empresa` revisa lo que él mismo subió siendo dueño → se admite hoy (SEG-67); si debe impedirse es `P34`,
+- 3b. El `admin_empresa` revisa lo que él mismo subió siendo dueño → se admite hoy (SEG-67); y con la VF18 es la regla: su aprobación es la final (D132),
   abierta.
 
 ### CU-ROL-05 · Leer el cumplimiento como auditor

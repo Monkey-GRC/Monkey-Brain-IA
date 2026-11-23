@@ -1,5 +1,7 @@
 # Catálogo maestro · historias de usuario
 
+> **VF18 (D128): estas historias y sus cifras (119 controles, 61 pruebas) describen el catálogo v1 construido.** La VF18 trae el catálogo v2 (D129): ver [`datos/decisiones/catalogo-maestro/`](../../datos/decisiones/catalogo-maestro/README.md).
+
 Responde: **¿qué necesita cada persona para leer las opciones que salen del catálogo, y qué necesita el equipo de Monkey
 para mantener los marcos, controles, pruebas, riesgos, causas y evidencias sin romper lo que ya usan las empresas, y
 cómo se comprueba que lo tiene?** Cada historia dice quién, qué y para qué; sus criterios de aceptación son verificables

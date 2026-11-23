@@ -36,7 +36,7 @@ Está en `P39`, con ocho preguntas (la 8, la invitación por correo, ya la decid
 | ¿Qué eventos notifican? | Hoy el único disparador fiable es `compliance_events` ([Trazabilidad](../trazabilidad/README.md)) |
 | ¿Quién recibe qué? | Depende de la cadena de asignación (D102): dueño, ejecutor y `admin_empresa` |
 | ¿Frecuencia: inmediato o resumen? | Cambia por completo la arquitectura (envío directo vs. cola y planificador) |
-| Recordatorios de vencimiento | Dependen de la periodicidad de los controles, abierta en `P22` punto 2 |
+| Recordatorios de vencimiento | Ya definidos: periodicidad por control y días de aviso (D131, PR-06) |
 
 ## Dos restricciones que ya valen
 
@@ -61,7 +61,7 @@ Registros de este módulo:
 
 | Registro | Dónde |
 |---|---|
-| Decisiones (`D-n`) | ninguna propia: lo que sale hoy lo deciden D99, D101, D102 y D117 ([`empresas`](../../datos/decisiones/empresas.md), [`autenticacion`](../../datos/decisiones/autenticacion.md), [`gestion-usuarios`](../../datos/decisiones/gestion-usuarios.md)) |
+| Decisiones (`D-n`) | [`datos/decisiones/notificaciones.md`](../../datos/decisiones/notificaciones.md): `D138`; lo que sale hoy lo deciden además D99, D101, D102 y D117 ([`empresas`](../../datos/decisiones/empresas.md), [`autenticacion`](../../datos/decisiones/autenticacion.md), [`gestion-usuarios`](../../datos/decisiones/gestion-usuarios.md)) |
 | Pendientes del comité (`P-n`) | [`datos/pendientes/notificaciones.md`](../../datos/pendientes/notificaciones.md): `P39` — **si sigue abierto, se pregunta** |
 | Deuda vigente (`DT-n`) | [`deuda-tecnica/notificaciones.md`](../../deuda-tecnica/notificaciones.md): 1 ficha (`DT-83`) |
 | Requisitos de seguridad (`SEG-n`) | ninguno propio. Un aviso que vea un usuario cumple los de [`plataforma.md`](../../seguridad/plataforma.md) |

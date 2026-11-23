@@ -68,14 +68,14 @@ El **sprint 1** cubre los épicos 1 a 5 y está detallado aparte en `sprint-onbo
 
 | # | Épico | Qué entra | Fuente |
 |---|---|---|---|
-| 1 | **Fundación RBAC y Auth** | `companies`, `users`, los 4 roles fijos (sin roles personalizados), sesiones, aislamiento por tenant (dedicado o RLS). MFA obligatoria para los 4 roles, **en el sprint de acceso y usuarios (MD-94)** | `modelo-datos.md` §4 y §5 |
+| 1 | **Fundación RBAC y Auth** | `companies`, `users`, los roles fijos (sin roles personalizados; seis con el `colaborador` de la VF18, D136), sesiones, aislamiento por tenant (dedicado o RLS). MFA obligatoria para los 4 roles, **en el sprint de acceso y usuarios (MD-94)** | `modelo-datos.md` §4 y §5 |
 | 2 | **Onboarding — Contexto Organizacional** | Componente 1: 10 campos de identidad, perfil y jurisdicción → `organizations` | `arquitectura/onboarding/README.md` |
 | 3 | **Onboarding — Contexto del Servicio** | Componente 2: 16 campos por servicio, incluida la Descripción del Sistema (10 secciones AICPA) → `services` y lo que cuelga de ella | `arquitectura/onboarding/README.md` |
 | 4 | **Onboarding — Control Técnico** | Componente 3: catálogo `ac_01`…`ac_06`, flujo conectar → validar → activar → programar. **El cliente nunca ve el proveedor del motor** | `arquitectura/onboarding/README.md`, `wazuh.md` |
 | 5 | **Catálogo maestro y clonado** | Marcos, requisitos, puntos de enfoque y el control atómico. Al elegir marco, el catálogo queda disponible sin pasos manuales: controles clonados, requisitos y puntos de enfoque referenciados con FK (D3) | `modelo-datos.md` §3 |
 | 6 | **Motor de cumplimiento (cálculo)** | Cumplimiento derivado por par servicio × marco, nunca un % de empresa completa; recorrido requisitos → puntos de enfoque → controles, nunca almacenado como atributo del marco | `modelo-datos.md` §9 (D68: el motor del comité; reemplaza la agregación de D62) |
 | 7 | **Motor de evidencias** | Cadena de custodia completa: origen, fecha, responsable, versión, integridad | `modelo-datos.md` §7.3 |
-| 8 | **Motor de riesgos ("Cumplimiento")** | Registro de riesgo y causa, scoring cualitativo, tratamiento con dueño. **Módulo aparte que no bloquea nada.** La fórmula del riesgo residual está adoptada (D75); faltan datos del catálogo y quién define el apetito (`P22`, MD-151) | D23, confirmada por el comité el 2026-09-26 |
+| 8 | **Motor de riesgos ("Cumplimiento")** | Registro de riesgo y causa, scoring cualitativo, tratamiento con dueño. **Módulo aparte que no bloquea nada.** La regla del riesgo es la de la VF18 (D134): nivel por posición, residual por cobertura verificada y apetito por zonas; falta construirla (RC-10, RC-11, MD-151) | D23, confirmada por el comité el 2026-09-26 |
 | 9 | **Dashboard y modo guiado** | Vista por defecto con estado cualitativo, porcentaje de avance y cobertura juntos, y el vocabulario y los códigos del dominio (D80); nunca un % solo. La vista técnica detallada **no es un modo ni un botón: es la pantalla de los roles `auditor` y `admin_empresa`** (D63, D81, D96; mientras no se definan los permisos por pantalla, `P3`) | `philosophy.md` |
 | 10 | **Integración de la sonda y del motor de nube** | La sonda es la base del agente on-prem/híbrido; el motor de nube evalúa las cuentas. Confidencialidad total: nunca se nombra al proveedor, en ninguna pantalla, notificación ni texto generado por IA | `wazuh.md` |
 | 11 | **Conectores cloud/SaaS/IdP** | 12-15 conectores: AWS o Azure, GitHub, Google Workspace o M365, Okta o Entra ID, Slack | columna MUST de este archivo |
@@ -122,7 +122,7 @@ de cumplimiento global (%)" queda derogado por la decisión de medir por servici
 Al cerrar el modelo relacional (`datos/decisiones/README.md`) quedaron dos cosas que no son
 decisiones de modelo sino de roadmap:
 
-**Checks de nube — SHOULD, y urgente.** De los 61 TEST del catálogo, los **11 de nube
+**Checks de nube — SHOULD, y urgente.** (Cifra del catálogo v1; la VF18 la reemplaza, D128.) De los 61 TEST del catálogo, los **11 de nube
 (`T-CLD-*`) no tienen ni un check automático**, pese a que el comité decidió que el
 validador único cubre *"servidores, BD y nube"*; D100 lo acotó: la nube la mide Prowler (D53–D58) y Wazuh se queda con servidores, BD y endpoints (configuración, amenazas en tiempo real e incidentes). Consecuencia directa: un cliente con
 escenario **"Solo nube (gestionada)"** —que es un perfil de cliente normal, no un caso
@@ -141,6 +141,23 @@ de cumplimiento descarta del denominador todo check cuyo resultado no encuentra,
 produce una exclusión de facto sin justificación ni rastro — justo lo que el material
 fuente llama deshonesto ante un auditor. Hay que corregirlo antes de mostrarle un
 porcentaje a un cliente real.
+
+## La integración de la VF18 (catálogo v2)
+
+El comité entregó el 2026-11-22 la VF18, que reemplaza a la VF2 (D128). Trae 21 requerimientos de cambio (`RC-01` a
+`RC-21`, hoja `01_DESARROLLO`). Se construyen **después** de la documentación (MD-490) y en este orden, porque cada
+fase usa lo de la anterior:
+
+| Fase | Requerimientos | Qué deja | Depende de |
+|---|---|---|---|
+| 1 · Catálogo v2 | RC-05, RC-12, RC-03, RC-02, RC-04 → **RC-01** (carga y verificación); RC-16 (textos neutros) y RC-19 (parámetros) en paralelo. RC-10 (matriz por posición) se puede hacer antes | Las tablas nuevas de §3 y §11 y la v2 cargada; después, **el reset total del entorno de desarrollo** (D128) | La documentación y los contratos de cada RC |
+| 2 · Motor v2 | RC-06 (C%, nivel 0–5, reglas T), RC-08 (ventanas), RC-20 (excepciones), RC-18 (mensaje de brecha) | El cálculo de §9 | Fase 1; `P48` y `P49` |
+| 3 · Gestión | RC-13 y RC-14 (colaborador y matriz) → RC-07 (aprobaciones) → **RC-09 (módulo Documentos)** → RC-17 (alertas y tickets) | D132, D133, D136 y D138 construidas | Fase 2; el sistema de notificaciones (MD-69, `P39`) y el conector de Jira (`P46`) para RC-17 |
+| 4 · Riesgo | RC-11 (cobertura y residual) | D134 construida | Los niveles de RC-06 |
+| Aparte | RC-15 (contraseñas, D137); RC-21 (idioma, `P50`) | | |
+
+Las pantallas de Cumplimiento cambian casi todas (nivel, requisitos, aprobaciones, ventanas); se diseñan con
+`monkey-ui-copy` y el sistema de diseño en cada fase.
 
 ## Estado vigente del proyecto: reconstrucción
 

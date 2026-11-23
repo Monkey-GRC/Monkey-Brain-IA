@@ -53,6 +53,7 @@ En los diagramas, «nivel 3 del C4» se titula **piezas internas** para no confu
 | 12.6 | ↳ [Exclusiones](cumplimiento/exclusiones/README.md) | Sacar un activo de una prueba, con vigencia | [flujos](cumplimiento/exclusiones/03-flujos.md) |
 | 12.7 | ↳ [Observaciones](cumplimiento/observaciones/README.md) | Lo que escribe el auditor y cómo lo atiende la empresa | [flujos](cumplimiento/observaciones/03-flujos.md) |
 | 12.8 | ↳ [Riesgos](cumplimiento/riesgos/README.md) | Riesgos, causas, evaluación 5×5 y tratamiento | [flujos](cumplimiento/riesgos/03-flujos.md) |
+| **18** | [**Documentos**](documentos/README.md) | Políticas y procedimientos de la empresa: versiones, aprobación, aceptación del personal y la prueba documental (D133; no construido) | — |
 | | **Transversal** | | |
 | **13** | [**Trazabilidad**](trazabilidad/README.md) | El rastro de auditoría y los eventos de cambio de estado | [c4](trazabilidad/01-c4.md) · [modelo](trazabilidad/02-modelo.md) · [flujos](trazabilidad/03-flujos.md) · [historias](trazabilidad/04-historias.md) · [casos de uso](trazabilidad/05-casos-de-uso.md) · [mejoras](trazabilidad/06-mejoras.md) |
 | **14** | [**Aislamiento multi-tenant**](aislamiento-tenant/README.md) | RLS, `withScope` y por qué el aislamiento está en la base | [c4](aislamiento-tenant/01-c4.md) · [flujos](aislamiento-tenant/03-flujos.md) · [historias](aislamiento-tenant/04-historias.md) · [casos de uso](aislamiento-tenant/05-casos-de-uso.md) · [mejoras](aislamiento-tenant/06-mejoras.md) |

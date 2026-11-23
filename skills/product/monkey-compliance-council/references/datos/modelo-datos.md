@@ -21,7 +21,7 @@ actual del backend es el punto de partida que se está rehaciendo. Dos consecuen
 
 ## Cómo leer este documento
 
-**Está partido por módulos en `modelo/`** para no cargar 110 KB cuando se necesita un módulo. Los números de sección (§) no cambiaron: «modelo-datos.md §9» sigue valiendo y la tabla de abajo dice en qué archivo vive. Lee solo el módulo que tocas.
+**Está partido por módulos en `modelo/`** para no cargar 170 KB cuando se necesita un módulo. Los números de sección (§) no cambiaron: «modelo-datos.md §9» sigue valiendo y la tabla de abajo dice en qué archivo vive. Lee solo el módulo que tocas.
 
 **Está ordenado por módulos, en el orden en que un cliente los recorre**: primero lo que
 existe antes de que haya clientes (el catálogo), después el registro del tenant, los
@@ -59,15 +59,16 @@ el nombre en inglés.
 |---|---|---|---|
 | 0 | Fuentes | Qué documento del comité define qué, y dónde quedó transcrito cada uno | [`modelo/00-fuentes.md`](modelo/00-fuentes.md) |
 | 1 | Glosario | Todos los conceptos del dominio, con su tabla | [`modelo/01-glosario.md`](modelo/01-glosario.md) |
-| 2 | Las 5 dimensiones | El eje transversal que atraviesa todo el modelo | [`modelo/02-dimensiones.md`](modelo/02-dimensiones.md) |
-| 3 | Catálogo maestro | Lo que Monkey administra antes de que exista un cliente | [`modelo/03-catalogo-maestro.md`](modelo/03-catalogo-maestro.md) |
+| 2 | Las 9 dimensiones | El eje transversal que atraviesa todo el modelo | [`modelo/02-dimensiones.md`](modelo/02-dimensiones.md) |
+| 3 | Catálogo maestro | Lo que Monkey administra antes de que exista un cliente: el catálogo v2 de la VF18 (D129) | [`modelo/03-catalogo-maestro.md`](modelo/03-catalogo-maestro.md) |
 | 4 | Monkey Admin | Registro del tenant y aislamiento de datos | [`modelo/04-monkey-admin.md`](modelo/04-monkey-admin.md) |
-| 5 | Usuarios | Los 4 roles, las tablas, las políticas de seguridad, los responsables organizacionales, la matriz de permisos y cómo el modelo de acceso sostiene SOC 2 | [`modelo/05-usuarios.md`](modelo/05-usuarios.md) |
+| 5 | Usuarios | Los roles, las tablas, las políticas de seguridad, los responsables organizacionales, la matriz de permisos y cómo el modelo de acceso sostiene SOC 2 | [`modelo/05-usuarios.md`](modelo/05-usuarios.md) |
 | 6 | Onboarding | Los 3 componentes que capturan el contexto del cliente | [`modelo/06-onboarding.md`](modelo/06-onboarding.md) |
 | 7 | Cumplimiento | Controles del cliente, riesgos, evidencias, evaluaciones | [`modelo/07-cumplimiento.md`](modelo/07-cumplimiento.md) |
 | 8 | Control Técnico | La operación continua de la sonda | [`modelo/08-control-tecnico.md`](modelo/08-control-tecnico.md) |
-| 9 | El cálculo | Cómo se deriva el cumplimiento: activo → test → control → categoría → marco, con sus estados y reglas | [`modelo/09-calculo-cumplimiento.md`](modelo/09-calculo-cumplimiento.md) |
+| 9 | El cálculo | Cómo se deriva el cumplimiento (activo → check → test → requisito del control → control → categoría → marco) y el riesgo, con sus estados, reglas y parámetros (`MAP CALOR`, D130) | [`modelo/09-calculo-cumplimiento.md`](modelo/09-calculo-cumplimiento.md) |
 | 10 | Diagrama global | Todo junto | [`modelo/10-diagrama-global.md`](modelo/10-diagrama-global.md) |
+| 11 | Documentos | El documento del catálogo y el de la empresa: versiones, aprobación y aceptación (D133) | [`modelo/11-documentos.md`](modelo/11-documentos.md) |
 
 ### Equivalencia § ↔ módulo de arquitectura
 
@@ -93,5 +94,6 @@ Los § **no se renumeran** (todo el cerebro los cita), pero el resto del cerebro
 | 7.4 | [Trazabilidad](../arquitectura/trazabilidad/README.md) (eventos) y [Cumplimiento](../arquitectura/cumplimiento/README.md) (evaluaciones) |
 | 8 | [Control técnico](../arquitectura/control-tecnico/README.md) |
 | 9 | [Cumplimiento · Motor](../arquitectura/cumplimiento/motor/README.md) |
+| 11 | [Documentos](../arquitectura/documentos/README.md) |
 
 ---
