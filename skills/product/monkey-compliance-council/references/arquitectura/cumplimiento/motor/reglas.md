@@ -1,6 +1,6 @@
 # Motor · Las reglas, nivel por nivel
 
-> **VF18 (D128): esto describe el código construido con el catálogo v1.** Las reglas del motor v2 están en [§9](../../../datos/modelo/09-calculo-cumplimiento.md) (D130): estos archivos se reescriben con RC-06; la agregación por categoría y marco y el semáforo se conservan.
+> **VF18 (D128): los niveles 1a a 3 de abajo describen el motor v1.** Las reglas del motor v2 (construido con MD-498, 2026-11-23) están en [§9](../../../datos/modelo/09-calculo-cumplimiento.md) (D130) y en el código `Backend/src/features/compliance/domain/engine/v2/` (`technical-test.ts` T-04, `manual-test.ts`, `requirement.ts`, `control-level.ts` R1 a R6, `windows.ts`); la agregación por categoría y marco (`rollup.ts`) y el semáforo se conservan. Lo que el motor v2 aún no cubre: puntajes globales y módulos sin dato (MD-497), nivel Sólido por período (MD-500), plan de remediación de Parcial y «Cumplimiento aprobado» (MD-504, `DT-114`), parámetros desde una tabla (MD-495).
 
 Responde: **¿qué decide exactamente cada estado?** Lee antes [`README.md`](README.md) (la cadena y los cinco
 principios). Cada tabla se lee de arriba abajo: **gana la primera fila que aplique**.

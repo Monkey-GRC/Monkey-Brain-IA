@@ -32,7 +32,7 @@ la cierra). Los ID (`DT-n`) no se reutilizan. Si una deuda depende del comité, 
 | [`autenticacion.md`](autenticacion.md) | 3 | [Autenticación](../arquitectura/autenticacion/README.md) |
 | [`catalogo-maestro.md`](catalogo-maestro.md) | 6 | [Catálogo maestro](../arquitectura/catalogo-maestro/README.md) |
 | [`control-tecnico.md`](control-tecnico.md) | 20 | [Control técnico](../arquitectura/control-tecnico/README.md) |
-| [`cumplimiento.md`](cumplimiento.md) | 6 | [Cumplimiento](../arquitectura/cumplimiento/README.md) |
+| [`cumplimiento.md`](cumplimiento.md) | 7 | [Cumplimiento](../arquitectura/cumplimiento/README.md) |
 | [`empresas.md`](empresas.md) | 5 | [Empresas](../arquitectura/empresas/README.md) |
 | [`gestion-usuarios.md`](gestion-usuarios.md) | 3 | [Gestión de usuarios](../arquitectura/gestion-usuarios/README.md) |
 | [`notificaciones.md`](notificaciones.md) | 1 | [Notificaciones](../arquitectura/notificaciones/README.md) |
@@ -98,6 +98,7 @@ Limitan el producto o al equipo.
 | [DT-113](catalogo-maestro.md#dt-113--transición-del-catálogo-v1-al-v2-tablas-v1-vacías-puentes-y-admin-en-solo-lectura) | Transición del catálogo v1 al v2: tablas v1 vacías, puentes y Admin en solo lectura | [Catálogo maestro](catalogo-maestro.md) |
 | [DT-100](catalogo-maestro.md#dt-100--el-catálogo-del-comité-solo-está-en-español) | El catálogo del comité solo está en español | [Catálogo maestro](catalogo-maestro.md) |
 | [DT-71](cumplimiento.md#dt-71--la-lectura-de-controles-fija-valores-que-el-modelo-ya-prevé) | La lectura de controles fija valores que el modelo ya prevé | [Cumplimiento](cumplimiento.md) |
+| [DT-114](cumplimiento.md#dt-114--las-pruebas-manuales-y-la-aprobación-del-control-usan-la-evidencia-v1-mientras-no-existan-la-gestión-ni-documentos) | Las pruebas manuales y la aprobación del control usan la evidencia v1 mientras no existan la gestión ni Documentos | [Cumplimiento](cumplimiento.md) |
 | [DT-76](cumplimiento.md#dt-76--las-plantillas-de-evidencia-del-catálogo-no-dicen-a-qué-prueba-sirve-cada-documento-y-el-estado-documental-por-control-se-apartó-de-rn-13) | Las plantillas de evidencia del catálogo no dicen a qué prueba sirve cada documento, y el estado documental por control se apartó de RN-13 | [Cumplimiento](cumplimiento.md) |
 | [DT-77](onboarding.md#dt-77--evaluar-los-riesgos-antes-de-declarar-activos-se-exige-solo-en-la-pantalla) | Evaluar los riesgos antes de declarar activos se exige solo en la pantalla | [Onboarding](onboarding.md) |
 | [DT-78](control-tecnico.md#dt-78--la-guía-de-corrección-de-una-prueba-técnica-es-una-traducción-automática-sin-revisar-y-el-filtro-del-proveedor-es-una-red-de-seguridad) | La guía de corrección de una prueba técnica es una traducción automática sin revisar, y el filtro del proveedor es una red de seguridad | [Control técnico](control-tecnico.md) |

@@ -7,7 +7,16 @@ type: contract
 
 # Cumplimiento — resumen del servicio
 
-> **VF18 (D128): este contrato describe la API construida con el catálogo v1.** Con la VF18 un control cuenta como cumplido solo en «Cumplimiento aprobado» (D130, D132) y el período auditado dura 6 meses como mínimo (D131). Se ajusta antes de construir RC-06 y RC-08.
+> **VF18 (D128).** Con la VF18 un control cuenta como cumplido solo en «Cumplimiento aprobado» (D130, D132) y el período auditado dura 6 meses como mínimo (D131). **Desde MD-498 el resumen sale del motor v2** sin cambiar la forma de la respuesta: ver [Motor v2](#motor-v2-md-498).
+
+## Motor v2 (MD-498)
+
+La forma de la respuesta **no cambia**: los campos existentes se calculan con el motor v2 (§9) y la vista técnica agrega campos nuevos.
+
+- **Un control cuenta como cumplido** en el marco y la categoría cuando su nivel es Adecuado o Sólido. **Puente hasta RC-07 (MD-504, `DT-114`):** §9 exige además «Cumplimiento aprobado»; mientras la gestión del control no exista, la aprobación de la empresa es la validación de la evidencia que ya hace el `admin_empresa`, que el motor ya exige para dar Correcto a una prueba manual.
+- **`progress` y `coverage` del marco y de la categoría** siguen contando controles (únicos en el marco). Un control está «decidido» si su nivel no es `not_evaluated` y ningún requisito está Pendiente.
+- **`technical.state`** (`rollup_state`) se calcula como antes, con el control v2 como entrada: `non_compliant` si algún control tiene un requisito No cumple o Vencido.
+- **`categories[].technical.controls[]`** agrega `level`, `level_value`, `complies`, `c_percent` y `blocking_requirements[]` (`{ code, text, status }`: los requisitos que impiden el 100 %, REQ-026). `state` y `blocking_tests[]` se derivan como en [`controles.md`](controles.md#motor-v2-md-498-campos-nuevos-y-compatibilidad).
 
 | | |
 |---|---|
@@ -265,6 +274,8 @@ Todos con el mismo sobre (`conventions.md`); `message` es la clave i18n del erro
 ---
 
 ## Estado de implementación
+
+**Construido (MD-498, 2026-11-23): el resumen sale del motor v2** ([Motor v2](#motor-v2-md-498)): controles cumplidos por nivel Adecuado o Sólido, y `level`, `level_value`, `complies`, `c_percent` y `blocking_requirements[]` por control en la vista técnica. La agregación por categoría y marco sigue en `domain/engine/rollup.ts`. **Sin construir de esto:** los puntajes globales y los módulos sin dato (MD-497); las ventanas cerradas y el nivel Sólido por período (MD-500); «Cumplimiento aprobado» como condición de cumplido (MD-504, `DT-114`); los parámetros desde una tabla (MD-495); y las lecturas que aún usan `client_control_tests` (MD-509, `DT-113`).
 
 **Construido: `GET /v1/services/{service_id}/compliance-overview` (MD-137, 2026-10-17)**, con la vista de negocio y `?view=technical`. Lo calcula con el motor del comité (`domain/engine/`) sobre los mismos datos que la lista de controles.
 

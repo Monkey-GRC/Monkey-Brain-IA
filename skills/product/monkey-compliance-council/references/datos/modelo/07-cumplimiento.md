@@ -32,6 +32,8 @@ límite de tiempo. Lo usa `admin_empresa`.
 > | `client_risks` sin valoración hasta que el cliente la pone | La valoración inherente del catálogo llega prellenada al asistente (D134) |
 > | Sin alertas | Alertas por evento y tickets opcionales (D138) |
 
+**`client_control_requirements` (MD-498).** El requisito del control del cliente: una fila por cada `catalog.control_requirements` del control que el servicio heredó, creada al clonar el servicio (y para los servicios ya clonados, por la migración). Campos: `id`, `tenant_id`, `client_control_id`, `control_requirement_id` (el del catálogo), `periodicity` (copiada del catálogo; la cambia el `admin_empresa` con MD-500), `is_applicable` (por defecto `true`) y `not_applicable_reason` (el «No aplica» justificado y aprobado llega con la gestión del control, RC-07), `created_at`. Único por (`client_control_id`, `control_requirement_id`), con RLS por `tenant_id`. **No guarda estado:** el estado del requisito se deriva en cada lectura (§9). Las pruebas de cada requisito se leen del catálogo (`control_requirement_tests`); la v1 (`client_control_tests`) deja de usarse para calcular y se retira en MD-509.
+
 ### 7.1 El control del cliente
 
 ```mermaid
