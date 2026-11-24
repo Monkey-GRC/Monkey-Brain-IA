@@ -6,7 +6,7 @@ Por qué Cumplimiento es como es, partido por componente porque el módulo es gr
 
 | # | Componente | Decisiones |
 |---|---|---|
-| 1 | [Motor](motor.md) | `D62` · `D68` · `D79` · `D130` · `D131` |
+| 1 | [Motor](motor.md) | `D62` · `D68` · `D79` · `D130` · `D131` · `D140` · `D147` · `D148` |
 | 2 | [Controles](controles.md) | `D65` · `D119` · `D132` |
 | 3 | [Resumen](resumen.md) | `D87` · `D105` · `D118` |
 | 4 | [Veredictos](veredictos.md) | `D85` · `D88` · `D121` |

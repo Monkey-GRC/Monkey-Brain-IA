@@ -3,7 +3,7 @@
 Responde: **¿cómo se entera cada persona de que tiene algo que hacer o de que algo cambió en su cuenta, y cómo se
 comprueba?** Hoy solo salen **correos transaccionales** por el puerto `Mailer` (D99): la clave de acceso, las invitaciones y
 los dos avisos de la contraseña. Los avisos sobre el cumplimiento, el centro de notificaciones y las preferencias **no
-existen** todavía: ya están decididos (D138 los eventos y destinatarios, D143 el canal, la frecuencia y el centro de notificaciones) y se construyen en MD-69; esas historias siguen ⚪. Los pasos
+existen** todavía: ya están decididos (D138 los eventos y destinatarios, D143 el canal, la frecuencia y el centro de notificaciones) y se construyen en MD-515; esas historias siguen ⚪. Los pasos
 de cada caso están en [`05-casos-de-uso.md`](05-casos-de-uso.md); los cuerpos y errores, en los contratos de cada módulo
 que envía ([`empresas`](../../../../../../contracts/empresas.md), [`gestion-usuarios`](../../../../../../contracts/gestion-usuarios.md),
 [`administradores`](../../../../../../contracts/gestion-usuarios/administradores.md),

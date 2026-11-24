@@ -22,7 +22,7 @@ La forma de la respuesta **no cambia**: los campos existentes se calculan con el
 |---|---|
 | **Estado** | **ACORDADO** (2026-10-17; D80 el 2026-10-15). El período y la fecha de corte se definen con D87 (2026-10-20), definitiva desde D145. Reescrito por D96 (2026-10-27): la evaluación del auditor está en pausa. D102 (2026-11-03) limita el resumen de un `responsable` o `delegado` a **sus controles** |
 | **App** | Monkey Platform |
-| **Entidades** | `service_frameworks` (la evaluación del servicio; `framework_assessments`, §7.5, queda sin uso por D96) |
+| **Entidades** | `service_frameworks` (la evaluación del servicio) y `service_framework_periods` (sus períodos auditados, D148; `framework_assessments`, §7.5, queda sin uso por D96) |
 | **Tickets** | MD-137, MD-138, MD-139, MD-168 (MD-155, las evaluaciones, en pausa) · sprint 3: MD-193 |
 | **Contexto común** | [`README.md`](README.md) · convenciones (sección «Cumplimiento»): [`conventions.md`](../conventions.md) · enums: [`enums.md`](../enums.md) |
 
@@ -34,6 +34,7 @@ La forma de la respuesta **no cambia**: los campos existentes se calculan con el
 |---|---|---|---|
 | `GET` | [`/v1/services/{service_id}/compliance-overview`](#get-v1servicesservice_idcompliance-overview--el-resumen-del-servicio) | `admin_empresa` · `auditor` (todo) · `responsable`, `delegado` (solo lo suyo) | El cumplimiento del servicio por marco y categoría |
 | `PUT` | [`/v1/services/{service_id}/frameworks/{framework_code}/evaluation-period`](#put-v1servicesservice_idframeworksframework_codeevaluation-period--declarar-el-período-y-la-fecha-de-corte) | `admin_empresa` | Declarar el período y la fecha de corte (D87) |
+| `GET` | [`/v1/services/{service_id}/frameworks/{framework_code}/evaluation-periods`](#get-v1servicesservice_idframeworksframework_codeevaluation-periods--el-histórico-de-períodos) | `admin_empresa` · `auditor` | El histórico de períodos (D145, D148) |
 
 ## Quién puede qué
 
@@ -42,6 +43,7 @@ La forma de la respuesta **no cambia**: los campos existentes se calculan con el
 | Ver el resumen (vista de negocio) | ✓ | **solo lo de sus controles** | ✓ |
 | Pedir `view=technical` | ✓ (D81) | `403` | ✓ |
 | Declarar el período y la fecha de corte (D87) | ✓ | `403` | `403` |
+| Ver el histórico de períodos (D145) | ✓ | `403` | ✓ |
 
 > La **evaluación del auditor** (D77) está **en pausa** (D96): no se emiten ni se leen, y `GET …/assessments` y `POST …/assessments` no existen. Volverá según el Excel (`P35`). La tabla `framework_assessments`, `enums.md` (`assessor_role`, `assessment_verdict`) y el campo `assessments` de la vista técnica **no se usan**.
 
@@ -196,7 +198,7 @@ Declara o cambia el **período auditado** de un marco del servicio y, si se quie
 #### Request
 | Campo | Tipo | Obligatorio | Regla |
 |---|---|---|---|
-| `period_start` | date `AAAA-MM-DD` | sí | ≤ `period_end`; **pueden ser el mismo día** (SOC 2 Tipo I, una fecha puntual) |
+| `period_start` | date `AAAA-MM-DD` | sí | < `period_end`. En SOC 2 el período dura **como mínimo PR-16** (6 meses, D131): solo Tipo II (D145) |
 | `period_end` | date | sí | |
 | `cutoff_date` | date \| null | no | **Ausente o `null` = «hoy»** (y borra una fecha congelada anterior); con valor, queda **congelada** en esa fecha. Debe caer dentro del período y no estar en el futuro |
 
@@ -225,10 +227,40 @@ El mismo bloque `evaluation` del resumen, con `framework_code`.
 #### Errores propios
 | HTTP | Código | Cuándo |
 |---|---|---|
-| 422 | `period.invalid_range` | `period_start` > `period_end` (en `period_end`) |
+| 422 | `period.invalid_range` | `period_start` ≥ `period_end` (en `period_end`) |
+| 422 | `period.too_short` | En SOC 2, el período dura menos que PR-16 (6 meses: `period_end` antes de `period_start` + 6 meses − 1 día) (en `period_end`) |
 | 422 | `cutoff.out_of_period` | La `cutoff_date` explícita cae fuera del período |
 | 422 | `cutoff.in_future` | La `cutoff_date` está en el futuro: no hay datos de un día que no ha llegado |
 | 404 | `NOT_FOUND` | El marco no está contratado y activo en el servicio (igual que si el servicio no es de la empresa) |
+
+#### Períodos e histórico (D145, D148, MD-500)
+- Cada servicio × marco tiene **un período por fila** (`service_framework_periods`): como mucho uno **abierto** y los **cerrados** como histórico, que no cambian.
+- Este `PUT` crea el primer período o edita el **abierto**. El bloque `evaluation` del resumen es siempre el del período abierto.
+- **El período siguiente se abre solo.** Una tarea diaria cierra el período cuyo `period_end` ya pasó y abre el siguiente: empieza el día después y dura lo mismo (en meses de calendario si el anterior iba de inicio de mes a fin de mes; si no, en días). La fecha de corte del nuevo es «hoy».
+- Cada cambio deja `evaluation_period.set` en el rastro; la apertura automática deja `evaluation_period.opened`, con actor sistema.
+
+### GET /v1/services/{service_id}/frameworks/{framework_code}/evaluation-periods — El histórico de períodos
+
+| | |
+|---|---|
+| **Quién** | `admin_empresa` · `auditor` |
+| **Éxito** | `200` |
+| **Errores** | `403` · `404` (el marco no está contratado y activo en el servicio) |
+
+El abierto primero y después los cerrados, del más reciente al más viejo. Sin paginación: en SOC 2 hay uno cada 6 meses como mínimo (PR-16).
+
+```json
+{
+  "statusCode": 200,
+  "message": "evaluation_period.list",
+  "data": [
+    { "id": "8c1d…", "status": "open", "period_start": "2026-07-01", "period_end": "2026-12-31", "cutoff_date": null, "opened_by": "system", "closed_at": null },
+    { "id": "71b0…", "status": "closed", "period_start": "2026-01-01", "period_end": "2026-06-30", "cutoff_date": null, "opened_by": "user", "closed_at": "2026-07-01T00:05:00Z" }
+  ]
+}
+```
+
+`status` es el enum `evaluation_period_status` (`open` · `closed`); `opened_by`, `user` (lo declaró el `admin_empresa`) o `system` (lo abrió la tarea diaria).
 
 > Con el período definido deja de responder `409 EVALUATION_NOT_DEFINED` proponer una exclusión (vence en el `period_end`) y el resumen deja de responder `not_measured` por esta causa.
 
@@ -267,7 +299,7 @@ Todos con el mismo sobre (`conventions.md`); `message` es la clave i18n del erro
 
 ## Preguntas abiertas
 
-- ~~`P26`~~ cerrada por D145: solo Tipo II; al terminar un período se abre el siguiente y el anterior queda como histórico (hoy hay una sola fila por servicio y marco: cambia con MD-500).
+- ~~`P26`~~ cerrada por D145: solo Tipo II; al terminar un período se abre el siguiente y el anterior queda como histórico (construido con MD-500: una fila por período en `service_framework_periods`).
 - **`P35`:** la calificación del auditor (en pausa).
 - **Mitigación y riesgo residual:** no están aquí; entran con D134 (RC-11) como campos opcionales.
 
@@ -275,11 +307,12 @@ Todos con el mismo sobre (`conventions.md`); `message` es la clave i18n del erro
 
 ## Estado de implementación
 
-**Construido (MD-498, 2026-11-23): el resumen sale del motor v2** ([Motor v2](#motor-v2-md-498)): controles cumplidos por nivel Adecuado o Sólido, y `level`, `level_value`, `complies`, `c_percent` y `blocking_requirements[]` por control en la vista técnica. La agregación por categoría y marco sigue en `domain/engine/rollup.ts`. **Sin construir de esto:** los puntajes globales y los módulos sin dato (MD-497); las ventanas cerradas y el nivel Sólido por período (MD-500); «Cumplimiento aprobado» como condición de cumplido (MD-504, `DT-114`); los parámetros desde una tabla (MD-495); y las lecturas que aún usan `client_control_tests` (MD-509, `DT-113`).
+**Construido (MD-498, 2026-11-23): el resumen sale del motor v2** ([Motor v2](#motor-v2-md-498)): controles cumplidos por nivel Adecuado o Sólido, y `level`, `level_value`, `complies`, `c_percent` y `blocking_requirements[]` por control en la vista técnica. La agregación por categoría y marco sigue en `domain/engine/rollup.ts`. **Sin construir de esto:** los puntajes globales y los módulos sin dato (MD-497); «Cumplimiento aprobado» como condición de cumplido (MD-504, `DT-114`); los parámetros desde una tabla (MD-495); y las lecturas que aún usan `client_control_tests` (MD-509, `DT-113`).
 
 **Construido: `GET /v1/services/{service_id}/compliance-overview` (MD-137, 2026-10-17)**, con la vista de negocio y `?view=technical`. Lo calcula con el motor del comité (`domain/engine/`) sobre los mismos datos que la lista de controles.
 
-- **Período y fecha de corte (MD-168, construido 2026-10-20).** `PUT …/evaluation-period`, solo `admin_empresa`. Se guarda en `service_frameworks` (`period_start`, `period_end`, `cutoff_date`); lo del servicio de otra empresa o un marco no contratado o inactivo responde `404`. **«Definido» es inicio y fin:** la fecha de corte guardada ya no hace falta. Cada cambio deja `evaluation_period.set` en el rastro con el valor anterior y el nuevo, en la misma transacción. Pruebas: `test/cumplimiento/periodo.e2e-spec.ts` y la lógica pura en `domain/periods/evaluation-period.ts`.
+- **Período y fecha de corte (MD-168, construido 2026-10-20).** `PUT …/evaluation-period`, solo `admin_empresa`. Desde MD-500 se guarda en `service_framework_periods` (el período abierto; `service_frameworks` ya no tiene `period_start`, `period_end` ni `cutoff_date`); lo del servicio de otra empresa o un marco no contratado o inactivo responde `404`. **«Definido» es inicio y fin:** la fecha de corte guardada ya no hace falta. Cada cambio deja `evaluation_period.set` en el rastro con el valor anterior y el nuevo, en la misma transacción. Pruebas: `test/cumplimiento/periodo.e2e-spec.ts` y la lógica pura en `domain/periods/evaluation-period.ts`.
+- **Construido (MD-500, 2026-11-23): períodos e histórico (D145, D148).** `service_framework_periods` (una fila por período, uno `open` como mucho), `GET …/evaluation-periods` (`data` es un arreglo, mensaje `evaluation_period.list`), SOC 2 solo Tipo II (`period.invalid_range` si inicio ≥ fin, `period.too_short` bajo 6 meses) y la tarea diaria que cierra y abre el siguiente (`EVALUATION_PERIOD_INTERVAL_MINUTES`, 1440 por defecto, `0` la apaga; `infrastructure/periods/evaluation-period.scheduler.ts`). Pruebas: `test/cumplimiento/periodo.e2e-spec.ts`, `periodicidad.e2e-spec.ts` y `domain/periods/evaluation-period.spec.ts`. Pendiente: `DT-117` (varios marcos, un período) y el aviso de cierre de período con notificaciones (MD-515).
 - **Sin construir de esto:** pedir el período al contratar el marco o crear el servicio (hoy el onboarding solo pide `evaluation_period`, un texto, DT-16).
 - **Vista técnica.** La piden `auditor` y `admin_empresa` (D81, D96); el `responsable`, el `delegado` y `admin_monkey` reciben `403`.
 - **`responsable` y `delegado` (D102, D118): construido en MD-193 (2026-11-17).** El resumen se calcula solo con sus controles, con los marcos y las categorías donde tienen alguno. Pruebas: `test/cumplimiento/resumen.e2e-spec.ts`.

@@ -13,7 +13,7 @@ los cuerpos y errores están en los contratos de quien envía
 
 Fuente del diagrama: [`05-casos-de-uso.puml`](05-casos-de-uso.puml) (PlantUML; se regenera con
 `skills/process/monkey-docs/scripts/render-uml.sh`). Los casos CU-NOT-01 a CU-NOT-03 incluyen **CU-NOT-04**, el envío
-común por el puerto `Mailer`. CU-NOT-05 a CU-NOT-07 están **por construir**: los dos primeros ya están decididos (D138, D143) y se construyen en MD-69.
+común por el puerto `Mailer`. CU-NOT-05 a CU-NOT-07 están **por construir**: los dos primeros ya están decididos (D138, D143) y se construyen en MD-515.
 
 ## Resumen
 

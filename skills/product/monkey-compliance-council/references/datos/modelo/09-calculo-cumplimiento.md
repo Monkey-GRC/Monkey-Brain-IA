@@ -132,7 +132,7 @@ Cada control se evalúa por **ventanas de calendario** según su periodicidad (l
 | Permanente | Continua: resultados automáticos con frescura ≤ PR-05; lo manual del control, con la periodicidad de su documento | Cuando la última recolección supera PR-05 | Evidencia → Desactualizada; test → Pendiente |
 | Cuando sea requerido | Por evento: evidencia de cada evento del período, o una declaración trimestral de «sin ocurrencias» del responsable | 15 días antes del cierre del trimestre | Evento sin evidencia → Excepción; sin declaración → Vencido |
 
-**El período auditado** (G-11) se configura por servicio y marco y en SOC 2 dura **como mínimo 6 meses** (PR-16): solo cuentan las ventanas que caen dentro, y una evidencia fechada fuera no cuenta. La fecha de corte sigue siendo «hoy» (D105).
+**El período auditado** (G-11) se configura por servicio y marco y en SOC 2 dura **como mínimo 6 meses** (PR-16): solo cuentan las ventanas que caen dentro, y una evidencia fechada fuera no cuenta. La fecha de corte sigue siendo «hoy» (D105). Cada período es una fila con su histórico; al terminar, una tarea diaria abre el siguiente con la misma duración (D145, D148). La periodicidad la cambia el `admin_empresa` por control, para todos sus requisitos (D147); los avisos previos de PR-06 salen como fecha (`alert_at`) y los envía el sistema de notificaciones (MD-515).
 
 ### La gestión del control (§14 del libro, D132)
 

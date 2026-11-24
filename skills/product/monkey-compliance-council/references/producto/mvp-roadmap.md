@@ -152,13 +152,13 @@ fase usa lo de la anterior:
 |---|---|---|---|
 | 1 · Catálogo v2 | RC-05, RC-12, RC-03, RC-02, RC-04 → **RC-01** (carga y verificación); RC-16 (textos neutros) y RC-19 (parámetros) en paralelo. RC-10 (matriz por posición) se puede hacer antes | Las tablas nuevas de §3 y §11 y la v2 cargada; después, **el reset total del entorno de desarrollo** (D128) | La documentación y los contratos de cada RC |
 | 2 · Motor v2 | RC-06 (C%, nivel 0–5, reglas T), RC-08 (ventanas), RC-20 (excepciones), RC-18 (mensaje de brecha) | El cálculo de §9 | Fase 1; D140, D141 y D146 |
-| 3 · Gestión | RC-13 y RC-14 (colaborador y matriz) → RC-07 (aprobaciones) → **RC-09 (módulo Documentos)** → RC-17 (alertas y tickets) | D132, D133, D136 y D138 construidas | Fase 2; el sistema de notificaciones (MD-69, D143) y el conector de Jira (D144) para RC-17 |
+| 3 · Gestión | RC-13 y RC-14 (colaborador y matriz) → RC-07 (aprobaciones) → **RC-09 (módulo Documentos)** → RC-17 (alertas y tickets) | D132, D133, D136 y D138 construidas | Fase 2; el sistema de notificaciones (MD-515, D143) y el conector de Jira (D144) para RC-17 |
 | 4 · Riesgo | RC-11 (cobertura y residual) | D134 construida | Los niveles de RC-06 |
 | Aparte | RC-15 (contraseñas, D137); RC-21 (idioma, D142) | | |
 
 **Fase 1, avance (MD-491, 2026-11-23):** construidos RC-05, RC-12, RC-03, RC-02, RC-04 y RC-01: el schema v2 aditivo, la carga y la verificación de la VF18 (D139); la v1 sigue en el schema hasta las fases 2 y 3 (`DT-113`). Quedan de la fase 1 RC-16 (la tabla 9 ya se aplica a los nombres neutros de las pruebas), RC-19 y RC-10. Ejecutar las plataformas nuevas del motor de nube y de la sonda va en un ticket aparte.
 
-**Fase 2, avance (MD-498, 2026-11-23):** construido RC-06: el motor v2 (C%, nivel 0 a 5, reglas T, ventanas por calendario) calcula lista, detalle y resumen de controles. Quedan de la fase 2: ventanas cerradas y nivel Sólido por período (RC-08, MD-500), puntajes globales y módulos sin dato (MD-497), parámetros desde una tabla (RC-19, MD-495), el plan de remediación de Parcial y «Cumplimiento aprobado» (RC-07, MD-504, `DT-114`) y el retiro de `client_control_tests` (MD-509, `DT-113`).
+**Fase 2, avance (MD-498, 2026-11-23):** construido RC-06: el motor v2 (C%, nivel 0 a 5, reglas T, ventanas por calendario) calcula lista, detalle y resumen de controles. **MD-500 (2026-11-23):** construido RC-08: ventanas cerradas, nivel Sólido por período, periodicidad por control (D147) y períodos con histórico (D145, D148); quedan `DT-115` a `DT-117` y los avisos (MD-515). Quedan de la fase 2: puntajes globales y módulos sin dato (MD-497), parámetros desde una tabla (RC-19, MD-495), el plan de remediación de Parcial y «Cumplimiento aprobado» (RC-07, MD-504, `DT-114`) y el retiro de `client_control_tests` (MD-509, `DT-113`).
 
 Las pantallas de Cumplimiento cambian casi todas (nivel, requisitos, aprobaciones, ventanas); se diseñan con
 `monkey-ui-copy` y el sistema de diseño en cada fase.

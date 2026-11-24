@@ -76,7 +76,7 @@ qué tan cerca está de la auditoría y qué falla.
 **Como** `admin_empresa`, **quiero** fijar el inicio y el fin del período que se audita **para** que el motor pueda
 medir el marco.
 
-- Las fechas se eligen en un calendario; inicio y fin pueden ser el mismo día (Tipo I) (D87, D105).
+- Las fechas se eligen en un calendario; inicio y fin pueden ser el mismo día (Tipo I) (D87, D105); **desde D145 (MD-500) solo hay Tipo II: el fin debe ser posterior al inicio y, en SOC 2, el período dura al menos 6 meses** (`period.invalid_range`, `period.too_short`).
 - Inicio después del fin → `422 period.invalid_range`; un marco no contratado → `404`.
 - La fecha de corte es siempre «hoy»: la pantalla no la ofrece ni la congela (D105).
 - Cada cambio deja en el rastro el valor anterior y el nuevo, en la misma transacción.
@@ -279,7 +279,7 @@ evidencia **para** dar el asunto por atendido.
 - Las de un servicio completo las atiende solo el `admin_empresa` (SEG-70).
 - La evidencia adjunta es de un control del mismo servicio; para que cuente se valida aparte (`P37`).
 - Responder una ya respondida → `409 OBSERVATION_NOT_OPEN`.
-- No hay aviso de que existe una nueva (decidido en D143; lo construye MD-69). 🟡 La API está construida; la pantalla falta.
+- No hay aviso de que existe una nueva (decidido en D143; lo construye MD-515). 🟡 La API está construida; la pantalla falta.
 
 ### HU-CUM-24 · Cerrar o devolver una observación que escribí
 

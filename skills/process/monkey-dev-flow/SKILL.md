@@ -17,8 +17,10 @@ Los subagentes son trabajadores: implementan, verifican o revisan, y no coordina
 
 - **Un ticket por vez.** Rod verifica y sube uno antes del siguiente; no se encadenan.
 - **Arranque:** `scripts/start-ticket.sh MD-n slug brain backend [frontend] [platform]`.
+  - Revisa con `gh` el PR de cada rama local: si alguno sigue **abierto**, se detiene (un ticket por vez).
   - Pone al día la rama de integración: el Brain en `main`; Backend y frontends en `develop`.
-  - Borra las ramas locales ya fusionadas. Las remotas las borra Rod.
+  - Borra las ramas locales ya fusionadas, también las de un squash cuya punta es la del PR. Las remotas las borra Rod.
+  - Antes de lanzarlo, pasa el ticket anterior a «Listo» en Jira si su PR ya se fusionó.
   - Crea `docs|feat/MD-n-slug`, con el mismo slug en todos los repos, y arranca el reloj.
   - Se detiene si un repo tiene cambios sin commitear.
   - Nada de worktrees: está bloqueado.
@@ -166,7 +168,8 @@ de acceso de una empresa nueva sale en la terminal del Backend con `MAIL_PROVIDE
 - Servidores en 3000, 4200 o 4201.
 - El e2e completo, o `ng test` sin `--include` (D120).
 - Migrar la base con el modo de desarrollo o resetearla: la base de dev tiene drift. Solo `migrate deploy`, que Rod autorizó
-  sin preguntar.
+  sin preguntar, y solo con migraciones aditivas: la base de Rod es la de dev compartida, y una migración sin fusionar que borra
+  o renombra rompe el `develop` desplegado (MD-500); esa la aplica el despliegue al fusionar.
 - Git worktrees.
 - Comentarios en Jira.
 

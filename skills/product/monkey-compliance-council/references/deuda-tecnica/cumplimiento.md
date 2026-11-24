@@ -61,3 +61,30 @@ Parches vigentes de [Cumplimiento](../arquitectura/cumplimiento/README.md). Tabl
 - **Qué está parchado:** `catalog.tests.type` es texto libre del comité («Manual», «Mixta», «Prueba de diseño…»), así que no sirve para saber si una prueba la resuelve una persona. El veredicto (MD-155) usa el tipo de la **dimensión del control** (`client_control_dimensions.type`): `manual` y `technical_manual` admiten veredicto; `automated` e `hybrid`, no (`409 TEST_NOT_MANUAL`). *(La otra mitad de esta deuda, exigir la razón cuando el control de origen tiene observaciones abiertas, la cerró MD-154: `422 closure_reason.required`.)*
 - **Por qué:** es el único dato estructurado que distingue lo manual de lo medido.
 - **Qué lo cierra:** la carga del catálogo v2 (RC-01): cada prueba de la VF18 trae su tipo (documental, población, operativo o técnico) y su automatización (D129).
+
+### DT-115 · Los requisitos «cuando sea requerido» no se miden por trimestre
+
+🟠 Importante
+
+- **Qué está parchado:** el motor v2 (MD-500) calcula el `alert_at` de un requisito «cuando sea requerido» (15 días antes del cierre del trimestre), pero no tiene ventanas ni lo da por Vencido: falta dónde guardar la evidencia de cada evento y la declaración trimestral de «sin ocurrencias» del responsable (D131 punto 3)
+- **Por qué:** esa declaración es un acto del responsable dentro de la gestión del control, que todavía no existe; crear una tabla aparte la habría duplicado
+- **Qué lo cierra:** MD-504 (gestión del control): la declaración trimestral del responsable y la evidencia por evento; con ellas el motor mide el trimestre y aplica «evento sin evidencia → Excepción, sin declaración → Vencido»
+
+### DT-116 · La vista del período aproxima las ventanas pasadas que no tienen historial
+
+🟠 Importante
+
+- **Qué está parchado:** la vista del período (R6, `technical.period`, MD-500) usa el historial de resultados técnicos de `evaluations`, pero hay piezas sin historial:
+  - De cada prueba manual solo se carga el último veredicto aprobado: una ventana pasada que solo cubrió un veredicto ya reemplazado cuenta como sin evidencia.
+  - Los vínculos de módulo o puntaje (D141, D146) y las dependencias (T-06) se dan por cubiertos en las ventanas pasadas.
+  - La periodicidad anual no se enumera, porque su ventana depende de la última evidencia.
+- **Por qué:** el estado de los módulos y el de las dependencias solo existe como dato actual, y los veredictos se reemplazan
+- **Qué lo cierra:** MD-504 (resultado de la prueba manual con su fecha, D140) y MD-497 (historial de módulos y puntajes por integración); la anual, cuando se enumere desde la primera evidencia del período
+
+### DT-117 · Un servicio con varios marcos se evalúa con un solo período
+
+🟡 Mejora
+
+- **Qué está parchado:** el motor toma, para todo el servicio, el período abierto que termina más tarde, aunque cada marco contratado tenga el suyo
+- **Por qué:** hoy solo se vende SOC 2 (D145) y un control del cliente no pertenece a un solo marco
+- **Qué lo cierra:** cuando un servicio contrate un segundo marco, evaluar la vista del período por marco, cada uno con su período (`service_framework_periods`)

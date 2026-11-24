@@ -271,6 +271,32 @@ de la VF2 marcadas abajo como reemplazadas.
 
 ---
 
+## Período auditado y periodicidad (MD-500, D145, D147, D148) — nuevas
+
+### `evaluation_period_status`
+**Columna:** `service_framework_periods.status` · Como mucho un `open` por servicio × marco.
+
+| Valor | Etiqueta (es) |
+|---|---|
+| `open` | Abierto |
+| `closed` | Cerrado |
+
+### `evaluation_period_origin`
+**Columna:** `service_framework_periods.opened_by` · En la API, `opened_by`.
+
+| Valor | Etiqueta (es) | Qué significa |
+|---|---|---|
+| `user` | Declarado | Lo declaró el `admin_empresa` |
+| `system` | Automático | Lo abrió la tarea diaria al cerrar el anterior (D145) |
+
+### `periodicity_source`
+**Dónde se usa:** `technical.requirements[].periodicity_source` del detalle de un control (no es columna: se deriva).
+
+| Valor | Etiqueta (es) | Qué significa |
+|---|---|---|
+| `catalog` | Sugerida | La del catálogo |
+| `client` | Configurada | La cambió el `admin_empresa` con justificación (G-10, D147) |
+
 ## Evaluación y veredictos
 
 ### `evaluation_origin`

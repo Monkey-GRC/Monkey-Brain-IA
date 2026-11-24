@@ -12,7 +12,7 @@ Por qué Notificaciones es como es. **Se consulta para reabrir, no para construi
 
 **Por qué.** El libro define qué avisa Monkey, a quién y con qué texto, que era lo que bloqueaba los recordatorios de vencimiento y la gestión de las fallas.
 
-**Qué cambia.** El sistema de notificaciones (MD-69), `arquitectura/notificaciones/` y `contracts/integraciones.md`. Responde los eventos y los destinatarios de `P39` (siguen abiertos el canal, la frecuencia y el centro de notificaciones) y el punto 1 de `P46` (los tickets son para remediar; la categoría Ticketing además aporta evidencia). La prioridad de un check de la sonda, que no trae severidad, queda en `P49`.
+**Qué cambia.** El sistema de notificaciones (MD-515), `arquitectura/notificaciones/` y `contracts/integraciones.md`. Responde los eventos y los destinatarios de `P39` (siguen abiertos el canal, la frecuencia y el centro de notificaciones) y el punto 1 de `P46` (los tickets son para remediar; la categoría Ticketing además aporta evidencia). La prioridad de un check de la sonda, que no trae severidad, queda en `P49`.
 
 **Fuente:** comité funcional, VF18 (`MAP CALOR`, secciones 6, 8, 13 y 14; hoja `INTEGRACIONES`), 2026-11-22.
 
@@ -29,6 +29,6 @@ Por qué Notificaciones es como es. **Se consulta para reabrir, no para construi
 
 **Por qué.** Eran las preguntas técnicas que quedaban de `P39`; el comité ya había definido qué se avisa y a quién.
 
-**Qué cambia.** `arquitectura/notificaciones/` (historias y casos de uso dejan de estar bloqueados), el sistema de notificaciones (MD-69) y los avisos de RC-08, RC-09 y RC-17 (MD-500, MD-506, MD-508). Necesita un planificador para el resumen diario y una tabla de notificaciones.
+**Qué cambia.** `arquitectura/notificaciones/` (historias y casos de uso dejan de estar bloqueados), el sistema de notificaciones (MD-515; D147 corrige la cita a MD-69) y los avisos de RC-08, RC-09 y RC-17 (MD-500, MD-506, MD-508). Necesita un planificador para el resumen diario y una tabla de notificaciones.
 
 **Fuente:** Héctor Ríos (Rod), 2026-11-23, como decisión de desarrollo, para no bloquear la VF18. **No es una decisión del comité.**
