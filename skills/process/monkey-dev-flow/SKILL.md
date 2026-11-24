@@ -112,10 +112,14 @@ cada repo contra su rama de integración y devuelve los comandos que prueban **s
 ## 7. Revisar arquitectura y seguridad, en paralelo con `qa`
 
 `qa`, `architecture-reviewer` (capas, imports entre features, `withScope`, contrato respetado), **`docs-guardian`**
-(enlaces, rutas y registros citados, contratos y estados de implementación frente al código; solo edita el cerebro) y, si la
-clase incluye seguridad, `monkey-security-review` se lanzan **a la vez**: los tres leen el mismo cambio y ninguno escribe código. Una
-violación vuelve al senior con la corrección puntual; la sesión principal no reescribe código de producción. Si una
-corrección cambia código, `qa` vuelve a verificar **solo** lo que tocó esa corrección.
+(enlaces, rutas y registros citados, contratos y estados de implementación frente al código; solo edita el cerebro),
+**`nestjs-reviewer`** cuando el cambio toca `Backend` o `monkey-cis-sync` (audita solo el diff con la skill
+`nestjs-code-audit`: fronteras y DDD, seguridad, integridad con Prisma, rendimiento y pruebas; MD-521) y, si la clase incluye
+seguridad, `monkey-security-review` se lanzan **a la vez**: todos leen el mismo cambio y ninguno escribe código. Una
+violación de `architecture-reviewer` o un hallazgo **CRÍTICO o ALTO** de `nestjs-reviewer` vuelve al senior con la corrección
+puntual; sus MEDIO y BAJO del cambio se corrigen si son baratos o van a un `DT-n`, y los preexistentes solo se reportan. La
+sesión principal no reescribe código de producción. Si una corrección cambia código, `qa` vuelve a verificar **solo** lo que
+tocó esa corrección.
 
 ## 8. Seguridad
 

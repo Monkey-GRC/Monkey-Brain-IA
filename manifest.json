@@ -144,6 +144,14 @@
       "model": "sonnet",
       "reports_to": "monkey-dev-flow"
     },
+    {
+      "id": "nestjs-reviewer",
+      "path": "agents/nestjs-reviewer.md",
+      "description": "Audita solo el diff de un ticket del Backend con la skill nestjs-code-audit (fronteras y DDD, seguridad NestJS, integridad Prisma, rendimiento y pruebas). Solo lectura; corre en paralelo con qa y architecture-reviewer.",
+      "model": "sonnet",
+      "applies_to": ["backend"],
+      "reports_to": "monkey-dev-flow"
+    },
     { "id": "docs-guardian", "path": "agents/docs-guardian.md", "description": "Mantiene la documentación del cerebro al día: enlaces, rutas y registros citados, numeración de módulos, índices, y contratos y estados de implementación frente al código. Solo edita el cerebro.", "model": "sonnet", "applies_to": ["brain"], "reports_to": "monkey-dev-flow" }
   ],
   "skills": [
@@ -279,6 +287,11 @@
       "id": "senior-frontend-engineer",
       "path": "skills/frontend/senior-frontend-engineer/SKILL.md",
       "description": "Punto de partida de los dos frontends: qué leer antes, mapa de cada app, principios de criterio, flujo, anti-patrones y definición de terminado. Enruta a las demás recetas."
+    },
+    {
+      "id": "nestjs-code-audit",
+      "path": ".claude/skills/nestjs-code-audit/SKILL.md",
+      "description": "Skill externa (amirtaherkhani/nestjs-skills, fijada en skills-lock.json): auditoría de solo lectura de código NestJS. La usa el subagente nestjs-reviewer sobre el diff de cada ticket del Backend (MD-521)."
     },
     {
       "id": "monkey-design-audit",

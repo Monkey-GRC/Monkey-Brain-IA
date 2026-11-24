@@ -93,6 +93,7 @@ Fuera de `references/`:
 ## Automatización (`.claude/`)
 
 Permisos y hooks están en `.claude/settings.json`; los scripts, en `.claude/hooks/` y en `skills/*/*/scripts/`. Subagentes:
-`backend-senior`, `frontend-senior`, `frontend-design`, `qa`, `architecture-reviewer`, `docs-guardian` (documentación al día y sin
-referencias rotas), `product-owner`, `wazuh-integration-expert`. Para comprobar qué
+`backend-senior`, `frontend-senior`, `frontend-design`, `qa`, `architecture-reviewer`, `nestjs-reviewer` (auditoría NestJS del
+diff, en paralelo con `qa`), `docs-guardian` (documentación al día y sin referencias rotas), `product-owner`,
+`wazuh-integration-expert`. Para comprobar qué
 se cargó en una sesión, `/memory` y `/status`.
