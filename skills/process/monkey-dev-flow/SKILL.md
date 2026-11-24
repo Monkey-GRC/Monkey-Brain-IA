@@ -88,6 +88,10 @@ El prompt al subagente incluye: la tarea, el módulo, la ruta del contrato, las 
 y qué **no** tocar. Pide un reporte corto: archivos cambiados, **los comandos de prueba que corrió con sus cifras y segundos**
 y las dudas.
 
+**Autocontrol antes de entregar.** El senior repasa su propio diff con la misma lista que usará su revisor de framework
+(los 5 pilares de `nestjs-reviewer` o de `angular-reviewer`) y corrige lo que encuentre: un hallazgo que el revisor encuentra
+después cuesta otra vuelta de implementación y verificación.
+
 **Paralelo por defecto.** Si dos tareas no comparten archivos (backend y frontend con el contrato ya fijado, o dos features
 distintas), lanza sus subagentes a la vez. En serie solo lo que depende de otro resultado.
 
@@ -109,17 +113,44 @@ cada repo contra su rama de integración y devuelve los comandos que prueban **s
   PASS de `qa` o, si no se pudo correr, **dilo explícitamente**. Con la rama ya subida, mira el CI con `gh pr checks` y
   `gh run list` (solo lectura; ver `monkey-closeout` §5).
 
-## 7. Revisar arquitectura y seguridad, en paralelo con `qa`
+## 7. Revisar: carriles en paralelo con `qa`
 
-`qa`, `architecture-reviewer` (capas, imports entre features, `withScope`, contrato respetado), **`docs-guardian`**
-(enlaces, rutas y registros citados, contratos y estados de implementación frente al código; solo edita el cerebro),
-**`nestjs-reviewer`** cuando el cambio toca `Backend` o `monkey-cis-sync` (audita solo el diff con la skill
-`nestjs-code-audit`: fronteras y DDD, seguridad, integridad con Prisma, rendimiento y pruebas; MD-521) y, si la clase incluye
-seguridad, `monkey-security-review` se lanzan **a la vez**: todos leen el mismo cambio y ninguno escribe código. Una
-violación de `architecture-reviewer` o un hallazgo **CRÍTICO o ALTO** de `nestjs-reviewer` vuelve al senior con la corrección
-puntual; sus MEDIO y BAJO del cambio se corrigen si son baratos o van a un `DT-n`, y los preexistentes solo se reportan. La
-sesión principal no reescribe código de producción. Si una corrección cambia código, `qa` vuelve a verificar **solo** lo que
-tocó esa corrección.
+Se lanzan **a la vez** sobre el mismo cambio; ninguno escribe código de producción. Cada uno tiene **un carril** y no
+repite el de otro:
+
+| Revisor | Cuándo | Su carril (y solo ese) |
+|---|---|---|
+| `qa` | Siempre | Que el cambio **hace lo que dice el contrato**: casos con su prueba, requests y flujos reales. PASS o FAIL |
+| `architecture-reviewer` | Siempre que hay código | **Reglas propias de Monkey**: capas, imports entre features, `withScope`, `AuditIntent`, contrato; en Angular, `core/shared/features`, alias, i18n y listas desde `/catalogs` |
+| `nestjs-reviewer` | Cambio en `Backend` o `monkey-cis-sync` | **Buenas prácticas de NestJS y Prisma** con la skill `nestjs-code-audit`: diseño, seguridad genérica (OWASP), integridad, N+1, paginación, índices, calidad de pruebas (MD-521) |
+| `angular-reviewer` | Cambio en `Frontend` o `Frontend-Platform` | **Buenas prácticas de Angular 20+** con la skill `angular-developer`: signals, OnPush, control flow, XSS, suscripciones, bundle, calidad de pruebas (MD-527). No opina del aspecto |
+| `docs-guardian` | Siempre | Documentación del cerebro frente al código; es el único que edita (solo el cerebro) |
+| `monkey-security-review` (skill, la corre la sesión principal) | Clase seguridad | **Requisitos registrados `SEG-n`**: cumple, no cumple o requisito nuevo. Los hallazgos de seguridad de los dos revisores de framework se cruzan aquí con su `SEG-n` |
+| `frontend-design` / `monkey-design-audit` | Cambio visual | El **aspecto** y el design system; Rod aprueba las pantallas (paso 9) |
+
+**Consolidar.** La sesión principal junta los reportes en **una lista**, un hallazgo por causa: si dos revisores ven lo mismo,
+queda el del carril dueño (regla de Monkey → `architecture-reviewer`; `SEG-n` → `monkey-security-review`; práctica de
+framework → `nestjs-reviewer`/`angular-reviewer`). **Si se contradicen, mandan las reglas del repo** (ver «Precedencia de
+skills» abajo) y la diferencia se le dice a Rod.
+
+**Qué vuelve al senior.** Un FAIL de `qa`, una violación de `architecture-reviewer`, un `SEG-n` incumplido y un hallazgo
+**CRÍTICO o ALTO** de un revisor de framework vuelven con la corrección puntual. Sus MEDIO y BAJO **del cambio** se corrigen si
+son baratos o van a un `DT-n`; los **preexistentes** solo se reportan (o al ticket que ya los tiene). La sesión principal no
+reescribe código de producción. Si una corrección cambia código, `qa` vuelve a verificar **solo** lo que tocó, y el revisor que
+lo pidió revisa solo esa corrección.
+
+### Precedencia de skills
+
+Las recetas del repo y las skills externas no compiten: **las del repo deciden qué y cómo se hace en Monkey; las externas
+dicen cómo se usa bien el framework**. Si chocan, gana el repo:
+
+1. `CLAUDE.md`, contratos y decisiones (`D-n`).
+2. Las skills y recetas de Monkey: `senior-backend-engineer`, `senior-frontend-engineer`, `skills/backend/`, `skills/frontend/`,
+   el design system y `monkey-ui-copy`.
+3. Las skills externas, como **referencia del framework**: `nestjs-code-audit` (criterio de revisión del Backend) y
+   `angular-developer` (API y buenas prácticas de Angular). De `angular-developer` **no se aplica** lo que no corresponde a
+   estas apps: crear proyectos con `ng new`, Signal Forms (Angular 22+; aquí 20), Vitest (aquí Karma, con `ng test --include`)
+   ni SSR/hidratación (no hay SSR). Su paso «correr `ng build`» sí vale.
 
 ## 8. Seguridad
 

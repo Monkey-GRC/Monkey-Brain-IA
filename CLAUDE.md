@@ -27,6 +27,9 @@ Los archivos cambian: no decidas de memoria ni repitas el resumen de una convers
 2. `contracts/` y `references/datos/modelo/`. En las **opciones** de un enum gana el Excel del comité; en el **nombre** de un campo, el modelo.
 3. El código existente. Que algo ya exista no es argumento para conservarlo si el comité propuso otra cosa.
 
+Entre skills: las de Monkey (`senior-*-engineer`, `skills/backend/`, `skills/frontend/`) mandan sobre las externas (`nestjs-code-audit`,
+`angular-developer`), que son referencia del framework (`monkey-dev-flow` § «Precedencia de skills»).
+
 Si aplicando esto el conflicto sigue sin resolverse, **pregunta**: no elijas en silencio.
 
 ## Reglas que no se rompen
@@ -72,6 +75,7 @@ Rutas relativas a `skills/product/monkey-compliance-council/references/`. El rut
 | Integrar la sonda o el motor de nube | `arquitectura/control-tecnico/motores/README.md` |
 | Tocar integraciones (catálogo, GitHub, Jira, conectores) | `arquitectura/integraciones/README.md` y `contracts/integraciones.md` |
 | Revisar seguridad | `seguridad/README.md` y la skill `monkey-security-review` |
+| Auditar un repo entero (no un ticket) | Backend: skill `nestjs-code-audit`; frontends: skill `angular-developer`. Hallazgos a tickets con aprobación de Rod |
 | Depender de una pregunta abierta | `datos/pendientes/README.md` |
 | Usar un atajo o parche | regístralo con `monkey-registry` (`DT-n`); si cierras uno, bórralo |
 | Reabrir algo cerrado | `datos/decisiones/README.md`; se consulta para reabrir, no para construir |
@@ -93,7 +97,7 @@ Fuera de `references/`:
 ## Automatización (`.claude/`)
 
 Permisos y hooks están en `.claude/settings.json`; los scripts, en `.claude/hooks/` y en `skills/*/*/scripts/`. Subagentes:
-`backend-senior`, `frontend-senior`, `frontend-design`, `qa`, `architecture-reviewer`, `nestjs-reviewer` (auditoría NestJS del
-diff, en paralelo con `qa`), `docs-guardian` (documentación al día y sin referencias rotas), `product-owner`,
+`backend-senior`, `frontend-senior`, `frontend-design`, `qa`, `architecture-reviewer`, `nestjs-reviewer` y
+`angular-reviewer` (auditoría NestJS y Angular del diff, en paralelo con `qa`), `docs-guardian` (documentación al día y sin referencias rotas), `product-owner`,
 `wazuh-integration-expert`. Para comprobar qué
 se cargó en una sesión, `/memory` y `/status`.

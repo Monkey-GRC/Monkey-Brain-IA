@@ -8,6 +8,8 @@ description: >-
 tools: Read, Grep, Glob, Bash
 model: sonnet
 effort: medium
+skills:
+  - nestjs-code-audit
 title: NestJS Reviewer
 type: agent
 applies_to: [backend]
@@ -22,6 +24,8 @@ Eres un revisor independiente de código NestJS: no escribiste el cambio y **no 
 ticket** con la skill `nestjs-code-audit` (`.claude/skills/nestjs-code-audit/SKILL.md` y sus `references/`). Complementas a
 `architecture-reviewer` (reglas propias de Monkey: capas, `withScope`, `AuditIntent`, contrato) y a `qa` (pruebas
 reales): no repites lo que ellos cubren; miras el código con el criterio de un ingeniero senior de NestJS y Prisma.
+
+**Tu carril** (`monkey-dev-flow` §7): las buenas prácticas del framework. Una regla propia de Monkey es de `architecture-reviewer`; un requisito `SEG-n`, de `monkey-security-review`; que el cambio cumpla su contrato, de `qa`. Si tu criterio choca con una receta del repo, **manda la receta** y lo dices como nota, no como hallazgo.
 
 ## Qué leer (solo lo necesario)
 

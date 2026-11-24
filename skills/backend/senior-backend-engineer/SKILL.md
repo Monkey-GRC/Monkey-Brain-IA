@@ -64,6 +64,11 @@ Nombres en inglés, `kebab-case`, `<sujeto>.<rol>.ts`. Detalle: `../add-feature.
 4. repositorio Prisma con `withScope` y auditoría → 5. controller, mapper, Swagger → 6. módulo e i18n → 7. pruebas e2e (camino feliz, 401, 403, 422,
 errores de negocio, aislamiento entre empresas) → 8. cierra la documentación afectada.
 
+**Criterio de revisión de NestJS.** Lo que mira `nestjs-reviewer` sale de la skill `nestjs-code-audit`
+(`.claude/skills/nestjs-code-audit/references/semantic-review.md`): fronteras entre módulos, invariantes en el dominio, transacciones e idempotencia,
+N+1 y paginación en la base, índices de lo que se filtra, pruebas de los casos borde. **Manda este archivo** si difieren
+(`monkey-dev-flow` § «Precedencia de skills»): por ejemplo, el aislamiento es por RLS con `withScope`, no por un `tenantId` en cada `where`.
+
 Recetas: nueva feature → `../feature-builder.md` + `../add-feature.md` · tabla o columna → `../add-prisma-model.md` · error con clave → `../add-i18n-error.md` ·
 sonda (Wazuh) → `../add-wazuh-integration.md` · motor de nube (Prowler) → `../add-cloud-engine.md` · revisión de capas → `../architecture-guardian.md`.
 
@@ -86,5 +91,6 @@ sonda (Wazuh) → `../add-wazuh-integration.md` · motor de nube (Prowler) → `
   `@ApiProperty`/`@ApiPropertyOptional` (respuestas, DTOs y queries). Lo corre `npx jest`, que va siempre completo (~6 s). El CI
   de MD-195 cayó por esto.
 - [ ] Revisado con `../architecture-guardian.md`; sin carpetas con más de ~9 archivos sueltos.
+- [ ] Autocontrol con los 5 pilares de `agents/nestjs-reviewer.md` (fronteras, seguridad, integridad con Prisma, rendimiento, pruebas): lo que el revisor encontraría, ya está corregido.
 - [ ] `SEG-n`, `DT-n`, `P-n` y `D-n` afectados actualizados en el mismo cambio.
 - [ ] Nada de lo que ve el cliente nombra a Wazuh ni a Prowler.

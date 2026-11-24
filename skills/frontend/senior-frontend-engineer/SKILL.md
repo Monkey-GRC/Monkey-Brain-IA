@@ -69,6 +69,11 @@ Las pruebas viven junto al archivo (`*.spec.ts`). Alias obligatorios: `@core/*`,
 5. vista y componentes (`presentation/`) → 6. ruta, guard y navegación → 7. claves i18n en `es` y `en` → 8. `ng build` y prueba en el navegador
 (camino feliz, error, vacío, sin permiso, móvil) → 9. cierra la documentación afectada.
 
+**Referencia de Angular.** Para usar bien una API del framework (signals, `computed`/`linkedSignal`, `effect`, `resource`/`rxResource`,
+`input()`/`output()`/`model()`, control flow, `@defer`, guards funcionales, interceptores, formularios reactivos tipados, `TestBed`, harnesses)
+consulta la skill `angular-developer` (`.claude/skills/angular-developer/references/`). **Manda este archivo** si difieren, y de ella no se aplica
+`ng new`, Signal Forms (Angular 22+; aquí 20), Vitest (aquí Karma) ni SSR (`monkey-dev-flow` § «Precedencia de skills»).
+
 Recetas: feature nueva → `../add-feature.md` · llamar al backend → `../call-backend-api.md` · textos → `../add-translation.md` · revisión de capas → `../architecture-guardian.md`.
 
 ## 5. Anti-patrones que se rechazan
@@ -87,6 +92,7 @@ Recetas: feature nueva → `../add-feature.md` · llamar al backend → `../call
 - [ ] `ng lint` sin errores (0 avisos); nada de `eslint-disable` ni reglas apagadas para callar un caso: se corrige o se registra.
 - [ ] Textos en `es` y `en`; ninguna lista de opciones hardcodeada; alias en los imports.
 - [ ] Revisado con `../architecture-guardian.md`; la ruta, su guard y su título correctos.
+- [ ] Autocontrol con los 5 pilares de `agents/angular-reviewer.md` (signals y OnPush, seguridad, suscripciones, rendimiento, pruebas): lo que el revisor encontraría, ya está corregido.
 - [ ] Estados de carga, vacío y error; sin permiso; móvil.
 - [ ] Si se ve en pantalla: lista de pantallas (ruta y cómo llegar) para que Rod las revise en su app, según `../visual-verification.md`. Sin capturas.
 - [ ] Nada de lo que ve el cliente nombra a Wazuh ni a Prowler.

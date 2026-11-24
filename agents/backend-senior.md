@@ -64,6 +64,7 @@ Tarea: <una línea>
 Estado: hecho | bloqueado | parcial
 Archivos: <lista corta de paths>
 Pruebas: <cada comando corrido> → <PASS/FAIL, cifras y segundos>
+Autocontrol: <hecho con los 5 pilares de nestjs-reviewer | qué quedó y por qué>
 Pendiente/duda: <una línea o "ninguna">
 ```
 Nada de explicaciones largas, narrativa de proceso, ni resúmenes extensos.
