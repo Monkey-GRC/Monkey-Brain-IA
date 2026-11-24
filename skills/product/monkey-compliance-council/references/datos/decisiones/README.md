@@ -230,3 +230,4 @@ quedan aquí:
 | D146 | Los tres puntajes globales de la VF18 pasan con 80 % o más, configurable *(cierra P49; decisión de desarrollo)* | [control-tecnico](control-tecnico.md) |
 | D147 | La periodicidad se cambia por control (todos sus requisitos) con justificación; los avisos previos salen como fechas en la API y los envía MD-515 *(decisión de desarrollo)* | [cumplimiento/motor](cumplimiento/motor.md) |
 | D148 | Un período auditado por fila con histórico; una tarea diaria abre el siguiente y deja los eventos de las ventanas cerradas *(decisión de desarrollo)* | [cumplimiento/motor](cumplimiento/motor.md) |
+| D149 | Los parámetros PR-01 a PR-16, D146 y Sólido en `catalog.evaluation_parameters`, todos editables por `admin_monkey`; PR-07 admite ventanas móviles *(decisión de desarrollo)* | [cumplimiento/motor](cumplimiento/motor.md) |

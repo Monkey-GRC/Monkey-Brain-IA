@@ -180,3 +180,21 @@ preparación por severidad se escribe contra esta regla; `DT-65`, el calculador 
 **Qué cambia.** El modelo §7 (la tabla de períodos sale de `service_frameworks`), `contracts/cumplimiento/resumen.md` y §9.
 
 **Fuente:** Héctor Ríos (Rod), 2026-11-23, al planificar MD-500, como decisión de desarrollo. **No es una decisión del comité.**
+
+---
+
+## D149 · Los parámetros de evaluación viven en una tabla, todos editables por Monkey, y PR-07 admite ventanas móviles (2026-11-24; construye RC-19 y D140 punto 5)
+
+**Decisión:**
+
+1. **Tabla.** `catalog.evaluation_parameters`, una fila por parámetro: PR-01 a PR-16 (PR-06 en dos filas: por periodicidad y «cuando sea requerido»), el umbral de los puntajes globales (D146) y la cobertura de activos de un control Sólido. 19 filas con la semilla del libro, iguales para todos los clientes (D140).
+2. **Todos editables** por `admin_monkey` (`GET` y `PATCH /v1/catalog/evaluation-parameters`), con validación por unidad, reglas entre parámetros y auditoría en la misma transacción, **incluidos PR-07, PR-10 y PR-13**. Un cambio vale desde la siguiente lectura y no es retroactivo.
+3. **PR-07 con dos modos:** `calendar` (el del libro, por defecto) y `rolling`: cada evidencia válida cubre una periodicidad desde su fecha; la siguiente vence un período después; sin evidencia previa, la primera vence una periodicidad después del inicio del período auditado; una evidencia anticipada renueva desde su fecha; en una prueba técnica cuenta un día con al menos PR-03 % de los activos con resultado.
+4. **Los que aún no lee el motor** quedan obligados para su ticket: PR-08, PR-09 y PR-10 los aplica el riesgo residual (MD-511) y PR-11 a PR-15 el módulo Documentos, con cualquiera de sus valores.
+5. El motor los carga **una vez por caso de uso**, dentro de su transacción y sin caché.
+
+**Por qué.** RC-19 pide los 16 configurables y el libro no bloquea ninguno ni define qué es una ventana móvil. Dejar parámetros sin poder editarse hasta una aprobación era un hueco; donde el libro no fija algo, decide el equipo de desarrollo.
+
+**Qué cambia.** `contracts/catalogo-maestro.md` (sección «Parámetros de evaluación (RC-19)»), `contracts/enums/catalogo-maestro.md` (`evaluation_parameter_unit`, `window_mode`) y §9 «Los parámetros».
+
+**Fuente:** Héctor Ríos (Rod), 2026-11-24, al planificar MD-495, como decisión del equipo de desarrollo. **No es una decisión del comité.**

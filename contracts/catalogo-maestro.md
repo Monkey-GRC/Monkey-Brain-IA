@@ -55,6 +55,7 @@ Con SOC 2: 5 criterios de confianza · 61 requisitos · 302 puntos de enfoque ·
 | [Lectura](#lectura) | `GET /v1/catalog/frameworks[/{id}[/controls\|/points-of-focus]]` · `GET /v1/catalog/controls[/{id}]` · `GET /v1/catalog/risks[/{id}]` · `GET /v1/catalog/causes[/{id}]` · `GET /v1/catalog/tests[/{id}]` · `GET /v1/catalog/evidence-templates[/{id}]` | Ver el catálogo |
 | [Escritura de elementos](#escritura-de-elementos) | `POST` · `PATCH` · `DELETE` sobre `controls`, `risks`, `causes`, `evidence-templates`, `tests` | Crear, editar y dar de baja |
 | [Vínculos](#vínculos) | `POST` · `DELETE` sobre `controls/{id}/points-of-focus`, `/tests`, `/evidence-templates`, `/dimensions`; `causes/{id}/controls`; `risks/{id}/causes` | Relacionar elementos |
+| [Parámetros de evaluación](#parámetros-de-evaluación-rc-19) | `GET /v1/catalog/evaluation-parameters` · `PATCH /v1/catalog/evaluation-parameters/{key}` | Ver y cambiar los parámetros PR-01 a PR-16 del motor (MD-495) |
 
 ---
 
@@ -206,6 +207,93 @@ Cada llamada deja su fila de auditoría `catalog.*` en la misma transacción (SE
 
 > **Lo dado de baja deja de ofrecerse a los servicios nuevos** (el clonado salta controles, pruebas, plantillas, riesgos y causas inactivos), pero **no cambia las copias que las empresas ya clonaron** (D28). La propagación a las existentes (A4) sigue fuera de esta entrega.
 
+## Parámetros de evaluación (RC-19)
+
+Los parámetros del modelo de evaluación (§11 del libro, `PR-01` a `PR-16`) más dos que el libro no numera: el umbral de
+los puntajes globales (D146) y la cobertura de activos de un control Sólido (R5/R6). **Nunca se escriben en el código**
+(RC-19): viven en `catalog.evaluation_parameters`, una fila por parámetro, con el valor del libro en la semilla. Tienen
+**un solo valor de Monkey, igual para todos los clientes** (D140 punto 5); la empresa solo cambia la periodicidad de sus
+controles (G-10, `PUT /v1/controls/{id}/periodicity`). El motor los carga **una vez por caso de uso**, sin caché.
+
+| | |
+|---|---|
+| **Quién** | `admin_monkey` |
+| **Éxito** | `GET` → `200` · `PATCH` → `200` con el parámetro ya actualizado |
+| **Errores** | `403` · `404 NOT_FOUND` (la `key` no existe) · `422 VALIDATION_FAILED` |
+
+**No los bloquea la transición** (`CATALOG_READ_ONLY`): no son parte de la carga del catálogo v2.
+
+### `GET /v1/catalog/evaluation-parameters`
+
+Lista fija (19 filas: PR-06 son dos, en el orden de la tabla de abajo), **sin paginar**: `{ items: [...] }`. Cada ítem:
+
+| Campo | Qué es |
+|---|---|
+| `key` | Identificador estable en `snake_case`; es el que va en la ruta del `PATCH` |
+| `code` | El código del libro (`PR-01`…`PR-16`), o `null` en los dos que el libro no numera |
+| `name` · `description` | Ya traducidos según `Accept-Language` |
+| `unit` | Enum `evaluation_parameter_unit`: dice la forma de `value` |
+| `value` · `default_value` | El valor vigente y el del libro (la semilla) |
+| `updated_at` · `updated_by` | Último cambio: fecha y `{ id, name }` de quien lo hizo; `null` y `null` si sigue el valor de la semilla |
+
+| `key` | `code` | `unit` | Por defecto | Qué acepta el `PATCH` |
+|---|---|---|---|---|
+| `partial_threshold` | PR-01 | `percent` | 75 | Entero 1–100, mayor que `weak_threshold` |
+| `weak_threshold` | PR-02 | `percent` | 40 | Entero 1–100, menor que `partial_threshold` |
+| `asset_coverage` | PR-03 | `percent` | 100 | Entero 1–100, no mayor que `solid_asset_coverage` |
+| `check_exception_max_days` | PR-04 | `days` | 90 | Entero 1–365 |
+| `freshness_hours` | PR-05 | `hours` | 24 | Entero 1–720 |
+| `alert_days_before` | PR-06 | `days_by_periodicity` | `{ "daily": 0, "weekly": 2, "monthly": 5, "bimonthly": 10, "quarterly": 15, "semiannual": 20, "annual": 30 }` | Un objeto con **exactamente** esas 7 periodicidades (`permanent` no tiene ventana); cada una, un entero desde 0 y menor que la duración de su ventana en días (diaria 1, semanal 7, mensual 28, bimestral 59, trimestral 90, semestral 181, anual 365) |
+| `on_demand_alert_days` | PR-06 | `days` | 15 | Entero 0–89 (días antes del cierre del trimestre) |
+| `validity_windows` | PR-07 | `window_mode` | `calendar` | `calendar` o `rolling` ([abajo](#pr-07-ventanas-de-calendario-o-móviles)) |
+| `risk_partial_mitigation_coverage` | PR-08 | `percent` | 60 | Entero 1–100, menor que `risk_demonstrated_mitigation_coverage` |
+| `risk_demonstrated_mitigation_coverage` | PR-09 | `percent` | 85 | Entero 1–100, mayor que `risk_partial_mitigation_coverage` |
+| `impact_reduction_enabled` | PR-10 | `boolean` | `false` | `true` o `false` |
+| `approval_max_steps` | PR-11 | `count` | 5 | Entero 1–10 |
+| `approval_max_approvers_per_step` | PR-12 | `count` | 3 | Entero 1–10 |
+| `submitter_sole_approver_allowed` | PR-13 | `boolean` | `false` | `true` o `false` |
+| `document_acceptance_days` | PR-14 | `days` | 30 | Entero 1–365 |
+| `document_acceptance_required` | PR-15 | `percent` | 100 | Entero 1–100 |
+| `audited_period_min_months` | PR-16 | `months` | 6 | Entero 1–24 |
+| `score_threshold` | `null` (D146) | `percent` | 80 | Entero 1–100 |
+| `solid_asset_coverage` | `null` (R5/R6) | `percent` | 100 | Entero 1–100, no menor que `asset_coverage` |
+
+**Todos son editables** (decisión del equipo de desarrollo, Rod, 2026-11-24). PR-08 a PR-15 se guardan y se editan
+aunque todavía no los lee nadie: el riesgo residual (MD-511) **debe** aplicar PR-08, PR-09 y PR-10 con cualquiera de sus
+valores, y el módulo Documentos, PR-11 a PR-15 (PR-13 en `true` deja que quien envía sea el único aprobador; queda en la
+auditoría). PR-07 sí lo aplica ya el motor:
+
+#### PR-07: ventanas de calendario o móviles
+
+- **`calendar`** (por defecto, el libro): la ventana es el período de calendario de la periodicidad (el mes, el
+  trimestre, el año) y basta una evidencia válida dentro de ella (§9).
+- **`rolling`**: cada evidencia válida cubre **una periodicidad desde su fecha**; la siguiente vence esa misma fecha un
+  período después (mensual: evidencia del 20 de marzo → vence el 20 de abril). Sin evidencia previa, la primera vence
+  una periodicidad después del inicio del período auditado. Al vencer sin evidencia nueva, el requisito pasa como al
+  cerrar una ventana de calendario (Vencido; un activo sin resultado, Excepción, D140), y el aviso previo de PR-06 sale
+  esos días antes del vencimiento (`alert_at`). Solo cuentan los vencimientos dentro del período auditado (G-11).
+  `permanent` y «cuando sea requerido» no cambian.
+  - Una evidencia que llega **antes** del vencimiento renueva **desde su fecha**, no desde el vencimiento.
+  - `window_end` es el último día válido, como en calendario (evidencia del 20 de marzo → `window_end` 19 de abril).
+  - En una prueba técnica cuenta como evidencia de un día que al menos PR-03 % de los activos en alcance tenga resultado.
+  - Una prueba que nunca tuvo evidencia sigue en Pendiente, como en calendario; el vencimiento perdido se ve en la vista
+    del período (`period.missing`) y le quita el Sólido al control.
+
+### `PATCH /v1/catalog/evaluation-parameters/{key}`
+
+Request: `{ "value": … }`, con la forma que dice su `unit`. Un `PATCH` sin `value` es `422 required`.
+
+- Las **reglas entre parámetros** (PR-01 > PR-02, PR-08 < PR-09, Sólido ≥ PR-03; por eso PR-03 tampoco supera al de Sólido) se comprueban contra el valor vigente
+  del otro: para invertir un par se cambia primero el que deja el par válido.
+- **Auditoría:** `catalog.evaluation_parameter.update`, con `before_state` y `after_state` (`{ key, value }`),
+  `tenant_id` nulo y en la misma transacción (SEG-36). Mandar el mismo valor responde `200` sin cambio y sin fila.
+- **Efecto:** el cumplimiento se calcula al leer (§9), así que el valor nuevo vale desde la siguiente lectura o
+  evaluación de todos los clientes. **No es retroactivo:** los eventos de cambio de estado ya registrados no se recalculan.
+
+Códigos de `error.fields[].code`: `required`, `value.type` (no tiene la forma de su `unit`), `value.range` (fuera de
+rango), `value.order` (rompe una regla entre parámetros; `field` es `value`), `value.periodicities` (en PR-06 falta o
+sobra una periodicidad).
+
 ## Listas de opciones del Admin
 
 Los selects del formulario (`dimension`, `control_type`, `risk_criterion`, `failure_category`) y los filtros (`dimension`, `catalog_origin`) se llenan con `GET /v1/catalogs/{name}`, igual que en Platform (`enums.md`); el Admin no tiene listas propias. El `Accept-Language` lo manda el interceptor de autenticación.
@@ -224,8 +312,8 @@ Los selects del formulario (`dimension`, `control_type`, `risk_criterion`, `fail
 | 409 | `CODE_ALREADY_EXISTS` | `code` repetido |
 | 409 | `LINK_ALREADY_EXISTS` | El vínculo ya existe |
 | 409 | `CATALOG_ITEM_IN_USE` | Dar de baja o desenlazar lo que otro elemento activo necesita |
-| 409 | `CATALOG_READ_ONLY` | Cualquier escritura mientras dure la transición al catálogo v2 (MD-491) |
-| 422 | `VALIDATION_FAILED` | `required`, `enum.invalid`, `uuid.invalid`, `text.names_provider`, `code.dimension_mismatch`, `dimension.not_in_control`, `sequence.range` |
+| 409 | `CATALOG_READ_ONLY` | Cualquier escritura mientras dure la transición al catálogo v2 (MD-491); no aplica a los parámetros de evaluación |
+| 422 | `VALIDATION_FAILED` | `required`, `enum.invalid`, `uuid.invalid`, `text.names_provider`, `code.dimension_mismatch`, `dimension.not_in_control`, `sequence.range`; en los parámetros, `value.type`, `value.range`, `value.order`, `value.periodicities` |
 
 ## Preguntas abiertas
 
