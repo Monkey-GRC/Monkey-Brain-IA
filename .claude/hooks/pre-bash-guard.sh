@@ -1,7 +1,7 @@
 #!/bin/bash
 # PreToolUse · Bash. Bloquea (exit 2) lo que Rod decidió que Claude no hace, incluso en comandos compuestos:
 #   1) commits, pushes y PRs   2) leer o copiar archivos de credenciales   3) servidores en los puertos de Rod (3000, 4200, 4201)
-#   4) la suite completa en local (D120: es del CI)   5) `prisma migrate dev` (la base de dev tiene drift)   6) git worktrees.
+#   4) la suite completa en local (D120: es del CI)   5) `prisma migrate dev` (la base de dev tiene drift) y `migrate deploy` de migraciones destructivas sin fusionar   6) git worktrees.
 # Refuerza permissions.deny, que no cubre todas las formas de escribir el comando.
 INPUT=$(cat)
 CMD=$(printf '%s' "$INPUT" | jq -r '.tool_input.command // empty')
@@ -49,6 +49,19 @@ fi
 if printf '%s' "$CMD" | grep -Eq 'prisma[[:space:]]+migrate[[:space:]]+(dev|reset)|npm[[:space:]]+run[[:space:]]+prisma:migrate([[:space:]]|$)'; then
   echo "Bloqueado: usa \`npx prisma migrate deploy\`; \`migrate dev\`/\`reset\` reescriben la base de dev, que tiene drift." >&2
   exit 2
+fi
+
+# 5b) La base de Rod es la de dev COMPARTIDA (la del backend desplegado). `migrate deploy` contra ella solo con migraciones aditivas: si una
+#     migración de la rama (no fusionada en develop) borra o renombra algo, el `develop` desplegado se rompe. Esas las aplica el despliegue al
+#     fusionar (MD-500, 2026-11-23). La base de prueba (`test:db`, TEST_DATABASE_URL) no pasa por aquí.
+if printf '%s' "$CMD" | grep -Eq 'prisma[[:space:]]+migrate[[:space:]]+deploy|prisma:migrate:deploy' && ! printf '%s' "$CMD" | grep -Eq 'TEST_DATABASE_URL|test:db'; then
+  BACKEND="${CLAUDE_PROJECT_DIR:-$(pwd)}/../Backend"
+  NEW=$(git -C "$BACKEND" diff --name-only origin/develop -- prisma/migrations 2>/dev/null; git -C "$BACKEND" ls-files --others --exclude-standard -- prisma/migrations 2>/dev/null)
+  DESTRUCTIVE=$(for f in $NEW; do [ -f "$BACKEND/$f" ] && grep -lEi 'DROP[[:space:]]+(COLUMN|TABLE|TYPE|INDEX|CONSTRAINT)|RENAME[[:space:]]+(COLUMN|TO)|ALTER[[:space:]]+COLUMN[^;]*(TYPE|SET[[:space:]]+NOT[[:space:]]+NULL)' "$BACKEND/$f"; done | sed "s#^$BACKEND/##")
+  if [ -n "$DESTRUCTIVE" ]; then
+    echo "Bloqueado: la base de Rod es la de dev compartida y estas migraciones sin fusionar borran o renombran: $DESTRUCTIVE. Rompería el develop desplegado; las aplica el despliegue al fusionar." >&2
+    exit 2
+  fi
 fi
 
 # 6) Rod prueba desde las carpetas normales de cada repo: nada de worktrees.

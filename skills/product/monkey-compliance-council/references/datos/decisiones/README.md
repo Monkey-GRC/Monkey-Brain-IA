@@ -228,3 +228,5 @@ quedan aquí:
 | D144 | Jira lo conecta el `admin_empresa` con una cuenta de servicio; el ticket se crea desde el control o la brecha *(cierra P46; decisión de desarrollo)* | [integraciones](integraciones.md) |
 | D145 | Solo SOC 2 Tipo II; al terminar un período se abre el siguiente y el anterior queda como histórico *(cierra P26; D87 deja de ser provisional; decisión de desarrollo)* | [cumplimiento/resumen](cumplimiento/resumen.md) |
 | D146 | Los tres puntajes globales de la VF18 pasan con 80 % o más, configurable *(cierra P49; decisión de desarrollo)* | [control-tecnico](control-tecnico.md) |
+| D147 | La periodicidad se cambia por control (todos sus requisitos) con justificación; los avisos previos salen como fechas en la API y los envía MD-515 *(decisión de desarrollo)* | [cumplimiento/motor](cumplimiento/motor.md) |
+| D148 | Un período auditado por fila con histórico; una tarea diaria abre el siguiente y deja los eventos de las ventanas cerradas *(decisión de desarrollo)* | [cumplimiento/motor](cumplimiento/motor.md) |

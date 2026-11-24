@@ -33,7 +33,10 @@ Desde MD-498 el cálculo sale del motor v2 (§9, D130). **Los campos de abajo se
 | `technical.complies` | boolean | `true` solo en `adequate` y `solid` (R4) |
 | `technical.c_percent` | number \| null | C% con dos decimales; `null` si no hay requisitos aplicables |
 | `technical.requirements[]` (solo en el detalle) | objeto | `id`, `code` (`IDA-11-L3`), `text`, `type`, `periodicity`, `status` (enum `requirement_status`) y `tests[]` |
-| `…requirements[].tests[]` | objeto | `test_id`, `test_code`, `display_name`, `status` (enum `test_status`), `window_end` (fecha de cierre de la ventana actual o `null`) y, en las técnicas, `checks: { direct_pass, direct_fail, direct_exception, no_data, complementary_fail }` y `asset_coverage: { with_result, in_scope }` |
+| `…requirements[]` (MD-500) | | Además: `suggested_periodicity` (la del catálogo) y `periodicity_source` (`catalog` · `client`, si la cambió el `admin_empresa`) |
+| `technical.periodicity_change` (MD-500) | objeto \| null | El último cambio de periodicidad del control (D147): `{ periodicity, justification, changed_at }`; `null` si usa la sugerida |
+| `technical.period` (MD-500, R6) | objeto \| null | La vista **del período** auditado abierto: `level`, `complies`, `windows: { total, with_evidence }` (las ventanas **ya cerradas** del período; la vigente no cuenta) y `missing[]` (`{ requirement_code, window_start, window_end }`, las ventanas ya cerradas del período sin evidencia válida). `null` si el período no está definido. Los campos de arriba son la vista **a la fecha** |
+| `…requirements[].tests[]` | objeto | `test_id`, `test_code`, `display_name`, `status` (enum `test_status`), `window_end` (fecha de cierre de la ventana actual o `null`), `alert_at` (MD-500: el día del aviso previo, `window_end` − PR-06; `null` sin ventana) y, en las técnicas, `checks: { direct_pass, direct_fail, direct_exception, no_data, complementary_fail }` y `asset_coverage: { with_result, in_scope }` |
 
 ```json
 "technical": {
@@ -56,7 +59,9 @@ Desde MD-498 el cálculo sale del motor v2 (§9, D130). **Los campos de abajo se
 - **Requisitos del control del cliente** (`client_control_requirements`): se copian del catálogo al clonar el servicio, uno por requisito del control, con su periodicidad. Un control propio no tiene requisitos del catálogo: se mide con su evidencia como un requisito documental único.
 - **Pruebas técnicas** (T-04): solo deciden los checks **Directos** que aplican; un Complementario en FAIL da Observación; una Dependencia toma el estado de la prueba del control dueño. Un activo en alcance sin resultado deja la prueba **Pendiente** mientras su ventana está abierta y en **Excepción** al cerrarla (D140). Los vínculos «N/A» de módulos y puntajes se evalúan con D141 y D146.
 - **Pruebas manuales — puente hasta MD-504 y MD-506** (`DT-114`): la prueba toma el estado de la evidencia que se sube hoy para ella: validada → Correcto · rechazada → Excepción · sin entrega o sin revisar → Pendiente · fuera de su ventana → Vencido.
-- **Ventanas** (D131, D140): calendario según la periodicidad del requisito (o, si no tiene, la de su control); la anual son 12 meses desde la última evidencia válida. La periodicidad que configura la empresa llega con MD-500.
+- **Ventanas** (D131, D140): calendario según la periodicidad del requisito (o, si no tiene, la de su control); la anual son 12 meses desde la última evidencia válida. La periodicidad la puede cambiar el `admin_empresa` por control (D147, `PUT /v1/controls/{id}/periodicity`).
+- **Ventanas cerradas y período** (MD-500, R6, G-11): solo cuentan las ventanas que caen dentro del período auditado abierto, y una evidencia fechada fuera de él no cuenta. Una ventana cerrada sin evidencia válida deja el requisito **Vencido**; un activo en alcance sin resultado al cerrar la ventana deja la prueba técnica en **Excepción** (D140). **Sólido** exige además evidencia en todas las ventanas cerradas del período y 100 % de cobertura de activos (o evidencia automática continua).
+- **Lo permanente** (PR-05): un resultado automático de más de 24 h deja la evidencia desactualizada y la prueba **Pendiente**. Lo «cuando sea requerido» se mide por trimestre (D131 punto 3).
 - **Parámetros** PR-01 a PR-05 y el umbral de D146: los lee el motor de la configuración, con los valores por defecto del libro (§9); nunca están escritos en el código.
 
 | | |
@@ -80,6 +85,7 @@ Desde MD-498 el cálculo sale del motor v2 (§9, D130). **Los campos de abajo se
 | `POST` | [`/v1/services/{service_id}/controls`](#post-v1servicesservice_idcontrols--crear-un-control-propio) | `admin_empresa` | Crear un control propio |
 | `PATCH` | [`/v1/controls/{id}`](#patch-v1controlsid--editar-un-control) | `admin_empresa` | Editar interpretación o dimensiones |
 | `DELETE` | [`/v1/controls/{id}`](#delete-v1controlsid--dar-de-baja-un-control) | `admin_empresa` | Dar de baja |
+| `PUT` | [`/v1/controls/{id}/periodicity`](#put-v1controlsidperiodicity--cambiar-la-periodicidad-de-un-control) | `admin_empresa` | Cambiar la periodicidad con justificación (G-10, D147) |
 
 ## Quién puede qué
 
@@ -90,6 +96,7 @@ Desde MD-498 el cálculo sale del motor v2 (§9, D130). **Los campos de abajo se
 | Crear un control propio | ✓ | `403` | `403` |
 | Editar la interpretación o las dimensiones | ✓ | `403` | `403` |
 | Dar de baja | ✓ | `403` | `403` |
+| Cambiar la periodicidad (D147) | ✓ | `403` | `403` |
 
 > Vigente con la matriz de `modelo/05-usuarios.md` §5.5 (D102: el comité no entregará el Excel por pantalla). El Excel marcaba «editar control» como ⊗ para el `funcional` (rol que D96 y D102 reemplazaron); el `responsable` y el `delegado` **no editan**.
 
@@ -354,6 +361,31 @@ Cambia la interpretación o las dimensiones **al instante**; las dos cosas puede
 
 ---
 
+### PUT /v1/controls/{id}/periodicity — Cambiar la periodicidad de un control
+
+| | |
+|---|---|
+| **Quién** | `admin_empresa` |
+| **Éxito** | `200` con el detalle del control ya recalculado (como `GET /v1/controls/{id}`) |
+| **Errores** | `403` · `404` · `409 CONTROL_RETIRED` · `422 VALIDATION_FAILED` (`enum.invalid`, `required`, `string.max`, `periodicity.own_control`) |
+
+Cambia la periodicidad del control **al instante** (G-10, D147): se aplica a **todos sus requisitos**, Monkey recalcula las ventanas y el nivel. `periodicity: null` vuelve a la sugerida por el catálogo.
+
+#### Request
+| Campo | Tipo | Obligatorio | Regla |
+|---|---|---|---|
+| `periodicity` | enum `periodicity` \| null | sí | `null` = volver a la sugerida |
+| `justification` | string | sí | 1 a 1000 caracteres, sin contar espacios de los extremos. Queda en el rastro |
+
+```json
+{ "periodicity": "monthly", "justification": "Rotamos accesos cada mes por exigencia del contrato con el banco." }
+```
+
+#### Reglas
+- Un control **propio** no tiene requisitos del catálogo: responde `422` con `periodicity.own_control` (en `periodicity`).
+- Repetir la misma periodicidad no cambia nada ni deja rastro nuevo.
+- Deja `client_control.periodicity_set` en el rastro, con el valor anterior, el nuevo y la justificación, y, si cambia el estado del control, un `compliance_events`, todo en la misma transacción.
+
 ## Errores del módulo
 
 | HTTP | `error.code` | Cuándo |
@@ -361,7 +393,7 @@ Cambia la interpretación o las dimensiones **al instante**; las dos cosas puede
 | 403 | `FORBIDDEN` | El rol no puede; el control no es del `responsable` o `delegado` que lo pide; `view=technical` sin ser `admin_empresa` o `auditor` |
 | 404 | `NOT_FOUND` | El control o el servicio no existen para esta empresa |
 | 409 | `CONTROL_RETIRED` | El control ya está dado de baja |
-| 422 | `VALIDATION_FAILED` | Campos: `required`, `enum.invalid`, `string.max`, y los propios: `category.not_in_scope` (`trust_criterion` no es una categoría contratada), `dimension.policy_only` (`dimensions[i]` en un control propio), `reason.required` (`dimensions[i].reason_not_applicable` cuando `applies` es `false`) |
+| 422 | `VALIDATION_FAILED` | Campos: `required`, `enum.invalid`, `string.max`, y los propios: `category.not_in_scope` (`trust_criterion` no es una categoría contratada), `dimension.policy_only` (`dimensions[i]` en un control propio), `periodicity.own_control` (`periodicity` en un control propio), `reason.required` (`dimensions[i].reason_not_applicable` cuando `applies` es `false`) |
 
 **Claves i18n:** `control.list`, `control.read`, `control.created`, `control.updated`, `control.retired`.
 
@@ -397,6 +429,7 @@ Todos con el mismo sobre (`conventions.md`); `message` es la clave i18n del erro
 | `client_control.create` | Se crea un control propio | `admin_empresa` |
 | `client_control.update` | Se edita la interpretación o las dimensiones (con `before_state`/`after_state`) | `admin_empresa` |
 | `client_control.retire` | Se da de baja (con `before_state`) | `admin_empresa` |
+| `client_control.periodicity_set` | Se cambia la periodicidad (con `before_state`/`after_state` y la `justification`) | `admin_empresa` |
 
 Crear, editar dimensiones o dar de baja altera lo que se mide y deja además un `compliance_events` en la misma transacción.
 
@@ -409,7 +442,9 @@ Crear, editar dimensiones o dar de baja altera lo que se mide y deja además un 
 
 ## Estado de implementación
 
-**Construido (MD-498, 2026-11-23): el motor v2.** Lista, detalle y creación calculan con requisitos del control, pruebas con `test_status` y nivel 0–5 ([Motor v2](#motor-v2-md-498-campos-nuevos-y-compatibilidad); `domain/engine/v2/`, `domain/controls/control-readout.ts`). Pruebas: las `*.spec.ts` de `engine/v2/` (en especial `engine.acceptance.spec.ts`) y `control-readout.spec.ts`. **Sin construir de esto:** los estados de gestión y «Cumplimiento aprobado» (MD-504, `DT-114`); el resultado de una prueba manual y la prueba documental con el módulo Documentos (MD-504 y MD-506, `DT-114`); la periodicidad que configura la empresa y las ventanas cerradas con el nivel Sólido por período (MD-500); los parámetros PR-01 a PR-05 y D146 desde una tabla, hoy con los valores por defecto del libro (MD-495); y el retiro de `client_control_tests`, que otras lecturas aún usan (MD-509, `DT-113`).
+**Construido (MD-498, 2026-11-23): el motor v2.** Lista, detalle y creación calculan con requisitos del control, pruebas con `test_status` y nivel 0–5 ([Motor v2](#motor-v2-md-498-campos-nuevos-y-compatibilidad); `domain/engine/v2/`, `domain/controls/control-readout.ts`). Pruebas: las `*.spec.ts` de `engine/v2/` (en especial `engine.acceptance.spec.ts`) y `control-readout.spec.ts`. **Sin construir de esto:** los estados de gestión y «Cumplimiento aprobado» (MD-504, `DT-114`); el resultado de una prueba manual y la prueba documental con el módulo Documentos (MD-504 y MD-506, `DT-114`); los parámetros PR-01 a PR-05 y D146 desde una tabla, hoy con los valores por defecto del libro (MD-495); y el retiro de `client_control_tests`, que otras lecturas aún usan (MD-509, `DT-113`).
+
+**Construido (MD-500, 2026-11-23): periodicidad por control y ventanas cerradas por período.** `PUT /v1/controls/{id}/periodicity` (solo `admin_empresa`, `client_control.periodicity_set`, mensaje `control.periodicity_set`, responde el detalle con la vista técnica); el detalle suma `suggested_periodicity`, `periodicity_source`, `technical.periodicity_change` y `technical.period` (vista del período abierto: solo cuentan las ventanas cerradas dentro de él, nivel Sólido por período). Código: `domain/engine/v2/windows.ts`, `control-level.ts`, `domain/controls/control-readout.ts`, `application/controls/edit-control.use-cases.ts` y `control-edit.validation.ts`. Pruebas: `test/cumplimiento/periodicidad.e2e-spec.ts`, `test/cumplimiento/controles.e2e-spec.ts`, `src/features/compliance/domain/controls/control-readout.period.spec.ts` y `engine/v2/windows.spec.ts` · `control-level.spec.ts`. **Sin construir de esto:** los requisitos «cuando sea requerido» no se miden por trimestre (`DT-115`); la vista del período aproxima las ventanas pasadas sin historial (`DT-116`); un servicio con varios marcos usa un solo período (`DT-117`); el aviso al responsable por ventana por cerrar o vencida va con las notificaciones (MD-515).
 
 **Construido (MD-166, 2026-10-30): los códigos en la vista de negocio (D80).** `code` (el del catálogo `IAC-12` o el propio `C01`) y `requirement_codes` salen en la lista, el detalle y la creación de un control, para todos los roles que los leen (`admin_empresa`, `responsable`, `delegado` y `auditor`); `own_code` sigue siendo solo la numeración de los propios. `technical` conserva únicamente `points_of_focus`, `control_state`, `tests_count` y, en el detalle, `tests`: **`control_code` y `requirement_codes` ya no viajan allí.** Cada causa de `causes` en el detalle lleva también su `code`. Pruebas: `controles.e2e-spec.ts`, `cambios.e2e-spec.ts` y `riesgos.e2e-spec.ts`.
 

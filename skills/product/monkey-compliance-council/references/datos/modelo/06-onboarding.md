@@ -115,10 +115,19 @@ erDiagram
         uuid catalog_version_id FK
         date contracted_at
         enum status
-        string evaluation_period "AAAA-Tn: el periodo por defecto (trimestre natural); D68 lo precisa con las tres fechas de abajo"
+        string evaluation_period "AAAA-Tn: el periodo por defecto (trimestre natural)"
+    }
+    service_framework_periods {
+        uuid id PK
+        uuid tenant_id FK
+        uuid service_framework_id FK
         date period_start "periodo auditado (D68, REQ-004)"
-        date period_end "periodo auditado"
-        date cutoff_date "fecha de corte de la evaluacion"
+        date period_end "periodo auditado; en SOC 2 al menos PR-16"
+        date cutoff_date "nullable: hoy hasta que se congela (D87)"
+        enum status "open|closed (como mucho un open)"
+        enum opened_by "user|system (D145)"
+        timestamptz closed_at "nullable"
+        timestamptz created_at
     }
     subservice_organizations {
         uuid id PK
@@ -150,6 +159,7 @@ erDiagram
     trust_criteria ||--o{ service_trust_criteria : "contratado por"
     services ||--o{ service_frameworks : "contrata marco"
     frameworks ||--o{ service_frameworks : "contratado en"
+    service_frameworks ||--o{ service_framework_periods : "periodos auditados"
     services ||--o{ subservice_organizations : "depende de"
     subservice_organizations ||--o{ csocs : "debe aportar"
     services ||--o{ cuecs : "espera del cliente usuario"
@@ -175,7 +185,9 @@ también **contra qué versión del catálogo** (`catalog_version_id`) y **desde
 (`evaluation_period`) aplica, que es lo que evita que un control nuevo mueva el número a
 mitad de periodo.
 
-**La evaluación del comité es este par servicio × marco en un período** (D68, REQ-004): `service_frameworks` más su versión del catálogo (`catalog_version_id`), el **período auditado** (`period_start`, `period_end`) y la **fecha de corte**. Sin esos cinco datos no se ejecuta ni se reutiliza un resultado (§9). `evaluation_period` queda como el período por defecto.
+**La evaluación del comité es este par servicio × marco en un período** (D68, REQ-004): `service_frameworks` más su versión del catálogo (`catalog_version_id`), el **período auditado** (`period_start`, `period_end`, en `service_framework_periods`) y la **fecha de corte**. Sin esos cinco datos no se ejecuta ni se reutiliza un resultado (§9). `evaluation_period` queda como el período por defecto.
+
+**Los períodos viven en `service_framework_periods` (MD-500, D145, D148)**, uno por fila, con RLS por `tenant_id`: como mucho uno `open` por `service_framework_id` (índice único parcial) y los `closed` como histórico, que no se editan. Una tarea diaria cierra el abierto cuyo `period_end` ya pasó y abre el siguiente con la misma duración (`opened_by = system`). La migración copia a esta tabla el período de cada `service_frameworks` que lo tenía, como `open` y `opened_by = user`, y después borra `period_start`, `period_end` y `cutoff_date` de `service_frameworks` (Rod, 2026-11-23).
 
 **La regulación se declara solo a nivel de empresa** (D51, que revierte D45). `organization_regulations` dice a qué
 normas de protección de datos está sujeta la empresa; **no hay `service_regulations`**: esas leyes aplican a la empresa,

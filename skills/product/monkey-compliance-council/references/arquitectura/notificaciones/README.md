@@ -5,7 +5,7 @@ la tabla de abajo): no existe un sistema de notificaciones. Este directorio docu
 bloquea, para que nadie lo construya a medias por su cuenta.
 
 > **El sistema de notificaciones no está construido**, pero ya está decidido: los eventos y destinatarios en D138, los
-> recordatorios en D131 y el canal, la frecuencia y el centro de notificaciones en D143. Se construye en `MD-69`.
+> recordatorios en D131 y el canal, la frecuencia y el centro de notificaciones en D143. Se construye en `MD-515`.
 
 ## Lo único que sale hoy
 
@@ -53,7 +53,7 @@ solo mecanismo.
 
 ## Dónde está cada dato
 
-D138, D143 · `MD-69` · D99, D101, D102 y D117 · `producto/philosophy.md` (cómo se redacta).
+D138, D143 · `MD-515` · D99, D101, D102 y D117 · `producto/philosophy.md` (cómo se redacta).
 
 Registros de este módulo:
 

@@ -22,9 +22,26 @@ for key in brain backend frontend platform; do
   if [ -n "$(git -C "$repo" status --porcelain)" ]; then
     echo "✗ ${DIR[$key]} tiene cambios sin commitear: que Rod los commitee o los guarde antes de empezar $TICKET." >&2; exit 1
   fi
+  # Estado de los PR de cada rama local (gh, solo lectura): uno abierto detiene el arranque (un ticket por vez).
+  for b in $(git -C "$repo" for-each-ref --format='%(refname:short)' refs/heads); do
+    case "$b" in main|develop) continue ;; esac
+    states="$(cd "$repo" && gh pr list --head "$b" --state all --json state --jq '.[].state' 2>/dev/null | sort -u | tr '\n' ' ')"
+    if [[ " $states" == *" OPEN "* ]]; then
+      echo "✗ ${DIR[$key]}: la rama $b tiene un PR abierto; que Rod lo fusione antes de empezar $TICKET." >&2; exit 1
+    fi
+    echo "  ${DIR[$key]}: $b → PR ${states:-sin PR}"
+  done
   git -C "$repo" checkout -q "$base" && git -C "$repo" pull -q --ff-only
   for b in $(git -C "$repo" for-each-ref --format='%(refname:short)' refs/heads); do
-    case "$b" in main|develop) ;; *) git -C "$repo" merge-base --is-ancestor "$b" "origin/$base" && git -C "$repo" branch -q -D "$b" ;; esac
+    case "$b" in main|develop) continue ;; esac
+    if git -C "$repo" merge-base --is-ancestor "$b" "origin/$base" \
+       || (cd "$repo" && gh pr list --head "$b" --state merged --json headRefOid --jq '.[].headRefOid' 2>/dev/null) \
+            | grep -qx "$(git -C "$repo" rev-parse "$b")"; then
+      # Fusionada (o squash de un PR cuya punta es justo esta rama: no se pierde ningún commit local).
+      git -C "$repo" branch -q -D "$b"
+    else
+      echo "  ⚠ ${DIR[$key]}: $b no está fusionada; se conserva." >&2
+    fi
   done
   line="${DIR[$key]}: $base @ $(git -C "$repo" log --oneline -1 | cut -c1-60)"
   if [[ "$WANT" == *" $key "* ]]; then

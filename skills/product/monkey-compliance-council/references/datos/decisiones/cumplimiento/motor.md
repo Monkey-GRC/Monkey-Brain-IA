@@ -149,3 +149,34 @@ preparación por severidad se escribe contra esta regla; `DT-65`, el calculador 
 **Qué cambia.** §9 (tabla de ventanas, R5, parámetros, caso C2), `arquitectura/cumplimiento/riesgos/README.md` (plan de tratamiento) y el punto 6 de D130. Los tickets MD-495, MD-498, MD-500 y MD-511 quedan desbloqueados.
 
 **Fuente:** comité funcional, 2026-11-23, en reunión con Héctor Ríos (Rod): aprobó las siete propuestas de `P48`.
+
+---
+
+## D147 · La periodicidad se cambia por control y los avisos previos salen como fechas en la API (2026-11-23; precisa D131 y D143)
+
+**Decisión:**
+
+1. **Por control.** El `admin_empresa` cambia la periodicidad de un control del cliente con una justificación escrita (G-10). El valor se aplica a **todos los requisitos** de ese control (`client_control_requirements.periodicity`) y deja en el rastro el valor anterior, el nuevo y la justificación, en la misma transacción. Quitar el cambio vuelve a la sugerida por el catálogo.
+2. **Avisos previos (PR-06) como datos.** MD-500 calcula, por requisito, el cierre de la ventana vigente y la fecha del aviso previo, y los entrega en la vista técnica. El envío (campana, correo diario e historial) lo hace el sistema de notificaciones, **MD-515**: D143 lo citaba como MD-69, que es el correo de la clave de acceso.
+
+**Por qué.** El libro dice «por control» (G-10, D131 punto 4), pero el dato vive por requisito desde MD-498. El sistema de notificaciones no existía y construirlo dentro de RC-08 duplicaba el tamaño del ticket.
+
+**Qué cambia.** `contracts/cumplimiento/controles.md` (el endpoint de periodicidad y los campos `window_end` y `alert_at`), §9 y `arquitectura/notificaciones/` (MD-515).
+
+**Fuente:** Héctor Ríos (Rod), 2026-11-23, al planificar MD-500, como decisión de desarrollo. **No es una decisión del comité.**
+
+---
+
+## D148 · Un período auditado por fila y una tarea diaria que abre el siguiente y deja los eventos de las ventanas cerradas (2026-11-23; construye D145)
+
+**Decisión:**
+
+1. **Tabla de períodos.** Cada servicio × marco tiene sus períodos en una tabla propia, uno por fila. Solo el **abierto** se edita con `PUT …/evaluation-period`, con el mínimo de PR-16 (6 meses en SOC 2); los cerrados quedan como histórico y no cambian.
+2. **Tarea diaria.** Una tarea programada, con el mismo patrón que el borrado de empresas, hace dos cosas: al terminar un período abre el siguiente con la misma duración (D145), y vuelve a evaluar los controles para que el cierre de una ventana sin evidencia deje su evento de cambio de estado (D91).
+3. Ninguna consulta `GET` escribe en la base.
+
+**Por qué.** D145 pide el histórico y el período siguiente automático. Sin una tarea, el control bajaría de nivel al cerrar la ventana sin que nadie dejara el evento.
+
+**Qué cambia.** El modelo §7 (la tabla de períodos sale de `service_frameworks`), `contracts/cumplimiento/resumen.md` y §9.
+
+**Fuente:** Héctor Ríos (Rod), 2026-11-23, al planificar MD-500, como decisión de desarrollo. **No es una decisión del comité.**
