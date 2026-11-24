@@ -79,6 +79,7 @@ La sesión principal coordina (skill `monkey-dev-flow`); los subagentes trabajan
 | `frontend-design` | Sistema de diseño y que las dos apps se vean idénticas | Lógica, rutas, contratos |
 | `qa` | Verifica el cambio contra su contrato; PASS o FAIL con el caso mínimo | Escribir código |
 | `architecture-reviewer` | Revisa capas, imports, `withScope` y contrato; violaciones con `archivo:línea` | Reescribir código |
+| `nestjs-reviewer` | Audita el diff del Backend con `nestjs-code-audit` (fronteras, seguridad, Prisma, rendimiento, pruebas), en paralelo con `qa` | Editar código |
 | `docs-guardian` | Mantiene la documentación al día: enlaces, rutas, registros, índices, contratos frente al código | Tocar código o decidir |
 | `product-owner` | Qué se construye y en qué orden (MUST / SHOULD / LATER / NO BUILD) | Tocar código |
 | `wazuh-integration-expert` | Explica la sonda y su integración (solo lectura) | Actuar por su cuenta |

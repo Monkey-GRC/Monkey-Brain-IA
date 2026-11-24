@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "skills": {
+    "nestjs-code-audit": {
+      "source": "amirtaherkhani/nestjs-skills",
+      "commit": "82723748fa3cfdaa16f8a6a4130fcd8dfe42517f",
+      "sourceType": "github",
+      "skillPath": "skills/nestjs-code-audit/SKILL.md",
+      "computedHash": "ef1f3885fccc94b0edd3e3f562ebb55f34ddfe233981071f295482707f7bd405"
+    }
+  }
+}
