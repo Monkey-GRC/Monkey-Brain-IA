@@ -35,6 +35,9 @@ Los requisitos viven **una sola vez, en el módulo que posee la capacidad**: abr
 3. Para cada uno: **cumple / no cumple / no aplica**, citando `archivo:línea` del código revisado.
 4. Un requisito en 🔴 o 🟠 que el cambio **empeora** es un bloqueo; uno que ya estaba así se queda como estaba.
 
+Los hallazgos de seguridad de `nestjs-reviewer` y `angular-reviewer` (OWASP, XSS, raw SQL, secretos) llegan aquí: se cruzan con su
+`SEG-n` y se dice si cumple, si no cumple o si hace falta uno nuevo. No se revisa dos veces lo mismo.
+
 ## 3. Salida
 
 ```

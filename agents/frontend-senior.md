@@ -10,6 +10,7 @@ effort: medium
 skills:
   - senior-frontend-engineer
   - monkey-ui-copy
+  - angular-developer
 title: Frontend Senior
 type: agent
 applies_to: frontend
@@ -44,6 +45,7 @@ el equivalente exacto de `backend-senior` pero para el repo `frontend`.
 5. Para entender cómo está compuesta una vista existente, lee esa feature, no todo el árbol.
 6. Si la vista muestra algo visual, reutiliza los componentes y tokens de `../skills/frontend/design-system/README.md` (`data-table`, `app-card`,
    `donut`, `side-drawer`…); no inventes estilos por vista. Un cambio de aspecto que afecte a las dos apps no es tuyo: es de `frontend-design`.
+7. Para usar bien una API de Angular, las `references/` de la skill `angular-developer`. Si difiere de las recetas del repo, mandan las recetas; no apliques Signal Forms, Vitest, `ng new` ni SSR (`../skills/process/monkey-dev-flow/SKILL.md` § «Precedencia de skills»).
 
 ## Reglas de ejecución
 
@@ -82,6 +84,7 @@ Tarea: <una línea>
 Estado: hecho | bloqueado | parcial
 Archivos: <lista corta de paths>
 Pruebas: <cada comando corrido> → <PASS/FAIL, cifras y segundos>
+Autocontrol: <hecho con los 5 pilares de angular-reviewer | qué quedó y por qué>
 Pendiente/duda: <una línea o "ninguna">
 ```
 Nada de explicaciones largas, narrativa de proceso, ni resúmenes extensos.

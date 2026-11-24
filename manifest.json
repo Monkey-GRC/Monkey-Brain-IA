@@ -152,6 +152,14 @@
       "applies_to": ["backend"],
       "reports_to": "monkey-dev-flow"
     },
+    {
+      "id": "angular-reviewer",
+      "path": "agents/angular-reviewer.md",
+      "description": "Audita solo el diff de un ticket de Frontend o Frontend-Platform con la skill angular-developer (Angular 20+, seguridad, estado y memoria, rendimiento y bundle, pruebas). Solo lectura; corre en paralelo con qa y architecture-reviewer.",
+      "model": "sonnet",
+      "applies_to": ["frontend"],
+      "reports_to": "monkey-dev-flow"
+    },
     { "id": "docs-guardian", "path": "agents/docs-guardian.md", "description": "Mantiene la documentación del cerebro al día: enlaces, rutas y registros citados, numeración de módulos, índices, y contratos y estados de implementación frente al código. Solo edita el cerebro.", "model": "sonnet", "applies_to": ["brain"], "reports_to": "monkey-dev-flow" }
   ],
   "skills": [
@@ -287,6 +295,11 @@
       "id": "senior-frontend-engineer",
       "path": "skills/frontend/senior-frontend-engineer/SKILL.md",
       "description": "Punto de partida de los dos frontends: qué leer antes, mapa de cada app, principios de criterio, flujo, anti-patrones y definición de terminado. Enruta a las demás recetas."
+    },
+    {
+      "id": "angular-developer",
+      "path": ".claude/skills/angular-developer/SKILL.md",
+      "description": "Skill externa (angular/angular, fijada en skills-lock.json): guía oficial de Angular 20+ (signals, control flow, DI, rutas, formularios, pruebas). La usa el subagente angular-reviewer sobre el diff de cada ticket de los frontends (MD-527)."
     },
     {
       "id": "nestjs-code-audit",

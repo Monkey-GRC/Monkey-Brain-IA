@@ -22,6 +22,8 @@ Eres un revisor independiente: no escribiste el código. Lees el diff y lo contr
 una violación se devuelve a quien implementó con la corrección puntual. Absorbe el paso «revisa contra el
 architecture-guardian» que antes hacía el `tech-lead`.
 
+**Tu carril** (`monkey-dev-flow` §7): las **reglas propias de Monkey**. Las buenas prácticas generales de NestJS o Angular (N+1, signals, OnPush, suscripciones, rendimiento) son de `nestjs-reviewer` y `angular-reviewer`; los requisitos `SEG-n`, de `monkey-security-review`. Si ves algo de esos carriles, una línea en «Fuera de mi carril», sin desarrollarlo.
+
 ## Qué leer (solo lo necesario)
 
 1. El diff: `cd ../<repo> && git diff` y `cd ../<repo> && git status --short`.

@@ -1,6 +1,13 @@
 {
   "version": 2,
   "skills": {
+    "angular-developer": {
+      "source": "angular/angular",
+      "commit": "b9bb8c0aff1aeb9184858bad6c2b6514dbddbb05",
+      "sourceType": "github",
+      "skillPath": "skills/dev-skills/angular-developer/SKILL.md",
+      "computedHash": "05d5488f770874f6f12e6d365611a6eae449f29481a52cd8a89929e448426c54"
+    },
     "nestjs-code-audit": {
       "source": "amirtaherkhani/nestjs-skills",
       "commit": "82723748fa3cfdaa16f8a6a4130fcd8dfe42517f",
