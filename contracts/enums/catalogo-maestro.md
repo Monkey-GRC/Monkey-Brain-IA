@@ -145,6 +145,25 @@ listas marcadas **«nueva»** son las que trajo la VF18; ya existen en el Backen
 | `all_users` | Todos los usuarios |
 | `not_required` | No requiere |
 
+## `evaluation_parameter_unit` (nueva) · `window_mode` (nueva)
+**Columna:** `evaluation_parameters.unit` y el valor de PR-07 · **Qué es:** la forma del valor de un parámetro de evaluación (RC-19, MD-495; [contrato](../catalogo-maestro.md#parámetros-de-evaluación-rc-19)). Propuesta de desarrollo: el libro no trae lista.
+
+| `evaluation_parameter_unit` | Etiqueta (es) | Forma de `value` |
+|---|---|---|
+| `percent` | Porcentaje | Entero (1–100 según el parámetro) |
+| `days` | Días | Entero |
+| `hours` | Horas | Entero |
+| `months` | Meses | Entero |
+| `count` | Cantidad | Entero |
+| `boolean` | Sí / No | `true` o `false` |
+| `days_by_periodicity` | Días por periodicidad | Objeto `{ <periodicity>: entero }` sin `permanent` |
+| `window_mode` | Modo de ventana | Un valor de `window_mode` |
+
+| `window_mode` | Etiqueta (es) | Qué significa |
+|---|---|---|
+| `calendar` | Calendario | Las ventanas siguen el calendario (mes, trimestre, año), no una fecha móvil (PR-07) |
+| `rolling` | Móvil | Cada evidencia vale una periodicidad desde su fecha; la siguiente vence un período después (PR-07, MD-495) |
+
 ## `framework_type`
 **Columna:** `frameworks.type` · **En el MVP** solo se usa `attestation`.
 
