@@ -1,7 +1,8 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
 import { Select, SelectOption } from '@shared/presentation/components/select/select';
-import { PageInfo, canGoBack, canGoForward, pageWindow, visibleRange } from '@shared/presentation/components/data-table/table-page';
+import { PageInfo } from '@shared/domain/models/page-info.model';
+import { canGoBack, canGoForward, pageWindow, visibleRange } from '@shared/presentation/components/data-table/table-page';
 
 // Pagination bar: «Showing 1–10 of 31», rows per page, previous, page numbers and next. It fetches nothing: it receives the `PageInfo` and says which page
 // or size was asked for; the owner slices the list (client side) or asks the server. Every control is a native button or select, so Tab, Enter and Space work;

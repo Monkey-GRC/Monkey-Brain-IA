@@ -148,7 +148,7 @@ tipos (232 documentales, 244 operativos, 97 técnicos y 3 de población). Cada u
 sugerida** (40 permanentes, 36 cuando sea requerido, 28 anuales, 4 semestrales, 3 mensuales, 3 trimestrales) y el
 **rol responsable sugerido**, que es solo una guía: cada empresa asigna a sus usuarios (G-01). El **dominio** (25 valores literales) **es de la fila** control + punto de enfoque, no del control: 61 controles tienen 2 a 4 dominios distintos y `IN-08` no exige que coincidan (MD-491). Las **dimensiones**
 vienen explícitas en las columnas «TEST …» de la hoja: el control aplica las que dicen «Definido» (las 114
-aplican la documental). La columna «EVALUACIÓN DE CONTROL» es un resultado por cliente y no se carga.
+aplican la documental). Desde MD-499 la carga suma además una fila por cada dimensión en que el control tenga pruebas y la hoja no marque (en la práctica `process`): 267 filas de «Definido» + 107 de `process` = **374** `control_dimensions`. La columna «EVALUACIÓN DE CONTROL» es un resultado por cliente y no se carga.
 
 **Prefijos de código de la v2:** `ACT`, `AEV`, `CAP`, `CFG`, `CHG`, `CIF`, `CLI`, `CNT`, `CON`, `CPL`, `DCL`, `EQU`,
 `FIS`, `GOB`, `IDA`, `INC`, `MNT`, `MOV`, `OPS`, `PRV`, `RED`, `RIE`, `RRH`, `TER`, `TRD`, `VUL`. No tienen equivalencia

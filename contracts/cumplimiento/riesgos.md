@@ -242,9 +242,9 @@ Misma forma que los riesgos, con `failure_category` (6 valores) en lugar de `tru
 | Endpoint | Request | Qué hace |
 |---|---|---|
 | `GET /v1/services/{service_id}/causes` | Filtros: `failure_category`, `origin`, `include_inactive`, `risk_id` | Lista paginada |
-| `POST /v1/services/{service_id}/causes` | `{ "name", "description", "failure_category" }` | Crea una causa propia → `201` |
+| `POST /v1/services/{service_id}/causes` | `{ "name", "description", "failure_category" }` y opcionales `cause_origin`, `cause_type` (MD-499) | Crea una causa propia → `201` |
 | `GET /v1/causes/{id}` | — | Detalle con los riesgos que origina y las acciones que la mitigan |
-| `PATCH /v1/causes/{id}` | `name`, `description`, `failure_category` | Edita |
+| `PATCH /v1/causes/{id}` | `name`, `description`, `failure_category`, `cause_origin`, `cause_type` (MD-499; `null` los borra) | Edita. La clasificación solo se edita en una causa **propia**; en una del catálogo responde `422` con `cause.catalog_classification` |
 | `DELETE /v1/causes/{id}` | — | Baja lógica → `204` |
 
 Los endpoints devuelven este objeto:
@@ -254,6 +254,8 @@ Los endpoints devuelven este objeto:
 | `id`, `service_id`, `code`, `name`, `description` | | |
 | `failure_category` | enum `failure_category` | |
 | `origin`, `is_active` | | |
+| `cause_origin` (MD-499) | enum `cause_origin` \| null | Clasificación v2 (D129): `internal` · `external`. `null` en una causa sin clasificar (las v1 y las propias sin dato) |
+| `cause_type` (MD-499) | enum `cause_type` \| null | Clasificación v2 (D129): `human` · `processes` · `information` · `measurement` · … (valores en `enums/catalogo-maestro.md`). `null` si no la tiene |
 | `risks[]` | `{ id, code, name }` | Los riesgos que origina |
 | `controls[]` | `{ control_id, code, own_code, name, is_mandatory, effect }` | Los controles que la mitigan |
 
@@ -266,6 +268,8 @@ Los endpoints devuelven este objeto:
   "description": "Las cuentas de quien se va siguen activas porque nadie avisa a TI.",
   "failure_category": "human_resource",
   "origin": "catalog",
+  "cause_origin": "internal",
+  "cause_type": "human",
   "is_active": true,
   "risks": [ { "id": "c1a7…", "code": "R001", "name": "Acceso no autorizado a información sensible" } ],
   "controls": [ { "control_id": "3f1c…", "code": "IAC-12", "own_code": null, "name": "Gestión de accesos de usuarios", "is_mandatory": true, "effect": null } ]
@@ -476,6 +480,8 @@ Todos con el mismo sobre (`conventions.md`); `message` es la clave i18n del erro
 ---
 
 ## Estado de implementación
+
+**Construido (MD-499, 2026-11-24): clasificación v2 de la causa.** `cause_origin` y `cause_type` al crear y editar una causa propia y en las respuestas; la causa del catálogo responde `422 cause.catalog_classification` (`application/risks/cause-classification.use-cases.spec.ts`).
 
 **Construido (MD-166, 2026-10-30): el código en cada vínculo causa–control (`controls[]`) en la vista de negocio (D80).** Es el del catálogo (`IAC-12`) o el propio (`C01`); el riesgo y la causa ya lo traían. `own_code` sigue siendo solo la numeración de los propios y `technical.catalog_code` se mantiene en la vista técnica. Pruebas: `riesgos.e2e-spec.ts`.
 

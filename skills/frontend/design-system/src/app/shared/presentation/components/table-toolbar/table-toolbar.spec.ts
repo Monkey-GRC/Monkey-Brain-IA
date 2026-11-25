@@ -28,7 +28,7 @@ describe('TableToolbar', () => {
     fixture.detectChanges();
   });
 
-  it('puts the search, the filters and the actions in one row, and emits what is typed', () => {
+  it('puts the search on top at full width with the actions at its right, the filters below, and emits what is typed', () => {
     const input = el().querySelector<HTMLInputElement>('input[type="search"]')!;
     expect(input.placeholder).toBe('TEST.SEARCH');
     input.value = 'ana';
@@ -39,6 +39,16 @@ describe('TableToolbar', () => {
     expect(el().querySelector('app-table-filter')).not.toBeNull();
     expect(el().querySelector('button[actions]')!.textContent).toBe('Go');
     expect(el().querySelector('app-table-toolbar [role="group"]')!.className).toContain('flex');
+    expect(el().querySelector('[data-toolbar-search]')!.className).toContain('flex-1');
+    expect(el().querySelector('[data-toolbar-search]')!.className).not.toContain('max-w');
+    expect(el().querySelector('[data-toolbar-filters]')!.className).toContain('basis-full');
+  });
+
+  it('without a search, the filters come first and share the row with the actions', () => {
+    fixture.componentInstance.search.set(null);
+    fixture.detectChanges();
+    expect(el().querySelector('[data-toolbar-filters]')!.className).toContain('order-first');
+    expect(el().querySelector('[data-toolbar-filters]')!.className).not.toContain('basis-full');
   });
 
   it('has no search box without a placeholder key', () => {

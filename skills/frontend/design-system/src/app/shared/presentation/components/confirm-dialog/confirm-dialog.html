@@ -1,4 +1,4 @@
-<!-- Por encima del panel lateral (`--z-dialog` sobre `--z-drawer`): se abre desde un panel y, si quedara debajo, el botón de confirmar no se vería. -->
+<!-- Por encima del modal (`--z-dialog` sobre `--z-modal`): se abre desde un modal de detalle o de formulario y, si quedara debajo, el botón de confirmar no se vería. -->
 <div class="mk-backdrop-in fixed inset-0 z-(--z-dialog) flex items-center justify-center bg-scrim p-4" role="presentation" (click)="$event.target === $event.currentTarget && cancel()">
   <div
     cdkTrapFocus

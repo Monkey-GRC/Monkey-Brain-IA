@@ -1,10 +1,6 @@
-// The page the backend returns (contracts/conventions.md): `page` starts at 1. The one `PageInfo` of both apps (it replaces the old pagination util of Platform).
-export interface PageInfo {
-  page: number;
-  pageSize: number;
-  total: number;
-  totalPages: number;
-}
+import type { PageInfo } from '@shared/domain/models/page-info.model';
+
+// Helpers of the page bar over the `PageInfo` the backend returns (`shared/domain/models/page-info.model`).
 
 export function visibleRange(page: PageInfo): { from: number; to: number } {
   if (page.total === 0) return { from: 0, to: 0 };

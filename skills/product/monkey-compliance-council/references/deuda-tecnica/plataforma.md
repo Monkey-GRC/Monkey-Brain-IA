@@ -37,3 +37,11 @@ Parches que dejó el rediseño visual y las capas de `Frontend` y `Frontend-Plat
 - **Por qué:** subir `eslint` a 10 exige `angular-eslint` 21 o 22, y estos exigen `@angular/cli` 21 o 22; no se subió ninguna dependencia a una versión mayor en este cambio
 - **Qué lo cierra:** subir los dos frontends a Angular 21 o superior (con `angular-eslint`, `eslint` 10 y `@angular/cli` actualizados), con lo que se cierran (1) y (4); para (2), escribir los `!` de los specs con un ayudante tipado que lance si el elemento falta y quitar la excepción; para (3), migrar el constructor a `inject()`
 
+
+### DT-121 · Specs de los frontends que aseveran clases de estilo
+
+🟡 Mejora
+
+- **Qué está parchado:** unos 15 specs comprueban clases CSS en vez de comportamiento o `data-*`: `modal`, `data-table`, `donut`, `confirm-dialog`, `expandable-text`, `table-toolbar`, `option-chips` (compartidos) y `discovered-assets`, `control-evidence`, `control-tests`, `detail-card`, `overview`, `company-dashboard`, `integrations-list`, `home` (Platform)
+- **Por qué:** MD-499 corrigió los que tocó con más carga; el resto se dejó para no abrir otra vuelta de revisión antes de la demo
+- **Qué lo cierra:** MD-526 (calidad de pruebas): asertar `data-*`, roles o `data-state`; la clase solo vale cuando es el comportamiento (`line-clamp-2`)

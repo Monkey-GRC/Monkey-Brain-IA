@@ -30,7 +30,7 @@ const ICON: Record<MetricColor, string> = {
   selector: 'app-metric-card',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'flex h-full items-center gap-4 rounded-card border border-line bg-surface p-4' },
+  host: { class: 'flex h-full items-center gap-4 rounded-card border border-line bg-surface p-4', '[attr.data-color]': 'color()' },
   template: `
     <span class="mk-metric-icon" [class]="iconClass()" aria-hidden="true"><span class="material-symbols-rounded text-[28px] leading-none">{{ icon() }}</span></span>
     <div class="min-w-0 flex-1">

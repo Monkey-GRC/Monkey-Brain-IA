@@ -76,7 +76,7 @@ RULES = [
     ('h-screen / 100vh', r'\b(?:min-)?h-screen\b|100vh', ('.ts', '.html'), 'min-h-dvh / h-dvh', 'fail'),
     ('arbitrary z-[N]', r'(?<![\w-])(?:[a-z-]+:)*-?z-\[', ('.ts', '.html'), 'the --z-* scale of the theme', 'fail'),
     ('rounded-md/lg/xl', r'\brounded-(?:sm|md|lg|xl|2xl|3xl)\b', ('.ts', '.html'), 'rounded-control / card / panel / badge', 'warn'),
-    ('app-modal in a view', r'<app-modal\b', ('.html',), 'app-form-modal / side-drawer', 'fail'),
+    ('app-modal in a view', r'<app-modal\b', ('.html',), 'app-form-modal / app-detail-modal', 'fail'),
     ('javascript:void / href="#"', r'href="(?:javascript:void\(0\)|#)"', ('.ts', '.html'), 'a real link, or aria-disabled', 'fail'),
     ('icon size off the scale', r'material-symbols[^>]*\btext-\[(?!(?:16|20|24|28|32|44)px\])\d+(?:\.\d+)?px\]', ('.ts', '.html'), '16 / 20 / 24 px (28 metric, 32 empty state, 44 final screen)', 'fail'),
     ('static style=""', r'(?<![\[\w.-])style="', ('.ts', '.html'), 'classes', 'warn'),
@@ -84,16 +84,16 @@ RULES = [
 # Files where a rule is allowed on purpose (documented exceptions).
 RULE_ALLOW = {'dark: with colour in a view': ('device-icon.ts',), 'uppercase in a label': ('password-rules.ts',)}
 # Rules that a canonical base component (a file that also exists in the canonical copy, e.g. notice-dialog, second-factor-dialog) may break on purpose: they are the
-# building blocks a view uses instead (`app-form-modal`, `app-side-drawer` and these dialogs are built on `app-modal`). Platform- or Admin-only components still count.
+# building blocks a view uses instead (`app-form-modal`, `app-detail-modal` and these dialogs are built on `app-modal`). Platform- or Admin-only components still count.
 RULE_CANON_OK = {'app-modal in a view'}
 # A text input that normalises what is typed may keep `uppercase`.
 RULE_LINE_SKIP = {'uppercase in a label': re.compile(r'<input|mk-input|<code\b')}
 ICON_LINE = re.compile(r'material-symbols')
 PROVIDER = re.compile(r'wazuh|prowler', re.I)
 
-# A text field written by hand (not `mk-input`) must set its own text colour, or the browser's black shows on the dark surface.
+# A text field written by hand (not `mk-input` nor `mk-textarea`, which carry `text-ink`) must set its own text colour, or the browser's black shows on the dark surface.
 INPUT_TAG = re.compile(r'<(?:input|textarea)\b[^>]*>', re.S)
-INPUT_OK = re.compile(r'\bmk-input\b|\bmk-checkbox\b|\btext-(?:ink|ink-muted|white|action|bad|ok|warn)\b|type="(?:checkbox|radio|file|hidden|range|color)"')
+INPUT_OK = re.compile(r'\bmk-(?:input|textarea)\b|\bmk-checkbox\b|\btext-(?:ink|ink-muted|white|action|bad|ok|warn)\b|type="(?:checkbox|radio|file|hidden|range|color)"')
 INPUT_RULE = 'input without text colour'
 TEAL = re.compile(r'rgba\(\s*4\s*,\s*164\s*,\s*156')
 

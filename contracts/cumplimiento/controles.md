@@ -11,6 +11,8 @@ type: contract
 
 ## Motor v2 (MD-498): campos nuevos y compatibilidad
 
+> **Quitados en MD-499 (2026-11-24).** Las pantallas v2 ya no los leen, así que salen de la API: `technical.control_state` (lo reemplazan `technical.level`, `level_value` y `complies`), `technical.tests[].state` (lo reemplaza `technical.tests[].status`, enum `test_status`, que ahora viaja también en la lista plana) y `technical.tests_count`. **Se conservan**, porque son contrato de producto y no puente: la lista plana `technical.tests[]` (con `status`, `accepts_evidence`, `evidence_fallback`), `failing[]`, `progress`, `coverage` y `readiness`. Las filas de abajo que nombran los campos quitados son historia.
+
 Desde MD-498 el cálculo sale del motor v2 (§9, D130). **Los campos de abajo se agregan; ninguno de los existentes se quita** hasta que las pantallas v2 (MD-499) dejen de leerlos. Los viejos se derivan del motor nuevo, así que dicen lo mismo con otra forma.
 
 **Qué cambia de significado en los campos que ya existen** (lista, detalle y `failing_controls` del resumen):
@@ -37,6 +39,20 @@ Desde MD-498 el cálculo sale del motor v2 (§9, D130). **Los campos de abajo se
 | `technical.periodicity_change` (MD-500) | objeto \| null | El último cambio de periodicidad del control (D147): `{ periodicity, justification, changed_at }`; `null` si usa la sugerida |
 | `technical.period` (MD-500, R6) | objeto \| null | La vista **del período** auditado abierto: `level`, `complies`, `windows: { total, with_evidence }` (las ventanas **ya cerradas** del período; la vigente no cuenta) y `missing[]` (`{ requirement_code, window_start, window_end }`, las ventanas ya cerradas del período sin evidencia válida). `null` si el período no está definido. Los campos de arriba son la vista **a la fecha** |
 | `…requirements[].tests[]` | objeto | `test_id`, `test_code`, `display_name`, `status` (enum `test_status`), `window_end` (fecha de cierre de la ventana actual o `null`), `alert_at` (MD-500: el día del aviso previo, `window_end` − PR-06; `null` sin ventana) y, en las técnicas, `checks: { direct_pass, direct_fail, direct_exception, no_data, complementary_fail }` y `asset_coverage: { with_result, in_scope }` |
+| `…requirements[].tests[].check_links[]` (MD-499, solo en el detalle y solo en las técnicas; `[]` en las demás) | objeto | Los vínculos **ratificados** de la prueba con su **rol** (enum `check_role`, D129, T-04 a T-06), en orden Directos → Complementarios → Dependencias. Ver la tabla de abajo |
+
+**`check_links[]`** (MD-499). Una entrada por vínculo; lo que el motor ignora (vínculos sin ratificar, D56) no sale.
+
+| Campo | Tipo | Qué es |
+|---|---|---|
+| `role` | enum `check_role` | `direct` · `complementary` · `dependency` |
+| `kind` | `check` · `module` | Un check de la sonda o del motor de nube, o un vínculo a un módulo o puntaje global (D141, D146) |
+| `check` | `{ id, title }` \| null | Con `kind: check`: `id` es el uuid del check en el catálogo de Monkey y `title` su título en el idioma de la petición (`title_es` y, si no hay traducción, `title_en`); un título que nombra al proveedor no sale (`publicText`, SEG-39) y en su lugar va un texto neutro de la dimensión. Nunca el proveedor, la política ni el identificador del check en la plataforma de origen (regla 1) |
+| `module` | `vulnerabilities` · `score` · `other` \| null | Con `kind: module`: qué módulo es, ya clasificado. El nombre interno (`module_ref`) no sale |
+| `failing_assets` | integer \| null | Solo en un **Complementario**: los activos en alcance cuyo resultado más reciente de ese check es FAIL (lo que da la Observación). `null` en Directos y Dependencias |
+
+> **Solo lo exacto (Rod, 2026-11-24).** El motor guarda un resultado por prueba y activo para todos los Directos juntos, no uno por check, así que **no hay conteo por check Directo**: el resultado por activos de los Directos es el de la prueba (`checks` y `asset_coverage`). Un conteo por check exige guardarlo por check (`DT-n` de MD-499). Un activo sin corrida no se cuenta como «cumple».
+| `owner` | `{ control_id, control_code, test_status }` \| null | Solo en una Dependencia: el control dueño (T-06) y el estado de su prueba, que es lo que esta toma. `control_id` es el control del cliente en el mismo servicio; si el dueño no está en el alcance, `control_id: null` y `test_status: null` |
 
 ```json
 "technical": {
@@ -49,7 +65,14 @@ Desde MD-498 el cálculo sale del motor v2 (§9, D130). **Los campos de abajo se
     {
       "id": "a41e…", "code": "IAC-12-L2", "text": "Los accesos privilegiados se revisan cada trimestre.",
       "type": "operational", "periodicity": "quarterly", "status": "non_compliant",
-      "tests": [ { "test_id": "21ab…", "test_code": "T-IAC-12-02", "display_name": "Revisión de accesos privilegiados", "status": "exception", "window_end": "2026-12-31", "checks": null, "asset_coverage": null } ]
+      "tests": [ { "test_id": "21ab…", "test_code": "T-IAC-12-02", "display_name": "Revisión de accesos privilegiados", "status": "exception", "window_end": "2026-12-31", "checks": null, "asset_coverage": null, "check_links": [] },
+                 { "test_id": "33cd…", "test_code": "T-IAC-12-01", "display_name": "MFA en cuentas privilegiadas", "status": "exception", "window_end": "2026-12-31",
+                   "checks": { "direct_pass": 3, "direct_fail": 1, "direct_exception": 0, "no_data": 0, "complementary_fail": 0 }, "asset_coverage": { "with_result": 4, "in_scope": 4 },
+                   "check_links": [
+                     { "role": "direct", "kind": "check", "check": { "id": "9f10…", "title": "Asegurar que la MFA esté habilitada para usuarios privilegiados" }, "module": null,
+                       "failing_assets": null, "owner": null },
+                     { "role": "dependency", "kind": "check", "check": { "id": "a2b3…", "title": "Bloqueo de cuenta tras intentos fallidos" }, "module": null,
+                       "failing_assets": null, "owner": { "control_id": "c7d8…", "control_code": "IAC-15", "test_status": "correct" } } ] } ]
     }
   ]
 }
@@ -183,9 +206,9 @@ Desde MD-498 el cálculo sale del motor v2 (§9, D130). **Los campos de abajo se
 #### Vista técnica (`?view=technical`)
 Cada ítem agrega:
 ```json
-"technical": { "points_of_focus": ["CC6.1-POF1"], "control_state": "ineffective", "tests_count": 5 }
+"technical": { "points_of_focus": ["CC6.1-POF1"], "level": "partial", "level_value": 3, "complies": false }
 ```
-`control_state` es el de `enums.md` (`effective`, `ineffective`…). El detalle de los tests de un control está en [`veredictos.md`](veredictos.md).
+`level` es el `control_level` de `enums.md` (`control_state` y `tests_count` se quitaron en MD-499). El detalle de los tests de un control está en [`veredictos.md`](veredictos.md).
 
 > Un control propio **cuenta en el avance desde que se crea**.
 
@@ -205,6 +228,11 @@ Cada ítem agrega:
 | `id`, `service_id`, `code`, `requirement_codes`, `own_code`, `name`, `origin`, `type`, `trust_criteria`, `approval` | | Como en la lista |
 | `interpretation` | `{ text, is_customized }` | `is_customized` es `true` si la empresa la reescribió; si no, es el texto del catálogo |
 | `dimensions[]` | `{ dimension, applies, type, reason_not_applicable }` | **Todas las que el control exige**; una que no aplica **se declara con su motivo**, nunca se omite |
+| `…tests[].accepts_evidence` (MD-499) | boolean | En toda lista de pruebas del detalle (`technical.tests[]`, `technical.requirements[].tests[]` y la de la vista de negocio, si la hay): `true` si la prueba acepta `POST …/tests/{test_id}/evidence` (regla por `primary_source` en [`evidencia.md`](evidencia.md)). La pantalla decide con este campo, no deduciéndolo de la dimensión |
+| `evidence_tests[]` (MD-499) | `{ test_id, test_code, display_name, dimension, status, evidence_fallback, requirement_id }` | **Para todos los roles que leen el detalle** (también la vista de negocio): las pruebas del control que aceptan evidencia (`accepts_evidence`), para que el ejecutor y el dueño suban por prueba aunque aún no exista su requerimiento. `status` es el `test_status` de la prueba en este control; `requirement_id` es el lugar ya creado por la primera entrega (`null` si aún no hay). No trae checks, niveles ni requisitos (§9). El `responsable` y el `delegado` lo reciben solo en sus controles, como el resto del detalle |
+| `…tests[].evidence_fallback` (MD-499) | boolean | `true` solo en una prueba de fuente `integration` que acepta subida porque el servicio no tiene la integración conectada: la pantalla la etiqueta «Sin integración conectada» |
+
+> **Dimensiones de las pruebas (MD-499).** `dimensions[]` incluye **toda dimensión en la que el control tenga pruebas** (antes faltaba `process`, que no venía en la semilla del catálogo). El `type` de una dimensión agregada sale de las **fuentes de sus pruebas** en ese control: todas `document`/`manual` → `manual`; todas automáticas (`probe`, `cloud_engine`, `probe_and_cloud_engine`, `integration`) → `automated`; mezcla → `hybrid`. Las filas que ya existían no cambian de tipo.
 | `evidence[]` | `{ requirement_id, description, responsible, latest_submission }` | `responsible` es el **cargo de la organización** (`organization_responsibles`); `latest_submission` trae `id`, `version` y `evidence_state` |
 | `causes[]` | `{ id, code, name }` | |
 | `readiness`, `progress`, `coverage` | | Como en la lista |
@@ -441,6 +469,8 @@ Crear, editar dimensiones o dar de baja altera lo que se mide y deja además un 
 ---
 
 ## Estado de implementación
+
+**Construido (MD-499, 2026-11-24): contrato de las pantallas v2.** `check_links[]` por prueba técnica, `evidence_tests[]`, `accepts_evidence` y `evidence_fallback`, dimensiones según las fuentes de las pruebas (incluida `process`) y retirados `technical.control_state`, `technical.tests[].state` y `technical.tests_count` (`Backend/src/features/compliance/presentation/controls/`, `domain/controls/control-readout.ts`; pruebas: `check-links.spec.ts`, `control-response.mapper.spec.ts`, `test/cumplimiento/controles.e2e-spec.ts`). Pendiente: el conteo por check Directo (necesita guardar el resultado por check; ver la nota «Solo lo exacto»).
 
 **Construido (MD-498, 2026-11-23): el motor v2.** Lista, detalle y creación calculan con requisitos del control, pruebas con `test_status` y nivel 0–5 ([Motor v2](#motor-v2-md-498-campos-nuevos-y-compatibilidad); `domain/engine/v2/`, `domain/controls/control-readout.ts`). Pruebas: las `*.spec.ts` de `engine/v2/` (en especial `engine.acceptance.spec.ts`) y `control-readout.spec.ts`. **Construido (MD-495, 2026-11-24):** los parámetros PR-01 a PR-05, D146 y los demás salen de `catalog.evaluation_parameters` ([contrato](../catalogo-maestro.md#parámetros-de-evaluación-rc-19)), con el modo de ventanas de PR-07. **Sin construir de esto:** los estados de gestión y «Cumplimiento aprobado» (MD-504, `DT-114`); el resultado de una prueba manual y la prueba documental con el módulo Documentos (MD-504 y MD-506, `DT-114`); y el retiro de `client_control_tests`, que otras lecturas aún usan (MD-509, `DT-113`).
 

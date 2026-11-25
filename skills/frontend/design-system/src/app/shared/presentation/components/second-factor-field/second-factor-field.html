@@ -10,7 +10,7 @@
       class="mk-input !h-12 !text-base tracking-widest caret-ink aria-invalid:border-bad" />
   }
   @if (allowRecovery()) {
-    <button type="button" (click)="toggle()" [disabled]="disabled()" class="mt-2 text-sm font-medium text-action enabled:hover:underline disabled:cursor-not-allowed disabled:text-ink-faint">
+    <button type="button" (click)="toggle()" [disabled]="disabled()" class="mk-link mt-2 text-sm underline">
       {{ (useRecovery() ? 'COMMON.SECOND_FACTOR.USE_APP' : 'COMMON.SECOND_FACTOR.USE_RECOVERY') | translate }}
     </button>
   }

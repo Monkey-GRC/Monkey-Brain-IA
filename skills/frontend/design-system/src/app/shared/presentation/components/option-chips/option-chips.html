@@ -1,6 +1,7 @@
+<!-- La etiqueta dice qué se filtra, en texto de cuerpo con peso medio y color principal, centrada con los chips y separada de ellos por una línea fina (MD-499). -->
 <div class="flex flex-col gap-1.5 lg:flex-row lg:items-center lg:gap-3">
   @if (labelKey(); as key) {
-  <span class="text-xs font-medium text-ink-muted" aria-hidden="true">{{ key | translate }}</span>
+  <span class="flex shrink-0 items-center gap-3 text-sm font-medium text-ink" aria-hidden="true" data-chips-label>{{ key | translate }}<span class="hidden h-5 w-px bg-line-strong lg:block"></span></span>
   }
 <div class="flex flex-wrap" [class]="compact() ? 'gap-2' : 'gap-2.5'" role="group" [attr.aria-label]="ariaLabel() ?? (labelKey() ? (labelKey()! | translate) : 'Opciones')">
   @for (option of options(); track option.value) {

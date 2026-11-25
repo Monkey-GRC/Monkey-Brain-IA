@@ -10,7 +10,7 @@ import { TabItem, Tabs } from './tabs';
 class Host {
   items: TabItem[] = [
     { id: 'a', labelKey: 'TEST.A' },
-    { id: 'b', labelKey: 'TEST.B' },
+    { id: 'b', labelKey: 'TEST.B', count: 3 },
   ];
   active = 'a';
 }
@@ -30,6 +30,15 @@ describe('Tabs', () => {
     expect(tabs()[0].className).toContain('border-action');
     expect(tabs()[1].className).toContain('border-transparent');
     expect(tabs()[1].getAttribute('tabindex')).toBe('-1');
+  });
+
+  it('shows the count of a tab after its label, only where there is one', () => {
+    expect(tabs()[0].querySelector('[data-tab-count]')).toBeNull();
+    expect(tabs()[1].querySelector('[data-tab-count]')?.textContent).toBe('3');
+  });
+
+  it('names each tab `tab-<id>` by default, so the tab panel can point at it', () => {
+    expect(tabs().map((t) => t.id)).toEqual(['tab-a', 'tab-b']);
   });
 
   it('changes tab with a click', () => {

@@ -33,7 +33,7 @@ reemplazarlo**.
 ## Cómo se trabaja
 
 1. **Escanear.** Lee la pantalla o el componente, su `.html`, su `.ts` y sus estilos. Ubica qué componentes base usa
-   (`data-table`, `app-card`, `app-badge`, `side-drawer`…) y qué hace a mano.
+   (`data-table`, `app-card`, `app-badge`, `detail-modal`…) y qué hace a mano.
 2. **Diagnosticar.** Recorre la auditoría de abajo. Anota cada hallazgo con `archivo:línea`, en qué app está y a qué
    categoría pertenece.
 3. **Reportar antes de corregir.** Entrega a Rod la lista agrupada por pantalla y prioridad. Él veta lo que no quiere.
@@ -113,7 +113,8 @@ reemplazarlo**.
     150 ms en transiciones de color.
   - Se anima solo `transform` y `opacity`, nunca `top`, `left`, `width` ni `height`.
   - Con `prefers-reduced-motion`, el movimiento pasa a un fundido.
-- **Modales para todo.** El detalle va en panel lateral (`side-drawer`). Los modales quedan para lo que el design system
+- **Modales hechos a mano o detalles en página.** El detalle de un elemento va en `detail-modal`: el panel lateral ancho pegado a la derecha y a todo el alto (`drawer`; `drawer-narrow` para una columna), o el modal compacto para un detalle corto; tamaño fijo, X arriba y «Cerrar» en el pie (MD-499); los formularios, en `form-modal`. Nada de paneles laterales ni modales propios.
+- **Texto azul usado como botón.** Una acción es un botón del sistema (`mk-btn*`, pequeño dentro de una tarjeta); la navegación y el «ver más» son un enlace subrayado (README §2).
   ya decidió que es modal (MD-210). La edición simple puede ir inline.
 
 ## Textos

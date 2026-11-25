@@ -1,7 +1,7 @@
 import { NgTemplateOutlet } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Directive, TemplateRef, computed, contentChildren, inject, input, output, signal } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
-import { PageInfo } from './table-page';
+import { PageInfo } from '@shared/domain/models/page-info.model';
 import { Pagination } from '@shared/presentation/components/pagination/pagination';
 import { EmptyState } from '@shared/presentation/components/empty-state/empty-state';
 import { Skeleton } from '@shared/presentation/components/skeleton/skeleton';
@@ -93,9 +93,10 @@ export interface TableColumn<T> {
   class?: string;
   // El encabezado se oculta a la vista pero sigue ahí para los lectores de pantalla (columna de acciones).
   srOnlyHeader?: boolean;
-  // What the column holds, so the loading rows draw a cell of the same kind: `text` (default), `badge` (status, code), `person` (avatar and two lines), `actions` (a small button) or
-  // `none` (empty cell).
-  skeleton?: 'text' | 'badge' | 'person' | 'actions' | 'none';
+  // What the column holds, so the loading rows draw a cell of the same kind (D116, the full shape): `text` (default, one line), `lines` (a title and a caption below),
+  // `badge` (status, code), `badges` (two badges, e.g. code and level), `progress` (a figure, a 4 px bar and a caption), `person` (avatar and two lines),
+  // `actions` (small buttons) or `none` (empty cell).
+  skeleton?: 'text' | 'lines' | 'badge' | 'badges' | 'progress' | 'person' | 'actions' | 'none';
 }
 
 // Marca la plantilla de una celda: `<ng-template appCell="status" let-row><app-status-indicator tone="ok" labelKey="..." /></ng-template>`.
@@ -149,10 +150,10 @@ export class DataTable<T> {
   // Filas agrupadas: `groupBy` da la clave de grupo de cada fila (las filas se muestran en el orden recibido; los grupos, en el de su primera aparición) y `groupLabel` el
   // título ya traducido del grupo (por defecto, la clave). Cada grupo lleva un encabezado de sección con su conteo; con `collapsible` el encabezado es un botón que pliega o
   // despliega las filas del grupo (`aria-expanded`). Sin `groupBy` la tabla es la plana de siempre.
-  readonly groupBy = input<((row: T) => string) | null>(null);
+  readonly groupBy = input<((row: T) => string | null | undefined) | null>(null);
   readonly groupLabel = input<((key: string, rows: T[]) => string) | null>(null);
   readonly collapsible = input(false);
-  // Variante compacta para listas dentro de un panel lateral (`side-drawer`, de 28 a 42 rem): sin ancho mínimo, celdas más bajas que pueden partir el texto en dos líneas; es la
+  // Variante compacta para listas dentro de un panel estrecho (una columna de `detail-modal` o un `form-modal`): sin ancho mínimo, celdas más bajas que pueden partir el texto en dos líneas; es la
   // misma tabla (mismo borde, hover, fila activable, vacío y carga). Con `hideHeader` el encabezado queda solo para lectores de pantalla (una lista sin títulos de columna).
   readonly compact = input(false);
   readonly hideHeader = input(false);
@@ -170,6 +171,13 @@ export class DataTable<T> {
 
   protected readonly openHintId = `data-table-open-${nextId++}`;
   protected readonly s = computed<StackClasses>(() => (this.compact() ? COMPACT : STACK[this.stackBelow()]));
+  // La barra de página. En la compacta (una lista corta de un detalle) se omite mientras todo cabe en la página más chica: «Mostrando 1–3 de 3» no dice nada que la lista no diga.
+  protected readonly pageBar = computed(() => {
+    const p = this.page();
+    if (!p || !this.compact()) return p;
+    const smallest = Math.min(p.pageSize, ...this.pageSizes());
+    return p.total > smallest ? p : null;
+  });
   protected readonly stacked = computed(() => !this.compact() && this.stackBelow() !== 'never');
   protected readonly cellPad = computed(() => this.s().pad + ' ' + this.s().padX);
   protected readonly isFocusable = computed(() => this.clickable() && this.focusable());
@@ -183,7 +191,8 @@ export class DataTable<T> {
     if (!keyOf) return [];
     const byKey = new Map<string, T[]>();
     for (const row of this.rows()) {
-      const key = keyOf(row);
+      // A row without a group (null or undefined key, e.g. a v2 cause with no failure category) goes in the group with the empty key.
+      const key = keyOf(row) ?? '';
       const list = byKey.get(key);
       if (list) list.push(row);
       else byKey.set(key, [row]);
@@ -191,6 +200,9 @@ export class DataTable<T> {
     const labelOf = this.groupLabel();
     return Array.from(byKey, ([key, rows]) => ({ key, label: labelOf ? labelOf(key, rows) : key, rows }));
   });
+  // The group rows only say something when there are at least two groups: with one (everything in the same group, or no key at all) the table is the plain one
+  // and the total stays where the view already says it (MD-499: no «— · Elementos: 100» row between the header and the rows).
+  protected readonly showGroups = computed(() => this.groups().length > 1);
   protected readonly skeletonRows = computed(() => Array.from({ length: Math.max(1, Math.floor(this.loadingRows())) }, (_, i) => i));
   private readonly collapsedGroups = signal<ReadonlySet<string>>(new Set());
 

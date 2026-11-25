@@ -1,7 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { provideTranslateService } from '@ngx-translate/core';
+import { TranslateService, provideTranslateService } from '@ngx-translate/core';
 import { Select, SelectOption } from './select';
 
 const OPTIONS: SelectOption[] = [
@@ -20,11 +20,22 @@ const OPTIONS: SelectOption[] = [
     <div id="model"><app-select [options]="options" [(ngModel)]="model" /></div>
     <div id="clear"><app-select [options]="options" clearable placeholderKey="TEST.PLACEHOLDER" (valueChange)="picked.push($event)" /></div>
     <div id="empty"><app-select [options]="options" emptyLabelKey="TEST.ALL" (valueChange)="picked.push($event)" /></div>
+    <div id="search"><app-select [options]="grouped" searchable (valueChange)="picked.push($event)" /></div>
+    <div id="i18n"><app-select [options]="translated" searchable ariaLabelKey="TEST.NAME" /></div>
     <button id="outside" type="button">outside</button>
   `,
 })
 class Host {
   options = OPTIONS;
+  grouped: SelectOption[] = [
+    { value: 'soc2', label: 'SOC 2 · 2017', group: 'TEST.AVAILABLE' },
+    { value: 'iso', label: 'ISO 27001 · 2022', group: 'TEST.AVAILABLE' },
+    { value: 'gdpr', label: 'Protección de datos · 2018', group: 'TEST.SOON' },
+  ];
+  translated: SelectOption[] = [
+    { value: 'red', labelKey: 'TEST.RED' },
+    { value: 'blue', labelKey: 'TEST.BLUE' },
+  ];
   value = signal('');
   values = signal<string[]>([]);
   invalid = signal(false);
@@ -247,6 +258,91 @@ describe('Select', () => {
       options()[0].click();
       fixture.detectChanges();
       expect(host.model).toBe('a');
+    });
+  });
+
+  describe('searchable, with groups', () => {
+    const search = () => document.body.querySelector<HTMLInputElement>('[data-select-search]')!;
+    const type = (text: string) => {
+      search().value = text;
+      search().dispatchEvent(new Event('input'));
+      fixture.detectChanges();
+    };
+    const keyIn = (k: string) => {
+      search().dispatchEvent(new KeyboardEvent('keydown', { key: k, bubbles: true, cancelable: true }));
+      fixture.detectChanges();
+    };
+
+    it('puts the options under the heading of their group, each group a labelled group of the listbox', () => {
+      open('search');
+      const groups = Array.from(document.body.querySelectorAll<HTMLElement>('[role="group"]'));
+      expect(groups.length).toBe(2);
+      expect(groups.map((g) => document.getElementById(g.getAttribute('aria-labelledby')!)!.textContent!.trim())).toEqual(['TEST.AVAILABLE', 'TEST.SOON']);
+      expect(groups[0].querySelectorAll('[data-select-option]').length).toBe(2);
+      expect(groups[1].querySelectorAll('[data-select-option]').length).toBe(1);
+    });
+
+    it('has a search box above the listbox (not inside it) that takes the focus', async () => {
+      open('search');
+      await fixture.whenStable();
+      expect(search()).not.toBeNull();
+      expect(search().closest('[role="listbox"]')).toBeNull();
+      const list = document.body.querySelector('[role="listbox"]')!;
+      expect(search().getAttribute('aria-controls')).toBe(list.id);
+      expect(trigger('search').getAttribute('aria-controls')).toBe(list.id);
+      expect(document.activeElement).toBe(search());
+    });
+
+    it('filters by the option text ignoring case and accents, says when nothing matches, and chooses with Enter', () => {
+      open('search');
+      type('PROTECCION');
+      expect(options().map((o) => o.getAttribute('data-value'))).toEqual(['gdpr']);
+      expect(document.body.querySelectorAll('[data-select-group]').length).toBe(1);
+      type('zzz');
+      expect(options().length).toBe(0);
+      expect(document.body.querySelector('[data-select-empty]')!.textContent).toContain('COMMON.SELECT.NO_MATCH');
+      type('iso');
+      keyIn('Enter');
+      expect(host.picked).toEqual(['iso']);
+      expect(panel()).toBeNull();
+    });
+
+    it('follows a change of language: the search matches the new texts and the list keeps its name in the new language', () => {
+      const translate = TestBed.inject(TranslateService);
+      translate.setTranslation('es', { TEST: { NAME: 'Color', RED: 'Rojo', BLUE: 'Azul' } });
+      translate.setTranslation('en', { TEST: { NAME: 'Colour', RED: 'Red', BLUE: 'Blue' } });
+      translate.use('es');
+      fixture.detectChanges();
+      open('i18n');
+      type('roj');
+      expect(options().map((o) => o.getAttribute('data-value'))).toEqual(['red']);
+      expect(document.body.querySelector('[role="listbox"]')!.getAttribute('aria-label')).toBe('Color');
+      translate.use('en');
+      fixture.detectChanges();
+      expect(options().length).toBe(0);
+      expect(document.body.querySelector('[role="listbox"]')!.getAttribute('aria-label')).toBe('Colour');
+      type('re');
+      expect(options().map((o) => o.getAttribute('data-value'))).toEqual(['red']);
+    });
+
+    it('moves with the arrows from the box; Esc closes, clears the search and gives the focus back to the trigger', async () => {
+      open('search');
+      await fixture.whenStable();
+      keyIn('ArrowDown');
+      expect(search().getAttribute('aria-activedescendant')).toBe(options()[1].id);
+      type('soc');
+      keyIn('Escape');
+      expect(panel()).toBeNull();
+      expect(document.activeElement).toBe(trigger('search'));
+      open('search');
+      expect(search().value).toBe('');
+      expect(options().length).toBe(3);
+    });
+
+    it('typing a letter on the closed trigger opens it with the search already started', () => {
+      key('search', 'p');
+      expect(search().value).toBe('p');
+      expect(options().map((o) => o.getAttribute('data-value'))).toEqual(['gdpr']);
     });
   });
 

@@ -1,4 +1,4 @@
-// Pila de capas que atrapan el foco (side-drawer, modal, confirm-dialog). Cada capa se apunta al abrirse y se quita al cerrarse; con Esc solo reacciona la de arriba
+// Pila de capas que atrapan el foco (modal, detail-modal, form-modal, confirm-dialog). Cada capa se apunta al abrirse y se quita al cerrarse; con Esc solo reacciona la de arriba
 // (la última abierta), así un diálogo de confirmación abierto sobre un panel se cierra solo y el panel sigue ahí hasta el siguiente Esc.
 const stack: object[] = [];
 
