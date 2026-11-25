@@ -47,10 +47,15 @@ describe('OptionChips', () => {
   });
 
   it('draws the optional title before the chips and uses it as the group label', () => {
-    expect(el().querySelector('span.text-xs.font-medium.text-ink-muted')).toBeNull();
+    expect(el().querySelector('[data-chips-label]')).toBeNull();
     fixture.componentRef.setInput('labelKey', 'COMPLIANCE.CONTROLS.FILTER_TOPIC');
     fixture.detectChanges();
-    expect(el().querySelector('span.text-xs.font-medium.text-ink-muted')!.textContent).toContain('COMPLIANCE.CONTROLS.FILTER_TOPIC');
+    const label = el().querySelector('[data-chips-label]')!;
+    expect(label.textContent).toContain('COMPLIANCE.CONTROLS.FILTER_TOPIC');
+    // Con presencia: texto de cuerpo, peso medio y color principal (no gris pequeño), y una línea fina antes de los chips.
+    expect(label.className).toContain('text-sm');
+    expect(label.className).toContain('text-ink');
+    expect(label.querySelector('.bg-line-strong')).not.toBeNull();
     expect(el().querySelector('[role="group"]')!.getAttribute('aria-label')).toBe('COMPLIANCE.CONTROLS.FILTER_TOPIC');
   });
 });

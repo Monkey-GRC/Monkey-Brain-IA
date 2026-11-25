@@ -71,6 +71,15 @@
                     @case ('badge') {
                       <div class="flex" [class]="skeletonJustify(column)"><app-skeleton shape="badge" /></div>
                     }
+                    @case ('lines') {
+                      <div class="flex flex-col gap-2" [class]="skeletonJustify(column)"><app-skeleton shape="line" [style.width]="skeletonWidth(n, c)" /><app-skeleton shape="block" height="0.625rem" width="55%" /></div>
+                    }
+                    @case ('badges') {
+                      <div class="flex flex-wrap gap-1.5" [class]="skeletonJustify(column)"><app-skeleton shape="badge" width="4.5rem" /><app-skeleton shape="badge" width="3.5rem" /></div>
+                    }
+                    @case ('progress') {
+                      <div class="flex flex-col gap-2"><app-skeleton shape="line" width="70%" /><app-skeleton shape="block" height="0.25rem" /><app-skeleton shape="block" height="0.625rem" width="50%" /></div>
+                    }
                     @case ('person') {
                       <div class="flex items-center gap-3">
                         <app-skeleton shape="circle" [size]="36" />
@@ -78,7 +87,7 @@
                       </div>
                     }
                     @case ('actions') {
-                      <div class="flex" [class]="skeletonJustify(column)"><app-skeleton shape="block" width="2rem" height="2rem" /></div>
+                      <div class="flex gap-2" [class]="skeletonJustify(column)"><app-skeleton shape="block" width="4.5rem" height="2rem" /></div>
                     }
                     @case ('none') {}
                     @default {
@@ -93,7 +102,7 @@
             </tr>
           }
         } @else {
-          @if (groupBy()) {
+          @if (showGroups()) {
             @for (group of groups(); track group.key) {
               <tr data-group-header [attr.data-group]="group.key" class="border-b border-line bg-tint" [class]="s().group">
                 <th scope="rowgroup" [attr.colspan]="columnCount()" class="bg-tint py-2.5 text-left text-sm font-normal" [class]="s().cell + ' ' + (stacked() ? 'px-4 ' : '') + s().padX">
@@ -141,7 +150,7 @@
     </div>
   }
 
-  @if (page(); as p) {
+  @if (pageBar(); as p) {
     <app-pagination class="block border-t border-line" [page]="p" [pageSizes]="pageSizes()" (pageChange)="pageChange.emit($event)" (pageSizeChange)="pageSizeChange.emit($event)" />
   }
 </div>

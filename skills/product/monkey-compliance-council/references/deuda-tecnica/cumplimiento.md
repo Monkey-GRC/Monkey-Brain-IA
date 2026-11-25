@@ -88,3 +88,27 @@ Parches vigentes de [Cumplimiento](../arquitectura/cumplimiento/README.md). Tabl
 - **Qué está parchado:** el motor toma, para todo el servicio, el período abierto que termina más tarde, aunque cada marco contratado tenga el suyo
 - **Por qué:** hoy solo se vende SOC 2 (D145) y un control del cliente no pertenece a un solo marco
 - **Qué lo cierra:** cuando un servicio contrate un segundo marco, evaluar la vista del período por marco, cada uno con su período (`service_framework_periods`)
+
+### DT-118 · El detalle no da el resultado por activos de cada check Directo
+
+🟡 Mejora
+
+- **Qué está parchado:** el detalle técnico del control (`check_links[]`, MD-499) muestra el rol y el título de cada check, pero el resultado por activos solo a nivel de la prueba (`checks`, `asset_coverage`); un Complementario trae `failing_assets`
+- **Por qué:** el motor guarda un resultado por prueba y activo para todos los Directos juntos; Rod pidió «solo lo exacto» (2026-11-24) antes que repetir el mismo conteo en cada check
+- **Qué lo cierra:** guardar el resultado de cada check por activo y exponerlo en `check_links[]`
+
+### DT-120 · Una prueba manual se cumple por evidencia y también admite veredicto
+
+🟠 Importante
+
+- **Qué está parchado:** desde MD-499 una prueba de fuente `manual` acepta evidencia (la valida el admin) y «Mi trabajo» la cuenta como pieza de evidencia, pero `POST …/verdicts` todavía la admite porque `veredictos.md` (catálogo v1) da veredicto a toda prueba manual no documental
+- **Por qué:** el contrato de veredictos se reescribe con RC-07; Rod decidió (2026-11-24) resolverlo en MD-504 y dejar las dos vías para la demo
+- **Qué lo cierra:** MD-504: decidir evidencia o veredicto por prueba con `workPieceOf`, reescribir `contracts/cumplimiento/veredictos.md` y usarlo en `test-verdict.prisma.repository.ts`
+
+### DT-122 · La subida de respaldo de las pruebas de integración usa un puerto sin implementar
+
+🟡 Mejora
+
+- **Qué está parchado:** `IntegrationConnections` está enlazado a `NoIntegrationConnections`, que no da ninguna categoría conectada; por eso toda prueba de fuente `integration` acepta subida de respaldo (`evidence_fallback: true`)
+- **Por qué:** las integraciones (MD-497) no están construidas; el respaldo se calcula y no guarda nada, así que no hay que migrar al conectarlas
+- **Qué lo cierra:** MD-497: implementar el puerto leyendo las conexiones activas por categoría, fuera de la transacción de la bandeja

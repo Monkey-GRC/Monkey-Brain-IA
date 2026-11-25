@@ -474,14 +474,14 @@ Un control cae en **un solo** `bucket`, el primero que le aplique visto desde qu
 
 1. **`rejected`**: alguna evidencia o veredicto del control que subió o registró la persona (o su delegado, si es el dueño) tiene su última versión rechazada y hay que rehacerla.
 2. **`to_review`** (solo el `responsable` dueño): algo que subió o registró otra persona espera **su** revisión.
-3. **`to_upload`**: a una prueba documental le falta evidencia, o a una prueba manual no documental le falta el veredicto.
+3. **`to_upload`**: a una prueba que acepta subida de evidencia le falta la entrega, o a una prueba manual que no la acepta le falta el veredicto.
 4. **`in_review`**: todo está entregado y espera la revisión de otra persona.
 5. **`done`**: nada pendiente de su parte.
 
 `pending_items` suma lo que falta subir, lo rechazado, lo que tiene que revisar y las **observaciones abiertas del auditor** sobre el control. Las fallas de las pruebas automáticas no son un bucket: se ven en `state` (el estado del control).
 
 Precisiones de la construcción (MD-195):
-- **Qué se cuenta:** cada evidencia requerida de cada prueba documental, también la de una prueba que aún no tiene ninguna entrega, y cada prueba manual no documental con el último veredicto del servicio (D121).
+- **Qué se cuenta:** la bandeja decide **por prueba** si la pieza es evidencia o veredicto (MD-499, `domain/work/work-piece.ts`): si la prueba acepta subida (la regla única por `primary_source` y dimensión aplicable de `contracts/cumplimiento/evidencia.md`), cuenta cada evidencia requerida suya, también la de una prueba que aún no tiene ninguna entrega; si no la acepta y el control la resuelve a mano (la documental nunca), cuenta el último veredicto del servicio (D121); una prueba que mide la evaluación automática o una integración conectada no es pieza. Ya no se decide por `dimension: policy`.
 - **Evidencia vencida** (`expired`) cuenta como `rejected` para quien la subió: hay que rehacerla.
 - **Lo de su delegado** cuenta como propio solo para el dueño, a efectos de `rejected`. Un veredicto registrado desde otro control no genera `to_review` en este: lo revisa el dueño del control de origen.
 - **`bucket=to_review` pedido por un `delegado`** devuelve la lista vacía, no `422`.

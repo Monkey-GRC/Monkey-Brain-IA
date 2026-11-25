@@ -1,5 +1,7 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, ElementRef, Injector, afterNextRender, booleanAttribute, computed, effect, forwardRef, inject, input, linkedSignal, output, signal, viewChild } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { map, merge } from 'rxjs';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { pushOverlay, takeEscape } from '@shared/presentation/components/overlay-stack/overlay-stack';
 
@@ -12,6 +14,13 @@ export interface SelectOption {
   /** Text that is already data (a group name, a person); used when there is no `labelKey`. */
   label?: string;
   disabled?: boolean;
+  /** Translation key (or text already translated) of the group the option belongs to. Consecutive options of the same group go under its heading. */
+  group?: string;
+}
+
+interface Section {
+  group: string | null;
+  items: { option: SelectOption; index: number }[];
 }
 
 interface Place {
@@ -26,17 +35,21 @@ interface Place {
 
 let nextId = 0;
 const ROW = 36; // px of an option (h-9)
+const SEARCH = 52; // px of the search box at the top of the panel
+const HEADING = 28; // px of a group heading
 const MAX_HEIGHT = 256; // 16 rem
 const GAP = 4;
 const MARGIN = 8;
 
 /**
  * The select of Monkey: it replaces the browser's native select element everywhere. A trigger button (value + chevron) and its own panel (surface, 1 px border, soft shadow, system radius)
- * that opens under the button, or over it when there is no room. The panel is moved to `<body>` with `position: fixed`, so it is never clipped by a modal, a drawer or a table.
+ * that opens under the button, or over it when there is no room. The panel is moved to `<body>` with `position: fixed`, so it is never clipped by a modal or a table.
  * Combobox/listbox pattern: the focus stays on the trigger and the active option is `aria-activedescendant`.
  *
  * Keyboard: Arrows, Home, End move; Enter or Space choose (or open); Esc closes (only the select, not the modal around it); Tab closes and moves on; typing jumps to an option.
  * Outside click closes. `multiple` shows a checkbox per option and keeps the panel open.
+ * `searchable` puts a search box at the top of the panel (for long lists): the focus goes into it, typing filters by the option text (case and accents ignored),
+ * arrows and Enter work from it, Esc and Tab close and give the focus back to the trigger. An option with `group` goes under that group's heading.
  *
  * Works as a form control (`formControlName`, `ngModel`: a string, or `string[]` with `multiple`) and with plain inputs/outputs (`value`/`valueChange`, `values`/`valuesChange`).
  * Values are strings. `emptyLabelKey` adds a first option with the empty value («Todos») for single mode; `summaryKey` names a multiple filter on its trigger with the count.
@@ -103,22 +116,56 @@ const MARGIN = 8;
       @let p = place();
       <div
         #panel
-        role="listbox"
         data-select-panel
         tabindex="-1"
-        [id]="listId"
-        [attr.aria-multiselectable]="multiple() ? 'true' : null"
-        [attr.aria-label]="ariaLabelKey() ? (ariaLabelKey() | translate) : (summaryKey() ? (summaryKey() | translate) : null)"
-        class="mk-enter fixed z-(--z-popover) overflow-y-auto rounded-card border border-line bg-surface p-1 text-sm text-ink shadow-float"
+        [attr.role]="searchable() ? null : 'listbox'"
+        [id]="searchable() ? listId + '-panel' : listId"
+        [attr.aria-multiselectable]="!searchable() && multiple() ? 'true' : null"
+        [attr.aria-label]="searchable() ? null : (listLabelKey() | translate)"
+        class="mk-enter fixed z-(--z-popover) flex flex-col overflow-hidden rounded-card border border-line bg-surface text-sm text-ink shadow-float"
         [style.left.px]="p?.left"
         [style.top.px]="p && !p.up ? p.edge : null"
         [style.bottom.px]="p && p.up ? p.edge : null"
         [style.min-width.px]="p?.minWidth"
         [style.max-width.px]="p?.maxWidth"
         [style.max-height.px]="p?.maxHeight"
-        (mousedown)="$event.preventDefault()"
+        (mousedown)="keepFocus($event)"
       >
-        @for (o of rows(); track o.value; let i = $index) {
+        @if (searchable()) {
+          <!-- The search box stays above the list (outside the listbox, which only holds options) and does not scroll with it. -->
+          <div class="shrink-0 border-b border-line p-2">
+            <input
+              #search
+              type="text"
+              data-select-search
+              autocomplete="off"
+              class="mk-input h-9"
+              [value]="query()"
+              [attr.aria-label]="'COMMON.SELECT.SEARCH' | translate"
+              [placeholder]="'COMMON.SELECT.SEARCH' | translate"
+              [attr.aria-controls]="listId"
+              aria-autocomplete="list"
+              [attr.aria-activedescendant]="active() >= 0 ? optionId(active()) : null"
+              (input)="filter($event)"
+              (keydown)="onSearchKeydown($event)"
+            />
+          </div>
+        }
+        <div
+          class="min-h-0 flex-1 overflow-y-auto p-1"
+          [attr.role]="searchable() ? 'listbox' : null"
+          [id]="searchable() ? listId : null"
+          [attr.aria-multiselectable]="searchable() && multiple() ? 'true' : null"
+          [attr.aria-label]="searchable() ? (listLabelKey() | translate) : null"
+        >
+        @for (section of sections(); track section.group; let si = $index) {
+          <div [attr.role]="section.group ? 'group' : null" [attr.aria-labelledby]="section.group ? listId + '-g' + si : null" class="contents">
+            @if (section.group) {
+              <div [id]="listId + '-g' + si" data-select-group class="px-2.5 pb-1 pt-2 text-xs font-medium text-ink-faint">{{ section.group | translate }}</div>
+            }
+            @for (item of section.items; track item.option.value) {
+              @let o = item.option;
+              @let i = item.index;
           <button
             type="button"
             role="option"
@@ -150,9 +197,12 @@ const MARGIN = 8;
               <span class="material-symbols-rounded text-[20px] text-action" aria-hidden="true">check</span>
             }
           </button>
+            }
+          </div>
         } @empty {
-          <div class="px-2.5 py-2 text-ink-muted">{{ 'COMMON.SELECT.NO_OPTIONS' | translate }}</div>
+          <div class="px-2.5 py-2 text-ink-muted" data-select-empty>{{ (query() ? 'COMMON.SELECT.NO_MATCH' : 'COMMON.SELECT.NO_OPTIONS') | translate }}</div>
         }
+        </div>
       </div>
     }
   `,
@@ -183,6 +233,8 @@ export class Select implements ControlValueAccessor {
   readonly disabled = input(false, { transform: booleanAttribute });
   /** `md` is the 40 px control of forms and toolbars; `sm` is 36 px (pagination, a compact bar). */
   readonly size = input<'md' | 'sm'>('md');
+  /** A search box at the top of the panel, for long lists. */
+  readonly searchable = input(false, { transform: booleanAttribute });
 
   readonly valueChange = output<string>();
   readonly valuesChange = output<string[]>();
@@ -191,6 +243,8 @@ export class Select implements ControlValueAccessor {
   protected readonly open = signal(false);
   protected readonly active = signal(-1);
   protected readonly place = signal<Place | null>(null);
+  /** What is typed in the search box (`searchable`). */
+  protected readonly query = signal('');
   private readonly cvaDisabled = signal(false);
   protected readonly isDisabled = computed(() => this.disabled() || this.cvaDisabled());
 
@@ -199,12 +253,33 @@ export class Select implements ControlValueAccessor {
     const empty = this.emptyLabelKey() ?? (this.clearable() ? 'COMMON.SELECT.NONE' : null);
     return empty && !this.multiple() ? [{ value: '', labelKey: empty }, ...this.options()] : this.options();
   });
+  /** Accessible name of the list (translated in the template, so it follows the language): the select's own label or, for a multiple filter, its summary. */
+  protected readonly listLabelKey = computed(() => this.ariaLabelKey() ?? this.summaryKey());
+  // Changes when the language or its translations change: a `computed` that translates with `instant()` reads it, so it is recalculated.
+  private readonly translations = toSignal(merge(this.translate.onLangChange, this.translate.onTranslationChange).pipe(map(() => ({}))), { initialValue: {} });
+  /** The options the panel shows: all of them, or those that match the search (by the text in the current language). The active index points into this list. */
+  protected readonly visible = computed<SelectOption[]>(() => {
+    this.translations();
+    const q = fold(this.query());
+    return q ? this.rows().filter((o) => o.value !== '' && fold(this.plain(o)).includes(q)) : this.rows();
+  });
+  protected readonly sections = computed<Section[]>(() => {
+    const out: Section[] = [];
+    this.visible().forEach((option, index) => {
+      const group = option.group ?? null;
+      let last = out[out.length - 1];
+      if (!last || last.group !== group) out.push((last = { group, items: [] }));
+      last.items.push({ option, index });
+    });
+    return out;
+  });
   protected readonly chosen = computed(() => this.rows().filter((o) => this.selected().includes(o.value)));
   protected readonly current = computed(() => this.rows().find((o) => o.value === this.selected()[0]) ?? null);
   protected readonly count = computed(() => this.selected().filter((v) => v !== '').length);
 
   private readonly trigger = viewChild<ElementRef<HTMLButtonElement>>('trigger');
   private readonly panel = viewChild<ElementRef<HTMLElement>>('panel');
+  private readonly searchBox = viewChild<ElementRef<HTMLInputElement>>('search');
   private stopListening: (() => void) | null = null;
   private releaseLayer: (() => void) | null = null;
   private typed = '';
@@ -256,7 +331,7 @@ export class Select implements ControlValueAccessor {
   }
 
   protected hover(i: number): void {
-    if (!this.rows()[i]?.disabled) this.active.set(i);
+    if (!this.visible()[i]?.disabled) this.active.set(i);
   }
 
   protected choose(o: SelectOption): void {
@@ -284,14 +359,15 @@ export class Select implements ControlValueAccessor {
 
   private openPanel(start: 'selected' | 'first' | 'last'): void {
     if (this.isDisabled() || this.open()) return;
-    const rows = this.rows();
+    const rows = this.visible();
     this.place.set(this.measure());
     this.open.set(true);
     let at = start === 'first' ? this.step(-1, 1) : start === 'last' ? this.step(rows.length, -1) : rows.findIndex((o) => this.selected().includes(o.value) && !o.disabled);
     if (at < 0) at = this.step(-1, 1);
     this.active.set(at);
     this.reveal(at);
-    this.trigger()?.nativeElement.focus();
+    if (this.searchable()) afterNextRender(() => this.searchBox()?.nativeElement.focus(), { injector: this.injector });
+    else this.trigger()?.nativeElement.focus();
     this.releaseLayer = pushOverlay(this);
     const onDown = (e: Event) => {
       const t = e.target as Node | null;
@@ -300,7 +376,7 @@ export class Select implements ControlValueAccessor {
     const onMove = (e: Event) => {
       if (!this.panel()?.nativeElement.contains(e.target as Node)) this.place.set(this.measure());
     };
-    // Esc is taken in the capture phase so it reaches the select before any modal or drawer around it, wherever the focus is; the modal then sees it as already handled.
+    // Esc is taken in the capture phase so it reaches the select before any modal around it, wherever the focus is; the modal then sees it as already handled.
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && takeEscape(this, e)) this.close();
     };
@@ -318,10 +394,52 @@ export class Select implements ControlValueAccessor {
 
   protected close(): void {
     if (!this.open()) return;
+    // The focus was in the search box (inside the panel, in <body>): it goes back to the trigger before the panel goes away.
+    const hadFocus = !!this.panel()?.nativeElement.contains(document.activeElement);
     this.teardown();
     this.open.set(false);
     this.active.set(-1);
+    this.query.set('');
+    if (hadFocus) this.trigger()?.nativeElement.focus();
     this.onTouched();
+  }
+
+  // A click inside the panel never takes the focus from the trigger, except on the search box, which needs it.
+  protected keepFocus(event: MouseEvent): void {
+    if (event.target !== this.searchBox()?.nativeElement) event.preventDefault();
+  }
+
+  protected filter(event: Event): void {
+    this.query.set((event.target as HTMLInputElement).value);
+    this.active.set(this.step(-1, 1));
+    this.place.set(this.measure());
+  }
+
+  // From the search box: arrows move, Enter chooses, Esc and Tab close (the focus goes back to the trigger). The rest is typing.
+  protected onSearchKeydown(event: KeyboardEvent): void {
+    switch (event.key) {
+      case 'ArrowDown':
+        event.preventDefault();
+        this.move(this.step(this.active(), 1));
+        break;
+      case 'ArrowUp':
+        event.preventDefault();
+        this.move(this.step(this.active(), -1));
+        break;
+      case 'Enter': {
+        event.preventDefault();
+        const o = this.visible()[this.active()];
+        if (o) this.choose(o);
+        break;
+      }
+      case 'Escape':
+        if (takeEscape(this, event)) this.close();
+        break;
+      case 'Tab':
+        event.preventDefault();
+        this.close();
+        break;
+    }
   }
 
   private teardown(): void {
@@ -336,7 +454,9 @@ export class Select implements ControlValueAccessor {
     const el = this.trigger()?.nativeElement;
     if (!el) return null;
     const r = el.getBoundingClientRect();
-    const want = Math.min(MAX_HEIGHT, this.rows().length * ROW + 10);
+    const shown = this.visible();
+    const headings = new Set(shown.map((o) => o.group ?? null)).size - (shown.some((o) => !o.group) ? 1 : 0);
+    const want = Math.min(MAX_HEIGHT, Math.max(shown.length, 1) * ROW + headings * HEADING + (this.searchable() ? SEARCH : 0) + 10);
     const below = window.innerHeight - r.bottom - GAP - MARGIN;
     const above = r.top - GAP - MARGIN;
     const up = below < want && above > below;
@@ -354,7 +474,7 @@ export class Select implements ControlValueAccessor {
 
   // Next enabled option from `from` in the direction `dir` (no wrap); -1 if there is none.
   private step(from: number, dir: 1 | -1): number {
-    const rows = this.rows();
+    const rows = this.visible();
     for (let i = from + dir; i >= 0 && i < rows.length; i += dir) if (!rows[i].disabled) return i;
     return -1;
   }
@@ -378,7 +498,12 @@ export class Select implements ControlValueAccessor {
       else if (key === 'Home') this.openAndStop(event, 'first');
       else if (key.length === 1) {
         this.openPanel('selected');
-        this.search(key);
+        if (this.searchable()) {
+          // The first letter starts the search: the box gets the focus with it already written.
+          event.preventDefault();
+          this.query.set(key);
+          this.active.set(this.step(-1, 1));
+        } else this.search(key);
       }
       return;
     }
@@ -397,12 +522,12 @@ export class Select implements ControlValueAccessor {
         break;
       case 'End':
         event.preventDefault();
-        this.move(this.step(this.rows().length, -1));
+        this.move(this.step(this.visible().length, -1));
         break;
       case 'Enter':
       case ' ': {
         event.preventDefault();
-        const o = this.rows()[this.active()];
+        const o = this.visible()[this.active()];
         if (o) this.choose(o);
         break;
       }
@@ -427,7 +552,7 @@ export class Select implements ControlValueAccessor {
     this.typed += char.toLowerCase();
     if (this.typedTimer) clearTimeout(this.typedTimer);
     this.typedTimer = setTimeout(() => (this.typed = ''), 600);
-    const rows = this.rows();
+    const rows = this.visible();
     const start = this.typed.length === 1 ? this.active() + 1 : Math.max(this.active(), 0);
     for (let n = 0; n < rows.length; n++) {
       const i = (start + n) % rows.length;
@@ -441,4 +566,9 @@ export class Select implements ControlValueAccessor {
   private plain(o: SelectOption): string {
     return o.labelKey ? String(this.translate.instant(o.labelKey, o.labelParams)) : (o.label ?? o.value);
   }
+}
+
+/** Lower case and without accents, to compare what is typed with an option («gestion» finds «Gestión»). */
+function fold(text: string): string {
+  return text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().toLocaleLowerCase();
 }

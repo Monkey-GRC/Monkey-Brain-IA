@@ -267,9 +267,9 @@ El archivo **nunca es público**.
 |---|---|
 | **Quién** | Quien puede ver el control |
 | **Éxito** | `200` |
-| **Errores** | `403` · `404` (el test no es manual ni documental, o el control no lo lleva) |
+| **Errores** | `403` · `404` (el control no lleva la prueba, o la prueba no acepta subida y el control no tiene entregas de ella; MD-499) |
 
-Lo que se subió para un test **manual o documental** (D85), para mostrarlo en el test del control.
+Lo que se subió para una prueba **que acepta evidencia** (regla única por `primary_source`, MD-499; D85), para mostrarlo en la prueba del control. Si el control ya tiene entregas de la prueba, se muestran como histórico aunque hoy no acepte subida (p. ej. integración conectada).
 - **Test documental (`dimension: "policy"`, D88):** solo el requerimiento **de esa prueba en este control** (`test.id` igual al test). Su estado es el de este control; `shared_with` va vacío.
 - **Otro test manual (D85, RN-13):** un test puede estar en varios controles y su veredicto vale en todos; por eso salen los requerimientos de **todos los controles del servicio que llevan el test**, con la dimensión del test, y cada uno dice de qué control es.
 
@@ -312,7 +312,7 @@ Cada ítem es el mismo objeto de requerimiento de `GET /v1/controls/{id}/evidenc
 |---|---|
 | **Quién** | El ejecutor, el dueño o el `admin_empresa`, sobre un control suyo |
 | **Éxito** | `201` con la entrega (`requirement_id` del lugar de esa prueba) |
-| **Errores** | `403` · `404` (el control no lleva esa prueba) · `409 CONTROL_RETIRED` · `413` · `415` · `422 test.not_documentary` · `422 FILE_REQUIRED` |
+| **Errores** | `403` · `404` (el control no lleva esa prueba) · `409 CONTROL_RETIRED` · `413` · `415` · `422 test.not_manual` · `422 FILE_REQUIRED` |
 
 La persona lee lo que pide la prueba y sube su documento **bajo ella**, en un solo paso (D88). La revisan después el dueño y el `admin_empresa` (D96, D102).
 
@@ -322,7 +322,7 @@ La persona lee lo que pide la prueba y sube su documento **bajo ella**, en un so
 #### Reglas
 - **La primera entrega crea el lugar de esa prueba** en el control (un requerimiento propio, `origin: "own"`, con `test_id` = la prueba, `description` = el nombre neutro de la prueba y código `EV-<control>-NN`); las siguientes son **versiones nuevas** del mismo lugar. Con el control bloqueado, dos primeras entregas a la vez crean un solo lugar.
 - El archivo se comprueba **antes** de crear el lugar: uno rechazado no deja un requerimiento vacío.
-- La prueba debe ser documental (`dimension: "policy"`) y del control: si el control no la lleva, `404`; si no es documental, `422 test.not_documentary`.
+- La prueba debe ser **de fuente manual** y del control: si el control no la lleva, `404`; si su evidencia la toma una fuente automática, `422 test.not_manual`. **Fuente manual (MD-499, Rod 2026-11-24):** se decide por la **fuente principal de la prueba** (`primary_source`, enum `test_primary_source`), no por su dimensión: `document` o `manual` aceptan subida; `probe`, `cloud_engine` y `probe_and_cloud_engine` no (las mide la evaluación automática); `integration` acepta subida **de respaldo** solo mientras el servicio no tenga conectada una integración de la categoría de esa prueba (`integration_category`; hoy ninguna, MD-497) y, al conectarla, deja de aceptarla. **Además, la dimensión de la prueba debe aplicar en el control:** si el control la marcó «no aplica», la subida responde `422 dimension.not_in_control` (en `test_id`) y la prueba sale con `accepts_evidence: false`. En `POST …/evidence-requirements` con `test_id`, la `dimension` debe ser la de la prueba (si no, `422 dimension.not_of_test` en `dimension`). `dimension` admite las 9 dimensiones del enum. **Al conectar la integración no se borra nada:** el respaldo se calcula, no se guarda; las evidencias subidas quedan como histórico (inmutables, D119) y siguen contando para las ventanas ya cerradas del período, y desde la conexión la prueba la decide la integración. Si se desconecta, vuelve a aceptar subida. Así las pruebas de proceso, red, endpoint y físico (actas, muestras, inspecciones) se cumplen como las documentales: el cliente sube lo que pide «evidencia a conservar» y la revisan el dueño y el `admin_empresa`.
 - **Subir no cumple la prueba:** queda en revisión hasta que la revisen.
 
 ### Requerimientos
@@ -334,7 +334,8 @@ La persona lee lo que pide la prueba y sube su documento **bajo ella**, en un so
 | `DELETE /v1/evidence-requirements/{id}` | `admin_empresa` | — | `204` |
 
 - Solo se quitan requerimientos **propios** y **sin entregas**: uno del catálogo o uno con histórico no se borra (`409 REQUIREMENT_NOT_REMOVABLE`).
-- **`test_id` (D88)** hace que la evidencia sea de **una prueba concreta** de ese control. Debe ser una prueba **documental** (`dimension: "policy"`) que el control lleve; si no, `422` (`test.not_documentary`, `test.not_in_control`). Sin `test_id`, el requerimiento no cuenta para ninguna prueba. `code` y `sequence` los pone el servidor.
+- **`dimension`** admite las **9 dimensiones** del enum (lista única `src/common/catalogs/dimensions.ts`); con `test_id`, debe ser la de la prueba (`422 dimension.not_of_test`).
+- **`test_id` (D88)** hace que la evidencia sea de **una prueba concreta** de ese control. Debe ser una prueba **de fuente manual** (la misma regla del `POST …/tests/{test_id}/evidence`) que el control lleve; si no, `422` (`test.not_manual`, `test.not_in_control`). Sin `test_id`, el requerimiento no cuenta para ninguna prueba. `code` y `sequence` los pone el servidor.
 - La pantalla **no usa** `POST …/evidence-requirements`: sube la evidencia de cada prueba con `POST …/tests/{test_id}/evidence`, que crea el lugar solo. Existe para quien quiera nombrar un documento propio.
 
 ---
@@ -381,7 +382,7 @@ Los seis atributos de una evidencia y la revisión por una persona (RN-01 a RN-0
 | 413 | `FILE_TOO_LARGE` | El archivo pasa del máximo |
 | 415 | `UNSUPPORTED_MEDIA_TYPE` | Tipo no permitido o contenido que no coincide con el declarado |
 | 422 | `FILE_REQUIRED` | El multipart no trae `file` o viene vacío |
-| 422 | `VALIDATION_FAILED` | Campos: `enum.invalid`, `note.required`, `dimension.not_in_control`, `test.not_documentary`, `test.not_in_control`, `disposition.not_supported` (`inline` con un tipo que no se muestra en pantalla) |
+| 422 | `VALIDATION_FAILED` | Campos: `enum.invalid`, `note.required`, `dimension.not_in_control`, `dimension.not_of_test`, `test.not_manual`, `test.not_in_control`, `disposition.not_supported` (`inline` con un tipo que no se muestra en pantalla) |
 | 503 | `STORAGE_UNAVAILABLE` | El almacenamiento privado no está configurado |
 
 **Claves i18n:** `evidence.list`, `evidence.service_list`, `evidence.test_list`, `evidence.submission_list`, `evidence.submitted`, `evidence.download`, `evidence.version_conflict`, `evidence_requirement.updated`, `file.required`, `file.too_large`, `file.unsupported_type`, `file.storage_unavailable`.
@@ -429,6 +430,8 @@ Todos con el mismo sobre (`conventions.md`); `message` es la clave i18n del erro
 
 ## Estado de implementación
 
+**Construido (MD-499, 2026-11-24): la subida se decide por `primary_source`** (`test.not_manual`, que reemplaza a `test.not_documentary`; `domain/evidence/test-evidence-source.ts`, `evidence.use-cases.ts`).
+
 **Construido: MD-208** (2026-11-11): `GET /v1/services/{service_id}/evidence`. Número fijo de consultas (medido: las mismas con 3 que con 86 controles). Reutiliza la regla de qué controles ve cada rol (`canSeeControl`, compartida con el listado de controles). **MD-193 (2026-11-17)** retiró el filtro por dimensión: quien ve un control ve todos sus requerimientos. Pruebas: `test/cumplimiento/evidencia-servicio.e2e-spec.ts`.
 
 **Construido (2026-10-28, B66):**
@@ -441,10 +444,10 @@ Todos con el mismo sobre (`conventions.md`); `message` es la clave i18n del erro
 - **La llave del objeto no sale.** Es `<empresa>/services/<servicio>/evidence/<requerimiento>/<uuid>/<nombre>`; `file_name` es su último tramo (el nombre ya limpio: sin acentos ni espacios). `storage_location` guarda `s3`.
 - **`evidence_state`** (MD-127, 2026-10-22). Sale hoy de la única revisión de la entrega (`evidence_reviews`), la del `admin_empresa` (D96); D102 la cambia por la combinación de las revisiones de cada rol. Sin revisión es `pending` (o `in_review` si la IA ya sugirió). En `?view=technical` el bloque trae `review`, `attributes`, `note`, `reviewed_by` y `reviewed_at` de esa revisión; sin ninguna, todo `pending_review` y `null`.
 - **Subir por prueba (D88, 2026-10-22).** `POST /v1/controls/{id}/tests/{test_id}/evidence` busca el requerimiento de esa prueba en el control (lo crea en la primera entrega, con el control bloqueado) y sube el archivo como su versión siguiente. Rastro: `evidence_requirement.create` solo si lo creó, y `evidence.submit`.
-- **Requerimientos propios (D88, 2026-10-22).** `POST /v1/controls/{id}/evidence-requirements` (solo `admin_empresa`) crea un requerimiento `origin: "own"` con código `EV-<código del control>-NN` y la posición siguiente, calculados con el control bloqueado (dos altas a la vez no chocan). Valida `dimension.not_in_control`, `test.not_in_control` y `test.not_documentary`, y copia la vigencia que ya usa el servicio. Cómo la revisión de una evidencia mueve el estado del control está en [`README.md`](README.md) y en `modelo/09-calculo-cumplimiento.md`.
+- **Requerimientos propios (D88, 2026-10-22).** `POST /v1/controls/{id}/evidence-requirements` (solo `admin_empresa`) crea un requerimiento `origin: "own"` con código `EV-<código del control>-NN` y la posición siguiente, calculados con el control bloqueado (dos altas a la vez no chocan). Valida `dimension.not_in_control`, `dimension.not_of_test` (la `dimension` debe ser la de la prueba), `test.not_in_control` y `test.not_manual` (antes `test.not_documentary`, MD-499), y copia la vigencia que ya usa el servicio. Cómo la revisión de una evidencia mueve el estado del control está en [`README.md`](README.md) y en `modelo/09-calculo-cumplimiento.md`.
 - **`ai`.** `ai_confidence` va `null`: la confianza no se guarda todavía.
 - **Descarga.** Genera el enlace (5 minutos) y lo registra en el rastro **de mejor esfuerzo**, sin la URL firmada; no hay un cambio de datos con el que ser atómico. Si no hay almacenamiento responde `503` y no registra una descarga que no ocurrió.
 - **Tipos y tamaño.** PDF, DOCX, XLSX, PNG y JPG, hasta 25 MB. Un DOCX o un XLSX se reconoce mirando el directorio central del zip (`[Content_Types].xml` y `word/` o `xl/`); un zip cualquiera renombrado se rechaza con `415`.
-- **Ver sin descargar y listar por test (MD-177, 2026-10-30).** `GET /v1/controls/{id}/tests/{test_id}/evidence` y `disposition=inline` en la descarga están construidos. El enlace sale con la disposición y el tipo de contenido **fijados al firmar** (`ResponseContentDisposition` y `ResponseContentType` del S3); `inline` solo para PDF, PNG y JPG y con otro tipo es `422 disposition.not_supported`, sin generar enlace ni rastro. La respuesta de la descarga lleva `disposition` y el rastro `evidence.download` la guarda. El test se considera manual si es documental (`policy`) o si su dimensión en el control de origen es `manual` o `technical_manual` (lo mismo que decide si cabe un veredicto); uno automático o que el control no lleva es `404`. Un test documental solo devuelve el requerimiento de esa prueba **en este control**; otro test manual devuelve los requerimientos de los controles vigentes del servicio que lo llevan y sirven al test (`test_id` igual, o compartidos de su dimensión). Pruebas: `test/cumplimiento/evidencia-por-test.e2e-spec.ts` y la del firmado en `s3-file.storage.spec.ts`.
+- **Ver sin descargar y listar por test (MD-177, 2026-10-30).** `GET /v1/controls/{id}/tests/{test_id}/evidence` y `disposition=inline` en la descarga están construidos. El enlace sale con la disposición y el tipo de contenido **fijados al firmar** (`ResponseContentDisposition` y `ResponseContentType` del S3); `inline` solo para PDF, PNG y JPG y con otro tipo es `422 disposition.not_supported`, sin generar enlace ni rastro. La respuesta de la descarga lleva `disposition` y el rastro `evidence.download` la guarda. **MD-499:** la lectura la decide la regla única de la subida (`primary_source`, ver `POST …/tests/{test_id}/evidence`) y además se muestra el **histórico**: si el control ya tiene entregas de esa prueba, se devuelven aunque hoy no acepte subida (p. ej. una integración conectada después). `404` solo si la prueba no acepta subida **y** el control no tiene entregas de ella (o no la lleva). Un test documental solo devuelve el requerimiento de esa prueba **en este control**; otro test manual devuelve los requerimientos de los controles vigentes del servicio que lo llevan y sirven al test (`test_id` igual, o compartidos de su dimensión). Pruebas: `test/cumplimiento/evidencia-por-test.e2e-spec.ts` y la del firmado en `s3-file.storage.spec.ts`.
 - **Pruebas.** Unitaria del validador y e2e `test/cumplimiento/evidencias.e2e-spec.ts` (almacenamiento en memoria); y `test/almacenamiento/evidencia.e2e-spec.ts` contra un S3 real, opcional como la de la Descripción del Sistema.
 - **Sin construir (anotación anterior a MD-177, parte ya resuelta arriba):** de la gestión de requerimientos, cambiar el responsable (`PATCH`) y quitar uno propio (`DELETE`).

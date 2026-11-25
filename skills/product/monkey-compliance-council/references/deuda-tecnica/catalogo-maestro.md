@@ -55,3 +55,11 @@ Parches vigentes de [Catálogo maestro](../arquitectura/catalogo-maestro/README.
 - **Qué está parchado:** Salió PCI DSS y entraron la Ley 21.719 (CL), y las de UY, EC, PA y CR; las leyes con su vigencia están verificadas en fuentes públicas pero no se contrastaron con el Excel del comité
 - **Por qué:** El comité pidió depurar la lista y delegó la investigación
 - **Qué lo cierra:** Que el comité ratifique la lista. Mientras tanto, empresas que marcaron PCI DSS perdieron esa marca (la migración la borró)
+
+### DT-119 · El catálogo de Admin no deja crear pruebas de las cuatro dimensiones nuevas
+
+🟡 Mejora
+
+- **Qué está parchado:** `TEST_PREFIX_TO_DIMENSION` (`catalog-admin/application/use-cases/catalog-write.use-cases.ts:51,63`) solo conoce 5 dimensiones; desde MD-499 el DTO admite las 9, y crear una prueba `network`, `endpoint`, `physical` o `process` responde `422 code.dimension_mismatch`
+- **Por qué:** la edición del catálogo v2 en Admin es de MD-510 (hoy en solo lectura); MD-499 solo unificó la lista de dimensiones
+- **Qué lo cierra:** MD-510: prefijos del catálogo v2 (`T-RED-`, `T-IDA-`…) y contrato `catalogo-maestro.md` al día

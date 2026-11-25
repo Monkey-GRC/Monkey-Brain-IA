@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
 
-export type SkeletonShape = 'line' | 'title' | 'block' | 'circle' | 'field' | 'badge' | 'card' | 'metric' | 'row';
+export type SkeletonShape = 'line' | 'title' | 'block' | 'circle' | 'field' | 'badge' | 'card' | 'metric' | 'row' | 'tabs' | 'section';
 
 /**
  * Placeholder with the shape of the content that is loading (D116). Use one per region, not a single block for the whole screen. It is decorative (`aria-hidden`): the
@@ -16,6 +16,8 @@ export type SkeletonShape = 'line' | 'title' | 'block' | 'circle' | 'field' | 'b
  *  - `badge`: the size of an `app-badge`; `width` to adjust.
  *  - `card`: an `app-card` with a title and some lines. `metric`: a KPI card (label, big number, caption).
  *  - `row`: a list row (avatar, two lines and a badge).
+ *  - `tabs`: an `app-tabs` bar with `lines` tabs and its 1 px line (MD-499).
+ *  - `section`: a section of a detail: its title with the 1 px line below and `lines` lines of content (MD-499).
  *
  *   <app-skeleton-region [busy]="loading()"> @if (loading()) { <app-skeleton shape="field" /> <app-skeleton shape="field" /> } @else { …real form… } </app-skeleton-region>
  */
@@ -65,6 +67,21 @@ export type SkeletonShape = 'line' | 'title' | 'block' | 'circle' | 'field' | 'b
           <div class="mk-skeleton h-3 w-1/2 rounded-badge" data-skeleton-block></div>
         </div>
       }
+      @case ('tabs') {
+        <div class="flex gap-6 border-b border-line pb-3 pt-1">
+          @for (n of lineItems(); track n) {
+            <div class="mk-skeleton h-4 w-24 rounded-badge" data-skeleton-block></div>
+          }
+        </div>
+      }
+      @case ('section') {
+        <div class="mb-3 border-b border-line pb-2.5 pt-1.5"><div class="mk-skeleton h-5 rounded-badge" data-skeleton-block [style.width]="width() ?? '35%'"></div></div>
+        <div class="space-y-2">
+          @for (n of lineItems(); track n; let last = $last) {
+            <div class="mk-skeleton h-3.5 rounded-badge" data-skeleton-block [style.width]="last && lineItems().length > 1 ? '60%' : '100%'"></div>
+          }
+        </div>
+      }
       @case ('row') {
         <div class="flex items-center gap-3 py-2">
           <div class="mk-skeleton size-9 shrink-0 rounded-full" data-skeleton-block></div>
@@ -80,7 +97,7 @@ export type SkeletonShape = 'line' | 'title' | 'block' | 'circle' | 'field' | 'b
 })
 export class Skeleton {
   readonly shape = input<SkeletonShape>('line');
-  // Only for `line`: how many lines.
+  // How many lines (`line`, `section`) or tabs (`tabs`).
   readonly lines = input(1);
   // CSS length (`12rem`, `50%`) for `line` (single), `title`, `block` and `badge`.
   readonly width = input<string | null>(null);

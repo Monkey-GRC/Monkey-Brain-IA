@@ -1,7 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideTranslateService } from '@ngx-translate/core';
-import { PageInfo } from './table-page';
+import { PageInfo } from '@shared/domain/models/page-info.model';
 import { StatusIndicator } from '../status-indicator/status-indicator';
 import { pickOption } from '../select/select.testing';
 import { DataTable, TableCell, TableColumn, TableStack } from './data-table';
@@ -62,7 +62,7 @@ class Host {
   selectable = signal(false);
   chosen = signal<ReadonlySet<string | number>>(new Set());
   selections: Set<string | number>[] = [];
-  groupBy = signal<((r: Row) => string) | null>(null);
+  groupBy = signal<((r: Row) => string | null) | null>(null);
   collapsible = signal(false);
   compact = signal(false);
   hideHeader = signal(false);
@@ -206,6 +206,24 @@ describe('DataTable', () => {
     expect(cells[2].querySelector('[data-shape="block"]')).not.toBeNull();
   });
 
+  it('draws the full shape of a title with its caption, two badges and a progress cell (MD-499)', () => {
+    const fixture2 = TestBed.createComponent(DataTable<Row>);
+    fixture2.componentRef.setInput('captionKey', 'TEST.CAPTION');
+    fixture2.componentRef.setInput('columns', [
+      { key: 'a', headerKey: 'TEST.NAME', skeleton: 'lines' },
+      { key: 'b', headerKey: 'TEST.NAME', skeleton: 'badges' },
+      { key: 'c', headerKey: 'TEST.NAME', skeleton: 'progress' },
+    ] as TableColumn<Row>[]);
+    fixture2.componentRef.setInput('rows', []);
+    fixture2.componentRef.setInput('rowKey', (r: Row) => r.id);
+    fixture2.componentRef.setInput('loading', true);
+    fixture2.detectChanges();
+    const cells = (fixture2.nativeElement as HTMLElement).querySelectorAll<HTMLElement>('[data-skeleton-row]')[0].querySelectorAll<HTMLElement>('td');
+    expect(cells[0].querySelectorAll('app-skeleton').length).toBe(2);
+    expect(cells[1].querySelectorAll('[data-shape="badge"]').length).toBe(2);
+    expect(cells[2].querySelectorAll('app-skeleton').length).toBe(3);
+  });
+
   it('draws a person cell with an avatar circle', () => {
     const fixture2 = TestBed.createComponent(DataTable<Row>);
     fixture2.componentRef.setInput('captionKey', 'TEST.CAPTION');
@@ -296,8 +314,21 @@ describe('DataTable', () => {
     expect(headers[0].querySelector('[data-group-toggle]')).toBeNull();
   });
 
-  it('the group header is a full-width cell, not a row, so its colspan applies', () => {
+  it('draws no group rows when every row is in the same group or has no group (null key): the plain table, no «— · 100» row', () => {
     host.groupBy.set(() => 'a');
+    fixture.detectChanges();
+    expect(el().querySelector('[data-group-header]')).toBeNull();
+    expect(el().querySelectorAll('tbody tr').length).toBe(2);
+    host.groupBy.set(() => null);
+    fixture.detectChanges();
+    expect(el().querySelector('[data-group-header]')).toBeNull();
+    host.groupBy.set((r: Row) => (r.id === 2 ? 'b' : null));
+    fixture.detectChanges();
+    expect(Array.from(el().querySelectorAll('[data-group-header]')).map((h) => h.getAttribute('data-group'))).toEqual(['', 'b']);
+  });
+
+  it('the group header is a full-width cell, not a row, so its colspan applies', () => {
+    host.groupBy.set((r: Row) => (r.id === 2 ? 'b' : 'a'));
     fixture.detectChanges();
     const th = el().querySelector('[data-group-header] th[scope="rowgroup"]')!;
     expect(th.getAttribute('colspan')).toBe(String(el().querySelectorAll('thead th[scope="col"]').length));
@@ -306,19 +337,19 @@ describe('DataTable', () => {
   });
 
   it('a collapsible group folds its rows from a button that says whether it is open', () => {
-    host.groupBy.set(() => 'a');
+    host.groupBy.set((r: Row) => (r.id === 2 ? 'b' : 'a'));
     host.collapsible.set(true);
     fixture.detectChanges();
     const toggle = () => el().querySelector<HTMLButtonElement>('[data-group-toggle]')!;
     expect(toggle().getAttribute('aria-expanded')).toBe('true');
-    expect(el().querySelectorAll('tbody tr').length).toBe(3);
+    expect(el().querySelectorAll('tbody tr').length).toBe(4);
     toggle().click();
     fixture.detectChanges();
     expect(toggle().getAttribute('aria-expanded')).toBe('false');
-    expect(el().querySelectorAll('tbody tr').length).toBe(1);
+    expect(el().querySelectorAll('tbody tr').length).toBe(3);
     toggle().click();
     fixture.detectChanges();
-    expect(el().querySelectorAll('tbody tr').length).toBe(3);
+    expect(el().querySelectorAll('tbody tr').length).toBe(4);
   });
 
   it('the compact variant drops the minimum width and the tall rows, for lists inside a side panel', () => {
@@ -353,6 +384,20 @@ describe('DataTable', () => {
     fixture.detectChanges();
     expect(el().querySelector('table')!.className).toContain('min-w-[40rem]');
     expect(el().querySelector('tbody td')!.hasAttribute('data-label')).toBe(false);
+  });
+
+  it('the compact variant drops the page bar while everything fits on the smallest page, and keeps it once the list is longer', () => {
+    host.compact.set(true);
+    host.page.set({ page: 1, pageSize: 10, total: 3, totalPages: 1 });
+    fixture.detectChanges();
+    expect(el().querySelector('app-pagination')).toBeNull();
+    host.page.set({ page: 1, pageSize: 10, total: 11, totalPages: 2 });
+    fixture.detectChanges();
+    expect(el().querySelector('app-pagination')).not.toBeNull();
+    host.compact.set(false);
+    host.page.set({ page: 1, pageSize: 10, total: 3, totalPages: 1 });
+    fixture.detectChanges();
+    expect(el().querySelector('app-pagination')).not.toBeNull();
   });
 
   it('the compact variant is never stacked', () => {

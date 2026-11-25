@@ -211,7 +211,7 @@
   --color-risk-critical-on: #ffffff;
   --color-risk-critical-bg: #fee2e2;
   --color-risk-critical-ink: #7f1d1d;
-  /* Dimmed layer behind a modal, a drawer or the mobile menu. Not a status and not a surface: one token so every overlay darkens the same. */
+  /* Dimmed layer behind a modal or the mobile menu. Not a status and not a surface: one token so every overlay darkens the same. */
   --color-scrim: rgb(0 0 0 / 0.5);
   /* Brand tints: soft blue for secondary surfaces (support cards, hover, active menu item, progress tracks). They carry no status; `.dark` redefines them. */
   --color-tint: var(--color-brand-50);
@@ -304,26 +304,24 @@
   /* Minimal shadow of a card on the panel. Heavier shadows are only for floating layers (--shadow-float). */
   --shadow-soft: 0px 1px 2px 0px rgba(16, 24, 40, 0.04);
 
-  /* The only shadow of the system: floating layers (menu, modal, drawer, flyout). */
+  /* The only shadow of the system: floating layers (menu, modal, flyout). */
   --shadow-float: 0px 12px 16px -4px rgba(16, 24, 40, 0.08), 0px 4px 6px -2px rgba(16, 24, 40, 0.03);
 
   --shadow-focus-ring: 0px 0px 0px 4px rgba(4, 108, 196, 0.16);
 
-  /* Stacking scale (MD-485). A layer asks for its name (`z-(--z-drawer)`), never a loose `z-[N]`. From the bottom: the scrim and the mobile menu, the menu flyout, the header menus,
-     the side drawer and its scrim, the modal, the confirm dialog (it opens on top of a drawer), the floating panels (select, date picker, password bubble, the navigation bar) and the toasts on top
+  /* Stacking scale (MD-485). A layer asks for its name (`z-(--z-modal)`), never a loose `z-[N]`. From the bottom: the scrim and the mobile menu, the menu flyout, the header menus,
+     the modal (also the wide detail modal, MD-499), the confirm dialog (it opens on top of a modal), the floating panels (select, date picker, password bubble, the navigation bar) and the toasts on top
      of everything, or the error of a failed save would be hidden behind the panel. The header of each app has its own value in the `app-specific` block (`--z-app-header`). */
   --z-menu-scrim: 40;
   --z-menu: 50;
   --z-flyout: 60;
   --z-header-menu: 100000;
-  --z-drawer-scrim: 100000;
-  --z-drawer: 100001;
   --z-modal: 100001;
   --z-dialog: 100002;
   --z-popover: 100003;
   --z-toast: 100004;
 
-  /* Motion (MD-485, 6.11): ONE curve, the ease-out the menu already used, and three durations. 150 ms for colour and opacity, 180 ms for a modal or a drawer coming in,
+  /* Motion (MD-485, 6.11): ONE curve, the ease-out the menu already used, and three durations. 150 ms for colour and opacity, 180 ms for a modal coming in,
      200 ms for a size or a turn (menu group, chevron, progress). Only `transform` and `opacity` move; with `prefers-reduced-motion: reduce` a movement becomes a fade. */
   --ease-out: cubic-bezier(0, 0, 0.2, 1);
   --default-transition-timing-function: var(--ease-out);
@@ -373,18 +371,32 @@
   @apply inline-flex items-center justify-center gap-2 rounded-control bg-bad px-4 py-2.5 text-sm font-semibold text-white transition enabled:hover:bg-bad/90 enabled:active:translate-y-px focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-bad/25 disabled:cursor-not-allowed disabled:bg-line disabled:text-ink-muted disabled:shadow-none;
 }
 
+/* Small buttons (MD-499) for an action inside a card, a section or a row of a detail (Upload evidence, Edit, Save, Link, Remove): the same three looks at 32 px,
+   `text-sm`, a 16 px icon. `mk-btn-danger-sm` is the outlined destructive trigger (it opens the confirmation, which carries the filled `mk-btn-danger`);
+   `mk-btn-danger-outline` is the same trigger at full size, for a footer (Dar de baja, at the left of the footer of `app-detail-modal`).
+   An action is a button; navigation and «show more» are a link (`mk-link underline`), never the other way round (README §2). */
+@utility mk-btn-sm {
+  @apply inline-flex items-center justify-center gap-1.5 rounded-control bg-action px-3 py-1.5 text-sm font-semibold text-on-action transition enabled:hover:bg-action-hover enabled:active:translate-y-px focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/25 disabled:cursor-not-allowed disabled:bg-line disabled:text-ink-muted disabled:shadow-none;
+}
+@utility mk-btn-secondary-sm {
+  @apply inline-flex items-center justify-center gap-1.5 rounded-control border border-line-control bg-surface px-3 py-1.5 text-sm font-semibold text-ink transition enabled:hover:bg-tint enabled:active:translate-y-px focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/20 disabled:cursor-not-allowed disabled:border-transparent disabled:bg-line disabled:text-ink-muted disabled:shadow-none;
+}
+@utility mk-btn-danger-outline {
+  @apply inline-flex items-center justify-center gap-2 rounded-control border border-line-control bg-surface px-4 py-2.5 text-sm font-semibold text-bad-ink transition enabled:hover:bg-badge-bad-bg enabled:active:translate-y-px focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-bad/25 disabled:cursor-not-allowed disabled:border-transparent disabled:bg-line disabled:text-ink-muted disabled:shadow-none;
+}
+@utility mk-btn-danger-sm {
+  @apply inline-flex items-center justify-center gap-1.5 rounded-control border border-line-control bg-surface px-3 py-1.5 text-sm font-semibold text-bad-ink transition enabled:hover:bg-badge-bad-bg enabled:active:translate-y-px focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-bad/25 disabled:cursor-not-allowed disabled:border-transparent disabled:bg-line disabled:text-ink-muted disabled:shadow-none;
+}
+
 /* Icon-only button (refresh, close, pin, more): 40 px square, no border, `ink-muted` icon, hover `tint`, pressed 1 px down, a visible focus ring. It always carries an `aria-label`. */
 @utility mk-btn-icon {
   @apply inline-flex size-10 shrink-0 items-center justify-center rounded-control text-ink-muted transition enabled:hover:bg-tint enabled:hover:text-ink enabled:active:translate-y-px enabled:active:bg-tint-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-action/40 disabled:cursor-not-allowed disabled:text-ink-faint;
 }
 
-/* Text link or text button (row actions, «Retry», «Clear filters», inline links). Brand colour, underline on hover, a visible focus ring, pressed colour, tokenised disabled.
-   Inline links inside a sentence add `underline`. `mk-link-danger` is the destructive one (archive, delete). */
+/* Text link (navigation, «see more», «Clear filters», inline links). Brand colour, underline on hover, a visible focus ring, pressed colour, tokenised disabled.
+   Inline links inside a sentence add `underline`. Only navigation and «see more» are links (README §2): an action, destructive or not, is a button (`mk-btn*`). */
 @utility mk-link {
   @apply rounded-control font-medium text-action underline-offset-2 transition-colors hover:underline active:text-action-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-action/40 disabled:cursor-not-allowed disabled:text-ink-faint disabled:no-underline;
-}
-@utility mk-link-danger {
-  @apply rounded-control font-medium text-bad-ink underline-offset-2 transition-colors hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bad/40 disabled:cursor-not-allowed disabled:text-ink-faint disabled:no-underline;
 }
 
 /* Form controls (text input and select) used inside `app-field`. `mk-textarea` is the same field with free height (it grows with `rows`). */
@@ -937,7 +949,8 @@ button[aria-busy='true']:hover {
   animation: mk-fade-in var(--motion-fast) var(--ease-out) both;
 }
 
-/* Modal: the backdrop fades in and the panel fades in while growing from 0.96 to 1 (180 ms). With reduced motion the panel only fades: no scale, no shift. */
+/* Modal: the backdrop fades in and the panel fades in while growing from 0.96 to 1 (180 ms). With reduced motion the panel only fades: no scale, no shift.
+   `backwards`, not `both` (MD-499): once in, the panel keeps no `transform`, so a `position: fixed` layer opened from inside it (an upload modal in a detail modal) is not tied to the panel. */
 @keyframes mk-modal-in {
   from {
     opacity: 0;
@@ -953,10 +966,28 @@ button[aria-busy='true']:hover {
   animation: mk-fade-in var(--motion-enter) var(--ease-out) both;
 }
 @utility mk-modal-in {
-  animation: mk-modal-in var(--motion-enter) var(--ease-out) both;
+  animation: mk-modal-in var(--motion-enter) var(--ease-out) backwards;
 
   @media (prefers-reduced-motion: reduce) {
-    animation: mk-fade-in var(--motion-enter) var(--ease-out) both;
+    animation: mk-fade-in var(--motion-enter) var(--ease-out) backwards;
+  }
+}
+
+/* Side panel of a detail (`app-modal` size `drawer`, MD-499): it slides in from the right edge (180 ms). With reduced motion it only fades. `backwards` for the same reason as the modal. */
+@keyframes mk-drawer-in {
+  from {
+    transform: translateX(100%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+@utility mk-drawer-in {
+  animation: mk-drawer-in var(--motion-enter) var(--ease-out) backwards;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: mk-fade-in var(--motion-enter) var(--ease-out) backwards;
   }
 }
 

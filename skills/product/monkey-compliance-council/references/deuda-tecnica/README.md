@@ -69,6 +69,7 @@ Limitan el producto o al equipo.
 
 | ID | Qué | Módulo |
 |---|---|---|
+| [DT-120](cumplimiento.md#dt-120--una-prueba-manual-se-cumple-por-evidencia-y-también-admite-veredicto) | Una prueba manual se cumple por evidencia y también admite veredicto | [Cumplimiento](cumplimiento.md) |
 | [DT-2](control-tecnico.md#dt-2--n18-y-checks_available-son-constantes) | «n/18» y `checks_available` son constantes | [Control técnico](control-tecnico.md) |
 | [DT-3](onboarding.md#dt-3--ac_04-a-ac_06-se-completaron-por-analogía) | `ac_04` a `ac_06` se completaron por analogía | [Onboarding](onboarding.md) |
 | [DT-4](onboarding.md#dt-4--credenciales-por-conexión-definidas-por-desarrollo) | Credenciales por conexión definidas por desarrollo | [Onboarding](onboarding.md) |
@@ -116,6 +117,10 @@ Pendientes sin urgencia.
 
 | ID | Qué | Módulo |
 |---|---|---|
+| [DT-122](cumplimiento.md#dt-122--la-subida-de-respaldo-de-las-pruebas-de-integración-usa-un-puerto-sin-implementar) | La subida de respaldo de las pruebas de integración usa un puerto sin implementar | [Cumplimiento](cumplimiento.md) |
+| [DT-121](plataforma.md#dt-121--specs-de-los-frontends-que-aseveran-clases-de-estilo) | Specs de los frontends que aseveran clases de estilo | [Plataforma](plataforma.md) |
+| [DT-119](catalogo-maestro.md#dt-119--el-catálogo-de-admin-no-deja-crear-pruebas-de-las-cuatro-dimensiones-nuevas) | El catálogo de Admin no deja crear pruebas de las cuatro dimensiones nuevas | [Catálogo maestro](catalogo-maestro.md) |
+| [DT-118](cumplimiento.md#dt-118--el-detalle-no-da-el-resultado-por-activos-de-cada-check-directo) | El detalle no da el resultado por activos de cada check Directo | [Cumplimiento](cumplimiento.md) |
 | [DT-117](cumplimiento.md#dt-117--un-servicio-con-varios-marcos-se-evalúa-con-un-solo-período) | Un servicio con varios marcos se evalúa con un solo período | [Cumplimiento](cumplimiento.md) |
 | [DT-112](roles-permisos.md#dt-112--los-grupos-de-permiso-por-rol-están-repetidos-en-cada-pantalla-de-platform) | Los grupos de permiso por rol están repetidos en cada pantalla de Platform | [Roles y permisos](roles-permisos.md) |
 | [DT-111](autenticacion.md#dt-111--bcrypt-sin-tope-de-comparaciones-simultáneas-ante-ráfagas-de-login) | `bcrypt` sin tope de comparaciones simultáneas ante ráfagas de login | [Autenticación](autenticacion.md) |

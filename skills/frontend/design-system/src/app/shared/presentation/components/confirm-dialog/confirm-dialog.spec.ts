@@ -1,15 +1,15 @@
 import { Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideTranslateService } from '@ngx-translate/core';
-import { SideDrawer } from '@shared/presentation/components/side-drawer/side-drawer';
+import { DetailModal } from '@shared/presentation/components/detail-modal/detail-modal';
 import { ConfirmDialog } from './confirm-dialog';
 
 @Component({
-  imports: [SideDrawer, ConfirmDialog],
+  imports: [DetailModal, ConfirmDialog],
   template: `
-    <app-side-drawer [open]="true" titleKey="TEST.PANEL" (closed)="drawerClosed.set(drawerClosed() + 1)">
+    <app-detail-modal titleKey="TEST.PANEL" (closed)="detailClosed.set(detailClosed() + 1)">
       <p>detail</p>
-    </app-side-drawer>
+    </app-detail-modal>
     @if (asking()) {
       <app-confirm-dialog titleKey="TEST.TITLE" (cancelled)="asking.set(false)" />
     }
@@ -17,15 +17,15 @@ import { ConfirmDialog } from './confirm-dialog';
 })
 class StackedHost {
   asking = signal(false);
-  drawerClosed = signal(0);
+  detailClosed = signal(0);
 }
 
-describe('ConfirmDialog over a side drawer', () => {
-  it('the first Esc closes only the dialog and the second one closes the drawer', () => {
+describe('ConfirmDialog over a detail modal', () => {
+  it('the first Esc closes only the dialog and the second one closes the detail', () => {
     TestBed.configureTestingModule({ imports: [StackedHost], providers: [provideTranslateService()] });
     const f = TestBed.createComponent(StackedHost);
     f.detectChanges();
-    f.componentInstance.asking.set(true); // the dialog opens over a drawer that was already open
+    f.componentInstance.asking.set(true); // the dialog opens over a detail that was already open
     f.detectChanges();
     const esc = () => {
       const e = new KeyboardEvent('keydown', { key: 'Escape', cancelable: true });
@@ -35,9 +35,9 @@ describe('ConfirmDialog over a side drawer', () => {
     };
     expect(esc().defaultPrevented).toBeTrue();
     expect(f.componentInstance.asking()).toBeFalse();
-    expect(f.componentInstance.drawerClosed()).toBe(0);
+    expect(f.componentInstance.detailClosed()).toBe(0);
     esc();
-    expect(f.componentInstance.drawerClosed()).toBe(1);
+    expect(f.componentInstance.detailClosed()).toBe(1);
   });
 });
 
@@ -106,19 +106,18 @@ describe('ConfirmDialog', () => {
     expect(cancelled).toBe(0);
   });
 
-  it('sits above the side panel it is opened from, so its buttons are never hidden behind it', () => {
-    const panel = TestBed.createComponent(SideDrawer);
-    panel.componentRef.setInput('open', true);
+  it('sits above the detail modal it is opened from, so its buttons are never hidden behind it', () => {
+    const panel = TestBed.createComponent(DetailModal);
     panel.componentRef.setInput('titleKey', 'TEST.PANEL');
     panel.detectChanges();
-    // Each layer asks for its name in the stacking scale of the theme (`z-(--z-dialog)`, `z-(--z-drawer)`), and the scale puts the dialog above the drawer.
+    // Each layer asks for its name in the stacking scale of the theme (`z-(--z-dialog)`, `z-(--z-modal)`), and the scale puts the dialog above the modal.
     const layer = (root: HTMLElement) => /z-\(--(z-[a-z-]+)\)/.exec(root.querySelector<HTMLElement>('[class*="z-(--z-"]')?.className ?? '')?.[1];
     expect(layer(el())).toBe('z-dialog');
-    expect(layer(panel.nativeElement)).toBe('z-drawer-scrim');
+    expect(layer(panel.nativeElement)).toBe('z-modal');
     const scale = getComputedStyle(document.documentElement);
     const value = (name: string) => Number(scale.getPropertyValue('--' + name).trim());
-    expect(value('z-dialog')).toBeGreaterThan(value('z-drawer'));
-    expect(value('z-drawer')).toBeGreaterThan(value('z-drawer-scrim') - 1);
+    expect(value('z-dialog')).toBeGreaterThan(value('z-modal'));
+    document.body.classList.remove('overflow-hidden');
   });
 
   it('paints the confirm button red for a dangerous action', () => {

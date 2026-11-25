@@ -2,7 +2,24 @@ import { ChangeDetectionStrategy, Component, ElementRef, effect, input, output, 
 import { pushOverlay, takeEscape } from '@shared/presentation/components/overlay-stack/overlay-stack';
 
 const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
-const SIZES = { sm: 'max-w-sm', md: 'max-w-md', lg: 'max-w-lg', xl: 'max-w-4xl', wide: 'max-w-2xl', max: 'max-w-6xl' } as const;
+// Las clases van completas (Tailwind las lee del código tal cual).
+const SIZES = {
+  sm: 'max-w-sm',
+  md: 'max-w-md',
+  lg: 'max-w-lg',
+  xl: 'max-w-4xl',
+  wide: 'max-w-2xl',
+  max: 'max-w-6xl',
+  // El detalle corto (un activo descubierto, una evidencia requerida del catálogo): centrado, de alto fijo, a pantalla completa por debajo de md (768 px).
+  'detail-compact': 'max-w-2xl h-[min(31rem,calc(100dvh-2rem))] max-md:h-dvh max-md:max-h-dvh max-md:max-w-none max-md:rounded-none max-md:border-0',
+  // El panel lateral del detalle (MD-499, decisión de Rod: «la barra lateral de antes, solo que más ancha»): pegado a la derecha, a todo el alto, sin margen ni radio,
+  // con borde izquierdo; min(80vw, 80rem) desde lg y la pantalla entera por debajo de lg (1024 px). Entra desde la derecha (`mk-drawer-in`).
+  drawer: 'h-dvh max-h-dvh lg:w-[min(80vw,80rem)]',
+  // El mismo panel lateral con un ancho contenido (56 rem, ~900 px; la pantalla entera si no cabe): un detalle que se lee en una columna (el catálogo de Admin).
+  'drawer-narrow': 'h-dvh max-h-dvh max-w-[56rem]',
+} as const;
+
+export type ModalSize = keyof typeof SIZES;
 
 // La base de todos los modales de la app: el fondo oscuro, el panel y lo que un modal bien hecho debe hacer siempre. Lo de adentro lo pone quien lo usa:
 //   <app-modal [open]="abierto" labelledBy="mi-titulo" (dismissed)="cerrar()"> <h2 id="mi-titulo">…</h2> … </app-modal>
@@ -19,7 +36,7 @@ export class Modal {
   readonly labelledBy = input.required<string>();
   readonly describedBy = input<string | null>(null);
   readonly dismissible = input(true);
-  readonly size = input<keyof typeof SIZES>('md');
+  readonly size = input<ModalSize>('md');
   // Con `padded` en falso el panel no lleva relleno ni scroll propio: quien lo usa reparte cabecera, cuerpo con scroll y pie fijo (`app-form-modal`).
   readonly padded = input(true);
   // Prefijo de los `data-testid` del fondo (`<id>-backdrop`) y del panel (`<id>-dialog`), para que las pruebas de quien lo usa los encuentren.
@@ -53,8 +70,20 @@ export class Modal {
     return SIZES[this.size()];
   }
 
+  // Centrado con 16 px de margen; el panel lateral va pegado a la derecha, sin margen; el detalle corto pierde el margen donde pasa a pantalla completa.
+  get backdropClass(): string {
+    if (this.isDrawer) return 'justify-end';
+    return this.size() === 'detail-compact' ? 'items-center justify-center p-4 max-md:p-0' : 'items-center justify-center p-4';
+  }
+
+  private get isDrawer(): boolean {
+    return this.size() === 'drawer' || this.size() === 'drawer-narrow';
+  }
+
   get panelClass(): string {
-    return `${this.sizeClass} ${this.padded() ? 'overflow-y-auto p-6' : 'flex flex-col overflow-hidden'}`;
+    const frame = this.isDrawer ? 'mk-drawer-in border-l' : 'mk-modal-in rounded-panel border';
+    const height = this.isDrawer || this.size() === 'detail-compact' ? '' : 'max-h-[calc(100dvh-2rem)]';
+    return `${frame} ${this.sizeClass} ${height} ${this.padded() ? 'overflow-y-auto p-6' : 'flex flex-col overflow-hidden'}`;
   }
 
   // Esc: solo la capa de arriba lo atiende (un diálogo abierto sobre el modal se lo lleva primero).

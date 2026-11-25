@@ -41,6 +41,7 @@ cat > "$c/m/Frontend-Platform/src/app/a.html" <<'H'
 <button class="mk-btn bg-bad! hover:bg-bad/90!">{{ 'NO.SUCH_KEY' | translate }}</button>
 <select class="mk-input"><option>a</option></select>
 <input type="text" class="border bg-surface px-3" />
+<textarea rows="3" class="mk-textarea"></textarea>
 <button class="enabled:hover:underline disabled:text-ink-faint">{{ 'OK.KEY' | translate }}</button>
 <app-loading-spinner />
 <app-loading-spinner data-long-process />

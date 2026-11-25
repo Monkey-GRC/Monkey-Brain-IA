@@ -11,12 +11,14 @@ type: contract
 
 ## Motor v2 (MD-498)
 
+> **Quitados en MD-499 (2026-11-24):** `categories[].technical.controls[].state` y `…controls[].blocking_tests[]` (los reemplazan `level`, `level_value`, `complies` y `blocking_requirements[]`). **Se conservan** `technical.state` (`rollup_state`) del marco y de la categoría y `failing_controls[].failing[]`: son contrato del resumen, no puente.
+
 La forma de la respuesta **no cambia**: los campos existentes se calculan con el motor v2 (§9) y la vista técnica agrega campos nuevos.
 
 - **Un control cuenta como cumplido** en el marco y la categoría cuando su nivel es Adecuado o Sólido. **Puente hasta RC-07 (MD-504, `DT-114`):** §9 exige además «Cumplimiento aprobado»; mientras la gestión del control no exista, la aprobación de la empresa es la validación de la evidencia que ya hace el `admin_empresa`, que el motor ya exige para dar Correcto a una prueba manual.
 - **`progress` y `coverage` del marco y de la categoría** siguen contando controles (únicos en el marco). Un control está «decidido» si su nivel no es `not_evaluated` y ningún requisito está Pendiente.
 - **`technical.state`** (`rollup_state`) se calcula como antes, con el control v2 como entrada: `non_compliant` si algún control tiene un requisito No cumple o Vencido.
-- **`categories[].technical.controls[]`** agrega `level`, `level_value`, `complies`, `c_percent` y `blocking_requirements[]` (`{ code, text, status }`: los requisitos que impiden el 100 %, REQ-026). `state` y `blocking_tests[]` se derivan como en [`controles.md`](controles.md#motor-v2-md-498-campos-nuevos-y-compatibilidad).
+- **`categories[].technical.controls[]`** agrega `level`, `level_value`, `complies`, `c_percent` y `blocking_requirements[]` (`{ code, text, status }`: los requisitos que impiden el 100 %, REQ-026). `state` y `blocking_tests[]` se quitaron en MD-499 (ver arriba).
 
 | | |
 |---|---|
@@ -94,7 +96,8 @@ Un bloque por **marco contratado**. Dentro, solo las categorías **en alcance** 
           "period_start": "2026-01-01",
           "period_end": "2026-12-31",
           "cutoff_date": "2026-10-14",
-          "cutoff_frozen": false
+          "cutoff_frozen": false,
+          "min_period_months": 6
         },
         "categories": [
           {
@@ -130,7 +133,8 @@ Un bloque por **marco contratado**. Dentro, solo las categorías **en alcance** 
 - **`readiness` y cobertura.** Un marco con todo lo medido cumpliendo pero cobertura baja **no** es `ready`. El semáforo se muestra junto al porcentaje y a la cobertura (`conventions.md`, D80).
 - **`progress` del marco** cuenta controles únicos; el de la categoría, los controles de esa categoría.
 - **`failing_controls`** trae **solo lo que no cumple**, con su `code` y los `requirement_codes` que cubre (D80), en qué falla y el activo o la prueba afectados. Un test aparece con `display_name`, nunca con el texto del comité ni con su código (en la vista técnica sí viaja `test_code`). `own_code` solo en un control propio.
-- **`evaluation` sin definir (D87).** Mientras no esté definido el período (se declara con `PUT …/evaluation-period`), `evaluation` viene con sus cinco campos en `null`, el marco y sus categorías en `not_measured`, `progress.done` y `coverage.measured` en 0 y `failing_controls` vacío: el motor no ejecuta sin los cinco datos. **Un servicio nuevo nace sin período.**
+- **`evaluation` sin definir (D87).** Mientras no esté definido el período (se declara con `PUT …/evaluation-period`), `evaluation` viene con sus cinco campos en `null` y `min_period_months` siempre presente (seis campos), el marco y sus categorías en `not_measured`, `progress.done` y `coverage.measured` en 0 y `failing_controls` vacío: el motor no ejecuta sin los cinco datos. **Un servicio nuevo nace sin período.**
+- **`min_period_months` (MD-499).** La duración mínima del período auditado de ese marco, en meses: en SOC 2 es el parámetro PR-16 (configurable por Monkey, MD-495; hoy 6, D131); `null` si el marco no tiene mínimo. Viene aunque `evaluation` no esté definido, para que el formulario valide con el mismo valor que el servidor (nunca una constante en el cliente).
 - **`cutoff_date` y `cutoff_frozen` (D87).** Con el período definido, `cutoff_date` siempre trae una fecha. Si la empresa no fijó ninguna, es **hoy** (sin salirse del período: nunca antes del inicio ni después del fin; si el período ya terminó, es el fin; si aún no empieza, el inicio) y `cutoff_frozen` es `false`; si se fijó una (o la congeló una evaluación emitida, MD-155), es esa fecha y `cutoff_frozen` es `true`. La fecha de corte **no reinicia nada** (no borra evidencia ni veredictos ni vuelve a medir) y hoy **no filtra ningún cálculo**: es la etiqueta de la evaluación.
 - **Un servicio recién clonado, sin resultados,** responde `not_measured` y la pantalla **no inventa ningún porcentaje** (sin total no hay porcentaje).
 - **`responsable` y `delegado` (D102, D118).** El resumen que reciben es el de **sus controles**: los vigentes de los que son dueño o ejecutor activo (`client_control_assignments`). Nunca reciben el avance de la empresa; el resumen completo es del `admin_empresa` y del `auditor`. Se calcula con el mismo motor, pero solo sobre esos controles:
@@ -149,8 +153,7 @@ Un bloque por **marco contratado**. Dentro, solo las categorías **en alcance** 
 | `technical.state` (marco y categoría) | enum `rollup_state` | |
 | `technical.unique_controls` | integer | Solo en el marco |
 | `technical.failing`, `technical.pending` | string[] | Códigos de los controles del marco que no cumplen y los que aún no se pueden decidir |
-| `categories[].technical.controls[]` | objeto | `control_id`, `control_code`, `state` (enum `control_state`), `progress` y `blocking_tests[]` |
-| `blocking_tests[]` | `{ test_code, display_name, state }` | Tests que impiden que el control sea efectivo (REQ-026); `state` es `test_state` |
+| `categories[].technical.controls[]` | objeto | `control_id`, `control_code`, `level`, `level_value`, `complies`, `c_percent`, `progress` y `blocking_requirements[]` (MD-498; `state` y `blocking_tests[]` se quitaron en MD-499) |
 
 ```json
 {
@@ -170,9 +173,12 @@ Un bloque por **marco contratado**. Dentro, solo las categorías **en alcance** 
           {
             "control_id": "3f1c…",
             "control_code": "IAC-12",
-            "state": "ineffective",
+            "level": "weak",
+            "level_value": 2,
+            "complies": false,
+            "c_percent": 60,
             "progress": { "done": 3, "total": 5 },
-            "blocking_tests": [ { "test_code": "T-SRV-001", "display_name": "Cuentas privilegiadas con doble factor", "state": "non_compliant" } ]
+            "blocking_requirements": [ { "code": "IAC-12-R2", "text": "Cuentas privilegiadas con doble factor", "status": "non_compliant" } ]
           }
         ]
       }
@@ -306,6 +312,8 @@ Todos con el mismo sobre (`conventions.md`); `message` es la clave i18n del erro
 ---
 
 ## Estado de implementación
+
+**Construido (MD-499, 2026-11-24): `min_period_months`** en `evaluation`, siempre presente; y retirados `state` y `blocking_tests[]` por control de la vista técnica (`presentation/overview/`; `test/cumplimiento/resumen.e2e-spec.ts`).
 
 **Construido (MD-498, 2026-11-23): el resumen sale del motor v2** ([Motor v2](#motor-v2-md-498)): controles cumplidos por nivel Adecuado o Sólido, y `level`, `level_value`, `complies`, `c_percent` y `blocking_requirements[]` por control en la vista técnica. La agregación por categoría y marco sigue en `domain/engine/rollup.ts`. **Construido (MD-495, 2026-11-24):** los parámetros salen de `catalog.evaluation_parameters`, no del código ([contrato](../catalogo-maestro.md#parámetros-de-evaluación-rc-19)). **Sin construir de esto:** los puntajes globales y los módulos sin dato (MD-497); «Cumplimiento aprobado» como condición de cumplido (MD-504, `DT-114`); y las lecturas que aún usan `client_control_tests` (MD-509, `DT-113`).
 

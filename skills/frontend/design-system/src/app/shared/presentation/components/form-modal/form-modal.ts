@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, Component, ElementRef, effect, inject, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
-import { ConfirmDialog } from '@shared/presentation/components/confirm-dialog/confirm-dialog';
+import { DiscardConfirm, DiscardGuard } from '@shared/presentation/components/discard-confirm/discard-confirm';
 import { Modal } from '@shared/presentation/components/modal/modal';
 import { BusyFields } from '@shared/presentation/directives/busy-fields';
 
@@ -8,7 +8,7 @@ let nextId = 0;
 
 /**
  * Centered modal to create, edit or see something: title, one short line saying what it is for, a body that scrolls and a footer that stays fixed. It is built on `app-modal`
- * (role=dialog, focus trapped and returned, Esc, backdrop, entrance animation) and replaces the side drawer for forms and for the detail of a person or a group.
+ * (role=dialog, focus trapped and returned, Esc, backdrop, entrance animation) and is the place for forms and for the detail of a person or a group (the detail of an item is `app-detail-modal`).
  * By default there is no X: the way out is the **Cancel** button of the footer, always first, next to the main action(s) projected with `actions`. `icon` (a brand container at the left of the title) and `closeButton` (an X, same effect as Cancel) are opt-in; today only the detail of a person uses them (MD-483).
  *
  *   <app-form-modal titleKey="…" descriptionKey="…" [dismissible]="!saving()" [guarded]="dirty()" (closed)="close()">
@@ -26,9 +26,9 @@ let nextId = 0;
  */
 @Component({
   selector: 'app-form-modal',
-  imports: [Modal, ConfirmDialog, TranslatePipe, BusyFields],
+  imports: [Modal, DiscardConfirm, TranslatePipe, BusyFields],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { '(focusin)': 'remember($event)' },
+  host: { '(focusin)': 'discardGuard.remember($event)' },
   template: `
     <app-modal
       [open]="open()"
@@ -38,7 +38,7 @@ let nextId = 0;
       [describedBy]="descriptionKey() ? descriptionId : null"
       [dismissible]="dismissible() && !busy()"
       [testId]="testId()"
-      (dismissed)="requestClose()"
+      (dismissed)="discardGuard.request()"
     >
       <header class="flex shrink-0 items-start gap-4 border-b border-line px-6 pb-4 pt-5">
         @if (icon(); as name) {
@@ -51,20 +51,17 @@ let nextId = 0;
           }
         </div>
         @if (closeButton()) {
-          <button type="button" class="inline-flex size-9 shrink-0 items-center justify-center rounded-control text-ink-muted transition-colors enabled:hover:bg-tint focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-action/40 disabled:cursor-not-allowed disabled:text-ink-faint" [disabled]="!dismissible() || busy()" [attr.aria-label]="cancelLabelKey() | translate" (click)="cancel()" data-close-x><span class="material-symbols-rounded text-[24px] leading-none" aria-hidden="true">close</span></button>
+          <button type="button" class="inline-flex size-9 shrink-0 items-center justify-center rounded-control text-ink-muted transition-colors enabled:hover:bg-tint focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-action/40 disabled:cursor-not-allowed disabled:text-ink-faint" [disabled]="!dismissible() || busy()" [attr.aria-label]="cancelLabelKey() | translate" (click)="discardGuard.request()" data-close-x><span class="material-symbols-rounded text-[24px] leading-none" aria-hidden="true">close</span></button>
         }
       </header>
       <div class="min-h-0 flex-1 overflow-y-auto px-6 py-5 text-sm text-ink" data-form-modal-body [appBusyFields]="busy()"><ng-content /></div>
       <footer class="flex shrink-0 flex-wrap items-center justify-end gap-3 border-t border-line px-6 py-4 max-sm:flex-col-reverse max-sm:items-stretch">
-        <button type="button" class="mk-btn-secondary" [disabled]="!dismissible() || busy()" (click)="cancel()" data-cancel [attr.data-testid]="testId() + '-cancel'">{{ cancelLabelKey() | translate }}</button>
+        <button type="button" class="mk-btn-secondary" [disabled]="!dismissible() || busy()" (click)="discardGuard.request()" data-cancel [attr.data-testid]="testId() + '-cancel'">{{ cancelLabelKey() | translate }}</button>
         <ng-content select="[actions]" />
       </footer>
     </app-modal>
     <!-- Fuera del panel: el panel anima con transform y un \`fixed\` dentro de él quedaría atado al panel. -->
-    @if (open() && confirmingDiscard()) {
-      <app-confirm-dialog titleKey="COMMON.DISCARD.TITLE" messageKey="COMMON.DISCARD.MESSAGE" cancelLabelKey="COMMON.DISCARD.KEEP" confirmLabelKey="COMMON.DISCARD.CONFIRM"
-        tone="danger" (cancelled)="keepEditing()" (confirmed)="discard()" />
-    }
+    <app-discard-confirm [guard]="discardGuard" />
   `,
 })
 export class FormModal {
@@ -91,47 +88,11 @@ export class FormModal {
   protected readonly titleId = `form-modal-title-${nextId}`;
   protected readonly descriptionId = `form-modal-description-${nextId++}`;
 
-  // Se pidió descartar lo escrito: el sub-modal de confirmación está abierto.
-  protected readonly confirmingDiscard = signal(false);
-  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
-  private lastFocus: HTMLElement | null = null;
-
-  constructor() {
-    // Si quien lo usa lo cierra (guardó, navegó), la confirmación pendiente se olvida.
-    effect(() => {
-      if (!this.open()) this.confirmingDiscard.set(false);
-    });
-  }
-
-  protected cancel(): void {
-    this.requestClose();
-  }
-
   // Esc, el fondo, Cancelar y la X pasan por aquí: nada mientras se envía; con datos sin enviar, se pregunta; si no, se cierra.
-  protected requestClose(): void {
-    if (!this.dismissible() || this.busy() || this.confirmingDiscard()) return;
-    if (this.guarded()) this.confirmingDiscard.set(true);
-    else this.closed.emit();
-  }
-
-  protected keepEditing(): void {
-    this.confirmingDiscard.set(false);
-    // El foco vuelve al campo donde estaba (un clic en el fondo lo había sacado del panel).
-    setTimeout(() => {
-      const panel = this.host.nativeElement.querySelector<HTMLElement>('[role="dialog"]');
-      if (!panel || panel.contains(document.activeElement)) return;
-      const target = this.lastFocus && panel.contains(this.lastFocus) ? this.lastFocus : panel.querySelector<HTMLElement>('input, textarea, select, button, [tabindex]:not([tabindex="-1"])');
-      (target ?? panel).focus();
-    });
-  }
-
-  protected discard(): void {
-    this.confirmingDiscard.set(false);
-    this.closed.emit();
-  }
-
-  protected remember(event: FocusEvent): void {
-    const target = event.target as HTMLElement | null;
-    if (target?.closest('[role="dialog"]')) this.lastFocus = target;
-  }
+  protected readonly discardGuard = new DiscardGuard({
+    open: this.open,
+    canClose: () => this.dismissible() && !this.busy(),
+    guarded: this.guarded,
+    close: () => this.closed.emit(),
+  });
 }

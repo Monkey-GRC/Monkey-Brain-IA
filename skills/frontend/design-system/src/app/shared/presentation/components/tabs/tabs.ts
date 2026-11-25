@@ -5,6 +5,8 @@ export interface TabItem {
   id: string;
   /** Translation key of the label. */
   labelKey: string;
+  /** How many items the tab holds (e.g. «Causas 3»), muted after the label. Optional; `null` or absent shows nothing. */
+  count?: number | null;
 }
 
 /**
@@ -26,14 +28,14 @@ export interface TabItem {
         <button
           type="button"
           role="tab"
-          [id]="'tab-' + item.id"
+          [id]="idPrefix() + '-' + item.id"
           [attr.aria-selected]="item.id === active()"
           [attr.tabindex]="item.id === active() ? 0 : -1"
           (click)="activeChange.emit(item.id)"
           (keydown)="onKey($event)"
           class="-mb-px border-b-2 pb-2.5 pt-1 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-action/40"
           [class]="item.id === active() ? 'border-action text-ink' : 'border-transparent text-ink-muted hover:text-ink'"
-        >{{ item.labelKey | translate }}</button>
+        >{{ item.labelKey | translate }}@if (item.count !== undefined && item.count !== null) {<span class="ml-1.5 font-normal tabular-nums text-ink-faint" data-tab-count>{{ item.count }}</span>}</button>
       }
     </div>
   `,
@@ -42,6 +44,8 @@ export class Tabs {
   readonly items = input.required<TabItem[]>();
   readonly active = input.required<string>();
   readonly ariaLabelKey = input<string | null>(null);
+  /** Prefix of each tab id (`<prefix>-<item id>`). Two tab bars on screen at once (a page and a detail modal) need different prefixes: ids are unique. */
+  readonly idPrefix = input('tab');
 
   readonly activeChange = output<string>();
 
@@ -57,6 +61,6 @@ export class Tabs {
     event.preventDefault();
     this.activeChange.emit(ids[next]);
     // The new tab gets the focus after the active input updates.
-    queueMicrotask(() => (event.currentTarget as HTMLElement | null)?.closest('[role=tablist]')?.querySelector<HTMLElement>('#tab-' + ids[next])?.focus());
+    queueMicrotask(() => (event.currentTarget as HTMLElement | null)?.closest('[role=tablist]')?.querySelector<HTMLElement>('#' + this.idPrefix() + '-' + ids[next])?.focus());
   }
 }

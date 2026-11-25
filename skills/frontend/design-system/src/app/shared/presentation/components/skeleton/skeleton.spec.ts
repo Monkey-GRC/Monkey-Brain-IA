@@ -67,6 +67,8 @@ describe('Skeleton', () => {
     ['card', 4],
     ['metric', 3],
     ['row', 4],
+    ['tabs', 1],
+    ['section', 2],
   ];
   SHAPES.forEach(([shape, count]) => {
     it(`draws the «${shape}» shape (${count} block${count > 1 ? 's' : ''})`, () => {

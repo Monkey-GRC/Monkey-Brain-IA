@@ -204,7 +204,7 @@ ante el auditor.
 **Como** `admin_empresa`, **quiero** pedir un documento que el catálogo no trae y cambiar su responsable **para**
 adaptar la evidencia a mi operación.
 
-- Un requerimiento propio puede ir a una prueba documental del control (`test.not_documentary`, `test.not_in_control`) (D88).
+- Un requerimiento propio puede ir a una prueba documental del control (`test.not_manual`, `test.not_in_control`) (D88).
 - Solo se quita uno propio y sin entregas (`409 REQUIREMENT_NOT_REMOVABLE`).
 - 🟡 Crear está construido (solo API, la pantalla sube por prueba); cambiar el responsable y quitar, no.
 

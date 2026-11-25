@@ -2,7 +2,7 @@
  * Whether a form holds something the person wrote and has not sent: its current value differs from the value it started with (MD-485).
  * It is not `dirty` nor `touched`: typing and erasing back to the start is «no changes», and a field only focused is too.
  * Text is compared trimmed; `''`, `null` and `undefined` are the same «empty»; arrays keep their order; objects compare key by key.
- * A view passes the result to `guarded` of `app-form-modal` or `app-side-drawer`, which then asks before discarding it.
+ * A view passes the result to `guarded` of `app-form-modal` or `app-detail-modal`, which then asks before discarding it.
  *
  *   readonly guarded = computed(() => hasChanges(this.initial, this.values()));
  */

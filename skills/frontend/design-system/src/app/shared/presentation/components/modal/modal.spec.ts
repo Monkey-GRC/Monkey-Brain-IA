@@ -49,6 +49,7 @@ describe('Modal (la base de todos los modales)', () => {
     expect(panel.getAttribute('aria-labelledby')).toBe('t');
     expect(panel.getAttribute('aria-describedby')).toBe('d');
     expect(panel.className).toContain('max-w-sm');
+    expect(panel.dataset['size']).toBe('sm');
   });
 
   it('has the four sizes of the system, with xl for wide content such as a document preview', () => {
@@ -59,6 +60,27 @@ describe('Modal (la base de todos los modales)', () => {
       return fixture.componentInstance.sizeClass;
     });
     expect(sizes).toEqual(['max-w-sm', 'max-w-md', 'max-w-lg', 'max-w-4xl']);
+  });
+
+  it('has a short detail centred with a fixed height, and the side panel stuck to the right at full height (MD-499)', () => {
+    const fixture = TestBed.createComponent(Modal);
+    fixture.componentRef.setInput('labelledBy', 't');
+    const modal = fixture.componentInstance;
+    fixture.componentRef.setInput('size', 'detail-compact');
+    expect(modal.panelClass).toContain('max-w-2xl');
+    expect(modal.panelClass).toContain('h-[min(31rem,calc(100dvh-2rem))]');
+    expect(modal.panelClass).toContain('mk-modal-in');
+    expect(modal.backdropClass).toContain('max-md:p-0');
+    fixture.componentRef.setInput('size', 'drawer');
+    expect(modal.panelClass).toContain('mk-drawer-in');
+    expect(modal.panelClass).toContain('border-l');
+    expect(modal.panelClass).toContain('h-dvh');
+    expect(modal.panelClass).not.toContain('rounded-panel');
+    expect(modal.backdropClass).toBe('justify-end');
+    fixture.componentRef.setInput('size', 'md');
+    expect(modal.backdropClass).toBe('items-center justify-center p-4');
+    expect(modal.panelClass).toContain('max-h-[calc(100dvh-2rem)]');
+    expect(modal.panelClass).toContain('rounded-panel');
   });
 
   it('puts the keyboard focus inside when it opens', async () => {
