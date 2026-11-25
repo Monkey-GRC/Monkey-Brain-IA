@@ -48,6 +48,8 @@ cat > "$c/m/Frontend-Platform/src/app/a.html" <<'H'
 <span class="animate-spin">a</span>
 <span class="animate-spin" data-long-process>b</span>
 H
+mkdir -p "$c/m/Frontend-Platform/src/app/testing"
+echo "export const fixture = { codes: ['CC6.1', 'FIXTURE.ONLY_KEY'] };" > "$c/m/Frontend-Platform/src/app/testing/fixtures.ts"
 echo '{"OK":{"KEY":"a","ONLY_ES":"b"}}' > "$c/m/Frontend-Platform/public/i18n/es/a.json"
 echo '{"OK":{"KEY":"a"}}' > "$c/m/Frontend-Platform/public/i18n/en/a.json"
 chk() { DS_CANON="$c/canon" DS_MONKEY="$c/m" python3 -I "$here/ds.py" check --strict "$@"; }
@@ -60,6 +62,7 @@ echo "$out" | grep -Eq 'input without text colour[[:space:]]+0[[:space:]]+1' || 
 echo "$out" | grep -q 'MISSING NO.SUCH_KEY' || fail "missing i18n key not reported"
 echo "$out" | grep -q 'ONLY-ES OK.ONLY_ES' || fail "es/en pair out of step not reported"
 echo "$out" | grep -q 'MISSING OK.KEY' && fail "an existing key was reported"
+echo "$out" | grep -q 'MISSING FIXTURE.ONLY_KEY' && fail "a test fixture (testing/) was scanned for i18n keys"
 # (5) D116 allowlist: a spinner marked data-long-process is not counted; an unmarked one is
 echo "$out" | grep -Eq 'app-loading-spinner[[:space:]]+0[[:space:]]+1' || fail "unmarked app-loading-spinner not counted, or the marked one was"
 echo "$out" | grep -Eq 'animate-spin by hand[[:space:]]+0[[:space:]]+1' || fail "unmarked animate-spin not counted, or the marked one was"

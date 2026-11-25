@@ -47,7 +47,7 @@ Las de HTTP de aislamiento ya están en `develop` (PR #18 y #19). **Las de `test
 |---|--:|---|
 | [`aislamiento-tenant.md`](aislamiento-tenant.md) | 9 | [Aislamiento multi-tenant](../arquitectura/aislamiento-tenant/README.md) |
 | [`autenticacion.md`](autenticacion.md) | 11 | [Autenticación](../arquitectura/autenticacion/README.md) |
-| [`roles-permisos.md`](roles-permisos.md) | 11 | [Roles y permisos](../arquitectura/roles-permisos/README.md) |
+| [`roles-permisos.md`](roles-permisos.md) | 13 | [Roles y permisos](../arquitectura/roles-permisos/README.md) |
 | [`gestion-usuarios.md`](gestion-usuarios.md) | 7 | [Gestión de usuarios](../arquitectura/gestion-usuarios/README.md) |
 | [`empresas.md`](empresas.md) | 3 | [Empresas](../arquitectura/empresas/README.md) |
 | [`onboarding.md`](onboarding.md) | 2 | [Onboarding](../arquitectura/onboarding/README.md) |
@@ -55,6 +55,8 @@ Las de HTTP de aislamiento ya están en `develop` (PR #18 y #19). **Las de `test
 | [`trazabilidad.md`](trazabilidad.md) | 8 | [Trazabilidad](../arquitectura/trazabilidad/README.md) |
 | [`plataforma.md`](plataforma.md) | 9 | [Plataforma](../arquitectura/plataforma/README.md) |
 | [`entrega.md`](entrega.md) | 7 | **ninguno**: CI, despliegue, respaldos y red |
+| [`documentos.md`](documentos.md) | 1 | [Documentos](../arquitectura/documentos/README.md) |
+| [`notificaciones.md`](notificaciones.md) | 1 | [Notificaciones](../arquitectura/notificaciones/README.md) |
 
 ---
 
@@ -66,7 +68,7 @@ Las de HTTP de aislamiento ya están en `develop` (PR #18 y #19). **Las de `test
 |---|--:|--:|--:|--:|--:|--:|
 | [Aislamiento multi-tenant](aislamiento-tenant.md) | 6 | 1 | 1 | 1 | 0 | **9** |
 | [Autenticación](autenticacion.md) | 11 | 0 | 0 | 0 | 0 | **11** |
-| [Roles y permisos](roles-permisos.md) | 6 | 0 | 1 | 0 | 4 | **11** |
+| [Roles y permisos](roles-permisos.md) | 8 | 0 | 1 | 0 | 4 | **13** |
 | [Gestión de usuarios](gestion-usuarios.md) | 10 | 0 | 1 | 0 | 0 | **11** |
 | [Empresas](empresas.md) | 2 | 0 | 0 | 0 | 1 | **3** |
 | [Onboarding](onboarding.md) | 2 | 0 | 0 | 0 | 0 | **2** |
@@ -74,7 +76,9 @@ Las de HTTP de aislamiento ya están en `develop` (PR #18 y #19). **Las de `test
 | [Trazabilidad](trazabilidad.md) | 7 | 0 | 2 | 0 | 0 | **9** |
 | [Plataforma](plataforma.md) | 4 | 1 | 1 | 1 | 2 | **9** |
 | [Entrega](entrega.md) | 1 | 2 | 0 | 3 | 1 | **7** |
-| **Total** | **53** | **6** | **10** | **6** | **8** | **83** |
+| [Documentos](documentos.md) | 1 | 0 | 0 | 0 | 0 | **1** |
+| [Notificaciones](notificaciones.md) | 1 | 0 | 0 | 0 | 0 | **1** |
+| **Total** | **57** | **6** | **10** | **6** | **8** | **87** |
 
 ---
 

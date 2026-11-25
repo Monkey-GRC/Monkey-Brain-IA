@@ -47,7 +47,7 @@ ya había movido.
 2. **Lo semántico, sobre lo que cambió** (`git diff` de cada repo contra su rama de integración, más lo sin seguimiento):
    - Para cada archivo de código cambiado, busca en el cerebro (`grep` por ruta, feature, ruta HTTP, nombre de error o de
      tabla) los documentos que lo describen y comprueba que siguen diciendo la verdad.
-   - **Contratos ↔ código:** cada endpoint del contrato del módulo existe en el controlador (método, ruta, `@Roles`) y
+   - **Contratos ↔ código:** cada endpoint del contrato del módulo existe en el controlador (método, ruta, `@Can`) y
      viceversa; códigos de error en el catálogo; sección «Estado de implementación» al día.
    - **Enums:** `contracts/enums/<módulo>.md` coincide con lo que sirve `/catalogs/<nombre>`.
    - **Registros:** una `DT-n` cuyo «Qué lo cierra» ya está en el código → avísalo (la cierra quien la cerró, con

@@ -231,3 +231,6 @@ quedan aquí:
 | D147 | La periodicidad se cambia por control (todos sus requisitos) con justificación; los avisos previos salen como fechas en la API y los envía MD-515 *(decisión de desarrollo)* | [cumplimiento/motor](cumplimiento/motor.md) |
 | D148 | Un período auditado por fila con histórico; una tarea diaria abre el siguiente y deja los eventos de las ventanas cerradas *(decisión de desarrollo)* | [cumplimiento/motor](cumplimiento/motor.md) |
 | D149 | Los parámetros PR-01 a PR-16, D146 y Sólido en `catalog.evaluation_parameters`, todos editables por `admin_monkey`; PR-07 admite ventanas móviles *(decisión de desarrollo)* | [cumplimiento/motor](cumplimiento/motor.md) |
+| D150 | La matriz de la Tabla 2 se aplica con un guard central que niega por defecto; lo pendiente queda declarado *(decisión de desarrollo)* | [roles-permisos](roles-permisos.md) |
+| D151 | Cómo funcionan los avisos: destinatarios, agrupación, campana en vivo (SSE) y resumen diario *(decisión de desarrollo)* | [notificaciones](notificaciones.md) |
+| D152 | Corte mínimo de Documentos para el colaborador: versión importada, asignar, mis documentos y aceptar *(decisión de desarrollo)* | [documentos](documentos.md) |

@@ -184,3 +184,20 @@ estados distintos; el veredicto general completa lo que hoy es solo prueba por p
 **Fuente:** comité funcional, VF18 (`Modelo de Gestión usuarios`, Tablas 1 y 2), 2026-11-22; Héctor Ríos (Rod), 2026-11-22: «se hace como lo quiera el comité». Los puntos 4 y 5 los dejó desarrollo según DEV-16.
 
 ---
+
+---
+
+## D150 · La matriz de la Tabla 2 se aplica con un guard central que niega por defecto, con lo pendiente declarado (2026-11-24; aplica D136)
+
+**Decisión** (MD-503):
+
+1. **La matriz de §5.5 vive en un solo lugar del Backend** y un guard central la aplica: **toda ruta autenticada niega por defecto** si no declara su permiso (SEG-86). El alcance «todo / lo suyo / nada» sale de una lista explícita de roles, nunca de «todo rol que no sea `responsable` ni `delegado`».
+2. **Lo que cambia frente a lo construido:** solo `admin_empresa` crea usuarios **y grupos** (la matriz manda sobre D104: el `responsable` ya no crea su equipo); el `admin_empresa` **también delega** (asigna el ejecutor); el `responsable` edita sus controles (interpretación y dimensiones) y los riesgos vinculados a sus controles por sus causas, y restablece el segundo factor de su equipo; el `delegado` pierde solo el resumen de cumplimiento del servicio (`403`).
+3. **El `colaborador`** no tiene grupo, cuenta para el cupo (D103), su etiqueta en inglés es «Collaborator» y solo entra a su cuenta y a «Mis documentos» (SEG-85).
+4. **Pendiente, declarado en la matriz:** `admin_monkey` sobre los datos de una empresa (MD-146, DT-124) y «ejecutar pruebas» para `responsable`, `delegado` y `auditor` (DT-123).
+
+**Por qué.** El rol nuevo hacía peligroso el «permitido por defecto» de hoy: una ruta sin `@Roles` le abría el cumplimiento de toda la empresa. Lo pendiente queda negado, no abierto.
+
+**Qué cambia.** `contracts/gestion-usuarios.md`, `contracts/conventions.md`, `contracts/enums/roles-permisos.md`, `modelo/05-usuarios.md` §5.5, `seguridad/roles-permisos.md` (SEG-85, SEG-86).
+
+**Fuente:** Héctor Ríos (Rod), 2026-11-24, ronda de preguntas de MD-503/515, como decisión de desarrollo. **No es una decisión del comité.**

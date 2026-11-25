@@ -7,7 +7,7 @@ type: contract
 
 # Equipo — invitar, activar, agrupar y asignar controles
 
-> **VF18 (D128): este contrato describe la API construida con el catálogo v1.** Con la VF18 hay un sexto rol, **`colaborador`**, y **solo `admin_monkey` y `admin_empresa` crean usuarios**: el `responsable` ya no crea a sus delegados (D136). Se ajusta antes de construir RC-13 y RC-14.
+> **MD-503 (D136, D150; construido 2026-11-25): seis roles y la matriz de la Tabla 2.** Nace el **`colaborador`** (lee y acepta los documentos que le asignan: [`documentos.md`](documentos.md)). **Solo `admin_empresa` crea usuarios y grupos**: el `responsable` ya no crea delegados ni su equipo. El `admin_empresa` **también delega** (asigna el ejecutor). El `responsable` restablece el segundo factor de su equipo. Toda ruta **niega por defecto** a quien no tenga el permiso de la matriz (SEG-86). El acceso de `admin_monkey` a los datos de una empresa queda pendiente (DT-124, MD-146). Las tablas de abajo ya traen el estado nuevo.
 
 | | |
 |---|---|
@@ -15,42 +15,42 @@ type: contract
 | **App** | Monkey Platform (equipo, grupos, asignación y «Mi trabajo») y Monkey Admin (el cupo de usuarios, `contracts/empresas.md`) |
 | **Reglas del modelo** | `modelo-datos.md` §5.1, §5.2 y §5.5 · convenciones: [`conventions.md`](conventions.md) · enums: [`enums.md`](enums.md) |
 
-**Qué es.** El `admin_empresa` es el líder de compliance. Crea a todo el equipo, lo organiza en **grupos** y asigna a cada control un **dueño** (un `responsable`, o él mismo). El `responsable` lidera un equipo de `delegado` y les asigna, de sus controles, los que deben **ejecutar**. Cada persona ve solo lo suyo; el `admin_empresa` ve todo; el `auditor` ve todo en solo lectura, incluida la cadena. `admin_monkey` no crea ni desactiva cuentas de una empresa (sí las de otros `admin_monkey`: [`gestion-usuarios/administradores.md`](gestion-usuarios/administradores.md), D117).
+**Qué es.** El `admin_empresa` es el líder de compliance. Crea a todo el equipo, lo organiza en **grupos** y asigna a cada control un **dueño** (un `responsable`, o él mismo). El `responsable` lidera un equipo de `delegado` y les asigna, de sus controles, los que deben **ejecutar** (el `admin_empresa` también puede delegar, MD-503). Cada persona ve solo lo suyo; el `admin_empresa` ve todo; el `auditor` ve todo en solo lectura, incluida la cadena. `admin_monkey` no crea ni desactiva cuentas de una empresa (sí las de otros `admin_monkey`: [`gestion-usuarios/administradores.md`](gestion-usuarios/administradores.md), D117).
 
 ## Índice de endpoints
 
 | Método | Ruta | Quién | Para qué |
 |---|---|---|---|
-| `POST` | [`/v1/users`](#post-v1users--crear-una-persona-del-equipo) | `admin_empresa` · `responsable` (solo `delegado`) | Crear una persona e invitarla por correo |
+| `POST` | [`/v1/users`](#post-v1users--crear-una-persona-del-equipo) | `admin_empresa` (MD-503: el `responsable` ya no) | Crear una persona e invitarla por correo |
 | `GET` | [`/v1/users`](#get-v1users--listar-el-equipo) | `admin_empresa` · `responsable` (su equipo) | Listar el equipo |
 | `PATCH` | [`/v1/users/{id}`](#patch-v1usersid--editar-mover-desactivar-o-reactivar) | `admin_empresa` | Editar, mover, desactivar o reactivar |
 | `POST` | [`/v1/users/{id}/activation-code`](#post-v1usersidactivation-code--reenviar-la-invitación) | `admin_empresa` | Reenviar la invitación con un código nuevo |
-| `DELETE` | `/v1/users/{id}/mfa` | `admin_empresa` | Restablecer el segundo factor (D94, ver `autenticacion.md`) |
+| `DELETE` | `/v1/users/{id}/mfa` | `admin_empresa` · `responsable` (delegados de su equipo, MD-503) | Restablecer el segundo factor (D94, ver `autenticacion.md`) |
 | `GET` | [`/v1/groups`](#get-v1groups--listar-grupos) | `admin_empresa` · `responsable` (el suyo) | Listar grupos |
-| `POST` | [`/v1/groups`](#post-v1groups--crear-un-grupo) | `admin_empresa` · `responsable` (el suyo) | Crear un grupo de responsables, o el equipo de delegados de un responsable |
+| `POST` | [`/v1/groups`](#post-v1groups--crear-un-grupo) | `admin_empresa` (MD-503: el `responsable` ya no crea su equipo) | Crear un grupo de responsables, o el equipo de delegados de un responsable |
 | `PATCH` | [`/v1/groups/{id}`](#patch-v1groupsid--renombrar-un-grupo) | `admin_empresa` | Renombrar un grupo |
 | `GET` | [`/v1/assignments`](#get-v1assignments--listar-controles-con-su-asignación) | todos los roles de empresa (cada uno ve lo suyo) | Listar controles con dueño y ejecutor |
 | `PUT` | [`/v1/assignments/owner`](#put-v1assignmentsowner--asignar-el-dueño) | `admin_empresa` | Asignar o reasignar el dueño (masivo) |
-| `PUT` | [`/v1/assignments/executor`](#put-v1assignmentsexecutor--asignar-el-ejecutor) | `responsable` | Asignar o quitar el ejecutor (masivo) |
+| `PUT` | [`/v1/assignments/executor`](#put-v1assignmentsexecutor--asignar-el-ejecutor) | `admin_empresa` (MD-503) · `responsable` (sus controles) | Asignar o quitar el ejecutor (masivo) |
 | `GET` | [`/v1/team/workload`](#get-v1teamworkload--carga-de-trabajo-por-persona) | `admin_empresa` | Controles y avance de cada persona |
 | `GET` | [`/v1/me/work`](#get-v1mework--mi-trabajo) | `responsable` · `delegado` | La lista de trabajo de quien entra |
 
 ## Quién puede qué
 
-| Acción | `admin_empresa` | `responsable` | `delegado` | `auditor` | `admin_monkey` |
-|---|---|---|---|---|---|
-| Crear `responsable`, `auditor` o `admin_empresa` | ✓ | `403` | `403` | `403` | `403` |
-| Crear `delegado` | ✓ (en el equipo que elija) | ✓ solo en su equipo | `403` | `403` | `403` |
-| Editar, desactivar y reactivar a una persona; reemitir su código | ✓ | `403` | `403` | `403` | `403` |
-| Ver la lista del equipo | ✓ | ✓ solo su equipo | `403` | `403` | `403` |
-| Crear el **equipo de delegados** de un responsable | ✓ (de cualquier responsable) | ✓ solo el suyo, y uno | `403` | `403` | `403` |
-| Crear un grupo de responsables, renombrar grupos y mover un delegado | ✓ | `403` | `403` | `403` | `403` |
-| Listar grupos | ✓ todos | ✓ el suyo | `403` | `403` | `403` |
-| Asignar o reasignar el **dueño** | ✓ | `403` | `403` | `403` | `403` |
-| Asignar o quitar el **ejecutor** | `403` | ✓ solo de sus controles | `403` | `403` | `403` |
-| Ver la asignación (dueño y ejecutor) | ✓ todos | ✓ los suyos | ✓ los suyos | ✓ todos (solo lectura) | `403` |
-| Ver la carga de trabajo de cada persona | ✓ | `403` | `403` | `403` | `403` |
-| Restablecer el segundo factor de alguien de su equipo | ✓ | `403` | `403` | `403` | `403` |
+> Estado de MD-503 (D136, D150). El `colaborador` recibe `403` en todo este contrato.
+
+| Acción | `admin_empresa` | `responsable` | `delegado` | `auditor` | `colaborador` | `admin_monkey` |
+|---|---|---|---|---|---|---|
+| Crear `responsable`, `delegado`, `auditor`, `colaborador` o `admin_empresa` | ✓ | `403` | `403` | `403` | `403` | `403` (pendiente MD-146) |
+| Editar, desactivar y reactivar a una persona; reemitir su código | ✓ | `403` | `403` | `403` | `403` | `403` (pendiente MD-146) |
+| Ver la lista del equipo | ✓ | ✓ solo su equipo | `403` | `403` | `403` | `403` |
+| Crear grupos (de responsables o el equipo de un responsable), renombrarlos y mover un delegado | ✓ | `403` | `403` | `403` | `403` | `403` |
+| Listar grupos | ✓ todos | ✓ el suyo | `403` | `403` | `403` | `403` |
+| Asignar o reasignar el **dueño** | ✓ | `403` | `403` | `403` | `403` | `403` (pendiente MD-146) |
+| Asignar o quitar el **ejecutor** (delegar) | ✓ | ✓ solo de sus controles | `403` | `403` | `403` | `403` |
+| Ver la asignación (dueño y ejecutor) | ✓ todos | ✓ los suyos | ✓ los suyos | ✓ todos (solo lectura) | `403` | `403` (pendiente MD-146) |
+| Ver la carga de trabajo de cada persona | ✓ | `403` | `403` | `403` | `403` | `403` |
+| Restablecer el segundo factor | ✓ (cualquiera de la empresa) | ✓ los delegados de su equipo | `403` | `403` | `403` | por consola |
 
 ## Cómo entra alguien del equipo
 
@@ -68,7 +68,7 @@ Una cuenta `pending` que intenta iniciar sesión recibe `401 INVALID_CREDENTIALS
 
 | | |
 |---|---|
-| **Quién** | `admin_empresa` (cualquier rol) · `responsable` (solo `delegado` de su equipo) |
+| **Quién** | `admin_empresa` (cualquier rol; MD-503: el `responsable` ya no crea delegados) |
 | **Éxito** | `201` |
 | **Errores** | `403 FORBIDDEN` · `409 EMAIL_TAKEN` · `409 USER_LIMIT_REACHED` · `422 VALIDATION_FAILED` |
 
@@ -78,8 +78,8 @@ Una cuenta `pending` que intenta iniciar sesión recibe `401 INVALID_CREDENTIALS
 | `email` | string | sí | Único en toda la plataforma; se guarda en minúsculas |
 | `name` | string | sí | Máx. 100 (D98) |
 | `last_name` | string | sí | Máx. 100 (D98) |
-| `role` | enum `user_role` | sí | `admin_empresa`, `responsable`, `delegado` o `auditor`; nunca `admin_monkey` |
-| `group_id` | uuid | solo `delegado` (y opcional en `responsable`) | `delegado`: el equipo de un responsable, que **ya debe existir** (si lo crea un responsable, es el suyo y se omite; si no lo tiene, `409 RESPONSIBLE_HAS_NO_TEAM`). `responsable`: un grupo de responsables del administrador; por omisión, el grupo «Responsables», que se crea al hacer falta. `422 group_id.not_allowed` para `admin_empresa` y `auditor` |
+| `role` | enum `user_role` | sí | `admin_empresa`, `responsable`, `delegado`, `auditor` o `colaborador` (MD-503); nunca `admin_monkey`. El `colaborador` no lleva grupo ni `is_internal`, cuenta para el cupo (D103) y su entrada es «Mis documentos» |
+| `group_id` | uuid | solo `delegado` (y opcional en `responsable`) | `delegado`: **obligatorio**, el equipo de un responsable, que **ya debe existir** (`422 group_id:required` si falta; el `responsable` ya no crea delegados, MD-503). `responsable`: un grupo de responsables del administrador; por omisión, el grupo «Responsables», que se crea al hacer falta. `422 group_id.not_allowed` para `admin_empresa`, `auditor` y `colaborador` (D150) |
 | `is_internal` | boolean | solo `delegado` | Si es de la compañía o externo. `422 is_internal.not_allowed` para los demás roles |
 
 ```json
@@ -127,13 +127,12 @@ Una cuenta `pending` que intenta iniciar sesión recibe `401 INVALID_CREDENTIALS
 |---|---|---|
 | 409 | `EMAIL_TAKEN` | Ese correo ya tiene cuenta (en cualquier empresa; no se revela de quién) |
 | 409 | `USER_LIMIT_REACHED` | La empresa llegó a `max_users`. Trae `error.max_users` y `error.users_count` |
-| 409 | `RESPONSIBLE_HAS_NO_TEAM` | Se crea un `delegado` en el equipo de un responsable que aún no lo ha creado (D104) |
 | 409 | `RESPONSIBLES_GROUP_INVALID` | El grupo «Responsables» de la empresa no lo lidera un `admin_empresa` (D104): el alta no lo reutiliza; se elige otro `group_id` de responsables |
 | 409 | `TEAM_ALREADY_EXISTS` | Ese `responsable` ya lidera un equipo de delegados (D104) |
 | 409 | `GROUP_NAME_TAKEN` | Ya hay un grupo con ese nombre en la empresa, o se pide el nombre reservado «Responsables» |
 | 409 | `GROUP_RESERVED` | Se intenta renombrar el grupo por omisión «Responsables» |
 
-> **Crear un `responsable` solo lo deja en el grupo «Responsables»** (D104). Su equipo de delegados **no nace con él**: lo crea él mismo, o el administrador por él, con `POST /v1/groups`. Un `responsable` que crea un `delegado` lo pone en su equipo; si aún no tiene, `409 RESPONSIBLE_HAS_NO_TEAM`.
+> **Crear un `responsable` solo lo deja en el grupo «Responsables»** (D104). Su equipo de delegados **no nace con él**: lo crea el administrador por él, con `POST /v1/groups` y su `leader_id` (MD-503: el `responsable` ya no lo crea). Un `delegado` lo crea siempre el administrador, con el `group_id` del equipo de un responsable que ya exista (D150, MD-503).
 
 ---
 
@@ -229,7 +228,7 @@ Sin cuerpo.
 
 ## Grupos
 
-Un grupo tiene un nombre y un líder; cada persona (salvo `admin_empresa` y `auditor`) pertenece a **uno** (D102). Hay dos clases: el **grupo de responsables** (lo lidera el `admin_empresa`; ahí queda todo `responsable`) y el **equipo de delegados** (lo lidera un `responsable`, que **lo crea cuando quiere**; D104).
+Un grupo tiene un nombre y un líder; cada persona (salvo `admin_empresa` y `auditor`) pertenece a **uno** (D102). Hay dos clases: el **grupo de responsables** (lo lidera el `admin_empresa`; ahí queda todo `responsable`) y el **equipo de delegados** (lo lidera un `responsable`; lo crea el `admin_empresa` cuando hace falta, D104 y MD-503).
 
 ### GET /v1/groups — Listar grupos
 
@@ -262,7 +261,7 @@ Un grupo tiene un nombre y un líder; cada persona (salvo `admin_empresa` y `aud
 
 | | |
 |---|---|
-| **Quién** | `admin_empresa` (un grupo de responsables, o el equipo de un responsable) · `responsable` (solo el suyo) |
+| **Quién** | `admin_empresa` (un grupo de responsables, o el equipo de un responsable). El `responsable` recibe `403` (MD-503) |
 | **Éxito** | `201` con el grupo (misma forma que un ítem de `GET /v1/groups`) |
 | **Errores** | `403` · `404` · `409 TEAM_ALREADY_EXISTS` · `409 GROUP_NAME_TAKEN` · `422 VALIDATION_FAILED` |
 
@@ -270,7 +269,7 @@ Un grupo tiene un nombre y un líder; cada persona (salvo `admin_empresa` y `aud
 | Campo | Tipo | Obligatorio | Regla |
 |---|---|---|---|
 | `name` | string | sí | Máx. 100; único en la empresa (`409 GROUP_NAME_TAKEN`) |
-| `leader_id` | uuid | no | Solo `admin_empresa`: el `responsable` (activo o pendiente) cuyo **equipo de delegados** se crea. Sin él, crea un **grupo de responsables** que lidera el propio administrador. El `responsable` que lo manda con otro id recibe `403`; con el suyo, vale |
+| `leader_id` | uuid | no | Solo `admin_empresa`: el `responsable` (activo o pendiente) cuyo **equipo de delegados** se crea. Sin él, crea un **grupo de responsables** que lidera el propio administrador. El `responsable` recibe `403` (MD-503) |
 
 ```json
 { "name": "Equipo de María", "leader_id": "7d2e…" }
@@ -280,11 +279,11 @@ Un grupo tiene un nombre y un líder; cada persona (salvo `admin_empresa` y `aud
 |---|---|
 | `admin_empresa` sin `leader_id` | Un grupo de **responsables** que lidera él (p. ej. «Responsables - Servicio IA») |
 | `admin_empresa` con `leader_id` | El **equipo de delegados** de ese responsable. `404` si no es un responsable de la empresa |
-| `responsable` | **Su** equipo de delegados, con él de líder |
+| `responsable` | `403` (MD-503: solo `admin_empresa` crea grupos) |
 
-> El grupo queda con `kind = responsables` (sin `leader_id`) o `kind = team` (con `leader_id`, o creado por un responsable). El nombre «Responsables» no se puede usar (`409 GROUP_NAME_TAKEN`).
+> El grupo queda con `kind = responsables` (sin `leader_id`) o `kind = team` (con `leader_id`). El nombre «Responsables» no se puede usar (`409 GROUP_NAME_TAKEN`).
 
-> **Un responsable lidera un solo equipo (D102, D104):** pedir otro es `409 TEAM_ALREADY_EXISTS`. Mientras no lo cree, trabaja solo. No hay creación automática: el equipo no nace con el responsable.
+> **Un responsable lidera un solo equipo (D102, D104):** pedir otro es `409 TEAM_ALREADY_EXISTS`. Mientras el administrador no lo cree, trabaja solo. No hay creación automática: el equipo no nace con el responsable.
 
 ### PATCH /v1/groups/{id} — Renombrar un grupo
 
@@ -409,7 +408,7 @@ Un grupo tiene un nombre y un líder; cada persona (salvo `admin_empresa` y `aud
 { "updated": 1 }
 ```
 
-> Un `responsable` no asigna a otro `responsable`, y el `admin_empresa` no asigna directo a un `delegado`. Un `responsable` sin equipo (D104) solo puede enviar `executor_id: null`.
+> Un `responsable` no asigna a otro `responsable`. **El `admin_empresa` también delega (D150, MD-503):** el ejecutor debe ser un `delegado` del equipo del dueño de cada control; un control sin dueño solo admite `executor_id: null`. Un `responsable` sin equipo solo puede enviar `executor_id: null`.
 >
 > `updated` y la auditoría, como en el dueño. Concurrencia: se bloquea la fila del delegado y se **relee** su estado y su `group_id` (que siga en el equipo del actor), para no colarse con un movimiento (MD-189) o una baja (MD-191).
 
@@ -500,7 +499,8 @@ Precisiones de la construcción (MD-195):
 |---|---|
 | `admin_empresa` | Todo; los controles sin dueño se señalan **«Sin asignar»** |
 | `responsable` | Solo los controles de los que es dueño (incluidos los que ejecutan sus delegados), con **el avance de lo suyo**, nunca el de la empresa. Sin vista técnica (`403`) |
-| `delegado` | Solo los controles que ejecuta, con el avance de lo suyo. Sin vista técnica (`403`) |
+| `delegado` | Solo los controles que ejecuta, con el avance de lo suyo. Sin vista técnica (`403`) ni el resumen de cumplimiento del servicio (`403`, D136) |
+| `colaborador` | Solo los documentos que le asignan (los lee y los acepta, [`documentos.md`](documentos.md)) y su cuenta. Nada de Cumplimiento, Servicios, Equipo, Asignación, Integraciones ni Control técnico (`403`, SEG-85) |
 | `auditor` | Todo, en solo lectura, con la vista técnica y la cadena de asignación. Sus observaciones llegan al dueño y al ejecutor del control (en «Mi trabajo»; las notificaciones, D143) |
 
 En las listas de Cumplimiento (`controls`, `evidence`, pruebas de un control, riesgos, observaciones) un `responsable` o `delegado` recibe **solo** lo de sus controles; sin ninguno, la lista llega vacía, no falla. Un recurso que existe pero no es suyo responde `403`; de otra empresa, `404` (`conventions.md`).
@@ -509,7 +509,7 @@ En las listas de Cumplimiento (`controls`, `evidence`, pruebas de un control, ri
 
 | `action` | Cuándo | Quién | `tenant_id` |
 |---|---|---|---|
-| `user.create` | Se crea a una persona | `admin_empresa` o `responsable` | La empresa |
+| `user.create` | Se crea a una persona | `admin_empresa` | La empresa |
 | `user.update` | Se edita, mueve, desactiva o reactiva (`before_state`/`after_state`; `sessions_closed` al desactivar y `controls_unassigned` al desactivar o mover) | `admin_empresa` | La empresa |
 | `user.activation_code_regenerate` | Se emite un código nuevo | Quien lo pide | La empresa |
 | `user.activate` | La persona activa su cuenta (también si falla: `result = error`) | La persona, o `attempted_email` | La empresa |
@@ -560,10 +560,11 @@ Cada `control_assignment.set` lleva `resource = 'control_assignment'` y, dentro 
 | Visibilidad por dueño y ejecutor (MD-193, 2026-11-17) | El `responsable` y el `delegado` ven y tocan solo sus controles (dueño o ejecutor activo) en controles, pruebas, evidencia, riesgos y causas, observaciones, hallazgos y servicios, y reciben el resumen de lo suyo (D118). Sin controles, listas vacías; lo ajeno de la empresa es `403`, lo de otra empresa `404`; `view=technical` es `403`. El `delegado` entra en lectura al resumen, los riesgos, los servicios y los hallazgos. La regla vive en `compliance/domain/controls/control-access.ts` (`services` y `technical-control` la repiten en su repositorio). la deuda del acotamiento provisional quedó cerrada; SEG-22, SEG-66, SEG-70 y SEG-76 cumplidos. Pruebas: la matriz rol × recurso de `test/equipo/equipo.e2e-spec.ts` y los e2e de cada recurso |
 | Revisión en dos niveles (MD-194, 2026-11-17) | Evidencia: la revisan el `responsable` dueño (lo que no subió él) y el `admin_empresa`, una revisión por rol, y el estado combina las dos (un rechazo gana). Veredicto manual no documental (D121): se registra (ejecutor, dueño o admin; el del admin nace aprobado) y se revisa igual (`PUT /v1/verdicts/{id}/review`), en `test_verdicts` y `test_verdict_reviews`, inmutables (SEG-83). SEG-67 cumplido. Pruebas: `test/cumplimiento/revision-evidencia.e2e-spec.ts` y `veredictos.e2e-spec.ts` |
 | «Mi trabajo» y carga de trabajo (MD-195, 2026-11-17) | `GET /v1/me/work` (responsable y delegado) y `GET /v1/team/workload` (admin_empresa), en `compliance/*/work/`; reutilizan el estado por servicio de `GET /v1/assignments`, el módulo de alcance y el avance del resumen (D122, `summarizeControls`). Pruebas: `test/equipo/trabajo.e2e-spec.ts` |
-| Grupos (MD-189) | `GET`/`POST`/`PATCH /v1/groups`: el responsable crea su equipo y el administrador el de un responsable o un grupo de responsables; `user_groups.kind` (`group_kind`) con un índice único parcial por líder (un equipo por responsable); «Responsables» reservado (`GROUP_RESERVED`, `GROUP_NAME_TAKEN`); mover un delegado con `PATCH /v1/users/{id}` (`group_id`, `confirm_unassign`, `USER_HAS_ASSIGNMENTS`) |
+| Grupos (MD-189) | `GET`/`POST`/`PATCH /v1/groups`: el administrador crea el equipo de un responsable o un grupo de responsables (desde MD-503, el responsable ya no crea su equipo); `user_groups.kind` (`group_kind`) con un índice único parcial por líder (un equipo por responsable); «Responsables» reservado (`GROUP_RESERVED`, `GROUP_NAME_TAKEN`); mover un delegado con `PATCH /v1/users/{id}` (`group_id`, `confirm_unassign`, `USER_HAS_ASSIGNMENTS`) |
 | Invitación por correo (MD-190) | El alta y el reenvío envían el código por correo (después del commit); ninguna respuesta lo trae; el reenvío responde `200` con `invitation`; el correo no nombra al proveedor de la sonda ni de la nube. SEG-75 cumplido; ver `DT-90` |
-| Alta y lista del equipo (MD-188) | `POST`/`GET /v1/users` con `group_id`, `is_internal`, `group` y `responsible`; el responsable queda en «Responsables» y crea delegados de su equipo (`RESPONSIBLE_HAS_NO_TEAM` si no lo tiene); el alta no devuelve el código (`invitation`); migración que mete a los responsables existentes en «Responsables»; `group` y `responsible` en `/auth/me` |
+| Alta y lista del equipo (MD-188) | `POST`/`GET /v1/users` con `group_id`, `is_internal`, `group` y `responsible`; el responsable queda en «Responsables» (el alta de delegados pasó al administrador en MD-503: sin `RESPONSIBLE_HAS_NO_TEAM`); el alta no devuelve el código (`invitation`); migración que mete a los responsables existentes en «Responsables»; `group` y `responsible` en `/auth/me` |
 | Cupo de usuarios (MD-187) | `USER_LIMIT_REACHED` (`409`, con `error.max_users` y `error.users_count`) en el alta, en la reactivación `inactive`→`active` y en el canje de la clave; desactivar libera el cupo. Ver `empresas.md` y SEG-72 |
+| Seis roles y matriz (MD-503) | **Construido (2026-11-25).** `colaborador`; solo `admin_empresa` crea usuarios y grupos (`users.manage`, `groups.manage`); el `admin_empresa` también delega (`controls.delegate`); el `responsable` restablece el segundo factor de su equipo (`users.reset_mfa` con alcance); `PermissionsGuard` niega por defecto con la matriz de `src/common/authorization/permission-matrix.ts` (D150, SEG-85, SEG-86). Pruebas: `test/aislamiento/`, `test/equipo/` |
 
 **La API del sprint 3 está completa** (MD-186 a MD-195). Lo que sigue son las pantallas (MD-197 y MD-199 a MD-204, ver `context/frontend.md`).
 

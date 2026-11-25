@@ -38,7 +38,7 @@ una persona; «Equipo de Monkey» desarrolla y opera; «Planificador» es el cro
 
 **Flujo principal**
 1. El cliente envía la petición con `Accept-Language`.
-2. El sistema valida la sesión (`SessionAuthGuard`) y el rol (`RolesGuard`).
+2. El sistema valida la sesión (`SessionAuthGuard`) y el permiso del rol (`PermissionsGuard`).
 3. Aplica el límite de peticiones (**CU-PLT-02**).
 4. El caso de uso pide una conexión con `withScope` y ejecuta dentro del aislamiento de la empresa.
 5. El sistema responde `{ statusCode, message, data }`; una colección trae `items`, `page`, `page_size`, `total` y

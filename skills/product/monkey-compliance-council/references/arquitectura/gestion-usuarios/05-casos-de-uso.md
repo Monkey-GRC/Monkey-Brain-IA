@@ -27,7 +27,7 @@ La activación de la cuenta invitada es de [Autenticación](../autenticacion/05-
 | CU-USR-04 | Editar a una persona | `admin_empresa` | HU-USR-05, HU-USR-06 |
 | CU-USR-05 | Dar de baja a una persona | `admin_empresa` | HU-USR-07 |
 | CU-USR-06 | Reactivar a una persona | `admin_empresa` | HU-USR-08, HU-USR-09 |
-| CU-USR-07 | Gestionar grupos | `admin_empresa` · `responsable` | HU-USR-11, HU-USR-12 |
+| CU-USR-07 | Gestionar grupos | `admin_empresa` (el `responsable` solo los ve, MD-503) | HU-USR-11, HU-USR-12 |
 | CU-USR-08 | Mover a un delegado de equipo | `admin_empresa` | HU-USR-13 |
 | CU-USR-09 | Asignar el dueño de controles | `admin_empresa` | HU-USR-15 |
 | CU-USR-10 | Asignar el ejecutor de controles | `responsable` | HU-USR-16 |
@@ -58,11 +58,11 @@ HU-USR-26 y HU-USR-27 (⚪, `P47` y `P41`) no tienen caso hasta que el comité r
 5. La persona activa su cuenta en **CU-AUTH-01**.
 
 **Flujos alternos**
-- 1a. Un `responsable` intenta crear otro rol → `403 FORBIDDEN`.
+- 1a. Un `responsable` (o cualquier rol que no sea `admin_empresa`) intenta crear → `403 FORBIDDEN` (D150, MD-503).
 - 1b. Grupo o marca de interno en un rol que no la lleva → `VALIDATION_FAILED` (`group_id.not_allowed`, `is_internal.not_allowed`).
 - 2a. El correo ya tiene cuenta → `EMAIL_TAKEN`, sin decir de quién.
 - 2b. La empresa llegó al cupo → `USER_LIMIT_REACHED` con `max_users` y `users_count`; no queda cuenta ni rastro.
-- 2c. El responsable aún no tiene equipo → `RESPONSIBLE_HAS_NO_TEAM`; se crea primero (**CU-USR-07**).
+- 2c. El delegado no trae `group_id` → `VALIDATION_FAILED` (`group_id:required`); el equipo del responsable se crea primero (**CU-USR-07**). `RESPONSIBLE_HAS_NO_TEAM` se eliminó en MD-503.
 - 2d. El grupo «Responsables» no lo lidera un `admin_empresa` → `RESPONSIBLES_GROUP_INVALID`; se elige otro grupo.
 - 4a. El correo no sale → `delivery_status: failed`; la cuenta existe y se reenvía (**CU-USR-02**).
 
@@ -165,7 +165,7 @@ HU-USR-26 y HU-USR-27 (⚪, `P47` y `P41`) no tienen caso hasta que el comité r
 
 | | |
 |---|---|
-| **Actor** | `admin_empresa` · `responsable` (solo su equipo) |
+| **Actor** | `admin_empresa` (MD-503: el `responsable` solo lista el suyo, no crea) |
 | **Precondición** | Sesión abierta |
 | **Postcondición** | Grupo creado o renombrado; rastro `group.create` o `group.update` |
 

@@ -39,7 +39,7 @@ reales): no repites lo que ellos cubren; miras el código con el criterio de un 
 
 1. **Fronteras y DDD:** imports a `features/<otra>/(infrastructure|application|domain)`; `@nestjs` o `@prisma` en `domain/`;
    reglas de negocio en controladores o decididas solo en repositorios; `forwardRef`; reglas repetidas entre capas.
-2. **Seguridad:** rutas nuevas sin `@Roles` ni sesión (o `@Public()` sin otra protección); DTOs sin class-validator;
+2. **Seguridad:** rutas nuevas sin `@Can`/`@AnyAuthenticated` ni sesión (el `PermissionsGuard` las niega por defecto) (o `@Public()` sin otra protección); DTOs sin class-validator;
    `$queryRawUnsafe`/`$executeRawUnsafe` o `Prisma.raw` con datos de entrada; modelos de Prisma devueltos sin mapear;
    secretos en respuestas, logs o auditoría; rutas públicas sin tope de intentos.
 3. **Integridad con Prisma:** varias escrituras fuera de una transacción; transacciones interactivas con bucles de escritura o

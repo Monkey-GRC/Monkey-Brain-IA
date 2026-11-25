@@ -419,6 +419,14 @@
         "description": "Cumplimiento, riesgos y causas: gestion, vinculos, evaluacion 5x5 y tratamiento con responsable."
       },
       {
+        "path": "contracts/documentos.md",
+        "description": "Documentos, corte minimo (MD-503): version importada, asignar, mis documentos y aceptar."
+      },
+      {
+        "path": "contracts/notificaciones.md",
+        "description": "Notificaciones (MD-515): campana en vivo por SSE, historial de 90 dias, preferencia de correo y resumen diario."
+      },
+      {
         "path": "contracts/cumplimiento/evidencia.md",
         "description": "Cumplimiento, evidencias: subida con huella SHA-256 y version, descarga con enlace firmado, aprobacion solo del administrador de la empresa."
       },

@@ -42,6 +42,6 @@ Parches que dejó el rediseño visual y las capas de `Frontend` y `Frontend-Plat
 
 🟡 Mejora
 
-- **Qué está parchado:** unos 15 specs comprueban clases CSS en vez de comportamiento o `data-*`: `modal`, `data-table`, `donut`, `confirm-dialog`, `expandable-text`, `table-toolbar`, `option-chips` (compartidos) y `discovered-assets`, `control-evidence`, `control-tests`, `detail-card`, `overview`, `company-dashboard`, `integrations-list`, `home` (Platform)
+- **Qué está parchado:** unos 15 specs comprueban clases CSS en vez de comportamiento o `data-*`: `modal`, `data-table`, `donut`, `confirm-dialog`, `expandable-text`, `table-toolbar`, `option-chips` (compartidos) y `discovered-assets`, `control-evidence`, `control-tests`, `overview`, `company-dashboard`, `integrations-list`, `home` (Platform)
 - **Por qué:** MD-499 corrigió los que tocó con más carga; el resto se dejó para no abrir otra vuelta de revisión antes de la demo
 - **Qué lo cierra:** MD-526 (calidad de pruebas): asertar `data-*`, roles o `data-state`; la clase solo vale cuando es el comportamiento (`line-clamp-2`)

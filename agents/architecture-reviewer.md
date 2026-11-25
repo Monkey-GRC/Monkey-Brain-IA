@@ -37,7 +37,7 @@ architecture-guardian» que antes hacía el `tech-lead`.
 - Ninguna feature importa el interior de otra (los imports son relativos: busca `from '(../)+<feature>/(application|domain|infrastructure|presentation)/`).
 - Toda consulta a una tabla con RLS va dentro de `withScope`; ninguna conexión como superusuario.
 - Todo método de repositorio que cambia datos recibe un `AuditIntent` y escribe la auditoría **en la misma transacción**.
-- Todo endpoint exige sesión por defecto; `@Public()` y `@Roles(...)` son la excepción declarada.
+- Todo endpoint exige sesión por defecto; toda ruta declara `@Can(permiso)` (matriz en `src/common/authorization/permission-matrix.ts`), `@AnyAuthenticated()` o `@Public()`; el `PermissionsGuard` niega el resto.
 - El endpoint coincide con su contrato (ruta, campos, errores, enums).
 
 **Frontend**

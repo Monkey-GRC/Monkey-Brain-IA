@@ -8,11 +8,11 @@ Responde: **¿cómo llega una restricción de rol hasta lo que el usuario ve?**
 sequenceDiagram
     autonumber
     participant FE as Frontend
-    participant G as RolesGuard
+    participant G as PermissionsGuard
     participant UC as Caso de uso de compliance
     participant DB as PostgreSQL
     FE->>G: GET controles de un servicio
-    G->>G: ¿el rol está en @Roles? (capa 1)
+    G->>G: ¿la matriz da el permiso de la ruta a este rol? (capa 1, niega por defecto)
     G->>UC: Principal
     UC->>DB: carga el servicio dentro de la empresa (RLS, capa 2)
     UC->>UC: si es responsable o delegado, deja solo sus controles (capa 3, D102)

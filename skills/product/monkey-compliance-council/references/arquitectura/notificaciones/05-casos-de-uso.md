@@ -1,8 +1,8 @@
 # Notificaciones · casos de uso
 
 Responde: **¿qué pasos siguen el sistema y cada actor para que un aviso llegue, qué puede salir distinto y en qué estado
-queda todo al terminar?** Cada caso realiza una o varias [historias](04-historias.md). Este módulo no tiene contrato propio:
-los cuerpos y errores están en los contratos de quien envía
+queda todo al terminar?** Cada caso realiza una o varias [historias](04-historias.md). La campana y el resumen tienen su contrato
+([`notificaciones`](../../../../../../contracts/notificaciones.md)); los de los correos están en los contratos de quien envía
 ([`empresas`](../../../../../../contracts/empresas.md), [`gestion-usuarios`](../../../../../../contracts/gestion-usuarios.md),
 [`administradores`](../../../../../../contracts/gestion-usuarios/administradores.md),
 [`autenticacion`](../../../../../../contracts/autenticacion.md)).
@@ -13,7 +13,7 @@ los cuerpos y errores están en los contratos de quien envía
 
 Fuente del diagrama: [`05-casos-de-uso.puml`](05-casos-de-uso.puml) (PlantUML; se regenera con
 `skills/process/monkey-docs/scripts/render-uml.sh`). Los casos CU-NOT-01 a CU-NOT-03 incluyen **CU-NOT-04**, el envío
-común por el puerto `Mailer`. CU-NOT-05 a CU-NOT-07 están **por construir**: los dos primeros ya están decididos (D138, D143) y se construyen en MD-515.
+común por el puerto `Mailer`. CU-NOT-05 y CU-NOT-06 están **construidos** (MD-515, 2026-11-25); CU-NOT-07 sigue **por construir** (DT-83).
 
 ## Resumen
 
@@ -23,8 +23,8 @@ común por el puerto `Mailer`. CU-NOT-05 a CU-NOT-07 están **por construir**: l
 | CU-NOT-02 | Invitar a una persona por correo | `admin_empresa` · `responsable` · `admin_monkey` | HU-NOT-02, HU-NOT-03 |
 | CU-NOT-03 | Avisar por correo un evento de la contraseña | Persona | HU-NOT-04, HU-NOT-05 |
 | CU-NOT-04 | Componer y entregar un correo | Sistema (incluido) | HU-NOT-06 |
-| CU-NOT-05 | Avisar a la cadena de un control ⚪ | Sistema | HU-NOT-07 a HU-NOT-11 |
-| CU-NOT-06 | Consultar mis avisos y preferencias ⚪ | Persona de Platform | HU-NOT-12, HU-NOT-13 |
+| CU-NOT-05 | Avisar a la cadena de un control | Sistema | HU-NOT-07 a HU-NOT-11 |
+| CU-NOT-06 | Consultar mis avisos y preferencias | Persona de Platform | HU-NOT-12, HU-NOT-13 |
 | CU-NOT-07 | Avisar del borrado próximo de una empresa ⚪ | Sistema | HU-NOT-14 |
 
 ---
@@ -109,23 +109,25 @@ común por el puerto `Mailer`. CU-NOT-05 a CU-NOT-07 están **por construir**: l
 - 4b. Mensaje confidencial (código o clave) en el modo de log → se registra sin el cuerpo (SEG-75).
 - *Arranque.* En producción, sin servicio real o con el modo de log → el servidor no arranca (D99 punto 5, SEG-71).
 
-### CU-NOT-05 · Avisar a la cadena de un control ⚪
+### CU-NOT-05 · Avisar a la cadena de un control
 
 | | |
 |---|---|
 | **Actor** | Sistema; reciben `admin_empresa`, `responsable`, `delegado` según D138 |
-| **Precondición** | Un evento de cumplimiento registrado en `compliance_events` |
-| **Postcondición** | El aviso queda en la campana de cada destinatario y entra en su resumen diario por correo (D143) |
+| **Precondición** | Un hecho que avisa: asignación o reasignación, evidencia revisada, o la pasada diaria de las ventanas (por vencer, vencida) |
+| **Postcondición** | El aviso queda en la campana de cada destinatario, en la misma transacción del hecho, y entra en su resumen diario por correo (D143, D151) |
 
 **Flujo principal**
-1. Ocurre un evento: asignación o reasignación, evidencia revisada, control que pasa a «no cumple», fallo de la evaluación
-   automática, observación del auditor o los eventos de D138 (ventana por vencer o vencida, check Directo en falla, control por aprobar, aprobado o devuelto, avisos de Documentos).
-2. El sistema resuelve el dueño y el ejecutor del control (D102).
-3. El sistema genera el aviso con la plantilla de 7 campos de `producto/philosophy.md`, sin nombrar proveedores (SEG-39).
+1. Ocurre un hecho que avisa: asignación o reasignación, evidencia validada o rechazada, o ventana por vencer o vencida (pasada diaria). Siguen reservados el control que pasa a «no cumple», el fallo de la evaluación automática, la observación del auditor y los de Documentos y gestión del control (D138).
+2. El sistema resuelve el dueño y el ejecutor del control (D102) y la regla de destinatarios (`notification_audience`); quien causa el hecho no se avisa a sí mismo.
+3. El sistema guarda un aviso por persona con el tipo y los datos; el texto, con la plantilla de 7 campos de `producto/philosophy.md` y sin nombrar proveedores (SEG-39), se arma al leer en el idioma de la persona.
+4. Tras confirmar la transacción, el aviso llega en vivo a la campana de quien la tenga abierta y entra en el resumen diario por correo, salvo que la persona lo haya apagado (D143).
 
-4. El aviso se guarda en la tabla de notificaciones (campana, al instante) y entra en el resumen diario por correo, salvo que la persona haya apagado el correo (D143). El resumen necesita un planificador que hoy no existe.
+**Flujos alternos**
+- 2a. Un control «Sin asignar»: los administradores reciben **un** aviso por servicio, tipo y día (`target.kind = service`), no uno por control.
+- 3a. El aviso ya existe (`dedupe_key`) → no se duplica (repetir la pasada o tener dos réplicas es inocuo).
 
-### CU-NOT-06 · Consultar mis avisos y preferencias ⚪
+### CU-NOT-06 · Consultar mis avisos y preferencias
 
 | | |
 |---|---|
@@ -133,9 +135,13 @@ común por el puerto `Mailer`. CU-NOT-05 a CU-NOT-07 están **por construir**: l
 | **Precondición** | Sesión abierta |
 | **Postcondición** | La persona ve sus avisos y su preferencia de correo queda guardada |
 
-1. La persona abre la campana: ve sus avisos de los últimos 90 días, con leído y no leído (D143).
-2. Marca avisos como leídos.
-3. En sus preferencias, apaga o enciende el resumen diario por correo; los avisos de la app no se apagan (D143).
+1. La persona abre la campana: ve sus avisos de los últimos 90 días, con leído y no leído, y el contador al día por el canal en vivo (D143).
+2. Marca avisos como leídos, uno o todos.
+3. En sus preferencias (`/ajustes/notificaciones`), apaga o enciende el resumen diario por correo; los avisos de la app no se apagan (D143).
+
+**Flujos alternos**
+- 1a. Se cae el canal en vivo → la campana consulta el contador cada 60 s y se reconecta sola.
+- 1b. Pide el aviso de otra persona → `404`.
 
 ### CU-NOT-07 · Avisar del borrado próximo de una empresa ⚪
 

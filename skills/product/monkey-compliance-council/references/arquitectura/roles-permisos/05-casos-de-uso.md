@@ -43,7 +43,7 @@ persona de Platform puede pedir la vista técnica (CU-ROL-03), pero solo la obti
 **Flujo principal**
 1. La persona pide una ruta.
 2. El sistema valida la sesión y lee de la base el usuario, su estado y su rol (HU-ROL-03).
-3. El sistema comprueba que el rol esté entre los que declara la ruta (`@Roles`, capa 1, SEG-20).
+3. El sistema comprueba que la matriz dé al rol el permiso que declara la ruta (`@Can`, capa 1, SEG-20, SEG-86; sin permiso declarado, `403`).
 4. El sistema fija la empresa, el usuario y el rol en la transacción (`withScope`) y la base devuelve solo lo de esa
    empresa (RLS, capa 2).
 5. Si el rol es `responsable` o `delegado`, sigue con **CU-ROL-02**; si no, se ejecuta la acción.

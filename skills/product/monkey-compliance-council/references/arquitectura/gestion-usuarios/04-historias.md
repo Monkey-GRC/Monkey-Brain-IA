@@ -27,7 +27,7 @@ MD-195) y de lo que falta de las pantallas (MD-199 a MD-204).
 | HU-USR-09 | No pasar del cupo de usuarios de mi empresa | `admin_empresa` · `responsable` | ✅ | D103, SEG-72 |
 | HU-USR-10 | Fijar el cupo de usuarios de una empresa | `admin_monkey` | ✅ | D103, SEG-72, SEG-77 |
 | HU-USR-11 | Organizar a los responsables en grupos | `admin_empresa` | ✅ | D102, D104 |
-| HU-USR-12 | Crear el equipo de delegados de un responsable | `responsable` · `admin_empresa` | ✅ | D102, D104 |
+| HU-USR-12 | Crear el equipo de delegados de un responsable | `admin_empresa` (MD-503) | ✅ | D102, D104 |
 | HU-USR-13 | Mover a un delegado a otro equipo | `admin_empresa` | ✅ | D102, SEG-73 |
 | HU-USR-14 | Saber a qué responsable pertenezco | `delegado` | ✅ | D104 |
 | HU-USR-15 | Asignar el dueño de cada control | `admin_empresa` | 🟡 | D102, SEG-73 |
@@ -57,7 +57,7 @@ esquema completo (responsables, delegados, auditores y otros administradores).
 - Un `responsable` queda en el grupo «Responsables» (se crea si falta) o en el grupo de responsables que elija; su equipo
   de delegados **no** nace con él (D104). Si «Responsables» no lo lidera un `admin_empresa`, el alta no lo reutiliza
   (`RESPONSIBLES_GROUP_INVALID`).
-- Un `delegado` va al equipo de un responsable que ya debe existir (`RESPONSIBLE_HAS_NO_TEAM`) y se marca si es interno o
+- Un `delegado` va al equipo de un responsable que ya debe existir (`group_id` obligatorio) y se marca si es interno o
   externo; `admin_empresa` y `auditor` no llevan grupo ni esa marca (`VALIDATION_FAILED`: `group_id.not_allowed`,
   `is_internal.not_allowed`; D102 puntos 3 y 11).
 - La cuenta nace `pending` y el código de activación llega **solo por correo**: ni la respuesta, ni los logs, ni la
@@ -69,8 +69,7 @@ esquema completo (responsables, delegados, auditores y otros administradores).
 
 **Como** responsable, **quiero** invitar a los delegados de mi equipo **para** repartirles la ejecución de mis controles.
 
-- Solo puedo crear `delegado`; cualquier otro rol es `403` (D102 punto 2).
-- El delegado entra en **mi** equipo, sin elegir grupo; si aún no lo he creado, `RESPONSIBLE_HAS_NO_TEAM` (D104 punto 3).
+- **Reemplazada por D136 y D150 (MD-503):** el `responsable` ya no crea delegados; los crea el `admin_empresa` (HU-USR-01) en el equipo que elija. `POST /v1/users` responde `403` al `responsable`.
 - Marco si es interno o externo; es solo una etiqueta, no cambia permisos (D102 punto 11).
 - El código llega por correo como en HU-USR-01 (SEG-75).
 
@@ -182,13 +181,13 @@ mi equipo (p. ej. «Responsables - Servicio IA»).
 
 ### HU-USR-12 · Crear el equipo de delegados de un responsable
 
-**Como** responsable (o el administrador por él), **quiero** crear mi equipo de delegados cuando lo necesite **para**
+**Como** administrador (hasta MD-503 también el responsable, D150), **quiero** crear el equipo de delegados cuando lo necesite **para**
 empezar a repartir la ejecución de mis controles.
 
 - El equipo no nace con el responsable: mientras no lo crea, trabaja solo (D104 punto 2).
 - Un responsable lidera un solo equipo; pedir otro es `TEAM_ALREADY_EXISTS` (D102 punto 3, D104 punto 3).
 - El `admin_empresa` lo crea indicando el responsable (activo o pendiente); si no es un responsable de la empresa, `404`.
-  Un responsable que indica a otro recibe `403`.
+  El `responsable` recibe `403` (D150, MD-503).
 - El responsable solo ve su grupo; sin equipo, la lista llega vacía.
 
 ### HU-USR-13 · Mover a un delegado a otro equipo

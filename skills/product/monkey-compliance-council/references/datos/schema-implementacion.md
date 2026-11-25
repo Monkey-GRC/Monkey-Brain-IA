@@ -154,7 +154,13 @@ S3_FORCE_PATH_STYLE=true          # true con minio
 # Primer administrador (npm run bootstrap:admin), solo donde se siembra
 BOOTSTRAP_COMPANY_NAME=... BOOTSTRAP_ADMIN_EMAIL=... BOOTSTRAP_ADMIN_NAME=...
 BOOTSTRAP_ADMIN_LAST_NAME=... BOOTSTRAP_ADMIN_PASSWORD=...
+
+# Avisos y resumen diario (D143, D151, MD-515). Ambas opcionales.
+NOTIFICATION_DIGEST_INTERVAL_MINUTES=60   # cada cuántos minutos la tarea revisa si ya es la hora del resumen por correo; 0 la apaga. La misma tarea borra una vez al día los avisos de más de 90 días
+NOTIFICATION_DIGEST_HOUR_UTC=12           # desde qué hora UTC (0 a 23) sale el resumen
 ```
+
+**`APP_DATABASE_URL` debe ser una conexión directa a Postgres** (MD-515): el canal en vivo de la campana usa `LISTEN`/`NOTIFY`, que no funciona detrás de un pooler en modo transacción (PgBouncer `transaction`). Si el canal pierde la conexión, la reabre solo y manda a cada conexión abierta su contador al día.
 
 **Cómo se guardan los secretos que se buscan por igualdad** (`sessions.refresh_token_hash`, y
 `access_keys.code_hash`, sobre el código normalizado: sin prefijo `MNK`, guiones ni mayúsculas): **HMAC-SHA256 con `TOKEN_HASH_PEPPER`**, no
@@ -206,6 +212,8 @@ filtrarían a otra petición del pool): `app.tenant_id`, `app.user_id`, `app.use
 
 7. `user_activation_codes` (D95, D96): patrón normal por `company_id` (el de la cuenta a activar). `code_hash` es HMAC con `TOKEN_HASH_PEPPER`, como `access_keys`.
 8. `trusted_devices` (D123): patrón normal por `company_id`, RLS forzada. `token_hash` es HMAC con `TOKEN_HASH_PEPPER`.
+9. `platform.notifications` (D151, SEG-87, MD-515): **RLS por persona, no por empresa.** `SELECT` y `UPDATE` exigen `company_id = app.tenant_id` **y** `user_id = app.user_id`: ni el `admin_empresa`, ni `admin_monkey`, ni otra persona de la empresa ven un aviso ajeno. `INSERT` solo mira la empresa y se escribe **sin `RETURNING`**, como `audit_logs` (el sistema escribe el aviso de otra persona sin poder leerlo); un trigger exige que el destinatario sea de la empresa del aviso. **Sin política de `DELETE`:** la retención de 90 días y la purga de una cuenta `admin_monkey` pasan por funciones `SECURITY DEFINER` angostas (`platform.purge_expired_notifications`, `purge_user_notifications`, y `list_digest_candidates` para el resumen). La app solo puede `UPDATE (read_at, emailed_at)`: el contenido es inmutable. `platform.notification_digests` usa el aislamiento estándar por empresa.
+10. `tenant.document_acceptances` y `document_versions` (D152, SEG-88, MD-503): aislamiento estándar por empresa más restricciones de forma, **una sola versión vigente** por documento y permisos mínimos: una aceptación no se edita ni se borra (solo la purga de una empresa archivada), y el archivo de una versión no cambia.
 
 **Búsquedas previas al tenant** (login, canje de clave, refresh; `find_api_key` existe pero ningún endpoint autentica aún con API key): cuatro funciones
 `SECURITY DEFINER`, angostas, con `search_path` fijo y `REVOKE … FROM PUBLIC; GRANT EXECUTE … TO
@@ -388,6 +396,8 @@ desechable, ver §13):
 (D35, D36, D38) · 23 `rls_catalog_seed_and_client_controls` (D36) ·
 24 `service_context_optional_fields_and_regulations` (D45) · 25 `asset_provisioning_schedule_frequency` (D46) ·
 26 `catalog_policies_as_templates` (D39) · 27 `audit_append_only_triggers` (D41) · 28 `company_frameworks` (D47) · 29 `correcciones_onboarding_d50_d51` (D50, D51) · 30 `cloud_technical_control_model` (D53, D56) · 31 `rls_asset_resources` (D56) · 32 `execution_queue_lifecycle` y 33 `claim_next_execution` (D57) · 34 `cloud_connection_flow` y 35 `claim_execution_by_kind` (D58) · 36 `resource_inventory` y 37 `resource_inventory_warnings` (D59) · 38 `drop_declared_scope` (D60) · 39 `discovered_assets` (D61).
+
+**Desde MD-503 y MD-515** (2026-11-25, todas aditivas): `20261125090000_user_role_colaborador` (el sexto rol; va sola porque Postgres no deja usar un valor de enum nuevo en la transacción que lo crea) · `20261125090100_documents` y `20261125090200_rls_documents` (Documentos de la empresa, §11 del modelo) · `20261125100000_notifications` (tablas, enums y `users.is_email_digest_enabled`) · `20261125100100_rls_notifications` (RLS por persona, permisos e índices parciales) · `20261125100200_notification_digest_candidates` (a quién le toca el resumen) · `20261125100300_notification_retention` (borrado de 90 días) · `20261125110000_notification_guards` (la purga de una cuenta solo actúa sobre un `admin_monkey` inactivo y el destinatario debe ser de la empresa del aviso).
 
 > **Orden por fecha, no por número:** la 25 (`20261001120000`) quedó **antes** de la 26 y la 27 (`20261001180000` y
 > `20261001190000`) aunque se escribió en paralelo; ninguna depende de la otra. Prisma las aplica por nombre. Se

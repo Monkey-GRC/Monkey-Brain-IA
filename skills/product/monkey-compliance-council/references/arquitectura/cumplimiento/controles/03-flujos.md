@@ -13,7 +13,7 @@ Prisma · **Motor** = funciones puras.
 sequenceDiagram
     autonumber
     participant FE as Frontend (controls-list)
-    participant G as Guard y RolesGuard
+    participant G as Guard y PermissionsGuard
     participant C as ControlsController
     participant UC as ListControlsUseCase
     participant R as ControlPrismaRepository
@@ -21,7 +21,7 @@ sequenceDiagram
     participant M as Motor (readControl)
 
     FE->>G: GET /controls con cookie de sesión
-    G->>G: valida sesión, lee el rol de la base y comprueba @Roles
+    G->>G: valida sesión, lee el rol de la base y comprueba @Can (la matriz de permisos)
     G->>C: pasa con el Principal (empresa, usuario, rol)
     C->>UC: execute(principal, serviceId, filtros)
     UC->>UC: viewModeOf: ¿pidió vista técnica? solo admin_empresa o auditor

@@ -83,7 +83,7 @@ erDiagram
         string name "nullable (D51): la cuenta se identifica por su correo"
         string last_name "nullable (D51)"
         string password_hash "bcrypt+salt"
-        enum role "admin_monkey|admin_empresa|responsable|delegado|auditor"
+        enum role "admin_monkey|admin_empresa|responsable|delegado|auditor|colaborador"
         enum status "active|inactive|suspended|pending"
         enum preferred_language "es|en, por defecto es: idioma de sus correos (D111)"
         boolean is_mfa_enabled
@@ -310,6 +310,16 @@ Tres cosas que se leen mal si no se dicen:
   escenario de un cliente; el aislamiento por RLS tiene que admitir esa lectura sin abrir la escritura.
 - **Nadie borra una evidencia ni un control**: «eliminar» es dar de baja y el historial se conserva (D96, D119).
 - **No hay roles personalizados**: los seis roles son fijos.
+
+**Cómo se aplica (MD-503, D150).** La matriz vive en un solo lugar del Backend y un guard central **niega por defecto**
+toda ruta sin permiso declarado (SEG-86). Lo que aún no se construye queda declarado como pendiente:
+
+- **`admin_monkey` sobre los datos de una empresa** (ver, gestionar usuarios y asignaciones, conectores): pendiente de
+  MD-146; hoy recibe `403` (DT-124).
+- **Ejecutar pruebas** para `responsable`, `delegado` y `auditor` (⊗): pendiente (DT-123); hoy solo `admin_empresa`.
+- **Aprobar el control y Documentos completos:** MD-504 y MD-506. El corte mínimo de Documentos (D152) deja «Mis
+  documentos» y aceptar para los asignados, y listar, publicar y asignar para el `admin_empresa`.
+- **«Crear grupos» solo `admin_empresa`** (la matriz manda sobre D104); el `delegado` no ve el tablero de cumplimiento.
 
 ### 5.6 Cómo el modelo de usuarios sostiene SOC 2
 

@@ -45,7 +45,7 @@ interior de otra:
 
 | Qué | Dónde |
 |---|---|
-| Sobre de respuesta, errores de dominio, filtro global, paginación, decoradores (`@Public`, `@Roles`, `@CurrentUser`), `RolesGuard`, `TenantScope`, puertos compartidos (`TokenHasher`, `AuditLogWriter`) | `src/common/` |
+| Sobre de respuesta, errores de dominio, filtro global, paginación, decoradores (`@Public`, `@Can`, `@AnyAuthenticated`, `@CurrentUser`), `PermissionsGuard` y la matriz de permisos (`common/authorization/`), `TenantScope`, puertos compartidos (`TokenHasher`, `AuditLogWriter`) | `src/common/` |
 | `PrismaService` (con `withScope`), el writer de `audit_logs`, el HMAC de tokens | `src/infrastructure/` (módulos globales) |
 
 ## Pasos
@@ -80,7 +80,7 @@ interior de otra:
    - **Medición:** con un spy sobre `$transaction` (ver `test/cumplimiento/transacciones-ruta.e2e-spec.ts`).
 7. **Controller** en `presentation/`. Solo mapea request → caso de uso → `ResponseDto` con el
    mapper. Todo endpoint exige sesión por defecto (`SessionAuthGuard` global); `@Public()` para lo
-   abierto y `@Roles(...)` para restringir por rol. El usuario llega con `@CurrentUser()`.
+   abierto, `@Can('<permiso>')` para exigir un permiso de la matriz (`common/authorization/permission-matrix.ts`: quién puede qué, por rol) y `@AnyAuthenticated()` para cualquier cuenta con sesión. **El `PermissionsGuard` niega por defecto** (SEG-86): una ruta sin ninguno de los tres responde `403`, y un permiso nuevo se agrega primero a la matriz. El usuario llega con `@CurrentUser()`.
 8. **Auditar** (SEG-36, D52). Todo método del repositorio que **cambia datos** recibe un último parámetro
    `audit: AuditIntent<Resultado>`: una función que el caso de uso construye con lo que ya sabe (usuario, IP,
    `before`) y que el repositorio ejecuta **dentro de la misma transacción**, con el resultado ya escrito, llamando a
@@ -105,4 +105,4 @@ interior de otra:
   grupo (`@ApiTags(API_TAGS.<grupo>)`, con título y descripción en `common/swagger/api-docs.config.ts`), `@ApiOperation` en español,
   la respuesta con `@ApiData` / `@ApiPaged` / `@ApiItems` / `@ApiEmpty` / `@ApiNoBody` (el modelo es una clase solo de documentación
   `*.responses.ts` junto al mapper), los errores de negocio con `@ApiDomainErrors` y `@ApiProperty({ description, example, enum, enumName })`
-  en cada campo del DTO. Los roles salen solos de `@Roles`/`@Public`. `npm test` falla si falta algo (`api-docs.spec.ts`).
+  en cada campo del DTO. Los roles salen solos de `@Can`/`@AnyAuthenticated`/`@Public`. `npm test` falla si falta algo (`api-docs.spec.ts`).

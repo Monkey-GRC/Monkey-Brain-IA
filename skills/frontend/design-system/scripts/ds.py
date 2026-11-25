@@ -547,11 +547,12 @@ def i18n_keys(root, lang):
 
 
 def i18n_used(root):
-    """-> {key: [(file, line)]} for the literal keys (UPPER.DOTTED in quotes) of templates and .ts. Dynamic ones (`${}`, concatenated) never match: they are partial."""
+    """-> {key: [(file, line)]} for the literal keys (UPPER.DOTTED in quotes) of templates and .ts. Dynamic ones (`${}`, concatenated) never match: they are partial.
+    Test code is left out like the specs: a `testing/` folder and `*.testing.ts` hold fixtures whose data (a requirement code such as 'CC6.1') looks like a key."""
     used = {}
     src = os.path.join(root, 'src')
     for rel in walk(os.path.join(src, 'app')):
-        if rel.endswith('.spec.ts') or os.path.splitext(rel)[1] not in ('.ts', '.html'):
+        if rel.endswith(('.spec.ts', '.testing.ts')) or '/testing/' in '/' + rel or os.path.splitext(rel)[1] not in ('.ts', '.html'):
             continue
         for n, line in enumerate(read(os.path.join(src, 'app', rel)).splitlines(), 1):
             if line.lstrip().startswith(('*', '//', '/*')):

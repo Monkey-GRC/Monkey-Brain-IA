@@ -37,7 +37,7 @@ Lee, en este orden:
 - [ ] Repositorio Prisma en `infrastructure/repositories/`, con cada consulta dentro de
       `prisma.withScope(...)` (salvo las búsquedas previas al tenant vía funciones `SECURITY DEFINER`).
 - [ ] Controller en `presentation/` que solo transforma request/response, con su mapper.
-- [ ] `@Public()` solo donde el contrato lo diga; `@Roles(...)` donde el rol importe.
+- [ ] `@Public()` solo donde el contrato lo diga; `@Can('<permiso>')` en cada ruta (o `@AnyAuthenticated()` si sirve a cualquier rol): el `PermissionsGuard` **niega por defecto** y el permiso sale de la matriz (`src/common/authorization/permission-matrix.ts`).
 - [ ] `*.module.ts` registrando `provide/useClass` y los casos de uso; importado en `app.module.ts`.
 - [ ] Respuestas envueltas en `ResponseDto`; errores con el `error.code` del contrato.
 - [ ] Claves i18n en `i18n/es` e `i18n/en`.

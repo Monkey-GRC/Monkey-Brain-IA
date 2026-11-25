@@ -69,6 +69,7 @@ el nombre en inglés.
 | 9 | El cálculo | Cómo se deriva el cumplimiento (activo → check → test → requisito del control → control → categoría → marco) y el riesgo, con sus estados, reglas y parámetros (`MAP CALOR`, D130) | [`modelo/09-calculo-cumplimiento.md`](modelo/09-calculo-cumplimiento.md) |
 | 10 | Diagrama global | Todo junto | [`modelo/10-diagrama-global.md`](modelo/10-diagrama-global.md) |
 | 11 | Documentos | El documento del catálogo y el de la empresa: versiones, aprobación y aceptación (D133) | [`modelo/11-documentos.md`](modelo/11-documentos.md) |
+| 12 | Notificaciones | Los avisos de cada persona (campana, 90 días), su preferencia de correo y el resumen diario (D143, D151) | [`modelo/12-notificaciones.md`](modelo/12-notificaciones.md) |
 
 ### Equivalencia § ↔ módulo de arquitectura
 

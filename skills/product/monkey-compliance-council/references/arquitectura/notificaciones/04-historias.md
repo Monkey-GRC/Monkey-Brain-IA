@@ -1,15 +1,17 @@
 # Notificaciones · historias de usuario
 
 Responde: **¿cómo se entera cada persona de que tiene algo que hacer o de que algo cambió en su cuenta, y cómo se
-comprueba?** Hoy solo salen **correos transaccionales** por el puerto `Mailer` (D99): la clave de acceso, las invitaciones y
-los dos avisos de la contraseña. Los avisos sobre el cumplimiento, el centro de notificaciones y las preferencias **no
-existen** todavía: ya están decididos (D138 los eventos y destinatarios, D143 el canal, la frecuencia y el centro de notificaciones) y se construyen en MD-515; esas historias siguen ⚪. Los pasos
+comprueba?** Salen **correos transaccionales** por el puerto `Mailer` (D99): la clave de acceso, las invitaciones y
+los dos avisos de la contraseña; y, desde MD-515 (2026-11-25), la **campana** de avisos en la app con su **resumen diario
+por correo** y sus preferencias (D138 los eventos y destinatarios, D143 el canal, la frecuencia y el centro, D151 el funcionamiento).
+Siguen ⚪ los avisos cuyo evento aún no existe (el control que deja de cumplir, la observación del auditor, el borrado de una empresa). Los pasos
 de cada caso están en [`05-casos-de-uso.md`](05-casos-de-uso.md); los cuerpos y errores, en los contratos de cada módulo
 que envía ([`empresas`](../../../../../../contracts/empresas.md), [`gestion-usuarios`](../../../../../../contracts/gestion-usuarios.md),
 [`administradores`](../../../../../../contracts/gestion-usuarios/administradores.md),
-[`autenticacion`](../../../../../../contracts/autenticacion.md)). Este módulo no tiene contrato propio.
+[`autenticacion`](../../../../../../contracts/autenticacion.md)); la campana y el resumen tienen el suyo:
+[`notificaciones`](../../../../../../contracts/notificaciones.md).
 
-**Roles** (D96, D102): `admin_empresa`, `responsable`, `delegado`, `auditor` (Monkey Platform) y `admin_monkey` (Monkey Admin).
+**Roles** (D96, D102, D136): `admin_empresa`, `responsable`, `delegado`, `auditor`, `colaborador` (Monkey Platform) y `admin_monkey` (Monkey Admin).
 «Persona» = cualquiera de ellos. **Estado** de cada historia: ✅ construida · 🟡 parcial · ⚪ por construir.
 
 ## Resumen
@@ -22,13 +24,13 @@ que envía ([`empresas`](../../../../../../contracts/empresas.md), [`gestion-usu
 | HU-NOT-04 | Recibir el enlace para recuperar mi contraseña | Persona | ✅ | D101, SEG-14 |
 | HU-NOT-05 | Enterarme por correo de que cambió mi contraseña | Persona | ✅ | D101 |
 | HU-NOT-06 | Recibir correos en mi idioma, sin secretos a la vista ni nombres de proveedores | Persona | ✅ | D111, D70, SEG-39, SEG-75 |
-| HU-NOT-07 | Enterarme de que me asignaron o reasignaron un control | `responsable` · `delegado` | ⚪ | D138, D143, D102 |
-| HU-NOT-08 | Enterarme de que mi evidencia fue validada o rechazada | `responsable` · `delegado` · `admin_empresa` | ⚪ | D138, D143 |
+| HU-NOT-07 | Enterarme de que me asignaron o reasignaron un control | `responsable` · `delegado` | ✅ | D138, D143, D102 |
+| HU-NOT-08 | Enterarme de que mi evidencia fue validada o rechazada | `responsable` · `delegado` · `admin_empresa` | ✅ | D138, D143 |
 | HU-NOT-09 | Enterarme de que un control dejó de cumplir o la evaluación automática falló | `admin_empresa` · `responsable` · `delegado` | ⚪ | D138, D143, D70 |
 | HU-NOT-10 | Enterarme de una observación nueva del auditor | `responsable` · `delegado` | ⚪ | D138, D143, D102 punto 9 |
-| HU-NOT-11 | Recibir recordatorios antes de que algo venza | `admin_empresa` · `responsable` · `delegado` | ⚪ | D131, D138, D143 |
-| HU-NOT-12 | Ver mis avisos en un centro de notificaciones dentro de la app | Persona de Platform | ⚪ | D143 |
-| HU-NOT-13 | Elegir cómo y cada cuánto recibo los avisos | Persona de Platform | ⚪ | D143 |
+| HU-NOT-11 | Recibir recordatorios antes de que algo venza | `admin_empresa` · `responsable` · `delegado` | ✅ | D131, D138, D143, D151 |
+| HU-NOT-12 | Ver mis avisos en un centro de notificaciones dentro de la app | Persona de Platform | ✅ | D143, D151, SEG-87 |
+| HU-NOT-13 | Elegir cómo y cada cuánto recibo los avisos | Persona de Platform | 🟡 | D143 |
 | HU-NOT-14 | Enterarme a tiempo de que una empresa archivada está por borrarse | `admin_monkey` | ⚪ | D97, DT-83 |
 
 ---
@@ -106,16 +108,16 @@ entenderlo y confiar en él.
 **Como** `responsable` o `delegado`, **quiero** enterarme cuando me asignan un control o me lo quitan **para** saber qué
 tengo que atender sin entrar a revisar.
 
-- Hoy no hay aviso: se ve entrando a «Mi trabajo» (D102 punto 12).
+- **Construido (MD-515):** `control_assigned` llega a la campana de la persona asignada, en la misma transacción de la asignación (`PUT /v1/assignments/*`); quien asigna no se avisa a sí mismo.
 - Quién es dueño y ejecutor está decidido (D102 puntos 5 y 6); **canal y frecuencia: en la app al instante y por correo en resumen diario** (D143).
-- Cualquier texto seguirá la plantilla de 7 campos de `producto/philosophy.md`.
+- El texto sigue la plantilla de 7 campos de `producto/philosophy.md`.
 
 ### HU-NOT-08 · Enterarme de que mi evidencia fue validada o rechazada
 
 **Como** quien subió una evidencia, **quiero** saber cuándo la revisan y con qué resultado **para** corregirla a tiempo si la
 rechazan.
 
-- Hoy lo rechazado se ve en «Mi trabajo»; no hay aviso.
+- **Construido (MD-515):** `evidence_approved` y `evidence_rejected` llegan a quien subió la evidencia y al dueño del control, al revisarla.
 - Qué evento notifica y a quién: D138; canal y frecuencia: D143.
 
 ### HU-NOT-09 · Enterarme de que un control dejó de cumplir o la evaluación automática falló
@@ -139,20 +141,20 @@ pudo correr **para** actuar antes de una auditoría.
 
 **Como** persona a cargo de un control, **quiero** un recordatorio antes de que venza **para** no perder el plazo.
 
+- **Construido (MD-515):** `window_due_soon` (en `alert_at`, un solo recordatorio por control y cierre) y `window_expired` los genera la pasada diaria de las ventanas, que es idempotente. Un control «Sin asignar» avisa a los administradores en un solo aviso por servicio, tipo y día.
 - La periodicidad y los días de aviso ya están definidos (D131, PR-06); el canal, en la app y por correo (D143).
-- Necesita un planificador, que hoy no existe (README de este módulo).
 
 ### HU-NOT-12 · Ver mis avisos en un centro de notificaciones dentro de la app
 
 **Como** persona de Platform, **quiero** una campana con mis avisos **para** ver lo pendiente en un solo lugar.
 
-- Campana con leído y no leído e historial de 90 días (D143); hoy no existe tabla de notificaciones.
+- **Construido (MD-515):** campana con leído y no leído, en vivo, e historial de 90 días (D143); Centro de avisos en `/avisos`. Un aviso de otra persona responde `404`.
 
 ### HU-NOT-13 · Elegir cómo y cada cuánto recibo los avisos
 
 **Como** persona de Platform, **quiero** elegir canal y frecuencia (inmediato o resumen) **para** no saturarme.
 
-- Cada persona puede apagar el correo; los avisos de la app no se apagan (D143). El resumen diario necesita el planificador que hoy no existe.
+- **Parcial:** cada persona puede apagar el resumen diario por correo (`PATCH /v1/me/notification-preferences`); los avisos de la app no se apagan (D143). La frecuencia no se elige: el resumen es diario.
 
 ### HU-NOT-14 · Enterarme a tiempo de que una empresa archivada está por borrarse
 

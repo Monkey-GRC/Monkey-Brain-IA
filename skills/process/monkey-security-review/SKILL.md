@@ -19,7 +19,7 @@ Los requisitos viven **una sola vez, en el módulo que posee la capacidad**: abr
 
 | El cambio… | Revisa | Pregunta clave |
 |---|---|---|
-| Añade un **endpoint** | `seguridad/roles-permisos.md`, `seguridad/trazabilidad.md` | ¿Lleva `@Roles`? ¿El rol se lee de la base? ¿Deja el rastro **en la misma transacción** (`AuditIntent`)? |
+| Añade un **endpoint** | `seguridad/roles-permisos.md`, `seguridad/trazabilidad.md` | ¿Lleva `@Can` con el permiso de la matriz? ¿El rol se lee de la base? ¿Deja el rastro **en la misma transacción** (`AuditIntent`)? |
 | Añade o cambia una **tabla** de cliente | `seguridad/aislamiento-tenant.md` | ¿Tiene `tenant_id`/`company_id`, RLS activa y forzada, y toda consulta va en `withScope`? ¿Una FK a otra tabla de tenant lee antes el padre bajo RLS? |
 | Sube, guarda o entrega **archivos** | `seguridad/plataforma.md` | Tipo, tamaño y **contenido** validados; bucket privado; descarga por enlace firmado; huella SHA-256 |
 | Toca **credenciales o secretos** | `seguridad/plataforma.md`, `seguridad/entrega.md` | ¿Cifradas en reposo y nunca en una respuesta, log ni auditoría? ¿Alguna llave de larga vida? |
