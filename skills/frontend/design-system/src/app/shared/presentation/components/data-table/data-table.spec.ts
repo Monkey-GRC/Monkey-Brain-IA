@@ -253,6 +253,12 @@ describe('DataTable', () => {
     expect(el().querySelector('nav')).toBeNull();
   });
 
+  it('has no pagination bar when there are no results: the empty state says it, not «Showing 0–0 of 0»', () => {
+    host.page.set({ page: 1, pageSize: 10, total: 0, totalPages: 1 });
+    fixture.detectChanges();
+    expect(el().querySelector('app-pagination')).toBeNull();
+  });
+
   it('puts a chevron at the end of every clickable row, and none when it is turned off', () => {
     expect(el().querySelectorAll('tbody [data-row-chevron]').length).toBe(2);
     expect(el().querySelector('[data-row-chevron]')!.getAttribute('aria-hidden')).toBe('true');

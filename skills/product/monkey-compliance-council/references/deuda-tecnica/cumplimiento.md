@@ -112,3 +112,11 @@ Parches vigentes de [Cumplimiento](../arquitectura/cumplimiento/README.md). Tabl
 - **Qué está parchado:** `IntegrationConnections` está enlazado a `NoIntegrationConnections`, que no da ninguna categoría conectada; por eso toda prueba de fuente `integration` acepta subida de respaldo (`evidence_fallback: true`)
 - **Por qué:** las integraciones (MD-497) no están construidas; el respaldo se calcula y no guarda nada, así que no hay que migrar al conectarlas
 - **Qué lo cierra:** MD-497: implementar el puerto leyendo las conexiones activas por categoría, fuera de la transacción de la bandeja
+
+### DT-125 · La prueba documental T-DOC sigue resolviéndose con la evidencia subida
+
+🟡 Mejora
+
+- **Qué está parchado:** con el corte mínimo de Documentos (D152) un documento ya se publica y se acepta, pero el motor sigue resolviendo la `T-DOC` del control con la evidencia subida por el puente de D139, no con la versión vigente y la aceptación del personal (T-01, PR-15)
+- **Por qué:** el flujo de aprobación y la regla de aceptación completos son de MD-506; el corte mínimo es para mostrar al colaborador
+- **Qué lo cierra:** MD-506: `T-DOC` en el motor con la versión vigente aprobada y la aceptación dentro de PR-14/PR-15

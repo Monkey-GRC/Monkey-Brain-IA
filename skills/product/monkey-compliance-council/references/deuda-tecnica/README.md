@@ -32,13 +32,13 @@ la cierra). Los ID (`DT-n`) no se reutilizan. Si una deuda depende del comité, 
 | [`autenticacion.md`](autenticacion.md) | 3 | [Autenticación](../arquitectura/autenticacion/README.md) |
 | [`catalogo-maestro.md`](catalogo-maestro.md) | 6 | [Catálogo maestro](../arquitectura/catalogo-maestro/README.md) |
 | [`control-tecnico.md`](control-tecnico.md) | 20 | [Control técnico](../arquitectura/control-tecnico/README.md) |
-| [`cumplimiento.md`](cumplimiento.md) | 10 | [Cumplimiento](../arquitectura/cumplimiento/README.md) |
+| [`cumplimiento.md`](cumplimiento.md) | 11 | [Cumplimiento](../arquitectura/cumplimiento/README.md) |
 | [`empresas.md`](empresas.md) | 5 | [Empresas](../arquitectura/empresas/README.md) |
 | [`gestion-usuarios.md`](gestion-usuarios.md) | 3 | [Gestión de usuarios](../arquitectura/gestion-usuarios/README.md) |
 | [`notificaciones.md`](notificaciones.md) | 1 | [Notificaciones](../arquitectura/notificaciones/README.md) |
 | [`onboarding.md`](onboarding.md) | 15 | [Onboarding](../arquitectura/onboarding/README.md) y sus tres componentes |
 | [`plataforma.md`](plataforma.md) | 3 | [Plataforma](../arquitectura/plataforma/README.md) |
-| [`roles-permisos.md`](roles-permisos.md) | 1 | [Roles y permisos](../arquitectura/roles-permisos/README.md) |
+| [`roles-permisos.md`](roles-permisos.md) | 3 | [Roles y permisos](../arquitectura/roles-permisos/README.md) |
 | [`trazabilidad.md`](trazabilidad.md) | 4 | [Trazabilidad](../arquitectura/trazabilidad/README.md) |
 | [`entrega.md`](entrega.md) | 6 | **Ninguno**: pruebas, CI, despliegue, respaldos y runtime |
 
@@ -69,6 +69,7 @@ Limitan el producto o al equipo.
 
 | ID | Qué | Módulo |
 |---|---|---|
+| [DT-124](roles-permisos.md#dt-124--admin_monkey-no-ve-ni-gestiona-los-datos-de-una-empresa) | admin_monkey no ve ni gestiona los datos de una empresa | [Roles y permisos](roles-permisos.md) |
 | [DT-120](cumplimiento.md#dt-120--una-prueba-manual-se-cumple-por-evidencia-y-también-admite-veredicto) | Una prueba manual se cumple por evidencia y también admite veredicto | [Cumplimiento](cumplimiento.md) |
 | [DT-2](control-tecnico.md#dt-2--n18-y-checks_available-son-constantes) | «n/18» y `checks_available` son constantes | [Control técnico](control-tecnico.md) |
 | [DT-3](onboarding.md#dt-3--ac_04-a-ac_06-se-completaron-por-analogía) | `ac_04` a `ac_06` se completaron por analogía | [Onboarding](onboarding.md) |
@@ -117,6 +118,8 @@ Pendientes sin urgencia.
 
 | ID | Qué | Módulo |
 |---|---|---|
+| [DT-125](cumplimiento.md#dt-125--la-prueba-documental-t-doc-sigue-resolviéndose-con-la-evidencia-subida) | La prueba documental T-DOC sigue resolviéndose con la evidencia subida | [Cumplimiento](cumplimiento.md) |
+| [DT-123](roles-permisos.md#dt-123--ejecutar-pruebas-solo-lo-puede-el-admin_empresa) | Ejecutar pruebas solo lo puede el admin_empresa | [Roles y permisos](roles-permisos.md) |
 | [DT-122](cumplimiento.md#dt-122--la-subida-de-respaldo-de-las-pruebas-de-integración-usa-un-puerto-sin-implementar) | La subida de respaldo de las pruebas de integración usa un puerto sin implementar | [Cumplimiento](cumplimiento.md) |
 | [DT-121](plataforma.md#dt-121--specs-de-los-frontends-que-aseveran-clases-de-estilo) | Specs de los frontends que aseveran clases de estilo | [Plataforma](plataforma.md) |
 | [DT-119](catalogo-maestro.md#dt-119--el-catálogo-de-admin-no-deja-crear-pruebas-de-las-cuatro-dimensiones-nuevas) | El catálogo de Admin no deja crear pruebas de las cuatro dimensiones nuevas | [Catálogo maestro](catalogo-maestro.md) |

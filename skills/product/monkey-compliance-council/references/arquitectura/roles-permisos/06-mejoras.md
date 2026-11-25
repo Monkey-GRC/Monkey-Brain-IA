@@ -3,7 +3,7 @@
 | # | Mejora | Prio | Esfuerzo |
 |---|---|---|---|
 | M1 | ~~Cerrar `P3` (permisos por pantalla) antes de ampliar la matriz~~ Cerrada por D102 (2026-11-03): manda la matriz de §5.5 | — | — |
-| M2 | `RolesGuard` cerrado por defecto y una prueba que recorra todos los endpoints contra la matriz | M | S |
+| M2 | ~~`RolesGuard` cerrado por defecto y una prueba que recorra todos los endpoints contra la matriz~~ Construida en MD-503 (D150, SEG-86): `PermissionsGuard` niega por defecto y `test/aislamiento/rutas-con-permiso.e2e-spec.ts` recorre las rutas | — | — |
 | M3 | ~~MFA de `responsable` y `delegado`~~ Resuelta por D102, punto 13: TOTP para todos los roles | — | — |
 
 ## M1 · La matriz está a medias
@@ -11,6 +11,8 @@
 sigue en 🟠 solo por las pantallas pendientes (MD-197 a MD-204), no por esperar al comité.
 
 ## M2 · La matriz vive repartida en los `@Roles` y el guard es abierto por defecto
+> **Construida en MD-503 (2026-11-25).** La matriz es un solo archivo (`common/authorization/permission-matrix.ts`), el guard niega por defecto y la prueba recorre todas las rutas. Lo de abajo es el diagnóstico original (con `@Roles` y `RolesGuard`, que ya no existen).
+
 Cada endpoint declara sus roles y no hay un lugar que los compare contra §5.5. Además, `RolesGuard` deja pasar a
 cualquier rol con sesión cuando la ruta no declara `@Roles` (`if (!roles?.length) return true`). Hoy no hay una ruta
 expuesta: de 182, solo cinco tienen sesión y no tienen `@Roles`, y las cinco son de cualquier rol a propósito

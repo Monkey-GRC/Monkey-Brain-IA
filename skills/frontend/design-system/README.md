@@ -116,7 +116,7 @@ Reglas de uso medidas: `ink-faint` pasa AA sobre `surface`, `canvas`, `tint` y `
 
 **Radio** (moderados, menores que Donezo; siempre por token): `--radius-control = 8px` (inputs, botones, ítems de menú), `--radius-card = 10px`
 (cards, `section`, tablas; `--radius-surface` es su alias), `--radius-panel = 12px` (sidebar, header, área de contenido).
-`--radius-pill = 9999px` solo para el buscador del header (`rounded-pill`). Nada más; `rounded-full` solo para avatares, el punto del badge de estado y el indicador del menú. El badge usa `rounded-badge` (`--radius-badge` = 4 px), más cerrado que un control (8 px).
+`--radius-pill = 9999px` solo para el buscador del header (`rounded-pill`). Nada más; `rounded-full` solo para avatares, el punto del badge de estado (y el punto de no leído, `app-unread-dot`), el indicador del menú y la pista y la perilla del interruptor (`app-switch`). El badge usa `rounded-badge` (`--radius-badge` = 4 px), más cerrado que un control (8 px).
 
 **Borde**: `1px solid var(--color-line)`.
 

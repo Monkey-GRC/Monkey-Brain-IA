@@ -9,11 +9,11 @@ es una **regla transversal** (guardas, contexto de tenant y políticas RLS) que 
 
 ## Actores
 
-Los roles: `admin_monkey`, `admin_empresa`, `responsable`, `delegado`, `auditor`. No hay roles personalizados (D96, D102).
+Los roles: `admin_monkey`, `admin_empresa`, `responsable`, `delegado`, `auditor`, `colaborador` (D136). No hay roles personalizados (D96, D102).
 
 ## Qué posee
 
-Una columna, `users.role` (enum `user_role`), y la regla transversal: `@Roles`, `RolesGuard`, `TenantScope`
+Una columna, `users.role` (enum `user_role`), y la regla transversal: `@Can`, `@AnyAuthenticated`, `PermissionsGuard` (con la matriz de `permission-matrix.ts`), `TenantScope`
 y las políticas RLS que leen `app.user_role`. Sin tablas propias.
 
 ## Dónde está cada dato

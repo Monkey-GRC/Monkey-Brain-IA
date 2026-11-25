@@ -20,3 +20,19 @@ Por qué Documentos es como es. **Se consulta para reabrir, no para construir**:
 **Qué cambia.** Módulo nuevo `arquitectura/documentos/`, `contracts/documentos.md` (se escribe antes de construir, RC-09), §3, §7 y la matriz §5.5. Con D132, **reemplaza D88**: la prueba documental ya no se valida en cada control con la evidencia subida para ella; es una por documento y se resuelve con su flujo.
 
 **Fuente:** comité funcional, VF18 (`MAP CALOR`, secciones 4 y 13; hojas `Documentos` y `PROCEDIMIENTOS`; `Modelo de Gestión usuarios`, Tabla 2), 2026-11-22. Que los grupos de la aceptación son los equipos de D102 lo interpretó desarrollo.
+
+---
+
+## D152 · Corte mínimo de Documentos para el colaborador (2026-11-24; adelanta parte de MD-506/507)
+
+**Decisión** (entra con MD-503):
+
+1. **Se construye:** los documentos de la empresa (los vinculados a los controles de sus marcos contratados, uno por empresa), publicar la versión vigente como **aprobación importada** (D133 punto 5; aprobadores en texto, de 1 a 3), asignarla a personas, «Mis documentos» y aceptarla. El `auditor` ve la lista en solo lectura; el `responsable`, por ahora, solo «Mis documentos».
+2. **Reglas del corte:** una versión nueva siempre pide aceptar otra vez; el plazo (PR-14) se guarda en la **asignación**; no hace falta abrir el archivo para aceptar; la aceptación es inmutable (SEG-88); el filtro de lo asignado se hace en la aplicación (RLS por empresa, sin RLS por persona).
+3. **Queda para MD-506/507:** flujo de aprobación, borradores, documentos propios, responsable del documento, grupos, renovación, cambio menor, externos, avisos y `T-DOC` en el motor (DT-125).
+
+**Por qué.** Sin Documentos el `colaborador` no tiene nada que hacer; Rod pidió lo mínimo para mostrarlo en la demo.
+
+**Qué cambia.** `contracts/documentos.md`, `contracts/enums/documentos.md`, `modelo/11-documentos.md` (plazo en la asignación, archivo en la fila), `seguridad/documentos.md`.
+
+**Fuente:** Héctor Ríos (Rod), 2026-11-24, ronda de preguntas de MD-503/515, como decisión de desarrollo. **No es una decisión del comité.**

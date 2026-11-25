@@ -51,7 +51,7 @@ imprime contrato, enums, decisiones, **pendientes abiertas**, deuda y seguridad.
 
 ### 2b. Cruzar contrato y código antes de delegar
 
-Antes de asignar nada, recorre el contrato **endpoint por endpoint** contra el código (`grep` de rutas, `@Roles`, campos de
+Antes de asignar nada, recorre el contrato **endpoint por endpoint** contra el código (`grep` de rutas, `@Can`, campos de
 respuesta y filtros) y anota cada diferencia: lo que falta, lo que sobra, lo que el contrato no dice. Con esa lista haz **una
 sola ronda de preguntas** al usuario (paso 4) y entrega a los subagentes la lista completa. Un hueco descubierto después de
 implementar cuesta una vuelta entera de implementación y verificación.

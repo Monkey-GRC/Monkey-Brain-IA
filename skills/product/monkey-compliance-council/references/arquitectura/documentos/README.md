@@ -5,9 +5,13 @@ prueba los controles?** Cada documento tiene un responsable, versiones, un flujo
 aceptación del personal al que aplica. De ese flujo sale la **prueba documental** del documento (`T-DOC`), que alimenta a
 todos los controles que lo usan.
 
-> **No está construido.** Es un módulo nuevo de la VF18 del comité (D133, RC-09). Su contrato (un archivo nuevo en `contracts/`)
-> se escribe antes del código. Hoy los documentos se suben como evidencia de un control (plantillas de evidencia del
-> catálogo v1, D36), y eso desaparece con el catálogo v2.
+> **Corte mínimo construido en MD-503 (2026-11-25); el resto no.** Es un módulo nuevo de la VF18 del comité (D133, RC-09).
+> Lo construido (D152): el `admin_empresa` **publica la versión vigente como aprobación importada** (archivo, quién la
+> aprobó fuera de Monkey y cuándo), **la asigna a personas**, que la ven en «Mis documentos» y la **aceptan** (registro
+> inmutable, SEG-88); el `auditor` lee. Contrato: [`contracts/documentos.md`](../../../../../../contracts/documentos.md).
+> **Sigue en MD-506/MD-507:** flujo de aprobación y borradores, documentos propios y externos, responsable del documento,
+> asignación por grupos, renovación y vencimiento, `T-DOC` en el motor (DT-125) y los avisos de Documentos. Mientras tanto
+> los documentos también se suben como evidencia de un control (plantillas de evidencia del catálogo v1, D36).
 
 ## Actores
 
@@ -16,8 +20,8 @@ todos los controles que lo usan.
 | `admin_empresa` | Asigna y cambia el responsable de cada documento; puede hacer todo lo del responsable y aprobar; archiva |
 | Responsable del documento (`responsable` o `admin_empresa`) | Crea o importa el documento, mantiene sus versiones, marca el contenido mínimo, define el flujo de aprobación y quién debe aceptarlo, lo envía y atiende la renovación |
 | Aprobador (`admin_empresa` o `responsable` elegido por el responsable del documento) | Aprueba o rechaza, con motivo, la versión que recibe |
-| Usuario asignado (cualquier rol, incluido `colaborador`) | Lee y acepta la versión vigente dentro del plazo |
-| `auditor` | Consulta documentos, aprobaciones y aceptaciones; no aprueba ni acepta |
+| Usuario asignado (`admin_empresa`, `responsable`, `delegado` o `colaborador`) | Lee y acepta la versión vigente dentro del plazo |
+| `auditor` | Consulta documentos, aprobaciones y aceptaciones; no aprueba ni acepta (construido: lista, detalle y archivo) |
 
 ## Las reglas que lo explican
 
@@ -43,7 +47,9 @@ Los estados de un documento, el flujo paso a paso y los parámetros (PR-06, PR-1
 
 | Dato | Dueño |
 |---|---|
-| Decisiones (`D-n`) | [`datos/decisiones/documentos.md`](../../datos/decisiones/documentos.md): `D133` |
+| Decisiones (`D-n`) | [`datos/decisiones/documentos.md`](../../datos/decisiones/documentos.md): `D133`, `D152` |
 | Reglas del cálculo que lo usan | [`datos/modelo/09-calculo-cumplimiento.md`](../../datos/modelo/09-calculo-cumplimiento.md) (T-01, R2) |
-| Contrato | por escribir en `contracts/`, antes de construir RC-09 |
-| Código | no existe todavía |
+| Contrato | [`contracts/documentos.md`](../../../../../../contracts/documentos.md) (corte mínimo) y [`contracts/enums/documentos.md`](../../../../../../contracts/enums/documentos.md) |
+| Modelo | [`datos/modelo/11-documentos.md`](../../datos/modelo/11-documentos.md) |
+| Seguridad | [`seguridad/documentos.md`](../../seguridad/documentos.md): `SEG-88` |
+| Código | Backend `src/features/documents/`; Platform `src/app/features/documents/` |

@@ -47,6 +47,8 @@ te toca. Si lo que vas a construir no está aquí, el contrato se acuerda primer
 | | [`cumplimiento/observaciones.md`](cumplimiento/observaciones.md) | Lo que escribe el auditor y cómo lo responde la empresa |
 | | [`cumplimiento/exclusiones.md`](cumplimiento/exclusiones.md) | Sacar un activo de un test, con vigencia |
 | | [`cumplimiento/riesgos.md`](cumplimiento/riesgos.md) | Riesgos y causas, vínculos, evaluación 5×5 y tratamiento |
+| Documentos | [`documentos.md`](documentos.md) | Corte mínimo (MD-503): publicar una versión importada, asignar, «Mis documentos» y aceptar |
+| Notificaciones | [`notificaciones.md`](notificaciones.md) | La campana en vivo (SSE), el historial de 90 días, la preferencia de correo y el resumen diario |
 
 Lo que comparten los contratos de Cumplimiento (quién puede qué y el estado general) está en
 [`cumplimiento/README.md`](cumplimiento/README.md).

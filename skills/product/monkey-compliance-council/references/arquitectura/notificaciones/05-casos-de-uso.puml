@@ -1,7 +1,7 @@
 @startuml
 ' Diagrama UML de casos de uso de Notificaciones. Fuente: 05-casos-de-uso.md (cada óvalo es un CU-NOT-nn).
 ' Se genera con skills/process/monkey-docs/scripts/render-uml.sh → 05-casos-de-uso.svg. No editar el SVG a mano.
-' Los casos marcados «por construir» están decididos (D138, D143) o dependen de DT-83.
+' CU-NOT-05 y CU-NOT-06 están construidos (MD-515); el marcado «por construir» depende de DT-83.
 !pragma layout smetana
 top to bottom direction
 skinparam shadowing false
@@ -34,8 +34,8 @@ rectangle "Monkey · Notificaciones" {
   usecase "CU-NOT-02\nInvitar a una persona\npor correo" as CU2
   usecase "CU-NOT-03\nAvisar un evento\nde la contraseña" as CU3
   usecase "CU-NOT-04\nComponer y entregar\nun correo" as CU4
-  usecase "CU-NOT-05\nAvisar a la cadena\nde un control\n(por construir · D143)" as CU5
-  usecase "CU-NOT-06\nConsultar mis avisos\ny preferencias\n(por construir · D143)" as CU6
+  usecase "CU-NOT-05\nAvisar a la cadena\nde un control\n(MD-515)" as CU5
+  usecase "CU-NOT-06\nConsultar mis avisos\ny preferencias\n(MD-515)" as CU6
   usecase "CU-NOT-07\nAvisar del borrado\npróximo de una empresa\n(por construir · DT-83)" as CU7
 }
 

@@ -94,13 +94,15 @@ erDiagram
         uuid user_id FK "nullable"
         uuid group_id FK "nullable: equipo de D102"
         datetime assigned_at
+        datetime due_at "D152: asignacion + PR-14"
+        datetime revoked_at "nullable"
     }
     document_acceptances {
         uuid id PK
         uuid document_version_id FK
         uuid user_id FK
-        datetime due_at "asignacion + PR-14"
         datetime accepted_at
+        string integrity_hash "huella de la version aceptada"
     }
     company_documents ||--|{ document_versions : "tiene"
     document_versions ||--o{ document_approval_steps : "se aprueba en"
@@ -108,6 +110,12 @@ erDiagram
     company_documents ||--o{ document_assignments : "se asigna a"
     document_versions ||--o{ document_acceptances : "aceptada por"
 ```
+
+> **Corte mínimo (D152, MD-503).** Se construyen `company_documents`, `document_versions`, `document_assignments` y
+> `document_acceptances`. Dos diferencias con el diagrama original: el **plazo** (`due_at`) está en la asignación, para
+> que la aceptación sea solo de inserción e inmutable (SEG-88), y el **archivo** de la versión va en la fila
+> (`file_path`, `file_name`, `file_type`, `file_size`, `integrity_hash`, como `evidence_submissions`), porque no hay
+> tabla de archivos. Las de aprobación quedan para MD-506.
 
 **Las reglas que explican las tablas** (todas de D133):
 

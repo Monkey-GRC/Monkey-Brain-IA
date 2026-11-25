@@ -171,10 +171,12 @@ export class DataTable<T> {
 
   protected readonly openHintId = `data-table-open-${nextId++}`;
   protected readonly s = computed<StackClasses>(() => (this.compact() ? COMPACT : STACK[this.stackBelow()]));
-  // La barra de página. En la compacta (una lista corta de un detalle) se omite mientras todo cabe en la página más chica: «Mostrando 1–3 de 3» no dice nada que la lista no diga.
+  // La barra de página. Sin resultados no se pinta: el estado vacío ya lo dice, y «Mostrando 0–0 de 0» con un paginador no lleva a ninguna parte. En la compacta (una
+  // lista corta de un detalle) se omite además mientras todo cabe en la página más chica: «Mostrando 1–3 de 3» no dice nada que la lista no diga.
   protected readonly pageBar = computed(() => {
     const p = this.page();
-    if (!p || !this.compact()) return p;
+    if (!p || p.total === 0) return null;
+    if (!this.compact()) return p;
     const smallest = Math.min(p.pageSize, ...this.pageSizes());
     return p.total > smallest ? p : null;
   });

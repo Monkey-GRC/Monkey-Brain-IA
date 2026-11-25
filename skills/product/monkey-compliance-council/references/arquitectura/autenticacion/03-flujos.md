@@ -62,7 +62,7 @@ sequenceDiagram
     participant G as SessionAuthGuard
     participant V as ValidateSessionUseCase
     participant DB as platform.*
-    participant D as RolesGuard · RateLimitGuard
+    participant D as PermissionsGuard · RateLimitGuard
     FE->>G: cualquier ruta con cookie
     G->>V: access token
     V->>V: firma del JWT

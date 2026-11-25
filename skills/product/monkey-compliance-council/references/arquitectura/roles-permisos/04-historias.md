@@ -39,8 +39,8 @@ Admin). «Persona» = cualquiera de ellos. No hay roles personalizados. **Estado
 **Como** persona con cuenta, **quiero** que cada acción la autorice el servidor según mi rol **para** que nadie pueda
 saltarse un permiso manipulando la pantalla o la petición.
 
-- Cada endpoint declara los roles que lo usan (`@Roles`) y `RolesGuard` lo compara con el rol del `Principal` en cada
-  petición (SEG-20, §5.3: «no confiar en el frontend»).
+- Cada endpoint declara el permiso que exige (`@Can`, o `@AnyAuthenticated`) y `PermissionsGuard` lo compara, con la matriz, contra el rol del `Principal` en cada
+  petición; una ruta sin permiso declarado responde `403` (SEG-86) (SEG-20, §5.3: «no confiar en el frontend»).
 - El rol sale de la base (`users.role`), nunca de lo que mande el frontend ni solo del token (`conventions.md`).
 - Dado un rol que no está entre los de la ruta, entonces la respuesta es `403 FORBIDDEN` y no se ejecuta nada.
 - Una empresa no accede a las rutas de `admin_monkey`, y `admin_monkey` no actúa como `admin_empresa` (SEG-20).

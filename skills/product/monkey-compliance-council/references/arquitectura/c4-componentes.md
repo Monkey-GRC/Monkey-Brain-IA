@@ -23,7 +23,7 @@ flowchart TB
         end
 
         subgraph transv["Transversal"]
-            common["<b>common/</b><br/>ResponseDto, DomainError, guards,<br/>@Roles, TenantScope, i18n,<br/>paginación, rate-limit"]
+            common["<b>common/</b><br/>ResponseDto, DomainError, guards,<br/>@Can, PermissionsGuard, TenantScope, i18n,<br/>paginación, rate-limit"]
             infra["<b>infrastructure/</b><br/>PrismaService, auditoría,<br/>correo, almacenamiento, HMAC"]
         end
     end
