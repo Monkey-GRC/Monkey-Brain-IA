@@ -234,3 +234,4 @@ quedan aquí:
 | D150 | La matriz de la Tabla 2 se aplica con un guard central que niega por defecto; lo pendiente queda declarado *(decisión de desarrollo)* | [roles-permisos](roles-permisos.md) |
 | D151 | Cómo funcionan los avisos: destinatarios, agrupación, campana en vivo (SSE) y resumen diario *(decisión de desarrollo)* | [notificaciones](notificaciones.md) |
 | D152 | Corte mínimo de Documentos para el colaborador: versión importada, asignar, mis documentos y aceptar *(decisión de desarrollo)* | [documentos](documentos.md) |
+| D153 | Cuándo y a quién avisan la falla de un check Directo, el cambio de parámetros y la evidencia desactualizada *(decisión de desarrollo; se aparta de D138 punto 1)* | [notificaciones](notificaciones.md) |

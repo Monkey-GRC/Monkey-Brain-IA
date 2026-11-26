@@ -148,7 +148,7 @@ pudo correr **para** actuar antes de una auditoría.
 
 **Como** persona de Platform, **quiero** una campana con mis avisos **para** ver lo pendiente en un solo lugar.
 
-- **Construido (MD-515):** campana con leído y no leído, en vivo, e historial de 90 días (D143); Centro de avisos en `/avisos`. Un aviso de otra persona responde `404`.
+- **Construido (MD-515):** campana con leído y no leído, en vivo, e historial de 90 días (D143); Centro de avisos en `/notificaciones` (página fuera del shell; `/avisos` redirige). Un aviso de otra persona responde `404`.
 
 ### HU-NOT-13 · Elegir cómo y cada cuánto recibo los avisos
 

@@ -287,6 +287,7 @@ Request: `{ "value": … }`, con la forma que dice su `unit`. Un `PATCH` sin `va
   del otro: para invertir un par se cambia primero el que deja el par válido.
 - **Auditoría:** `catalog.evaluation_parameter.update`, con `before_state` y `after_state` (`{ key, value }`),
   `tenant_id` nulo y en la misma transacción (SEG-36). Mandar el mismo valor responde `200` sin cambio y sin fila.
+- **Historial (MD-508, D153):** en esa misma transacción se inserta una fila en `catalog.evaluation_parameter_changes` (`key`, `code`, valor anterior y nuevo, quién y cuándo). Es interno: ningún endpoint lo expone; lo lee la pasada por empresa para avisar `check_parameters_changed` (`contracts/notificaciones.md`). Mandar el mismo valor tampoco deja fila.
 - **Efecto:** el cumplimiento se calcula al leer (§9), así que el valor nuevo vale desde la siguiente lectura o
   evaluación de todos los clientes. **No es retroactivo:** los eventos de cambio de estado ya registrados no se recalculan.
 

@@ -120,3 +120,11 @@ Parches vigentes de [Cumplimiento](../arquitectura/cumplimiento/README.md). Tabl
 - **Qué está parchado:** con el corte mínimo de Documentos (D152) un documento ya se publica y se acepta, pero el motor sigue resolviendo la `T-DOC` del control con la evidencia subida por el puente de D139, no con la versión vigente y la aceptación del personal (T-01, PR-15)
 - **Por qué:** el flujo de aprobación y la regla de aceptación completos son de MD-506; el corte mínimo es para mostrar al colaborador
 - **Qué lo cierra:** MD-506: `T-DOC` en el motor con la versión vigente aprobada y la aceptación dentro de PR-14/PR-15
+
+### DT-127 · `common/catalogs` importa del dominio de la feature de cumplimiento
+
+🟡 Mejora
+
+- **Qué está parchado:** `Backend/src/common/catalogs/compliance-catalogs.ts:32` importa de `features/compliance/domain/…`: `common` depende de una feature, al revés de la dirección permitida por capas
+- **Por qué:** Preexistente; lo vio `architecture-reviewer` en MD-508, que no toca ese archivo
+- **Qué lo cierra:** Mover a `common` los valores que el catálogo necesita (o servir el catálogo desde la feature) y que `common` no importe de ninguna feature

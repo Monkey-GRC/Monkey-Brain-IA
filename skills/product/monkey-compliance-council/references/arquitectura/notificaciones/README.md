@@ -15,27 +15,24 @@ de la tabla de abajo). Este directorio documenta lo que hay, lo que sigue reserv
 |---|---|
 | Avisos por persona | Cada aviso es de **una** persona (RLS por persona, SEG-87) y nace **en la misma transacción** que el hecho que lo causa. Dura 90 días |
 | Canal en vivo | `GET /v1/me/notifications/stream` (Server-Sent Events) publica cada aviso confirmado; entre réplicas viaja por `LISTEN`/`NOTIFY` de Postgres (`APP_DATABASE_URL` directa); hasta 5 conexiones por persona |
+| La campana en pantalla | Panel de tarjetas (ícono y color según el tipo) con el detalle encima; «Ver todas» abre `/notificaciones`, página completa fuera del shell con «Volver a la aplicación» (`/avisos` y `/notificaciones/ventana` redirigen). El punto de no leído es rojo |
 | Resumen diario | Una vez al día desde las 12:00 UTC, solo con avisos sin leer y solo a quien no lo apagó (`users.is_email_digest_enabled`) |
-| Emiten hoy | `window_due_soon` y `window_expired` (pasada diaria de las ventanas; los controles «Sin asignar» van agrupados en un aviso por servicio, tipo y día para los administradores), `control_assigned`, `evidence_approved` y `evidence_rejected` |
-| Reservados | `direct_check_failed`, `check_parameters_changed`, `automatic_evidence_stale` (MD-508), `observation_created`, `control_pending_approval`, `control_owner_approved`, `control_returned` (MD-504), los de Documentos (MD-506) y `company_purge_upcoming` (DT-83) |
+| Emiten hoy | `window_due_soon` y `window_expired` (pasada diaria de las ventanas; los controles «Sin asignar» van agrupados en un aviso por servicio, tipo y día para los administradores), `control_assigned`, `evidence_approved` y `evidence_rejected`; desde MD-508 (D153): `direct_check_failed` (al cerrar la recolección, solo cuando un check Directo pasa a FAIL; la primera recolección del activo no avisa), `automatic_evidence_stale` (pasada diaria, un aviso por control) y `check_parameters_changed` (lo escribe la pasada por empresa, a cada `admin_empresa`, leyendo `catalog.evaluation_parameter_changes`) |
+| Reservados | `observation_created`, `control_pending_approval`, `control_owner_approved`, `control_returned` (MD-504), los de Documentos (MD-506) y `company_purge_upcoming` (DT-83) |
 
-## Lo único que sale hoy
+## Qué dice cada aviso y por dónde llega
 
-| Correo | Cuándo | Decisión |
-|---|---|---|
-| Clave de acceso de una empresa nueva | `admin_monkey` registra la empresa, o reenvía la clave | D99 |
-| Enlace de recuperación de contraseña | La persona lo pide | D101 |
-| Aviso de contraseña cambiada | Después de cambiarla | D101 |
-| Invitación con el código de activación de una cuenta de empresa | Alguien crea o reenvía la invitación de un `responsable`, `delegado`, `auditor` o `admin_empresa` | D102 punto 14, SEG-75 |
-| Invitación a Monkey Admin | Un `admin_monkey` invita a otro | D117 |
+La tabla única de cada aviso (evento que lo genera, canal, título y texto) y de los correos que salen sin pasar por la campana
+está en el contrato: [`contracts/notificaciones/textos.md`](../../../../../../contracts/notificaciones/textos.md).
 
 Los cinco los manda el puerto `Mailer` ([Plataforma](../plataforma/README.md)); en producción el servidor no arranca sin
 un servicio de correo real (`MAIL_PROVIDER`, SEG-71). El resumen diario de la campana sale por el mismo puerto.
 
 ## Lo que aún no avisa nadie
 
-- **Que un control pasó a no cumplir**, que la sonda falló, que el auditor escribió una observación, que una empresa
-  archivada está por borrarse: sus tipos de aviso existen pero están reservados (arriba). Se ve entrando a mirar.
+- **Que un control pasó a no cumplir**, que el auditor escribió una observación, que una empresa archivada está por
+  borrarse: sus tipos de aviso existen pero están reservados (arriba). Se ve entrando a mirar. (La falla de un check
+  Directo, la evidencia automática desactualizada y el cambio de parámetros ya avisan, D153.)
 
 ## Lo que ya está decidido
 
@@ -64,13 +61,13 @@ al de la purga de empresas; unificarlos sigue como mejora de [`control-tecnico`]
 
 ## Dónde está cada dato
 
-D138, D143, D151 · `MD-515` · D99, D101, D102 y D117 · `producto/philosophy.md` (cómo se redacta).
+D138, D143, D151, D153 · `MD-515`, `MD-508` · D99, D101, D102 y D117 · `producto/philosophy.md` (cómo se redacta).
 
 Registros de este módulo:
 
 | Registro | Dónde |
 |---|---|
-| Decisiones (`D-n`) | [`datos/decisiones/notificaciones.md`](../../datos/decisiones/notificaciones.md): `D138`, `D143`, `D151`; lo que sale hoy lo deciden además D99, D101, D102 y D117 ([`empresas`](../../datos/decisiones/empresas.md), [`autenticacion`](../../datos/decisiones/autenticacion.md), [`gestion-usuarios`](../../datos/decisiones/gestion-usuarios.md)) |
+| Decisiones (`D-n`) | [`datos/decisiones/notificaciones.md`](../../datos/decisiones/notificaciones.md): `D138`, `D143`, `D151`, `D153`; lo que sale hoy lo deciden además D99, D101, D102 y D117 ([`empresas`](../../datos/decisiones/empresas.md), [`autenticacion`](../../datos/decisiones/autenticacion.md), [`gestion-usuarios`](../../datos/decisiones/gestion-usuarios.md)) |
 | Pendientes del comité (`P-n`) | [`datos/pendientes/notificaciones.md`](../../datos/pendientes/notificaciones.md): ninguno abierto (P39 la cerró D143) |
 | Deuda vigente (`DT-n`) | [`deuda-tecnica/notificaciones.md`](../../deuda-tecnica/notificaciones.md): 1 ficha (`DT-83`) |
 | Requisitos de seguridad (`SEG-n`) | [`seguridad/notificaciones.md`](../../seguridad/notificaciones.md): `SEG-87`. Un aviso que vea un usuario cumple además los de [`plataforma.md`](../../seguridad/plataforma.md) |

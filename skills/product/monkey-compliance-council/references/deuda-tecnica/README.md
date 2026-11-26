@@ -118,6 +118,8 @@ Pendientes sin urgencia.
 
 | ID | Qué | Módulo |
 |---|---|---|
+| [DT-127](cumplimiento.md#dt-127--commoncatalogs-importa-del-dominio-de-la-feature-de-cumplimiento) | `common/catalogs` importa del dominio de la feature de cumplimiento | [Cumplimiento](cumplimiento.md) |
+| [DT-126](control-tecnico.md#dt-126--la-última-recolección-completada-de-un-activo-se-busca-sin-índice-por-finished_at) | La última recolección completada de un activo se busca sin índice por `finished_at` | [Control técnico](control-tecnico.md) |
 | [DT-125](cumplimiento.md#dt-125--la-prueba-documental-t-doc-sigue-resolviéndose-con-la-evidencia-subida) | La prueba documental T-DOC sigue resolviéndose con la evidencia subida | [Cumplimiento](cumplimiento.md) |
 | [DT-123](roles-permisos.md#dt-123--ejecutar-pruebas-solo-lo-puede-el-admin_empresa) | Ejecutar pruebas solo lo puede el admin_empresa | [Roles y permisos](roles-permisos.md) |
 | [DT-122](cumplimiento.md#dt-122--la-subida-de-respaldo-de-las-pruebas-de-integración-usa-un-puerto-sin-implementar) | La subida de respaldo de las pruebas de integración usa un puerto sin implementar | [Cumplimiento](cumplimiento.md) |

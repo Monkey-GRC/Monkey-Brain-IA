@@ -427,6 +427,10 @@
         "description": "Notificaciones (MD-515): campana en vivo por SSE, historial de 90 dias, preferencia de correo y resumen diario."
       },
       {
+        "path": "contracts/notificaciones/textos.md",
+        "description": "Notificaciones: que dice cada aviso de la campana y cada correo transaccional, que evento lo genera y por que canal llega."
+      },
+      {
         "path": "contracts/cumplimiento/evidencia.md",
         "description": "Cumplimiento, evidencias: subida con huella SHA-256 y version, descarga con enlace firmado, aprobacion solo del administrador de la empresa."
       },

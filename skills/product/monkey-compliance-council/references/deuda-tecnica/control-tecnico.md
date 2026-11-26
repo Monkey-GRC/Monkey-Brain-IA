@@ -141,6 +141,14 @@ Parches vigentes de [Control técnico](../arquitectura/control-tecnico/README.md
 
 ## Transversal
 
+### DT-126 · La última recolección completada de un activo se busca sin índice por `finished_at`
+
+🟡 Mejora
+
+- **Qué está parchado:** Los avisos de MD-508 (D153) buscan la recolección completada anterior de un activo (`direct-check-failures.loader.ts`) y, en la pasada diaria, la última de cada activo con un LATERAL (`automatic-readings.loader.ts`), ordenando `executions` por `finished_at DESC`. El único índice útil es `(asset_id, started_at)`, así que Postgres ordena todo el historial del activo
+- **Por qué:** Es una hipótesis de `nestjs-reviewer` sin medir; la meta es medir antes de optimizar
+- **Qué lo cierra:** `EXPLAIN (ANALYZE)` con historial realista y, si se confirma, una migración aditiva `CREATE INDEX … ON tenant.executions (asset_id, finished_at DESC) WHERE status = 'completed'`
+
 ### DT-48 · `check_results` no tiene política de retención ni de partición
 
 🟠 Importante
