@@ -51,3 +51,19 @@ Por qué Notificaciones es como es. **Se consulta para reabrir, no para construi
 **Qué cambia.** `contracts/notificaciones.md`, `contracts/enums/notificaciones.md`, `modelo/12-notificaciones.md`, `seguridad/notificaciones.md`.
 
 **Fuente:** Héctor Ríos (Rod), 2026-11-24, ronda de preguntas de MD-503/515, como decisión de desarrollo. **No es una decisión del comité.**
+
+---
+
+## D153 · Cuándo y a quién avisan la falla de un check, el cambio de parámetros y la evidencia desactualizada (2026-11-25; desarrolla D138)
+
+**Decisión** (MD-508, RC-17):
+
+1. **Check Directo en falla** (`direct_check_failed`): avisa solo cuando un check Directo **pasa a FAIL** en un activo (antes estaba en PASS o sin dato). La **primera recolección** de un activo no avisa: es la línea base. Un aviso por control y recolección, que agrupa los activos y los checks que fallaron. Un FAIL con excepción vigente no avisa. Destinatarios de D138: ejecutor, dueño y administrador.
+2. **Cambio de parametrización** (`check_parameters_changed`): cuando un `admin_monkey` cambia un parámetro PR-01 a PR-16 (D149), recibe un aviso **cada `admin_empresa` activo** de cada empresa no archivada, con el parámetro, el valor anterior, el nuevo y su efecto. El aviso lo escribe **la pasada por empresa** (la de las ventanas), con el permiso de esa empresa, no el `PATCH`: así ningún camino escribe avisos en varias empresas a la vez (SEG-87). El costo es que no llega al instante sino en la siguiente pasada (se aparta en eso del punto 2 de D143). **Se aparta del punto 1 de D138**, que avisaba a la cadena de cada control: los parámetros son globales de Monkey y avisar control por control llenaría la campana de todas las empresas.
+3. **Evidencia automática desactualizada** (`automatic_evidence_stale`): una pasada diaria detecta los activos cuya última recolección supera PR-05. Un aviso por control afectado, con la lista de activos, a ejecutor y dueño. **No se repite** hasta que haya una recolección fresca y el activo vuelva a desactualizarse.
+
+**Por qué.** D138 dice qué evento avisa y a quién, pero no cuándo cuenta una falla, qué hacer con la primera recolección de un cliente (cientos de fallas a la vez) ni cómo avisar un cambio que es de todos los clientes. Rod eligió avisar el cambio de estado, no el estado, para que la campana no se llene.
+
+**Qué cambia.** `contracts/notificaciones.md`, `contracts/enums/notificaciones.md` (destinatarios de `check_parameters_changed`), `modelo/12-notificaciones.md` y `arquitectura/notificaciones/README.md`.
+
+**Fuente:** Héctor Ríos (Rod), 2026-11-25, ronda de preguntas de MD-508, como decisión de desarrollo. **No es una decisión del comité.**

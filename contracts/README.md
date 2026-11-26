@@ -49,6 +49,7 @@ te toca. Si lo que vas a construir no está aquí, el contrato se acuerda primer
 | | [`cumplimiento/riesgos.md`](cumplimiento/riesgos.md) | Riesgos y causas, vínculos, evaluación 5×5 y tratamiento |
 | Documentos | [`documentos.md`](documentos.md) | Corte mínimo (MD-503): publicar una versión importada, asignar, «Mis documentos» y aceptar |
 | Notificaciones | [`notificaciones.md`](notificaciones.md) | La campana en vivo (SSE), el historial de 90 días, la preferencia de correo y el resumen diario |
+| | [`notificaciones/textos.md`](notificaciones/textos.md) | Qué dice cada aviso y cada correo, qué lo genera y por qué canal llega (campana, resumen diario o correo inmediato) |
 
 Lo que comparten los contratos de Cumplimiento (quién puede qué y el estado general) está en
 [`cumplimiento/README.md`](cumplimiento/README.md).

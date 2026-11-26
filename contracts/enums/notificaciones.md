@@ -15,9 +15,9 @@
 | `evidence_approved` | Evidencia validada | Evidence approved | `uploader` · `owner` | Se validó una evidencia que subiste o de tu control |
 | `evidence_rejected` | Evidencia rechazada | Evidence rejected | `uploader` · `owner` | Se rechazó una evidencia que subiste o de tu control |
 | `observation_created` | Observación del auditor | Auditor observation | `owner` · `executor` | Reservado |
-| `direct_check_failed` | Verificación automática en falla | Automated check failing | `executor` · `owner` · `company_admin` | Reservado (MD-508) |
-| `check_parameters_changed` | Cambio de parametrización | Parameters changed | `executor` · `owner` · `company_admin` | Reservado (MD-508) |
-| `automatic_evidence_stale` | Evidencia automática desactualizada | Automated evidence out of date | `executor` · `owner` | Reservado (MD-508) |
+| `direct_check_failed` | Verificación automática en falla | Automated check failing | `executor` · `owner` · `company_admin` | Un check Directo pasó a falla en un activo (D153) |
+| `check_parameters_changed` | Cambio de parametrización | Parameters changed | `company_admin` | Monkey cambió un parámetro de evaluación PR-n; solo a los administradores (D153) |
+| `automatic_evidence_stale` | Evidencia automática desactualizada | Automated evidence out of date | `executor` · `owner` | La última recolección de un activo superó PR-05 (D153) |
 | `control_pending_approval` | Control por aprobar | Control awaiting approval | `owner` | Reservado (MD-504) |
 | `control_owner_approved` | Control aprobado por el responsable | Control approved by owner | `company_admin` | Reservado (MD-504) |
 | `control_returned` | Control devuelto | Control returned | `executor` · `owner` | Reservado (MD-504) |

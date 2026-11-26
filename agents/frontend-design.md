@@ -6,8 +6,8 @@ description: >-
   el chequeo de sincronía. No decide producto ni toca lógica de negocio, servicios, rutas ni contratos. Úsalo para
   cualquier cambio visual de las dos apps.
 tools: Read, Grep, Glob, Edit, Write, Bash
-model: opus
-effort: high
+model: sonnet
+effort: medium
 skills:
   - senior-frontend-engineer
   - monkey-ui-copy

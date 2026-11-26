@@ -15,8 +15,8 @@ export type DetailVariant = 'drawer' | 'drawer-narrow' | 'compact';
  * from lg and the whole screen below lg (1024 px); `drawer-narrow` is the same panel 56 rem wide (~900 px), for a detail read in one column (the catalog of Admin).
  * `variant="compact"` is a short centred modal (a discovered asset, a required evidence of the catalog).
  * A fixed header (the title first, then what is projected with `meta` —codes, badges— and with `summary` —e.g. the score of a control—, and the tabs below; the drawer
- * keeps its close button at the top right), a body that scrolls on its own and a fixed footer: «Cerrar» (`mk-btn-secondary`) and the actions projected with `actions`;
- * what is projected with `footerStart` (a destructive trigger such as «Dar de baja», `mk-btn-danger-outline`) goes alone at the left of the footer.
+ * keeps its close button at the top right), a body that scrolls on its own and a fixed footer: «Cerrar» (`mk-btn-secondary`) alone at the left and, at the right, what is projected with `footerStart` and then the actions projected with `actions`, the primary one last;
+ * `footerStart` (a destructive trigger such as «Dar de baja», `mk-btn-danger-outline`) goes first of the right group, set apart from the actions by a thin line, so it is never next to «Cerrar».
  * The size never changes between tabs or records; what does not fit scrolls inside the body.
  * Built on `app-modal` (role=dialog labelled by the title, focus trapped and returned, Esc, backdrop, scroll lock, entrance animation).
  *
@@ -74,12 +74,15 @@ export type DetailVariant = 'drawer' | 'drawer-narrow' | 'compact';
         [attr.role]="hasTabs() ? 'tabpanel' : null" [attr.aria-labelledby]="hasTabs() ? 'detail-tab-' + activeTab() : null">
         <ng-content />
       </div>
-      <footer class="flex shrink-0 flex-wrap items-center justify-end gap-3 border-t border-line py-4 max-sm:flex-col-reverse max-sm:items-stretch" [class]="pad()">
-        <div class="mr-auto flex flex-wrap items-center gap-3 empty:hidden max-sm:mr-0 max-sm:order-last"><ng-content select="[footerStart]" /></div>
+      <footer class="flex shrink-0 flex-wrap items-center gap-3 border-t border-line py-4 max-sm:flex-col-reverse max-sm:items-stretch" [class]="pad()">
         <button #closeButton type="button" class="mk-btn-secondary" [disabled]="!dismissible()" (click)="discardGuard.request()" data-detail-close [attr.data-testid]="testId() + '-close'">
           {{ 'COMMON.CLOSE' | translate }}
         </button>
-        <ng-content select="[actions]" />
+        <!-- MD-508 (decisión de Rod): «Cerrar» a la izquierda; a la derecha, en este orden, lo destructivo (footerStart, separado por una línea fina), las acciones y al final la primaria. -->
+        <div class="ml-auto flex grow flex-wrap items-center justify-end gap-3 max-sm:ml-0 max-sm:flex-col-reverse max-sm:items-stretch">
+          <div class="flex flex-wrap items-center gap-3 empty:hidden"><ng-content select="[footerStart]" /></div>
+          <div class="flex flex-wrap items-center justify-end gap-3 empty:hidden [div:not(:empty)+&]:border-l [div:not(:empty)+&]:border-line [div:not(:empty)+&]:pl-3 max-sm:[div:not(:empty)+&]:border-l-0 max-sm:[div:not(:empty)+&]:pl-0"><ng-content select="[actions]" /></div>
+        </div>
       </footer>
     </app-modal>
     <!-- Fuera del panel, como en form-modal: la confirmación no queda atada al panel ni a su animación. -->
