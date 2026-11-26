@@ -206,15 +206,15 @@ de la VF2 marcadas abajo como reemplazadas.
 | `operations` | Operación |
 
 ### `risk_level`
-> **Con la VF18 (D134)** el nivel se lee por la **posición de la celda** en la matriz, no por rangos del valor. Los valores no cambian.
+> **Con la VF18 (D134, MD-496)** el nivel sale de la **posición de la celda** (probabilidad, impacto) en la matriz, no de rangos del valor. La tabla de celdas está en D134 y la sirve `GET /risk-matrix`; el frontend no la escribe.
 **Columnas:** `client_risks.inherent_risk_level` y `residual_risks.residual_level` · Sí del Excel (matriz 5×5).
 
-| Valor | Etiqueta (es) | Puntaje |
-|---|---|---|
-| `low` | Bajo | 1–4 |
-| `moderate` | Moderado | 5–9 |
-| `high` | Alto | 10–16 |
-| `critical` | Crítico | 17–25 |
+| Valor | Etiqueta (es) |
+|---|---|
+| `low` | Bajo |
+| `moderate` | Moderado |
+| `high` | Alto |
+| `critical` | Crítico |
 
 ### `failure_category`
 > **Se retira con la VF18 (D129):** la reemplazan `cause_origin` y `cause_type` ([`catalogo-maestro.md`](catalogo-maestro.md)).
