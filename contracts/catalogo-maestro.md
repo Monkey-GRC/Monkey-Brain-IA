@@ -94,9 +94,22 @@ En `tenant.client_causes`: `origin` y `cause_type`, y `name`/`failure_category` 
 ### El nombre que ve el cliente (D70, D82)
 
 La hoja `TEST` no trae nombre neutro. La carga lo **deriva** (Rod, 2026-11-23): en una `T-DOC`, el nombre del documento;
-en una prueba de control, el texto de su requisito o, si ese texto es «Posible Checks …», el objetivo. Se aplica la
-tabla 9 de `01_DESARROLLO`, se valida que no nombre a ningún proveedor (SEG-39) y queda `display_name_reviewed = false`
-hasta que Monkey lo revise. `display_description` es el objetivo, reescrito con la tabla 9 donde nombra al proveedor.
+en una prueba de control, el texto de su requisito o, si ese texto es «Posible Checks …», el objetivo. El nombre y la
+descripción se guardan como salen del libro (el libro **no se reescribe en la base**, Rod, 2026-11-25); la tabla 9 de
+`01_DESARROLLO` (D128) vive en `Backend/src/common/text/provider-names.ts` (`whiteLabel`) y se aplica **al enviar el texto
+al cliente** con `clientText`. El nombre queda `display_name_reviewed = false` hasta que Monkey lo revise.
+`display_description` es el objetivo.
+
+**Campos visibles al cliente** (`CLIENT_VISIBLE_TEXT_FIELDS`, `Backend/prisma/seed/catalog/display-names.ts`); todos pasan
+por `clientText` al salir, y `validate.ts` y `verify-catalog.ts` §6 fallan si alguno nombra al proveedor tras aplicarla (SEG-39):
+
+| Colección | Campos |
+|---|---|
+| `tests` | `displayName`, `displayDescription`, `objective`, `whyItMatters`, `stepByStep`, `correctIf`, `exceptionIf`, `observationIf`, `evidenceToRetain` |
+| `controlRequirements` | `text`, `assemblyNote` |
+| `standardProcedures` | `whenUsed`, `genericSteps`, `typicalEvidence` |
+| `integrationCategories` | `exampleTools` |
+| `testChecks` | `commonObjective` |
 `display_name_en` queda nulo hasta la traducción con IA revisada por el comité (D142).
 
 ### Puentes con el código v1
@@ -116,7 +129,7 @@ Para que crear empresa → contratar SOC 2 → clonar → medir siga funcionando
 - **Reglas `IN-01` a `IN-10`**. Avisos conocidos que no fallan: `IN-07` en VUL-1/VUL-2 («Detección de vulnerabilidades») y
   el tipo de pérdida de R003/R004 (`P9`, se carga literal).
 - Cada vínculo de `TEST_CHECKS` cruza con su check, salvo los 19 «N/A».
-- Marca blanca: ningún `display_name` ni `display_description` nombra al proveedor.
+- Marca blanca: ningún campo visible al cliente (`CLIENT_VISIBLE_TEXT_FIELDS`) nombra al proveedor una vez aplicada la tabla 9 (`clientText`); el libro queda intacto en la base.
 - Base frente a JSON, fila por fila, y los puentes.
 
 ## Transición: Admin en solo lectura

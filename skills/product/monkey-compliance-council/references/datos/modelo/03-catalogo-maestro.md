@@ -272,7 +272,7 @@ finanzas y CRM, y consentimiento y cookies; cada una con los controles que alime
 
 **Las pruebas son texto interno.** 126 de las 472 nombran a los proveedores de la sonda o del motor de nube en
 algún campo: nada de eso sale tal cual a la UI, a un reporte ni a un texto generado por IA. El cliente ve el nombre y
-la descripción neutros que escribe Monkey (D70, D82) y la tabla 9 de `01_DESARROLLO` (D128). La columna `Estado`
+la descripción neutros que escribe Monkey (D70, D82) y la tabla 9 de `01_DESARROLLO` (D128), que se aplica al salir hacia el cliente con `clientText` (el libro queda intacto en la base; campos en `contracts/catalogo-maestro.md`). La columna `Estado`
 de la hoja `TEST` no se carga.
 
 **El rol del check** (D129, `TEST_CHECKS`, 4.684 vínculos para 117 pruebas): **Directo** (1.728: decide el

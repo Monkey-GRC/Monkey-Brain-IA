@@ -83,7 +83,7 @@ Prowler, ni de ningún proveedor por su nombre. Aplica a pantallas, notificacion
 reportes exportables y cualquier texto que genere la IA. El proveedor es un
 atributo interno del modelo (`modelo-datos.md` §8), no una etiqueta de interfaz.
 
-**Cómo se dice cada cosa (tabla 9 de la VF18, D128):**
+**Cómo se dice cada cosa (tabla 9 de la VF18, D128; en el código, `whiteLabel`/`clientText` de `Backend/src/common/text/provider-names.ts`):**
 
 | En el material interno | Lo que ve el cliente |
 |---|---|
