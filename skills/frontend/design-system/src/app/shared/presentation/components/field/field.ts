@@ -13,7 +13,7 @@ import { TranslatePipe } from '@ngx-translate/core';
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'block' },
   template: `
-    <label [attr.for]="forId()" class="mb-1.5 block text-xs font-medium text-ink-faint">{{ labelKey() | translate }}</label>
+    <label [attr.for]="forId()" class="mb-1.5 block text-sm font-medium text-ink">{{ labelKey() | translate }}</label>
     <ng-content />
     @if (hintKey(); as hint) {
       <p [id]="forId() + '-hint'" class="mt-1.5 text-xs text-ink-muted">{{ hint | translate }}</p>

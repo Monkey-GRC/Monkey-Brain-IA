@@ -53,7 +53,7 @@ describe('DetailModal', () => {
 
   afterEach(() => document.body.classList.remove('overflow-hidden'));
 
-  it('is a modal dialog labelled by the item name, with its codes and summary in a fixed header and «Cerrar» first in a fixed footer, then the actions', () => {
+  it('is a modal dialog labelled by the item name, with its codes and summary in a fixed header and «Cerrar» at the left of a fixed footer and the destructive trigger and the actions at the right', () => {
     expect(dialog().getAttribute('aria-modal')).toBe('true');
     const title = el().querySelector('#' + dialog().getAttribute('aria-labelledby'))!;
     expect(title.textContent).toContain('Gestión de accesos');
@@ -64,9 +64,12 @@ describe('DetailModal', () => {
     expect(header.querySelector('[data-detail-x]')!.getAttribute('aria-label')).toBe('COMMON.CLOSE');
     expect(header.querySelector<HTMLButtonElement>('[data-detail-x]')!.type).toBe('button');
     const footer = dialog().querySelector('footer')!;
-    expect(close().previousElementSibling).toBe(footer.firstElementChild);
-    expect(footer.querySelector('#edit')).not.toBeNull();
-    expect(footer.firstElementChild!.querySelector('#retire')).not.toBeNull();
+    expect(footer.firstElementChild).toBe(close());
+    const group = footer.lastElementChild!;
+    expect(group.contains(close())).toBeFalse();
+    expect(group.querySelector('#edit')).not.toBeNull();
+    // Lo destructivo abre el grupo de la derecha y las acciones lo siguen: «Cerrar» no queda junto a él.
+    expect(group.firstElementChild!.querySelector('#retire')).not.toBeNull();
     expect(close().textContent).toContain('COMMON.CLOSE');
   });
 
