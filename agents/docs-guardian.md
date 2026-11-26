@@ -50,6 +50,9 @@ ya había movido.
    - **Contratos ↔ código:** cada endpoint del contrato del módulo existe en el controlador (método, ruta, `@Can`) y
      viceversa; códigos de error en el catálogo; sección «Estado de implementación» al día.
    - **Enums:** `contracts/enums/<módulo>.md` coincide con lo que sirve `/catalogs/<nombre>`.
+   - **Avisos y correos:** si cambió `Backend/i18n/{es,en}/notification.json`, `NOTIFICATION_TYPES`/`EMITTED_TYPES` o el asunto
+     de un correo (`*-email.ts`), `contracts/notificaciones/textos.md` tiene una fila
+     por tipo y por correo, con el título, «Qué ocurrió» y «Cómo se resuelve» iguales al JSON en español, y su estado al día.
    - **Registros:** una `DT-n` cuyo «Qué lo cierra» ya está en el código → avísalo (la cierra quien la cerró, con
      `monkey-registry`); un `SEG-n` cuya prueba citada ya no existe → avísalo.
    - **Índices:** cada módulo y componente nuevo, en `arquitectura/README.md`; cada archivo numerado, enlazado desde el

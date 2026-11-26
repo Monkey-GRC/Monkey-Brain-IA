@@ -6,7 +6,7 @@ description: >-
   después de backend-senior o frontend-senior y antes de dar la tarea por lista.
 tools: Read, Grep, Glob, Bash
 model: sonnet
-effort: low
+effort: medium
 title: QA
 type: agent
 applies_to: [backend, frontend]
