@@ -37,8 +37,8 @@ con sus causas. Retirar un riesgo no retira sus causas ni sus controles (D93).
 
 ## Lo que todavía no se puede calcular
 
-**Con la VF18 el riesgo ya tiene regla completa (D134)**, aunque no está construida: el nivel sale de la posición de la
-celda en la matriz; el residual, de la **cobertura verificada** (relaciones causa–control cuyo control cumple) contra los
+**Con la VF18 el riesgo ya tiene regla completa (D134)**. **Construido (MD-496): el nivel inherente sale de la posición de la
+celda en la matriz** (`domain/risks/risk-types.ts`, `riskLevelAt`), ya no de rangos del valor (RN-22). **Aún no construido:** el residual, de la **cobertura verificada** (relaciones causa–control cuyo control cumple) contra los
 umbrales de 60% y 85%, que bajan la probabilidad uno o dos niveles; el impacto no se reduce; y el apetito se lee por
 **zonas de color** (naranja, tolerable solo con plan de tratamiento aprobado). La valoración inherente viene del
 catálogo y llega prellenada al asistente. El plan de tratamiento lleva qué se hará, quién y para cuándo; lo registra el responsable y lo aprueba el `admin_empresa` (D140).

@@ -7,7 +7,7 @@ type: contract
 
 # Cumplimiento — riesgos y causas
 
-> **VF18 (D128): este contrato describe la API construida con el catálogo v1.** Con la VF18 el nivel inherente sale de la **posición en la matriz**, la valoración del catálogo llega prellenada, el residual se calcula por **cobertura verificada** y el efecto y la obligatoriedad de cada relación causa–control se retiran (D134). Se reescribe antes de construir RC-10 y RC-11.
+> **VF18 (D128): este contrato describe la API construida con el catálogo v1.** El nivel inherente ya sale de la **posición en la matriz** (construido en MD-496); con la VF18, además, la valoración del catálogo llega prellenada, el residual se calcula por **cobertura verificada** y el efecto y la obligatoriedad de cada relación causa–control se retiran (D134). Se reescribe antes de construir RC-10 y RC-11.
 
 | | |
 |---|---|
@@ -231,7 +231,7 @@ La matriz completa, con el valor y el nivel de **cada casilla**.
 { "min": 1, "max": 5, "cells": [ { "likelihood": 1, "impact": 1, "value": 1, "level": "low" }, …, { "likelihood": 5, "impact": 5, "value": 25, "level": "critical" } ] }
 ```
 
-> `value` es probabilidad × impacto y `level` sale de la **misma función** que la evaluación de un riesgo (Bajo 1–4 · Moderado 5–9 · Alto 10–16 · Crítico 17–25): una casilla vacía tiene exactamente el nivel que tendría un riesgo evaluado ahí. Sirve para pintar el mapa de calor (verde, amarillo, naranja, rojo) sin escribir los cortes en el frontend. Las 25 casillas vienen siempre, en orden de probabilidad e impacto crecientes; ordenar y colocar los ejes es cosa de la pantalla.
+> `value` es probabilidad × impacto y `level` sale de la **misma función** que la evaluación de un riesgo: la posición de la celda en la matriz (D134), no un rango del valor: una casilla vacía tiene exactamente el nivel que tendría un riesgo evaluado ahí. Sirve para pintar el mapa de calor (verde, amarillo, naranja, rojo) sin escribir los cortes en el frontend. Las 25 casillas vienen siempre, en orden de probabilidad e impacto crecientes; ordenar y colocar los ejes es cosa de la pantalla.
 
 ---
 
@@ -333,7 +333,7 @@ Los endpoints devuelven este objeto:
 |---|---|---|
 | `risk_id`, `likelihood`, `impact` | | |
 | `inherent_risk_value` | integer | |
-| `inherent_risk_level` | enum `risk_level` | Bajo 1–4 · Moderado 5–9 · Alto 10–16 · Crítico 17–25 |
+| `inherent_risk_level` | enum `risk_level` | Según la celda (probabilidad, impacto) de la matriz (D134) |
 | `previous` | `{ likelihood, impact, inherent_risk_value, inherent_risk_level }` \| null | `null` en la primera evaluación |
 | `evaluated_by` | `{ id, name, last_name }` | |
 | `evaluated_at` | datetime | |
@@ -480,6 +480,8 @@ Todos con el mismo sobre (`conventions.md`); `message` es la clave i18n del erro
 ---
 
 ## Estado de implementación
+
+**Construido (MD-496, 2026-11-25): el nivel inherente sale de la celda de la matriz (D134).** `riskLevelAt` y `riskMatrix()` en `domain/risks/risk-types.ts` (misma función para la evaluación y para `GET /risk-matrix`); la regla de los rangos 1–4/5–9/10–16/17–25 (RN-22) queda reemplazada. Cambia también el CHECK `client_risks_evaluation_shape` (`domain/risks/risk-types.spec.ts`).
 
 **Construido (MD-499, 2026-11-24): clasificación v2 de la causa.** `cause_origin` y `cause_type` al crear y editar una causa propia y en las respuestas; la causa del catálogo responde `422 cause.catalog_classification` (`application/risks/cause-classification.use-cases.spec.ts`).
 
