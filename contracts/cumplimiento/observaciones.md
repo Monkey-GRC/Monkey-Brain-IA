@@ -201,7 +201,7 @@ La auditoría lleva el texto (`body`, `answer_note`) antes y después: es lo que
 
 ## Preguntas abiertas
 
-- **`P37`:** criterios de las observaciones que desarrollo fijó sin que el comité los pidiera (qué es «abierta» para el veredicto, controles dados de baja, la evidencia de una respuesta, conservar la última respuesta, aviso a la empresa).
+- **`P37`:** criterios de las observaciones que desarrollo fijó sin que el comité los pidiera (qué es «abierta», controles dados de baja, la evidencia de una respuesta, conservar la última respuesta, aviso a la empresa).
 - **Reportes en PDF y Excel** del auditor: el contenido está por definir, no tienen contrato todavía.
 
 ---
@@ -210,8 +210,8 @@ La auditoría lleva el texto (`body`, `answer_note`) antes y después: es lo que
 
 **Construido (MD-154, 2026-10-29): las observaciones del auditor.** Tabla `tenant.audit_observations` (RLS por empresa, restricciones de coherencia y un trigger que impone en la base que nunca se borran y que una cerrada no se toca, SEG-69; solo desaparecen con la purga de una empresa archivada, D97). Cinco endpoints (arriba), permisos SEG-70, rastro en la misma transacción (`observation.*`). **No mueven el porcentaje:** no escriben evaluaciones ni eventos de cumplimiento (lo comprueba una prueba).
 
-Dos reglas que salían de otros documentos y quedan cerradas: el veredicto exige la razón cuando el control de origen tiene observaciones `open` (D85, antes la mitad de `DT-80`), y un servicio con observaciones no se borra (`SERVICE_HAS_EVALUATIONS`: son historia, igual que las evaluaciones). Los tipos y estados se sirven en `GET /v1/catalogs/{nombre}`.
+Dos reglas que salían de otros documentos y quedan cerradas: el veredicto exigía la razón cuando el control de origen tenía observaciones `open` (D85; se retiró con el veredicto en MD-504), y un servicio con observaciones no se borra (`SERVICE_HAS_EVALUATIONS`: son historia, igual que las evaluaciones). Los tipos y estados se sirven en `GET /v1/catalogs/{nombre}`.
 
-Pruebas: `test/cumplimiento/observaciones.e2e-spec.ts`, el bloque final de `veredictos.e2e-spec.ts` y `src/features/compliance/domain/observations/observation-lifecycle.spec.ts`.
+Pruebas: `test/cumplimiento/observaciones.e2e-spec.ts`, y `src/features/compliance/domain/observations/observation-lifecycle.spec.ts`.
 
 **Fuera de alcance, a propósito:** las pantallas (los permisos por pantalla ya no se esperan: D102) y el aviso a la empresa de que tiene una observación nueva (el sistema de correos y notificaciones no existe todavía; se decidió en D143 y lo construye MD-69; mientras tanto la empresa la ve al entrar al servicio y en «Mi trabajo»).

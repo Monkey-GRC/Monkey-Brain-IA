@@ -25,7 +25,7 @@ límite de tiempo. Lo usa `admin_empresa`.
 > |---|---|
 > | `evidence_requirements`, clonadas de plantillas de evidencia | **Requisitos del control del cliente**, uno por `control_requirements` y control del cliente, con su periodicidad configurada y su «No aplica» justificado y aprobado (D129, RC-02). Los documentos son de la empresa (§11) |
 > | `client_control_tests` (N:M control ↔ test) | Se retira: la prueba pertenece a su control (D129) |
-> | Revisión de cada evidencia por rol (`evidence_reviews`, D102) y del veredicto en dos niveles (`test_verdict_reviews`, D121) | **La aprobación es del control** (D132): estados de gestión y dos aprobaciones (responsable y, al final, `admin_empresa`), con motivo al devolver. La evidencia que causa una devolución queda «devuelta». El resultado de una prueba manual lo registra el responsable al revisar la evidencia del delegado (D140) |
+> | Revisión de cada evidencia por rol (`evidence_reviews`, D102) y del veredicto en dos niveles (`test_verdict_reviews`, D121). **Tablas borradas en MD-504 (2026-11-25)** | **La aprobación es del control** (D132): estados de gestión y dos aprobaciones (responsable y, al final, `admin_empresa`), con motivo al devolver. La evidencia que causa una devolución queda «devuelta». El resultado de una prueba manual lo registra el responsable al revisar la evidencia del delegado (D140). **Construido en MD-504:** `control_approvals` y `manual_test_results` (§7.3b) |
 > | La evidencia vale si cae en el período (C1) | Además, **por ventana** de la periodicidad del control o del requisito (D131); el `admin_empresa` cambia la periodicidad con justificación (G-10). El período auditado dura 6 meses como mínimo |
 > | `exclusions`: un activo sale del denominador de una prueba hasta el fin del período | **Excepción de un check en un activo**: cuenta como PASS marcado, con fecha de fin de 90 días como máximo (D135) |
 > | `client_cause_controls.is_mandatory` y `effect`; `residual_parameters` | Se retiran: el residual sale de la cobertura verificada y de PR-08 a PR-10; el apetito, de las zonas de color (D134) |
@@ -87,18 +87,9 @@ erDiagram
         text deactivation_reason "nullable, obligatoria al desactivar"
         uuid deactivated_by FK "nullable"
     }
-    action_plans {
-        uuid id PK
-        uuid client_control_id FK
-        uuid responsible_id FK
-        text action_description
-        date due_date
-        enum status
-    }
     controls ||--o{ client_controls : "particularizado en"
     services ||--o{ client_controls : "aplica"
     client_controls ||--o{ client_control_changes : "se modifica con"
-    client_controls ||--o{ action_plans : "remediado con"
     client_controls ||--o{ user_control_assignments : "asignado a"
     client_controls ||--o{ client_control_dimensions : "se evalua en"
     client_controls ||--o{ client_control_tests : "se verifica con"
@@ -272,22 +263,7 @@ erDiagram
         string integrity_hash
         string version
         text ai_verdict "etiquetado como generado por IA"
-    }
-    evidence_reviews {
-        uuid id PK
-        uuid tenant_id FK "RLS (D31)"
-        uuid evidence_submission_id FK
-        enum reviewer_role "responsable|admin_empresa: una fila por entrega y rol (D102)"
-        uuid reviewed_by FK
-        datetime reviewed_at
-        boolean type_ok "atributos de la evidencia (RN-01); nulo = sin revisar"
-        boolean period_ok "la fecha cae dentro del periodo"
-        boolean valid_ok "vigente; en No es EVIDENCIA VENCIDA (RN-02)"
-        boolean approved_ok "aprobacion del documento"
-        boolean signed_ok "firma o autorizacion"
-        boolean content_ok "contenido obligatorio"
-        enum review "pending_review|human_validated (RN-03); ai_prevalidated se deriva"
-        text note "nullable"
+        uuid returned_approval_id FK "nullable: la devolucion del control que dejo la entrega sin contar (D132, MD-504)"
     }
     exclusions {
         uuid id PK
@@ -308,12 +284,11 @@ erDiagram
     }
     client_controls ||--o{ evidence_requirements : "exige"
     evidence_requirements ||--o{ evidence_submissions : "se cumple con"
-    evidence_submissions ||--o{ evidence_reviews : "la revisan el responsable dueño y el admin_empresa"
+    control_approvals ||--o{ evidence_submissions : "la devuelve"
     tests ||--o{ exclusions : "excluye checks por"
 ```
 
-**Lo que D68 agrega a estas tablas** (la regla está en §9): `client_control_tests` lleva *obligatorio*, *vigente*, fechas y la justificación de una desactivación; `evidence_reviews` guarda los seis atributos que se
-validan por evidencia y la **revisión** (`pending_review`, `human_validated`; `ai_prevalidated` se **deriva** cuando la entrega tiene `ai_verdict` y ninguna revisión humana), de donde se **deriva** su estado (`evidence_state`). **La revisan el `responsable` dueño y el `admin_empresa`** (D102, que ajusta D96): no hay `validation_status` en la entrega, la revisión es otra fila por rol. `exclusions` puede excluir un **activo** de un test además de un check, siempre con justificación, aprobador y vigencia. Un `evaluations.result` ahora
+**Lo que D68 agrega a estas tablas** (la regla está en §9): `client_control_tests` lleva *obligatorio*, *vigente*, fechas y la justificación de una desactivación; `evidence_reviews` (D102) guardaba los seis atributos y la revisión por rol; **MD-504 la borró** (D132): `evidence_state` se **deriva** de si la entrega fue devuelta (`evidence_submissions.returned_approval_id`). `exclusions` puede excluir un **activo** de un test además de un check, siempre con justificación, aprobador y vigencia. Un `evaluations.result` ahora
 distingue `error` y `excluded`.
 
 **El responsable de la evidencia es cargo *y* persona, en planos distintos** (decisión A1):
@@ -333,8 +308,20 @@ sugiere para el control sin decir a qué prueba sirve (las 89 asignaciones del E
 exclusión sin justificación aprobada no cambia el denominador — y un check que sale por
 omisión es un agujero, no una exclusión.
 
-**La evidencia la sube el ejecutor, el dueño o el `admin_empresa`; la revisa el `responsable` dueño (si no la subió él) y el `admin_empresa` siempre puede** (D102; con la VF18 la aprobación pasa al control, D132); el `auditor` la lee, no la revisa. **Cada entrega tiene a lo sumo una revisión por rol** (`evidence_submission_id` + `reviewer_role` único). El estado que consume el motor sale de combinarlas: **si hay algún rechazo, rechazada; si no hay rechazos y hay al menos una validación, validada** (con dos revisiones, aprueban las dos); sin revisión, pendiente. Una revisión no se edita: se rehace con una entrega nueva. Una entrega es histórico: la app solo la inserta y la lee (sin `UPDATE` ni `DELETE`) y `(evidence_requirement_id, version)` es único (MD-126). La IA puede sugerir un veredicto (`ai_verdict`),
+**La evidencia la sube el ejecutor, el dueño o el `admin_empresa`, y nadie la revisa una por una** (D132, MD-504; reemplaza a D102): cuenta si está vigente y el control no se devolvió por ella. Al **devolver el control** (§7.3b) las entregas indicadas quedan marcadas con `returned_approval_id` y dejan de contar; el motivo es `control_approvals.reason`. El `auditor` la lee. Una entrega es histórico: la app solo la inserta y la lee (sin `UPDATE` ni `DELETE`, salvo marcar `returned_approval_id`) y `(evidence_requirement_id, version)` es único (MD-126). La IA puede sugerir un veredicto (`ai_verdict`),
 siempre etiquetado como generado por IA, pero **nunca cierra un control**.
+
+### 7.3b Gestión y aprobación del control (D132, D140; MD-504)
+
+Contrato: [`contracts/cumplimiento/aprobacion.md`](../../../../../../contracts/cumplimiento/aprobacion.md).
+
+| Tabla | Columnas | Reglas |
+|---|---|---|
+| `control_approvals` | `id`, `tenant_id` (RLS), `client_control_id`, `step` (`control_approval_step`: `owner` · `final`), `decision` (`control_approval_decision`: `approved` · `returned`), `reason`, `actor_id` (FK `users`), `at`, `window_start`, `invalidated_at` | Inmutable salvo `invalidated_at`, que se escribe una vez cuando la aprobación deja de valer (el control dejó de cumplir o se devolvió). `window_start` es el inicio de la ventana del control cuando se dio: otra ventana, otra aprobación. `reason` obligatorio al devolver |
+| `manual_test_results` | `id`, `tenant_id` (RLS), `client_control_id`, `test_id`, `result` (`manual_test_result_value`: `correct` · `observation` · `exception`), `note`, `registered_by` (FK `users`), `registered_at` | Inmutable: cada registro es una fila nueva y el último de la ventana vigente decide. Es de la prueba **en ese control** (D129), no del servicio |
+| `evidence_submissions.returned_approval_id` | FK nula a `control_approvals` | La devolución que dejó la entrega sin contar |
+
+El **estado de gestión** (`control_management_state`) no se guarda: se calcula al leer con el nivel del motor y estas filas.
 
 ### 7.4 Evaluaciones y hallazgos (el histórico)
 
@@ -438,18 +425,9 @@ sonda. Si lo causa el sistema (la sonda), `user_id`, `ip_address` y `user_agent`
 los controles de gestión de vulnerabilidades y parches (`CC7.1` / `A.8.8`). El módulo con
 vida propia no entra al MVP.
 
-### 7.4b Veredicto en dos niveles (D102, D121)
+### 7.4b Veredicto en dos niveles (D102, D121) — retirado
 
-> **Reemplazado por D132** con la VF18: la revisión en dos niveles pasa al control completo (7.0).
-
-El veredicto de una prueba manual **no documental** se registra y se revisa como la evidencia.
-
-| Tabla | Columnas | Reglas |
-|---|---|---|
-| `test_verdicts` | `id`, `tenant_id` (RLS), `service_id`, `client_control_id` (control de origen), `test_id`, `result` (`verdict_result`), `note`, `closure_observation_reason`, `registered_by` (FK `users`), `registered_at` | Inmutable: nunca se edita ni se borra. El **último** registrado de un test en un servicio decide el estado del test |
-| `test_verdict_reviews` | `id`, `tenant_id` (RLS), `test_verdict_id`, `reviewer_role` (`reviewer_role`), `decision` (`verdict_review_decision`), `note`, `reviewed_by` (FK `users`), `reviewed_at` | Única por (`test_verdict_id`, `reviewer_role`); un segundo `PUT` del mismo rol la reemplaza. `note` obligatoria al rechazar |
-
-**Estado (`verdict_state`, derivado):** algún rechazo → `rejected`; al menos una aprobación sin rechazos → `approved`; ninguna → `pending`. Solo un veredicto `approved` cuenta en el motor (§9): da su `result` a todos los controles del servicio que llevan el test (D85). Si lo registra el `admin_empresa`, nace con su aprobación. Las evaluaciones manuales que ya existían en `evaluations` se migran como veredictos aprobados por quien las dio (no hay empresas reales, D102).
+> **Retirado en MD-504 (2026-11-25).** Las tablas `test_verdicts` y `test_verdict_reviews`, el enum `verdict_result` y `verdict_review_decision` se borraron (migración destructiva `20261126130200_drop_v1_verdicts_reviews_action_plans`; no hay empresas reales). Reemplazo: la aprobación es del control y el resultado manual es por control, en `manual_test_results` (§7.3b, D132, D140). `action_plans` y su enum `action_plan_status` se borraron en la misma migración.
 
 ### 7.5 La IA y el veredicto
 

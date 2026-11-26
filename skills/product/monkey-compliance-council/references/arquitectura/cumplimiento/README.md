@@ -16,7 +16,7 @@ sale de aplicar la regla. Si cambia una nota, cambia el resultado sin tocar nada
 
 Por eso todo el módulo hace una de dos cosas:
 
-- **Escribir un hecho** (sonda, evidencia, veredicto). Deja su rastro de auditoría y, si mueve el estado de algún
+- **Escribir un hecho** (sonda, evidencia, resultado manual, aprobación del control). Deja su rastro de auditoría y, si mueve el estado de algún
   control, un evento de cambio de estado.
 - **Leer y calcular** (lista de controles, detalle, resumen por marco). Carga la «foto» del servicio y se la pasa al motor.
 
@@ -32,8 +32,8 @@ También es el orden de lectura. Un número con decimal es un **componente**.
 | **4** | [`03-flujos.md`](03-flujos.md) | Las dos clases de operación y el patrón común de escritura | 10 min |
 | 4.1 | ↳ [Controles](controles/README.md) · [flujos](controles/03-flujos.md) | Leer la lista y el detalle de los controles de un servicio | 10 min |
 | 4.2 | ↳ [Resumen](resumen/README.md) · [flujos](resumen/03-flujos.md) | El estado por marco y categoría, y el período auditado | 10 min |
-| 4.3 | ↳ [Evidencia](evidencia/README.md) · [flujos](evidencia/03-flujos.md) | Subir, versionar y revisar un documento | 10 min |
-| 4.4 | ↳ [Veredictos](veredictos/README.md) · [flujos](veredictos/03-flujos.md) | La decisión de una persona sobre una prueba manual | 5 min |
+| 4.3 | ↳ [Evidencia](evidencia/README.md) · [flujos](evidencia/03-flujos.md) | Subir y versionar un documento (la revisión se retiró en MD-504) | 10 min |
+| 4.4 | ↳ [Veredictos](veredictos/README.md) · [flujos](veredictos/03-flujos.md) | Retirado en MD-504: el resultado manual y la aprobación están en `contracts/cumplimiento/aprobacion.md` | 5 min |
 | 4.5 | ↳ [Exclusiones](exclusiones/README.md) · [flujos](exclusiones/03-flujos.md) | Sacar un activo de una prueba, con vigencia | 5 min |
 | 4.6 | ↳ [Observaciones](observaciones/README.md) · [flujos](observaciones/03-flujos.md) | Lo que escribe el auditor y cómo se atiende | 5 min |
 | 4.7 | ↳ [Riesgos](riesgos/README.md) · [flujos](riesgos/03-flujos.md) | Riesgos, causas, evaluación 5×5 y tratamiento | 15 min |
@@ -56,7 +56,7 @@ La otra puerta de entrada de hechos no es de este módulo: los resultados de la 
 | Dimensión | Sobre qué se mide: `policy` (documental), `server`, `database`, `app`, `cloud`. | enum `Dimension` |
 | Activo | Lo medido: un servidor, una base, una cuenta de nube… | `assets` ↔ `service_assets` |
 | Evaluación | **Un hecho**: el resultado de un activo en una prueba en un instante. Inmutable. | `evaluations` |
-| Evidencia | Un documento que respalda una prueba documental. Se sube y luego se revisa. | `evidence_*` |
+| Evidencia | Un documento que respalda una prueba documental. Se sube; cuenta si no se devuelve el control (MD-504). | `evidence_*` |
 | Veredicto | La decisión de una persona sobre una prueba manual. | `evaluations` con `origin = manual` |
 | Estado / avance / cobertura | El estado decide. El avance (%) y la cobertura solo informan. | `engine/` y `control-readout.ts` |
 
@@ -73,7 +73,7 @@ importa, el resto lo conecta con el mundo.
 | Estado de una evidencia | `domain/evidence/evidence.ts` | Cuándo una entrega cumple, vence o espera. |
 | Cambio de estado de un control | `domain/controls/control-state-events.ts` | Compara «antes» y «después» de una escritura. |
 | **La foto del servicio** | `infrastructure/shared/service-snapshot.loader.ts` | Carga controles, activos y últimos resultados. |
-| Casos de uso | `application/{controls,overview,verdicts,evidence}/` | Orquestan: permisos, repositorio, auditoría. |
+| Casos de uso | `application/{controls,overview,management,evidence}/` | Orquestan: permisos, repositorio, auditoría. |
 | Endpoints | `presentation/*/…controller.ts` | Rutas, roles permitidos, formato de respuesta. |
 | Pantallas | `Frontend-Platform/src/app/features/compliance/` | Cómo se ve para el cliente. |
 
@@ -81,7 +81,7 @@ importa, el resto lo conecta con el mundo.
 
 | Dato | Dueño |
 |---|---|
-| Rutas, cuerpos y errores | Índice y permisos comunes: `contracts/cumplimiento/README.md` · por componente: `controles.md` · `resumen.md` · `evidencia.md` · `veredictos.md` · `observaciones.md` · `exclusiones.md` · `riesgos.md` (todos en `contracts/cumplimiento/`) · y los cargos: `contracts/onboarding/cargos-responsables.md` |
+| Rutas, cuerpos y errores | Índice y permisos comunes: `contracts/cumplimiento/README.md` · por componente: `controles.md` · `resumen.md` · `evidencia.md` · `veredictos.md` · `aprobacion.md` · `observaciones.md` · `exclusiones.md` · `riesgos.md` (todos en `contracts/cumplimiento/`) · y los cargos: `contracts/onboarding/cargos-responsables.md` |
 | Valores de los enums | [`contracts/enums/cumplimiento.md`](../../../../../../contracts/enums/cumplimiento.md) |
 | La definición funcional del cálculo | `datos/modelo/09-calculo-cumplimiento.md` (§9) · `datos/modelo/07-cumplimiento.md` (§7) |
 | Decisiones (`D-n`) | [`datos/decisiones/cumplimiento/README.md`](../../datos/decisiones/cumplimiento/README.md): `D33` · `D62` · `D65` · `D68` · `D74` · `D75` · `D76` · `D78` · `D79` · `D80` · `D83` · `D85` · `D87` · `D88` · `D130` · `D131` · `D132` · `D134` · `D135` |

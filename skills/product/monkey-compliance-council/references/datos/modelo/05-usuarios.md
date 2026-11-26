@@ -317,7 +317,7 @@ toda ruta sin permiso declarado (SEG-86). Lo que aún no se construye queda decl
 - **`admin_monkey` sobre los datos de una empresa** (ver, gestionar usuarios y asignaciones, conectores): pendiente de
   MD-146; hoy recibe `403` (DT-124).
 - **Ejecutar pruebas** para `responsable`, `delegado` y `auditor` (⊗): pendiente (DT-123); hoy solo `admin_empresa`.
-- **Aprobar el control y Documentos completos:** MD-504 y MD-506. El corte mínimo de Documentos (D152) deja «Mis
+- **Aprobar el control (MD-504, 2026-11-25):** construido con `controls.approve_first` (`responsable` dueño y `admin_empresa`) y `controls.approve_final` (`admin_empresa`); registrar el resultado de una prueba manual es `verdicts.register` [N, A, S, N, N, N] (el `responsable`; el `admin_empresa` si no hay responsable o lo es él). `evidence.review` y `verdicts.review` se retiraron. **Documentos completos:** MD-506. El corte mínimo de Documentos (D152) deja «Mis
   documentos» y aceptar para los asignados, y listar, publicar y asignar para el `admin_empresa`.
 - **«Crear grupos» solo `admin_empresa`** (la matriz manda sobre D104); el `delegado` no ve el tablero de cumplimiento.
 

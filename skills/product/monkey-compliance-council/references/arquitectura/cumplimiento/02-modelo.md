@@ -12,7 +12,8 @@ Responde: **¿qué tablas participan y cuáles toca cada operación?** El modelo
 |---|---|---|
 | `client_controls` · `client_control_dimensions` · `client_control_tests` | El control del cliente, copia del catálogo | §7.1 |
 | `client_risks` · `client_causes` · sus puentes · `risk_treatments` · `residual_risks` | Riesgos y su tratamiento | §7.2 |
-| `evidence_requirements` · `evidence_submissions` · `evidence_reviews` · `exclusions` | Evidencias y exclusiones | §7.3 |
+| `evidence_requirements` · `evidence_submissions` · `exclusions` | Evidencias y exclusiones | §7.3 |
+| `control_approvals` · `manual_test_results` | Aprobación del control y resultado de una prueba manual (MD-504) | §7.3b |
 | `evaluations` · `findings` · `vulnerabilities` · `compliance_events` | El histórico inmutable | §7.4 |
 | `audit_observations` | Lo que escribe el auditor | §7.6 |
 | `services` · `assets` · `service_assets` | De dónde cuelga todo | `06-onboarding.md` §6.2 y §6.3 |
@@ -26,7 +27,8 @@ flowchart TB
     cat["catalog.controls"] -. "se clona en" .-> cc
     cc --> cct[["client_control_tests"]] --> t["catalog.tests"]
     cc --> ccd["client_control_dimensions"]
-    cc --> er["evidence_requirements"] --> es["evidence_submissions"] --> ev["evidence_reviews"]
+    cc --> er["evidence_requirements"] --> es["evidence_submissions"]
+    cc --> ca["control_approvals"] --> es
     cc --> e["evaluations"]
     a --> e
     t --> e
@@ -54,7 +56,8 @@ Las dos son **append-only por triggers** de la base (`SEG-38`): ni la aplicació
 | Estado de un control, categoría o marco | Se calcula en memoria con el motor |
 | Avance, cobertura y semáforo | Ídem |
 | `excluded` de un activo | Se **superpone al leer**: una exclusión aprobada y vigente cambia el resultado de ese activo en esa prueba. La evaluación de la sonda no se toca (MD-144, D78) |
-| `evidence_state` de una entrega | Se deriva de la revisión (`evidenceStateOf`) |
+| `evidence_state` de una entrega | Se deriva de si fue devuelta (`evidenceStateOf`, D132) |
+| `control_management_state` | Se calcula al leer con el motor y `control_approvals` / `manual_test_results` (MD-504) |
 | «Quién es responsable de este control» | Se calcula al leer: la excepción del control o, si no hay, el responsable del servicio (D96) |
 
 ## Qué toca cada operación
@@ -71,14 +74,14 @@ Las dos son **append-only por triggers** de la base (`SEG-38`): ni la aplicació
 | `exclusions` | L (las aprobadas y vigentes) | — | — | — | — |
 | `evidence_requirements` | L | — | L (E si es la primera entrega de una prueba) | L | — |
 | `evidence_submissions` | L | — | **E** | L | — |
-| `evidence_reviews` | L | — | — | **E** | — |
+| `control_approvals`, `manual_test_results` | L | — | — | **E** (`POST …/approval`, `POST …/result`) | — |
 | `executions`, `check_results`, `asset_resources` | — | — | — | — | **E** |
 | `audit.audit_logs` | — | **E** | **E** | **E** | **E** |
 | `audit.compliance_events` | — | E (si cambió algún estado) | E (ídem) | E (ídem) | E (ídem) |
 | Almacenamiento S3 | — | — | **E** | — | — |
 
 **Cómo se lee esta tabla:** las lecturas nunca escriben. Y **solo tres tablas guardan hechos que mueven el
-cumplimiento**: `evaluations`, `evidence_submissions` y `evidence_reviews` (más `exclusions`, que reinterpreta).
+cumplimiento**: `evaluations`, `evidence_submissions`, `control_approvals` y `manual_test_results` (más `exclusions`, que reinterpreta).
 Todo lo demás es contexto o rastro.
 
 ## Las reglas de datos que sostienen el cálculo

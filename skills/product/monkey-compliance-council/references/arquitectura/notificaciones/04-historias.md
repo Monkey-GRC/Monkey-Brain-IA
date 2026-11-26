@@ -117,7 +117,7 @@ tengo que atender sin entrar a revisar.
 **Como** quien subió una evidencia, **quiero** saber cuándo la revisan y con qué resultado **para** corregirla a tiempo si la
 rechazan.
 
-- **Construido (MD-515):** `evidence_approved` y `evidence_rejected` llegan a quien subió la evidencia y al dueño del control, al revisarla.
+- **Construido (MD-515), reemplazado en MD-504:** `evidence_approved` y `evidence_rejected` llegaban a quien subió la evidencia al revisarla; ya no se emiten (la aprobación es del control). Hoy se avisa con `control_returned` al devolver el control, con su motivo.
 - Qué evento notifica y a quién: D138; canal y frecuencia: D143.
 
 ### HU-NOT-09 · Enterarme de que un control dejó de cumplir o la evaluación automática falló

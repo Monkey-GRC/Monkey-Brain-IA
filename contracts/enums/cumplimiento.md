@@ -2,14 +2,14 @@
 
 > Índice de todos los enums: [`enums.md`](../enums.md). Por el cable viaja el **valor**; la etiqueta (es/en) la resuelve i18n. Formato: [`README.md`](../README.md#formato-de-un-enum).
 
-**Contenido:** [Modelo de evaluación v2](#modelo-de-evaluación-v2-vf18-d130-a-d135--nuevas) · [Observaciones del auditor](#observaciones-del-auditor) · [Controles y exclusiones](#controles-y-exclusiones) · [Riesgos y causas](#riesgos-y-causas) · [Evaluación y veredictos](#evaluación-y-veredictos) · [Estados del motor (D68)](#estados-del-motor-d68)
+**Contenido:** [Modelo de evaluación v2](#modelo-de-evaluación-v2-vf18-d130-a-d135--nuevas) · [Observaciones del auditor](#observaciones-del-auditor) · [Controles y exclusiones](#controles-y-exclusiones) · [Riesgos y causas](#riesgos-y-causas) · [Evaluación](#evaluación-y-veredictos) · [Estados del motor (D68)](#estados-del-motor-d68)
 
 ---
 
 ## Modelo de evaluación v2 (VF18, D130 a D135) — nuevas
 
 Las opciones son las de la tabla 8 de `01_DESARROLLO` y de `MAP CALOR`; los **valores** son propuesta de desarrollo y se
-fijan al construir el motor v2 (RC-06 a RC-09). **Construidos con MD-498 (2026-11-23), con estos mismos valores:** `check_result`, `test_status`, `requirement_status` y `control_level` (`Backend/src/features/compliance/domain/engine/v2/types.ts`; `control_level` y `requirement_status` salen en la vista técnica de la lista, el detalle y el resumen). **Aún no existen en el Backend:** `manual_evidence_state`, `automatic_evidence_state` (MD-506), `control_management_state` (MD-504) y `document_version_status` (MD-506). Reemplazan a las del modelo
+fijan al construir el motor v2 (RC-06 a RC-09). **Construidos con MD-498 (2026-11-23), con estos mismos valores:** `check_result`, `test_status`, `requirement_status` y `control_level` (`Backend/src/features/compliance/domain/engine/v2/types.ts`; `control_level` y `requirement_status` salen en la vista técnica de la lista, el detalle y el resumen). **Construido con MD-504 (2026-11-25):** `control_management_state` (`Backend/src/features/compliance/domain/controls/management-state.ts`), `control_approval_step`, `control_approval_decision` y `manual_test_result_value`. **Aún no existen en el Backend:** `manual_evidence_state`, `automatic_evidence_state` (MD-506) y `document_version_status` (MD-506). Reemplazan a las del modelo
 de la VF2 marcadas abajo como reemplazadas.
 
 ### `manual_evidence_state` · `automatic_evidence_state`
@@ -77,7 +77,7 @@ de la VF2 marcadas abajo como reemplazadas.
 | `solid` | Sólido | 5 |
 
 ### `control_management_state`
-**Dónde se usa:** la gestión del control (D132). **Solo `approved` cuenta como cumplido.**
+**Dónde se usa:** la gestión del control (D132; `cumplimiento/aprobacion.md`), calculada al leer; sale como `management_state`. **Solo `approved` cuenta como cumplido.**
 
 | Valor | Etiqueta (es) |
 |---|---|
@@ -87,6 +87,19 @@ de la VF2 marcadas abajo como reemplazadas.
 | `owner_approved` | Aprobado por el responsable |
 | `approved` | Cumplimiento aprobado |
 | `returned` | Devuelto |
+
+### `control_approval_step` · `control_approval_decision` · `manual_test_result_value`
+**Columnas:** `control_approvals.step`, `control_approvals.decision` y `manual_test_results.result` (D132, D140; `cumplimiento/aprobacion.md`). `manual_test_result_value` es el subconjunto de `test_status` que una persona puede registrar.
+
+| Enum | Valor | Etiqueta (es) |
+|---|---|---|
+| `control_approval_step` | `owner` | Primera aprobación (responsable) |
+| `control_approval_step` | `final` | Aprobación final (administrador de la empresa) |
+| `control_approval_decision` | `approved` | Aprobado |
+| `control_approval_decision` | `returned` | Devuelto |
+| `manual_test_result_value` | `correct` | Correcto |
+| `manual_test_result_value` | `observation` | Observación |
+| `manual_test_result_value` | `exception` | Excepción |
 
 ### `document_version_status`
 **Dónde se usa:** el estado de una versión de un documento de la empresa (§11, D133).
@@ -308,43 +321,6 @@ de la VF2 marcadas abajo como reemplazadas.
 | `manual` | Manual | Veredicto con evidencia |
 | `ai_assisted` | Asistida por IA | Revisión documental |
 
-### `action_plan_status`
-**Columna:** `action_plans.status` · «Vencido» no es un estado: se deriva de `due_date`.
-
-| Valor | Etiqueta (es) |
-|---|---|
-| `open` | Abierto |
-| `in_progress` | En curso |
-| `done` | Hecho |
-| `cancelled` | Cancelado |
-
-### `verdict_result`
-**Dónde se usa:** el veredicto de un test (`cumplimiento/veredictos.md`). Es el subconjunto de `asset_result` que puede dar una persona.
-
-| Valor | Etiqueta (es) |
-|---|---|
-| `compliant` | Cumple |
-| `non_compliant` | No cumple |
-
-### `verdict_state`
-> **Reemplazado con la VF18 (D132):** la aprobación es del control (`control_management_state`).
-**Dónde se usa:** el estado combinado de un veredicto (`cumplimiento/veredictos.md`, D121). Se **deriva** de sus revisiones; no se guarda.
-
-| Valor | Etiqueta (es) | Qué significa |
-|---|---|---|
-| `pending` | Pendiente de revisión | Nadie lo ha revisado; no cuenta |
-| `approved` | Aprobado | Al menos una aprobación y ningún rechazo; cuenta su `result` |
-| `rejected` | Rechazado | Algún rechazo; no cuenta y se registra uno nuevo |
-
-### `verdict_review_decision`
-> **Reemplazado con la VF18 (D132).**
-**Columna:** `test_verdict_reviews.decision` (D121).
-
-| Valor | Etiqueta (es) |
-|---|---|
-| `approve` | Aprobar |
-| `reject` | Rechazar |
-
 ### `asset_result`
 **Columna:** `evaluations.result` · El resultado de un activo en un test.
 
@@ -385,7 +361,7 @@ El cliente ve el estado cualitativo (Preparado, Casi listo, Requiere trabajo, Si
 
 ### `evidence_state`
 > **Reemplazado con la VF18 (D130, D132)** por `manual_evidence_state` y `automatic_evidence_state`.
-**Dónde se usa:** estado calculado de una evidencia (se combina de las revisiones de cada rol, D102).
+**Dónde se usa:** estado calculado de una entrega de evidencia. Desde MD-504 (D132) se deriva solo de si la entrega fue devuelta: `compliant` (cuenta) o `non_compliant` (devuelta); `pending` sin entregas y `expired` por la ventana. `in_review` ya no se produce.
 
 | Valor | Etiqueta (es) |
 |---|---|
@@ -395,26 +371,6 @@ El cliente ve el estado cualitativo (Preparado, Casi listo, Requiere trabajo, Si
 | `in_review` | En revisión |
 | `expired` | Evidencia vencida |
 | `not_applicable` | No aplica |
-
-### `evidence_review`
-> **Se retira con la VF18 (D132):** la revisión por evidencia pasa a ser la aprobación del control.
-**Columna:** `evidence_reviews.review` (D84) · **Solo `human_validated` permite `compliant`; la IA nunca produce «cumple» (RN-03).**
-Una persona lo guarda solo como `pending_review` o `human_validated`; **`ai_prevalidated` lo deriva el servidor** (la entrega tiene `ai_verdict` y ninguna revisión humana) y nunca se acepta de un cliente.
-
-| Valor | Etiqueta (es) |
-|---|---|
-| `pending_review` | Pendiente de revisión |
-| `ai_prevalidated` | Pre-validada por IA |
-| `human_validated` | Validada por una persona |
-
-### `reviewer_role`
-> **Se retira con la VF18 (D132).**
-**Columnas:** `evidence_reviews.reviewer_role` y `test_verdict_reviews.reviewer_role` (D102, que ajusta D96; D121) · **Una revisión por rol y entrega.** Si hay rechazo gana; con dos revisiones aprueban los dos. Sube el ejecutor, el dueño o el `admin_empresa`; el `auditor` la lee y no la revisa.
-
-| Valor | Etiqueta (es) | Qué significa |
-|---|---|---|
-| `responsable` | Responsable | El dueño del control, cuando subió su delegado |
-| `admin_empresa` | Administrador de la empresa | Puede revisar cualquier evidencia |
 
 ### `test_state`
 > **Reemplazado por `test_status` (D130).**

@@ -47,7 +47,6 @@ erDiagram
 
     controls ||--o{ client_controls : "particularizado en"
     client_controls ||--o| client_control_assignments : "asignado a"
-    client_controls ||--o{ action_plans : "remediado con"
     controls ||--o{ control_dimensions : "se evalua en"
     controls ||--|{ control_requirements : "se prueba con"
     control_requirements }o--|{ tests : "probado por"

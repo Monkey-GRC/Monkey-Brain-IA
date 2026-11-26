@@ -31,7 +31,7 @@ aportan nada al negocio: son el costo de verificar quién eres.
 > `GET /v1/services/:id`) abren una sola para el caso de uso: **2 por petición**. El diagrama y las cuentas de abajo
 > son el punto de partida de la auditoría; el resto de rutas sigue con 3 o más hasta que se apliquen MD-220 a MD-225.
 >
-> **Al 2026-11-19 (MD-220):** la lectura del último resultado de `evaluations` y `test_verdicts` usa `JOIN LATERAL`
+> **Al 2026-11-19 (MD-220):** la lectura del último resultado de `evaluations` y `test_verdicts` (esta última tabla se borró en MD-504) usa `JOIN LATERAL`
 > (`compliance/infrastructure/shared/latest-results.query.ts`) en vez de recorrer el historial; la respaldan el índice
 > parcial `evaluations_latest_idx` (`WHERE origin <> 'manual' INCLUDE (result)`) y `test_verdicts (service_id, test_id,
 > registered_at DESC, id DESC)` (migración `20261119000100_latest_results_indexes`). Ver

@@ -1,5 +1,8 @@
 # Evidencia · Flujos
 
+> **MD-504 (2026-11-25): el flujo «2 · Revisar» se retiró.** `PUT /v1/evidence-submissions/:id/review` ya no existe; la entrega cuenta si no fue devuelta y se devuelve al devolver el control (`contracts/cumplimiento/aprobacion.md`). Solo el flujo de subir sigue vigente.
+
+**
 Responde: **¿qué pasa al subir un documento y al revisarlo?** Las dos operaciones siguen el patrón común de
 escritura ([`../03-flujos.md`](../03-flujos.md)): foto antes, hecho, rastro, foto después.
 

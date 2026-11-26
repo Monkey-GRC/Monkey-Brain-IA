@@ -173,6 +173,8 @@ HU-CUM-32 (calificación del auditor) no tiene caso: está en pausa (D96, `P35`)
 
 ### CU-CUM-08 · Registrar un veredicto
 
+> **Retirado en MD-504 (2026-11-25):** el veredicto, su revisión y su historial ya no existen; el resultado manual y la aprobación del control están en `contracts/cumplimiento/aprobacion.md`. Se conserva como historia; falta escribir las historias y los casos de uso del nuevo flujo.
+
 | | |
 |---|---|
 | **Actor** | Quien trabaja el control o el `admin_empresa` |
@@ -190,6 +192,8 @@ HU-CUM-32 (calificación del auditor) no tiene caso: está en pausa (D96, `P35`)
 - 2c. `auditor` o alguien ajeno → `403`. Pantalla por construir (🟡).
 
 ### CU-CUM-09 · Revisar un veredicto
+
+> **Retirado en MD-504 (2026-11-25):** el veredicto, su revisión y su historial ya no existen; el resultado manual y la aprobación del control están en `contracts/cumplimiento/aprobacion.md`. Se conserva como historia; falta escribir las historias y los casos de uso del nuevo flujo.
 
 | | |
 |---|---|

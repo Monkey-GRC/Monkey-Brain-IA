@@ -1,5 +1,8 @@
 # Cumplimiento · Veredictos
 
+> **MD-504 (2026-11-25): el veredicto se retiró.** `POST …/verdicts`, `PUT /v1/verdicts/{id}/review`, `GET …/verdicts`, `test_verdicts` y `test_verdict_reviews` ya no existen (migración destructiva). El resultado de una prueba manual lo registra el responsable por control (`manual_test_results`) y la aprobación es del control (`control_approvals`): ver `contracts/cumplimiento/aprobacion.md` y `datos/modelo/07-cumplimiento.md` §7.3b. Lo de abajo es el diseño anterior y se conserva como historia hasta que se reescriba este componente (sin componente de gestión propio todavía).
+
+**
 > **VF18 (D128): esto describe el código construido con el catálogo v1.** Con la VF18 la revisión en dos niveles pasa al control (D132) y la prueba documental se resuelve en el módulo Documentos (D133).
 
 Responde: **¿cómo se resuelve una prueba manual que no se respalda con un documento?** Con el veredicto de una

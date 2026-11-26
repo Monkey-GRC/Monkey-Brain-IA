@@ -12,15 +12,15 @@
 | `window_due_soon` | Ventana por vencer | Window closing soon | `executor` · `owner` | Llegó el aviso previo (PR-06, `alert_at`) y alguna prueba no tiene evidencia válida |
 | `window_expired` | Ventana vencida | Window expired | `executor` · `owner` · `company_admin` | La ventana cerró sin evidencia: el requisito pasa a Vencido (G-06) |
 | `control_assigned` | Control asignado | Control assigned | `assignee` | Te asignaron como dueño o ejecutor de un control |
-| `evidence_approved` | Evidencia validada | Evidence approved | `uploader` · `owner` | Se validó una evidencia que subiste o de tu control |
-| `evidence_rejected` | Evidencia rechazada | Evidence rejected | `uploader` · `owner` | Se rechazó una evidencia que subiste o de tu control |
+| `evidence_approved` | Evidencia validada | Evidence approved | `uploader` · `owner` | **Sin emisor desde MD-504 (D132):** la aprobación es del control. Se conserva en el enum |
+| `evidence_rejected` | Evidencia rechazada | Evidence rejected | `uploader` · `owner` | **Sin emisor desde MD-504 (D132):** una entrega devuelta se avisa con `control_returned`. Se conserva en el enum |
 | `observation_created` | Observación del auditor | Auditor observation | `owner` · `executor` | Reservado |
 | `direct_check_failed` | Verificación automática en falla | Automated check failing | `executor` · `owner` · `company_admin` | Un check Directo pasó a falla en un activo (D153) |
 | `check_parameters_changed` | Cambio de parametrización | Parameters changed | `company_admin` | Monkey cambió un parámetro de evaluación PR-n; solo a los administradores (D153) |
 | `automatic_evidence_stale` | Evidencia automática desactualizada | Automated evidence out of date | `executor` · `owner` | La última recolección de un activo superó PR-05 (D153) |
-| `control_pending_approval` | Control por aprobar | Control awaiting approval | `owner` | Reservado (MD-504) |
-| `control_owner_approved` | Control aprobado por el responsable | Control approved by owner | `company_admin` | Reservado (MD-504) |
-| `control_returned` | Control devuelto | Control returned | `executor` · `owner` | Reservado (MD-504) |
+| `control_pending_approval` | Control por aprobar | Control awaiting approval | `owner` | El control cumple y espera la aprobación del responsable (cae en `company_admin` si no tiene responsable). Emitido desde MD-504 |
+| `control_owner_approved` | Control aprobado por el responsable | Control approved by owner | `company_admin` | El responsable dio la primera aprobación y falta la final. Emitido desde MD-504 |
+| `control_returned` | Control devuelto | Control returned | `executor` · `owner` | El control se devolvió con un motivo. Emitido desde MD-504 |
 
 ### Documentos (reservados, MD-506)
 

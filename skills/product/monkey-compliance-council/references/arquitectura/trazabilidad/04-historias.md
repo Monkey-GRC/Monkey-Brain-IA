@@ -34,7 +34,7 @@ poder reconstruir quién hizo qué y cómo estaba el dato antes y después.
 
 - Cada fila lleva `action`, `resource`, `result` (`success` | `error`), `user_id`, `tenant_id`, `ip_address`,
   `user_agent` y, si cambió un dato, `before_state` y `after_state` (`conventions.md` → Auditoría).
-- `action` sigue `<recurso>.<verbo>` en `snake_case` (`service.create`, `evidence.review`); una acción nueva se añade a
+- `action` sigue `<recurso>.<verbo>` en `snake_case` (`service.create`, `control_approval.return`); una acción nueva se añade a
   la tabla «Auditoría» de su contrato antes de escribir el código.
 - La fila se escribe **en la misma transacción** que la acción: si la acción se revierte, la fila también; si la fila
   falla, la acción se revierte y la respuesta es `500` `INTERNAL_ERROR` (D52, SEG-36).
@@ -75,7 +75,7 @@ el nuevo y su causa **para** demostrar cómo estuvo cada control durante el per�
   control en `compliance_events` (`changed_field = control.state`, `previous_value`, `new_value`), en la misma
   transacción que la escritura (D91, SEG-63).
 - Un cambio solo del porcentaje que no mueve el estado ni el semáforo no deja evento (D91, punto 1).
-- Cada evento trae su causa; hoy la escriben el veredicto de una prueba manual y su revisión, la entrega y la revisión de
+- Cada evento trae su causa; hoy la escriben el resultado de una prueba manual y la aprobación o devolución del control (MD-504), la entrega de
   una evidencia, aprobar una exclusión, editar las dimensiones de un control y lo que mide la sonda.
 - La revisión del auditor no mueve el estado y no deja evento (D91, punto 3; `eventos-estado.e2e-spec.ts`).
 - El estado se sigue derivando: el evento es la constancia, no el estado (D91, punto 2; §9).
