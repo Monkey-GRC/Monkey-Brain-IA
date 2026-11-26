@@ -1,5 +1,8 @@
 # Veredictos · Flujos
 
+> **MD-504 (2026-11-25): retirado.** Este flujo (`POST …/verdicts`) ya no existe: ver `contracts/cumplimiento/aprobacion.md` (`POST …/tests/{test_id}/result` y `POST /v1/controls/{id}/approval`). Se conserva como historia.
+
+**
 Responde: **¿qué pasa al dar un veredicto sobre una prueba manual?**
 
 `POST /v1/controls/:controlId/tests/:testId/verdicts` · `admin_empresa`, dueño (`responsable`) o ejecutor (`delegado`) del control (D121). Lo revisa después el dueño (si no lo registró él) o el `admin_empresa` (`PUT /v1/verdicts/:id/review`).

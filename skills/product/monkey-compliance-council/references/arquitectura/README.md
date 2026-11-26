@@ -49,7 +49,7 @@ En los diagramas, «nivel 3 del C4» se titula **piezas internas** para no confu
 | 12.2 | ↳ [Controles](cumplimiento/controles/README.md) | Lista y detalle de los controles de un servicio | [flujos](cumplimiento/controles/03-flujos.md) |
 | 12.3 | ↳ [Resumen](cumplimiento/resumen/README.md) | Estado por marco y categoría, y el período auditado | [flujos](cumplimiento/resumen/03-flujos.md) |
 | 12.4 | ↳ [Evidencia](cumplimiento/evidencia/README.md) | Subir, versionar y revisar documentos | [flujos](cumplimiento/evidencia/03-flujos.md) |
-| 12.5 | ↳ [Veredictos](cumplimiento/veredictos/README.md) | La decisión de una persona sobre una prueba manual | [flujos](cumplimiento/veredictos/03-flujos.md) |
+| 12.5 | ↳ [Veredictos](cumplimiento/veredictos/README.md) | Retirado en MD-504: el resultado manual y la aprobación están en `contracts/cumplimiento/aprobacion.md` | [flujos](cumplimiento/veredictos/03-flujos.md) |
 | 12.6 | ↳ [Exclusiones](cumplimiento/exclusiones/README.md) | Sacar un activo de una prueba, con vigencia | [flujos](cumplimiento/exclusiones/03-flujos.md) |
 | 12.7 | ↳ [Observaciones](cumplimiento/observaciones/README.md) | Lo que escribe el auditor y cómo lo atiende la empresa | [flujos](cumplimiento/observaciones/03-flujos.md) |
 | 12.8 | ↳ [Riesgos](cumplimiento/riesgos/README.md) | Riesgos, causas, evaluación 5×5 y tratamiento | [flujos](cumplimiento/riesgos/03-flujos.md) |

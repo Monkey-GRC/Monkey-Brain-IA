@@ -26,11 +26,11 @@ rastro falla, la acción se revierte (D52, SEG-36).
 
 ## 2 · Los dos niveles, con un ejemplo
 
-El `admin_empresa` rechaza una evidencia y, con eso, un control pasa de efectivo a no efectivo:
+El `admin_empresa` devuelve el control y, con eso, un control pasa de efectivo a no efectivo:
 
 | Registro | Fila que queda |
 |---|---|
-| `audit_logs` | `action = evidence.review`, `before_state` = la revisión anterior, `after_state` = la nueva, con el usuario y su IP |
+| `audit_logs` | `action = control_approval.return` (MD-504; antes `evidence.review`), `before_state` = el estado de gestión anterior, `after_state` = el nuevo, con el usuario y su IP |
 | `compliance_events` | `changed_field = control.state`, `previous_value = effective`, `new_value = ineffective`, mismo usuario |
 
 Uno cuenta **la acción**; el otro, **la consecuencia**. Hacen falta los dos: la acción sola no dice qué se movió, y
@@ -48,13 +48,13 @@ flowchart LR
     q -- "no" --> n["Ninguna fila en compliance_events"]
 ```
 
-Las cuatro puertas que pueden generar eventos: subir evidencia, revisarla, dar un veredicto y la entrega de
+Las cuatro puertas que pueden generar eventos: subir evidencia, aprobar o devolver el control, registrar el resultado de una prueba manual y la entrega de
 resultados de la sonda ([`cumplimiento/03-flujos.md`](../cumplimiento/03-flujos.md)).
 
 ## 4 · Convención de nombres
 
 `action` es `recurso.verbo` en minúsculas: `auth.login`, `auth.login_failed`, `service.create`, `user.update`,
-`evidence.review`, `execution.queue`, `company.deactivate`. La lista vive junto a cada contrato
+`control_approval.return`, `execution.queue`, `company.deactivate`. La lista vive junto a cada contrato
 (`contracts/conventions.md`); el nombre no se inventa al escribir código nuevo sin añadirlo ahí.
 
 ## 5 · Quién lo lee

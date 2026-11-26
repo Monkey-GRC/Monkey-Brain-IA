@@ -1,5 +1,8 @@
 # Cumplimiento · Evidencia
 
+> **MD-504 (2026-11-25): la revisión de cada evidencia se retiró.** `PUT …/review`, `evidence_reviews` y el bloque `technical` ya no existen. Una entrega cuenta si no fue devuelta (`evidence_submissions.returned_approval_id`); el responsable y el `admin_empresa` aprueban o devuelven el control (`contracts/cumplimiento/aprobacion.md`). Las secciones de «revisar» de abajo son el diseño anterior.
+
+**
 > **VF18 (D128): esto describe el código construido con el catálogo v1.** Con la VF18 la evidencia se exige por requisito del control y por ventana, y se aprueba el control, no cada evidencia (D129, D131, D132).
 
 Responde: **¿cómo se respalda una prueba documental con un documento, y quién decide si sirve?** Dos operaciones
@@ -11,7 +14,7 @@ encadenadas: alguien **sube** un documento y el `admin_empresa` lo **revisa**.
 |---|---|
 | Endpoints y casos de uso | `compliance/presentation/evidence/`, `application/evidence/` |
 | El estado de una entrega | `domain/evidence/evidence.ts` → `evidenceStateOf` |
-| Tablas | `evidence_requirements`, `evidence_submissions`, `evidence_reviews` |
+| Tablas | `evidence_requirements`, `evidence_submissions` (`evidence_reviews` se borró en MD-504) |
 | Los archivos | Almacenamiento S3 o minio (`infrastructure/storage`) |
 
 ## Las tres piezas, en orden

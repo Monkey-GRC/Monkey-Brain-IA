@@ -210,6 +210,8 @@ adaptar la evidencia a mi operación.
 
 ## Veredictos
 
+> **Retirado en MD-504 (2026-11-25):** el veredicto, su revisión y su historial ya no existen; el resultado manual y la aprobación del control están en `contracts/cumplimiento/aprobacion.md`. Se conserva como historia; falta escribir las historias y los casos de uso del nuevo flujo.
+
 ### HU-CUM-17 · Registrar el veredicto de una prueba manual
 
 **Como** quien trabaja un control o `admin_empresa`, **quiero** registrar si una prueba manual no documental cumple

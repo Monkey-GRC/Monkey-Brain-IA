@@ -9,8 +9,8 @@ el `03-flujos.md` de su componente.
 flowchart LR
     subgraph esc["Escribir un hecho"]
         e1["Subir evidencia"]
-        e2["Revisar evidencia"]
-        e3["Dar un veredicto"]
+        e2["Aprobar o devolver el control"]
+        e3["Registrar un resultado manual"]
         e4["La sonda entrega resultados"]
     end
     db[("Hechos<br/>evaluations · evidence_*")]
@@ -34,7 +34,7 @@ flowchart LR
 | Listar y ver controles | `admin_empresa` · `auditor` · `responsable` y `delegado` (solo lo suyo, D102) | [`controles/03-flujos.md`](controles/03-flujos.md) |
 | Resumen por marco y categoría | los tres roles | [`resumen/03-flujos.md`](resumen/03-flujos.md) |
 | Subir y revisar evidencia | suben el `admin_empresa`, el dueño o el ejecutor; revisan el dueño (lo que no subió él) y el `admin_empresa` (D102) | [`evidencia/03-flujos.md`](evidencia/03-flujos.md) |
-| Dar un veredicto | lo registran el `admin_empresa`, el dueño o el ejecutor; lo revisan el dueño y el `admin_empresa` (D121) | [`veredictos/03-flujos.md`](veredictos/03-flujos.md) |
+| Dar un veredicto (retirado en MD-504: resultado manual y aprobación, `contracts/cumplimiento/aprobacion.md`) | lo registran el `admin_empresa`, el dueño o el ejecutor; lo revisan el dueño y el `admin_empresa` (D121) | [`veredictos/03-flujos.md`](veredictos/03-flujos.md) |
 | Excluir un activo de una prueba | solo `admin_empresa` | [`exclusiones/03-flujos.md`](exclusiones/03-flujos.md) |
 | Escribir y responder una observación | escribe el `auditor`, responde la empresa | [`observaciones/03-flujos.md`](observaciones/03-flujos.md) |
 | Evaluar y tratar un riesgo | `admin_empresa` | [`riesgos/03-flujos.md`](riesgos/03-flujos.md) |

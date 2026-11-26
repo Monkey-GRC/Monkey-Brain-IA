@@ -72,6 +72,8 @@ ellos), pero hoy nunca llegan en otro valor.
 
 ## M4 · Volver a revisar una evidencia reemplaza la revisión anterior
 
+> **Obsoleta desde MD-504 (2026-11-25):** `evidence_reviews` y `saveReview` se borraron; la aprobación es del control y cada aprobación o devolución es una fila nueva (`control_approvals`). Se conserva como historia.
+
 `saveReview` hace `upsert` sobre la clave `(entrega, rol)`. La revisión anterior desaparece de `evidence_reviews`;
 solo queda su rastro en `audit_logs`. Las evaluaciones, en cambio, nunca se pisan. Puede ser deliberado (una sola
 revisión por entrega, D96), pero conviene saber que **el historial de revisiones vive en la auditoría, no en la

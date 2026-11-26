@@ -4,6 +4,8 @@ Por qué este componente es como es. Lo vigente está en [`arquitectura/cumplimi
 
 ## D85 · El veredicto de un test manual o documental vale para todos los controles que lo usan (2026-10-17)
 
+> **Reemplazada en lo manual por `contracts/cumplimiento/aprobacion.md` (MD-504, 2026-11-25).** El resultado de una prueba manual es **por control**, no por servicio (D129, D140), y el veredicto y sus endpoints se retiraron. El texto de abajo se conserva sin cambios como historia.
+
 > **Ajustada por D96 (2026-10-27).** El veredicto lo da el `admin_empresa` (no el consultor). Se mantiene que vale para todos los controles que usan la prueba.
 
 > **Ajustada por D88 (2026-10-22):** para las pruebas **documentales** ya no rige; su estado es por control y sale de la revisión de la evidencia. D85 sigue para las demás pruebas manuales.

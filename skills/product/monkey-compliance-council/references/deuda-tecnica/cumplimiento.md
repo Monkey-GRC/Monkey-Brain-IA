@@ -4,13 +4,13 @@ Parches vigentes de [Cumplimiento](../arquitectura/cumplimiento/README.md). Tabl
 
 ## Transversal
 
-### DT-114 · Las pruebas manuales y la aprobación del control usan la evidencia v1 mientras no existan la gestión ni Documentos
+### DT-114 · La prueba documental y el documento base usan la evidencia subida mientras no exista Documentos
 
 🟠 Importante
 
-- **Qué está parchado:** el motor v2 (MD-498) decide las pruebas manuales (documental, población, operativa y técnica manual) con la evidencia que se sube hoy para esa prueba (`evidence_requirements` y la combinación de sus revisiones): validada → Correcto, rechazada → Excepción, sin entrega o sin revisar → Pendiente, fuera de su ventana → Vencido. En las pruebas manuales no documentales también decide un veredicto aprobado (D85, D121), para no romper el endpoint de veredictos. Y en el marco y la categoría un control cuenta como cumplido con nivel Adecuado o Sólido, sin el estado «Cumplimiento aprobado» que exige §9
-- **Por qué:** el resultado de una prueba manual lo registra el responsable (D140) dentro de la gestión del control (RC-07), y la prueba documental se decide con el módulo Documentos (RC-09, T-01); ninguno existe todavía. Sin el puente, todas las pruebas manuales quedarían Pendientes y ningún control avanzaría (decidido con Rod el 2026-11-23)
-- **Qué lo cierra:** MD-504 (gestión y aprobación del control: el rollup cuenta solo «Cumplimiento aprobado») y MD-506 (Documentos: T-01 con el documento vigente, aprobado y aceptado)
+- **Qué está parchado:** el motor v2 decide la prueba documental con la evidencia que se sube hoy para ella (cuenta si no fue devuelta, D132) y toma las pruebas documentales del control como el «documento base» de R2. Y en la regla de «Parcial» (D140), que exige un plan de remediación por cada excepción, ese plan no existe: hoy Parcial se asigna por el porcentaje de cumplimiento (C%)
+- **Por qué:** la prueba documental se decide con el módulo Documentos (RC-09, T-01) y el plan de remediación por excepción es parte de lo que se dejó fuera de MD-504; sin ellos las dos reglas no se pueden cumplir como las pide el libro
+- **Qué lo cierra:** MD-506 (Documentos: T-01 y R2 con el documento vigente, aprobado y aceptado) y MD-529 (el plan de remediación por excepción, con R5). *(MD-504 cerró el resto: el resultado de la prueba manual lo registra el responsable y el rollup cuenta solo «Cumplimiento aprobado».)*
 
 ### DT-71 · La lectura de controles fija valores que el modelo ya prevé
 
@@ -58,7 +58,7 @@ Parches vigentes de [Cumplimiento](../arquitectura/cumplimiento/README.md). Tabl
 
 🟡 Mejora
 
-- **Qué está parchado:** `catalog.tests.type` es texto libre del comité («Manual», «Mixta», «Prueba de diseño…»), así que no sirve para saber si una prueba la resuelve una persona. El veredicto (MD-155) usa el tipo de la **dimensión del control** (`client_control_dimensions.type`): `manual` y `technical_manual` admiten veredicto; `automated` e `hybrid`, no (`409 TEST_NOT_MANUAL`). *(La otra mitad de esta deuda, exigir la razón cuando el control de origen tiene observaciones abiertas, la cerró MD-154: `422 closure_reason.required`.)*
+- **Qué está parchado:** `catalog.tests.type` es texto libre del comité («Manual», «Mixta», «Prueba de diseño…»), así que no sirve para saber si una prueba la resuelve una persona. El veredicto (MD-155; retirado en MD-504, hoy solo «Mi trabajo» lo usa en `workPieceOf`) usaba el tipo de la **dimensión del control** (`client_control_dimensions.type`): `manual` y `technical_manual` admiten veredicto; `automated` e `hybrid`, no (`409 TEST_NOT_MANUAL`). *(La otra mitad de esta deuda, exigir la razón cuando el control de origen tiene observaciones abiertas, la cerró MD-154: `422 closure_reason.required`.)*
 - **Por qué:** es el único dato estructurado que distingue lo manual de lo medido.
 - **Qué lo cierra:** la carga del catálogo v2 (RC-01): cada prueba de la VF18 trae su tipo (documental, población, operativo o técnico) y su automatización (D129).
 
@@ -67,19 +67,19 @@ Parches vigentes de [Cumplimiento](../arquitectura/cumplimiento/README.md). Tabl
 🟠 Importante
 
 - **Qué está parchado:** el motor v2 (MD-500) calcula el `alert_at` de un requisito «cuando sea requerido» (15 días antes del cierre del trimestre), pero no tiene ventanas ni lo da por Vencido: falta dónde guardar la evidencia de cada evento y la declaración trimestral de «sin ocurrencias» del responsable (D131 punto 3)
-- **Por qué:** esa declaración es un acto del responsable dentro de la gestión del control, que todavía no existe; crear una tabla aparte la habría duplicado
-- **Qué lo cierra:** MD-504 (gestión del control): la declaración trimestral del responsable y la evidencia por evento; con ellas el motor mide el trimestre y aplica «evento sin evidencia → Excepción, sin declaración → Vencido»
+- **Por qué:** esa declaración es un acto del responsable dentro de la gestión del control; MD-504 construyó la aprobación y el resultado manual pero dejó la declaración trimestral fuera
+- **Qué lo cierra:** MD-529: la declaración trimestral del responsable y la evidencia por evento; con ellas el motor mide el trimestre y aplica «evento sin evidencia → Excepción, sin declaración → Vencido»
 
 ### DT-116 · La vista del período aproxima las ventanas pasadas que no tienen historial
 
 🟠 Importante
 
 - **Qué está parchado:** la vista del período (R6, `technical.period`, MD-500) usa el historial de resultados técnicos de `evaluations`, pero hay piezas sin historial:
-  - De cada prueba manual solo se carga el último veredicto aprobado: una ventana pasada que solo cubrió un veredicto ya reemplazado cuenta como sin evidencia.
+  - De cada prueba manual solo se carga el último resultado registrado (`manual_test_results`): una ventana pasada que solo cubrió un resultado ya reemplazado cuenta como sin evidencia.
   - Los vínculos de módulo o puntaje (D141, D146) y las dependencias (T-06) se dan por cubiertos en las ventanas pasadas.
   - La periodicidad anual no se enumera, porque su ventana depende de la última evidencia.
-- **Por qué:** el estado de los módulos y el de las dependencias solo existe como dato actual, y los veredictos se reemplazan
-- **Qué lo cierra:** MD-504 (resultado de la prueba manual con su fecha, D140) y MD-497 (historial de módulos y puntajes por integración); la anual, cuando se enumere desde la primera evidencia del período
+- **Por qué:** el estado de los módulos y el de las dependencias solo existe como dato actual, y los resultados manuales y la evidencia se reemplazan en la lectura
+- **Qué lo cierra:** MD-529 (leer el historial de resultados manuales por ventana: `manual_test_results` ya guarda cada registro con su fecha, D140) y MD-497 (historial de módulos y puntajes por integración); la anual, cuando se enumere desde la primera evidencia del período
 
 ### DT-117 · Un servicio con varios marcos se evalúa con un solo período
 
@@ -97,13 +97,13 @@ Parches vigentes de [Cumplimiento](../arquitectura/cumplimiento/README.md). Tabl
 - **Por qué:** el motor guarda un resultado por prueba y activo para todos los Directos juntos; Rod pidió «solo lo exacto» (2026-11-24) antes que repetir el mismo conteo en cada check
 - **Qué lo cierra:** guardar el resultado de cada check por activo y exponerlo en `check_links[]`
 
-### DT-120 · Una prueba manual se cumple por evidencia y también admite veredicto
+### DT-120 · «Mi trabajo» cuenta una sola pieza por prueba manual
 
 🟠 Importante
 
-- **Qué está parchado:** desde MD-499 una prueba de fuente `manual` acepta evidencia (la valida el admin) y «Mi trabajo» la cuenta como pieza de evidencia, pero `POST …/verdicts` todavía la admite porque `veredictos.md` (catálogo v1) da veredicto a toda prueba manual no documental
-- **Por qué:** el contrato de veredictos se reescribe con RC-07; Rod decidió (2026-11-24) resolverlo en MD-504 y dejar las dos vías para la demo
-- **Qué lo cierra:** MD-504: decidir evidencia o veredicto por prueba con `workPieceOf`, reescribir `contracts/cumplimiento/veredictos.md` y usarlo en `test-verdict.prisma.repository.ts`
+- **Qué está parchado:** una prueba manual no documental pide al delegado su evidencia y al responsable su resultado (D140), pero `workPieceOf` (`domain/work/work-piece.ts`) da **una sola pieza por prueba**: la evidencia si la prueba acepta subida, o el resultado si no la acepta. Cuando la prueba acepta subida, el resultado que debe registrar el responsable no cuenta como pieza pendiente en «Mi trabajo» (el motor sí deja la prueba Pendiente hasta que lo registra)
+- **Por qué:** la bandeja de MD-195 se construyó con una pieza por prueba (MD-499); MD-504 retiró el veredicto y el contrato de resultado manual (`aprobacion.md`) no pedía cambiar la bandeja
+- **Qué lo cierra:** que `workPieceOf` devuelva las dos piezas (evidencia y resultado) en una prueba manual no documental que acepta subida, y que «Mi trabajo» las cuente por separado (`contracts/gestion-usuarios.md`, «En qué bucket cae cada control»)
 
 ### DT-122 · La subida de respaldo de las pruebas de integración usa un puerto sin implementar
 
@@ -128,3 +128,11 @@ Parches vigentes de [Cumplimiento](../arquitectura/cumplimiento/README.md). Tabl
 - **Qué está parchado:** `Backend/src/common/catalogs/compliance-catalogs.ts:32` importa de `features/compliance/domain/…`: `common` depende de una feature, al revés de la dirección permitida por capas
 - **Por qué:** Preexistente; lo vio `architecture-reviewer` en MD-508, que no toca ese archivo
 - **Qué lo cierra:** Mover a `common` los valores que el catálogo necesita (o servir el catálogo desde la feature) y que `common` no importe de ninguna feature
+
+### DT-129 · Aprobar o registrar un resultado lee el servicio completo dos veces
+
+🟡 Mejora
+
+- **Qué está parchado:** `POST /v1/controls/{id}/approval` y `POST …/tests/{t}/result` leen la foto completa del servicio bajo el candado (antes) y otra vez después, para el diff de estado y los avisos. Una aprobación tarda ~420 ms y un rechazo con `409` ~200 ms, medidos en e2e (MD-504). Antes del ajuste el `409` salía en ~43 ms.
+- **Por qué:** el diff de estado (D91) y la invalidación de aprobaciones necesitan el estado del control antes y después en la misma transacción; optimizarlo no era del núcleo de MD-504.
+- **Qué lo cierra:** leer solo el control afectado en los rechazos y en la foto «después» (o derivar el «después» de la foto «antes» y la escritura), medido antes y después, dentro de la meta de rendimiento de la API.

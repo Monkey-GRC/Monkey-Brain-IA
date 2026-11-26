@@ -70,7 +70,7 @@ Limitan el producto o al equipo.
 | ID | Qué | Módulo |
 |---|---|---|
 | [DT-124](roles-permisos.md#dt-124--admin_monkey-no-ve-ni-gestiona-los-datos-de-una-empresa) | admin_monkey no ve ni gestiona los datos de una empresa | [Roles y permisos](roles-permisos.md) |
-| [DT-120](cumplimiento.md#dt-120--una-prueba-manual-se-cumple-por-evidencia-y-también-admite-veredicto) | Una prueba manual se cumple por evidencia y también admite veredicto | [Cumplimiento](cumplimiento.md) |
+| [DT-120](cumplimiento.md#dt-120--mi-trabajo-cuenta-una-sola-pieza-por-prueba-manual) | «Mi trabajo» cuenta una sola pieza por prueba manual | [Cumplimiento](cumplimiento.md) |
 | [DT-2](control-tecnico.md#dt-2--n18-y-checks_available-son-constantes) | «n/18» y `checks_available` son constantes | [Control técnico](control-tecnico.md) |
 | [DT-3](onboarding.md#dt-3--ac_04-a-ac_06-se-completaron-por-analogía) | `ac_04` a `ac_06` se completaron por analogía | [Onboarding](onboarding.md) |
 | [DT-4](onboarding.md#dt-4--credenciales-por-conexión-definidas-por-desarrollo) | Credenciales por conexión definidas por desarrollo | [Onboarding](onboarding.md) |
@@ -100,7 +100,7 @@ Limitan el producto o al equipo.
 | [DT-113](catalogo-maestro.md#dt-113--transición-del-catálogo-v1-al-v2-tablas-v1-vacías-puentes-y-admin-en-solo-lectura) | Transición del catálogo v1 al v2: tablas v1 vacías, puentes y Admin en solo lectura | [Catálogo maestro](catalogo-maestro.md) |
 | [DT-100](catalogo-maestro.md#dt-100--el-catálogo-del-comité-solo-está-en-español) | El catálogo del comité solo está en español | [Catálogo maestro](catalogo-maestro.md) |
 | [DT-71](cumplimiento.md#dt-71--la-lectura-de-controles-fija-valores-que-el-modelo-ya-prevé) | La lectura de controles fija valores que el modelo ya prevé | [Cumplimiento](cumplimiento.md) |
-| [DT-114](cumplimiento.md#dt-114--las-pruebas-manuales-y-la-aprobación-del-control-usan-la-evidencia-v1-mientras-no-existan-la-gestión-ni-documentos) | Las pruebas manuales y la aprobación del control usan la evidencia v1 mientras no existan la gestión ni Documentos | [Cumplimiento](cumplimiento.md) |
+| [DT-114](cumplimiento.md#dt-114--la-prueba-documental-y-el-documento-base-usan-la-evidencia-subida-mientras-no-exista-documentos) | La prueba documental y el documento base usan la evidencia subida mientras no exista Documentos | [Cumplimiento](cumplimiento.md) |
 | [DT-115](cumplimiento.md#dt-115--los-requisitos-cuando-sea-requerido-no-se-miden-por-trimestre) | Los requisitos «cuando sea requerido» no se miden por trimestre | [Cumplimiento](cumplimiento.md) |
 | [DT-116](cumplimiento.md#dt-116--la-vista-del-período-aproxima-las-ventanas-pasadas-que-no-tienen-historial) | La vista del período aproxima las ventanas pasadas que no tienen historial | [Cumplimiento](cumplimiento.md) |
 | [DT-76](cumplimiento.md#dt-76--las-plantillas-de-evidencia-del-catálogo-no-dicen-a-qué-prueba-sirve-cada-documento-y-el-estado-documental-por-control-se-apartó-de-rn-13) | Las plantillas de evidencia del catálogo no dicen a qué prueba sirve cada documento, y el estado documental por control se apartó de RN-13 | [Cumplimiento](cumplimiento.md) |
@@ -118,6 +118,8 @@ Pendientes sin urgencia.
 
 | ID | Qué | Módulo |
 |---|---|---|
+| [DT-129](cumplimiento.md#dt-129--aprobar-o-registrar-un-resultado-lee-el-servicio-completo-dos-veces) | Aprobar o registrar un resultado lee el servicio completo dos veces | [Cumplimiento](cumplimiento.md) |
+| [DT-128](notificaciones.md#dt-128--los-avisos-evidence_approved-y-evidence_rejected-quedan-sin-emisor) | Los avisos `evidence_approved` y `evidence_rejected` quedan sin emisor | [Notificaciones](notificaciones.md) |
 | [DT-127](cumplimiento.md#dt-127--commoncatalogs-importa-del-dominio-de-la-feature-de-cumplimiento) | `common/catalogs` importa del dominio de la feature de cumplimiento | [Cumplimiento](cumplimiento.md) |
 | [DT-126](control-tecnico.md#dt-126--la-última-recolección-completada-de-un-activo-se-busca-sin-índice-por-finished_at) | La última recolección completada de un activo se busca sin índice por `finished_at` | [Control técnico](control-tecnico.md) |
 | [DT-125](cumplimiento.md#dt-125--la-prueba-documental-t-doc-sigue-resolviéndose-con-la-evidencia-subida) | La prueba documental T-DOC sigue resolviéndose con la evidencia subida | [Cumplimiento](cumplimiento.md) |
