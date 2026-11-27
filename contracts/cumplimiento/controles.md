@@ -15,6 +15,8 @@ type: contract
 
 Desde MD-498 el cálculo sale del motor v2 (§9, D130). **Los campos de abajo se agregan; ninguno de los existentes se quita** hasta que las pantallas v2 (MD-499) dejen de leerlos. Los viejos se derivan del motor nuevo, así que dicen lo mismo con otra forma.
 
+**Orden de la lista (MD-501).** `GET /v1/services/{id}/controls` y los controles de `failing_controls` salen por código propio (`own_code`) y luego `id`, siempre igual con los mismos datos (`service-snapshot.loader.ts`, `loadControls`).
+
 **Qué cambia de significado en los campos que ya existen** (lista, detalle y `failing_controls` del resumen):
 
 | Campo | Desde MD-498 |
@@ -56,7 +58,7 @@ Desde MD-498 el cálculo sale del motor v2 (§9, D130). **Los campos de abajo se
 > **Qué activos cuenta `asset_coverage` (D160).** `in_scope` son los activos del servicio de la dimensión de la prueba que tienen conexión propia, más cualquier otro activo en el que una evaluación automática midió esa prueba: la cuenta de nube o la organización conectada en una prueba de aplicación, de base de datos o de servidores, y cada recurso descubierto que el servicio eligió. Por eso `failing[].affected` puede traer, bajo una dimensión, un activo de otro tipo. Una prueba semiautomática con sus checks en PASS sigue `pending` hasta que el responsable registra su resultado ([`aprobacion.md`](aprobacion.md)); `checks` y `asset_coverage` muestran igual lo que midieron los checks.
 >
 > **Solo lo exacto (Rod, 2026-11-24).** El motor guarda un resultado por prueba y activo para todos los Directos juntos, no uno por check, así que **no hay conteo por check Directo**: el resultado por activos de los Directos es el de la prueba (`checks` y `asset_coverage`). Un conteo por check exige guardarlo por check (`DT-n` de MD-499). Un activo sin corrida no se cuenta como «cumple».
-| `owner` | `{ control_id, control_code, test_status }` \| null | Solo en una Dependencia: el control dueño (T-06) y el estado de su prueba, que es lo que esta toma. `control_id` es el control del cliente en el mismo servicio; si el dueño no está en el alcance, `control_id: null` y `test_status: null` |
+| `owner` | `{ control_id, control_code, test_status }` \| null | Solo en una Dependencia: el control dueño (T-06) y el estado de su prueba, que es lo que esta toma. Si la clave Directa aparece en varias pruebas del dueño, `test_status` es **el peor** de ellas; y si las dos pruebas se dependen una de la otra (un ciclo), comparten estado: el peor entre los checks propios de todas (D163). `control_id` es el control del cliente en el mismo servicio; si el dueño no está en el alcance, `control_id: null` y `test_status: null` |
 
 ```json
 "technical": {

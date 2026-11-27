@@ -26,3 +26,12 @@ tienen guías de uso: logo oficial sin modificar, espacio libre mínimo, a veces
 **Procedencia hoy** (`DT-68`): colecciones de iconos de marca, no los kits de cada proveedor. Simple Icons: Linux, HP (para HP-UX), PostgreSQL, MySQL, Oracle, MongoDB, GitHub y Jira (estos dos, MD-211) · Devicon: AWS, Azure, GCP, SQL Server y un icono genérico de Unix (para Solaris) · Logos: Microsoft (para Microsoft 365), la «G» de Google (para Google Workspace), Windows, AIX y Apple (para macOS). Cinco son una sustitución por la marca dueña del producto, no el logo propio de ese producto.
 
 **Qué depende:** los logos de `Frontend-Platform` (`logo_key`, D67) y la publicación del marketplace.
+
+## P51 · VUL-1 y VUL-2 dependen uno del otro en `TEST_CHECKS`: ¿es intencional?
+
+**Estado:** abierto desde 2026-11-27. Nace de una falla del motor (MD-501): en la VF18, `T-VUL-1-07` es Dependencia de checks cuyo dueño es VUL-2 (`T-VUL-2-04`, `T-VUL-2-06`), y esas dos pruebas son Dependencia de checks cuyo dueño es VUL-1 (`T-VUL-1-07`). Es el único ciclo del catálogo.
+
+1. ¿La dependencia en los dos sentidos es intencional, o una de las dos filas debería ser Directo o Complementario?
+2. Si es intencional: ¿se ratifica que las pruebas del ciclo comparten estado (el peor entre los checks propios de todas, D163)?
+
+**Qué depende:** nada bloquea. Mientras tanto rige D163.

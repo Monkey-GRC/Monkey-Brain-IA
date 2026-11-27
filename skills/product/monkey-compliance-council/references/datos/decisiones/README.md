@@ -244,3 +244,4 @@ quedan aquí:
 | D160 | Una prueba la decide la plataforma conectada, no su dimensión; cada recurso elegido es un activo con su resultado; una prueba semiautomática no es Correcta sin su parte manual *(decisión de desarrollo, por ratificar: `P14`)* | [control-tecnico](control-tecnico.md) |
 | D161 | La excepción es de una prueba en un activo, solo sobre un FAIL que existe hoy, con fecha de fin del cliente *(precisa D135)* | [cumplimiento/exclusiones](cumplimiento/exclusiones.md) |
 | D162 | La prioridad del mensaje de brecha: el promedio de severidad y criticidad, redondeado hacia arriba *(completa D138 punto 3)* | [notificaciones](notificaciones.md) |
+| D163 | En un ciclo de Dependencias las pruebas comparten estado: el peor entre los checks propios de todas; el estado no depende del orden de evaluación *(precisa T-06; decisión de desarrollo, por ratificar: `P51`)* | [cumplimiento/motor](cumplimiento/motor.md) |
