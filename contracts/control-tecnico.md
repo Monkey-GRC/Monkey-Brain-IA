@@ -75,6 +75,10 @@ Sin cuerpo.
 
 > Una ejecución fallida es un problema de **conexión**, no un incumplimiento (§8): `status = failed` con `failure_reason` (clave i18n), y **no mueve** el estado de preparación.
 
+### Evaluación programada *(D158)*
+
+No tiene endpoint: la crea el Backend. Una conexión de nube `scheduled` con `every_6h` o `every_24h` recibe una ejecución `assessment` con `origin: scheduled` cuando vence la frecuencia (contada desde la última evaluación, manual o programada); nunca evaluada, en la siguiente revisión. Si la anterior falló, un reintento a la hora. Como máximo 2 programadas esperando; en la cola, las manuales van primero. Configuración: `CLOUD_SCHEDULE_INTERVAL_MINUTES` (5; `0` la apaga; sin valor solo corre con `PROBE_MODE=runner` y el grupo de trabajadores `default`).
+
 ### GET /v1/assets/{id}/executions — Historial
 
 | | |
@@ -92,6 +96,7 @@ Sin cuerpo.
 | `progress` | integer 0–100 | **Solo mientras corre**; nunca como métrica de cumplimiento |
 | `narration` | clave i18n | Lo que está haciendo (la IA narra, nunca un spinner mudo) |
 | `failure_reason`, `failure_message` | clave i18n / texto | Solo si falló |
+| `mail_reviewed` | boolean o `null` | *(D157)* Solo en una evaluación **completada de Microsoft 365**: `true` si de verdad se leyó el correo (alguna verificación que solo existe con ese acceso dio `passed` o `failed`), `false` si no. `null` en cualquier otro caso. Se calcula al leer; no se guarda. La pantalla lo usa para dejar de pedir el rol «Lector global» |
 
 > El historial **no incluye las validaciones** (las de conexión, ver `onboarding/conexion-activos/validar.md`).
 
@@ -242,7 +247,15 @@ La usa **solo** el trabajador que ejecuta el motor (D57). **No está publicada**
 | `POST /internal/runner/executions/{id}/results` | Entrega el resultado crudo del motor; el backend lo interpreta y lo guarda; la ejecución pasa a `completed` |
 | `POST /internal/runner/executions/{id}/fail` | Informa que la corrida no pudo conectar; pasa a `failed` con su razón |
 
+**Microsoft 365 con el botón (D157):** `connection` es solo `{ "method": "admin_consent" }`; la organización es `external_account_id`. No viaja ninguna credencial: la de la aplicación de Monkey la tiene el trabajador (sin ella, la ejecución falla con `connection.method_not_supported_by_runner`).
+
+### POST /internal/runner/executions/{id}/progress (D156)
+
+Cuánto va una evaluación en curso. Cuerpo: `tenant_id` (uuid) y `percent` (entero 1-99). `204`. Solo se guarda si la ejecución está en curso y el valor **sube**; en cualquier otro caso se ignora sin error. `422` fuera de rango · `401` sin el token del trabajador. No deja rastro de auditoría (es telemetría). El historial de evaluaciones (`GET /v1/assets/{id}/executions`) lo entrega como `progress_percent` (entero 1-99 mientras está en curso e informa avance; `null` en cualquier otro caso).
+
 ### POST /internal/runner/claim
+
+**Orden de entrega (D155):** primero las validaciones y altas; dentro de cada grupo, la empresa con menos corridas en curso y, a igualdad, la más antigua.
 
 | | |
 |---|---|
@@ -259,7 +272,7 @@ La usa **solo** el trabajador que ejecuta el motor (D57). **No está publicada**
 |---|---|---|
 | `execution_id`, `kind`, `tenant_id`, `asset_id`, `origin` | | |
 | `platform`, `external_account_id`, `regions[]` | | |
-| `connection` | objeto | `method`, y según el método `role_arn` + `external_id` (rol), las llaves descifradas (`access_keys`, **solo en esta respuesta**: red interna, nunca se registran) o `external_id` + `project_number` (`identity_federation`, GCP, D112; `regions` llega vacío). En `agent` no hay corrida del trabajador: lee la sonda (otro adaptador) |
+| `connection` | objeto | `method`, y según el método `role_arn` + `external_id` (rol), las llaves descifradas (`access_keys`, **solo en esta respuesta**: red interna, nunca se registran) o `external_id` + `project_number` (`identity_federation`, GCP, D112; `regions` llega vacío). En `agent` no hay corrida del trabajador: lee la sonda (otro adaptador) · `client_id` + `certificate_thumbprint` + `private_key_pem` (`app_certificate`, Microsoft 365, D154 y D156: la clave privada **solo en esta respuesta**: red interna, nunca se registra y no sale del trabajador) |
 
 ```json
 {
@@ -282,6 +295,12 @@ La usa **solo** el trabajador que ejecuta el motor (D57). **No está publicada**
 ```json
 "platform": "gcp", "external_account_id": "acme-prod-421905", "regions": [],
 "connection": { "method": "identity_federation", "external_id": "mk-3f9a1c7e2b", "project_number": "983014806332" }
+```
+
+Microsoft 365 (D154), el activo es el tenant (`external_account_id`):
+
+```json
+"connection": { "method": "app_certificate", "client_id": "0b8c…", "certificate_thumbprint": "9C0F…E41A", "private_key_pem": "-----BEGIN PRIVATE KEY-----…" }
 ```
 
 > Una conexión que no sirve al reclamar (sin regiones donde aplican, sin rol, sin número de proyecto, proveedor no soportado) **no se entrega**: se cierra sola como `failed` con su razón y el reclamo sigue con la siguiente.
@@ -559,7 +578,7 @@ La sonda **no avisa** cuando un servidor se conecta: Monkey tiene que ir a leerl
 | `GET /v1/controls/{control_id}/tests/{test_id}/findings` | ✅ **Qué falló y cómo corregirlo** de una prueba de nube de un control (D90, `cumplimiento/veredictos.md`): título, recursos y guía de corrección traducida con IA. No es la plantilla de siete campos: esa sigue pendiente (`P14` E2) |
 
 - Un claim del trabajador acepta `{ "kind": "validation" | "assessment" }` y devuelve `kind`; `POST /internal/runner/executions/{id}/validated` cierra una validación.
-- **Al cerrar una corrida de nube** (`results` del trabajador o importación) se escriben también las `evaluations` de cada servicio que tiene el activo: una por control, test de nube y activo (`DT-50`). Es lo que alimenta los controles, el resumen y el marco. Necesita el catálogo de checks cargado (`npm run cloud:load -- --apply`): sin él, el motor descarta todos los resultados («Comprobaciones fuera del catálogo») y el cumplimiento sale «Sin medir».
+- **Al cerrar una corrida de nube** (`results` del trabajador o importación) se escriben también las `evaluations` de cada servicio que tiene el activo (`DT-50`, D160): una por control y prueba (de dimensión nube, aplicación, base de datos o servidores) para la conexión, con lo que es de toda la cuenta, y una más por cada recurso descubierto que el servicio eligió y en el que algo se midió. De cada prueba cuentan solo los Directos de la plataforma de esa conexión. Es lo que alimenta los controles, el resumen y el marco. Necesita el catálogo de checks cargado (`npm run cloud:load -- --apply`): sin él, el motor descarta todos los resultados («Comprobaciones fuera del catálogo») y el cumplimiento sale «Sin medir».
 
 **Configuración:** `RUNNER_POOL` (opcional, por defecto `default`; formato `^[a-z0-9][a-z0-9-]{0,39}$`, inválido = el backend no arranca): el grupo de trabajadores de ese backend. Toda ejecución que crea lleva su grupo y su `claim` solo entrega las de ese grupo; en local se usa uno propio (p. ej. `local-rod`) para no competir con el trabajador del servidor sobre la base de desarrollo.
 

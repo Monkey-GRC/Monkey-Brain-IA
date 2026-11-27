@@ -22,7 +22,7 @@ construir.
 | HU-CT-01 | Evaluar ahora una cuenta de nube | `admin_empresa` | ✅ | D57, D58, `EXECUTION_IN_PROGRESS`, `ASSET_NOT_VALIDATED` |
 | HU-CT-02 | Seguir una evaluación y consultar el historial | `admin_empresa` | 🟡 | D57, D58 |
 | HU-CT-03 | Distinguir «falló la conexión» de «el control falla» | `admin_empresa` | ✅ | D57, §8 |
-| HU-CT-04 | Que la nube se evalúe sola con la frecuencia elegida | `admin_empresa` | 🟡 | D57 |
+| HU-CT-04 | Que la nube se evalúe sola con la frecuencia elegida | `admin_empresa` | ✅ | D57, D158 |
 | HU-CT-05 | Ver la preparación de un activo | `admin_empresa` | 🟡 | D61, D62, D68, D80, DT-64, DT-66 |
 | HU-CT-06 | Ver qué falló y cómo corregirlo en una prueba automática | `admin_empresa` · `auditor` · `responsable` · `delegado` | ✅ | D90, D113 punto 14, D70, SEG-66, DT-78 |
 | HU-CT-07 | Leer cada hallazgo en la plantilla de siete campos | `admin_empresa` | ⚪ | P14 E2 |
@@ -87,14 +87,12 @@ no confundirlo con un incumplimiento.
 
 ### HU-CT-04 · Que la nube se evalúe sola con la frecuencia elegida
 
-> 🟡 **Parcial:** la frecuencia se elige y se guarda al activar la conexión (Conexión de activos), pero ningún
-> componente crea las evaluaciones programadas de la nube (comprobado en el Backend: solo la sonda de servidores
-> tiene tarea programada).
+> ✅ *(D158)* La frecuencia se elige al activar la conexión y la tarea de evaluación programada crea las ejecuciones.
 
 **Como** `admin_empresa`, **quiero** que mi cuenta de nube se evalúe sola con la frecuencia que elegí **para** que su
 estado no envejezca sin que yo lo pida.
 
-- ⚪ Al vencer la frecuencia del activo, se crea una evaluación con `origin: scheduled` que corre el mismo trabajador
+- ✅ Al vencer la frecuencia del activo, se crea una evaluación con `origin: scheduled` que corre el mismo trabajador
   que «Evaluar ahora» (D57).
 - La frecuencia vencida avisa sin mover el porcentaje: vencido ≠ incumplido (`02-modelo.md`).
 
@@ -257,7 +255,7 @@ el cumplimiento refleje lo que de verdad se midió.
   ⇒ `not_applicable` (D68, DT-50).
 - Solo cuentan los checks ratificados por el comité; una prueba sin ningún check ratificado no escribe nada y queda
   pendiente (D56).
-- Un check que el motor no devuelve es `not_applicable`, no «no ejecutado» (D56 punto 2).
+- Un check que el motor no devuelve es `not_applicable`, no «no ejecutado» (D56 punto 2). **Salvo en Microsoft 365** (D159): sus checks revisan la organización, así que un Directo que no vuelve es `not_run` y la prueba queda pendiente.
 - ⚪ Los checks sin prueba y las pruebas sin checks no cuentan: solo cuentan los vínculos de `TEST_CHECKS` de la VF18 (D129); cómo cuenta un
   check que falla en varios recursos y si un servidor de la nube es también un activo servidor siguen abiertos
   (`P14` B2, B4).

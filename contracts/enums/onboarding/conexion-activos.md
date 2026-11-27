@@ -103,6 +103,8 @@ Nulo hasta que se elige. Qué canales existen por categoría: `contracts/onboard
 | `access_keys` | Usuario con llaves (menos seguro) |
 | `agent` | Sonda instalada |
 | `identity_federation` | Federación de identidad, sin claves (GCP, D112) |
+| `app_certificate` | Aplicación del cliente con un certificado que genera Monkey; el cliente no copia secretos (Microsoft 365, D154) |
+| `admin_consent` | El cliente inicia sesión y autoriza la aplicación de solo lectura de Monkey; no copia nada (Microsoft 365, D157; recomendado) |
 
 ## `resource_kind`
 **Columna:** `asset_resources.kind` (D59)
@@ -132,7 +134,7 @@ Los nombres son marcas y **no se traducen**. `logo_key` es el nombre del SVG ofi
 - **`availability`** (el enum de los marcos, D50): `available` | `coming_soon`. **Solo `aws` (D58), `gcp` (D112, MD-214) y `linux` y `windows` en `ac_04`, servidores on-premise (D113), están `available`** (son los flujos construidos); todas las demás se muestran **bloqueadas**.
   Pasar una a `available` exige que su flujo exista; es un cambio de dato, no de contrato.
 - **Canales** (`platform_connection_methods`, el primero es el recomendado): `aws` → `readonly_role`, `access_keys`; los sistemas operativos y los motores de bases de datos → `agent`
-  (construido solo para Linux y Windows on-premise, D113; el resto, diseño); `gcp` → `identity_federation` (D112; `available` desde MD-214); Azure, Microsoft 365 y Google Workspace → ninguno hasta que se defina su canal.
+  (construido solo para Linux y Windows on-premise, D113; el resto, diseño); `gcp` → `identity_federation` (D112; `available` desde MD-214); `microsoft_365` → `admin_consent` y `app_certificate` (D154, D157; `available` desde que se probó con un tenant real); Azure y Google Workspace → ninguno hasta que se defina su canal.
 - **Frecuencias** (`capability_frequencies`): `ac_01` → `every_6h`, `every_24h`; `ac_02` a `ac_06` → `continuous`.
 - **Tipo de activo** (`automated_capabilities.asset_type`): `ac_01` → `cloud_service` · `ac_02`, `ac_04` → `server` · `ac_03`, `ac_05` → `database` · `ac_06` → `endpoint`.
 - **Regiones** (`platform_regions`): las de AWS se cargan de la lista actual del Backend (`GET /v1/catalogs/aws_region`); GCP **no lleva regiones** (se evalúa el proyecto completo, D112); las demás plataformas no tienen regiones hasta que tengan flujo.
@@ -151,5 +153,5 @@ Cada plataforma de `ac_01` que se conecta por un asistente ofrece **opciones**. 
 
 - **`gcp_connection_scope`**: `project` (un proyecto o unos pocos, `available`) · `organization` (todos los proyectos de una organización, `coming_soon`).
 - **`gcp_setup_method`**: `cloud_shell` (`available`) · `terraform` (`coming_soon`). Hoy solo `project` + `cloud_shell` crea una conexión (canal `identity_federation`); el Backend rechaza el resto con `422`.
-- **`connection_method`** (ya existente) suma `description`, `availability` y `tags`: `readonly_role` → `recommended`; `access_keys` → `less_secure`; `identity_federation` → `recommended`; `agent` → sin etiquetas.
+- **`connection_method`** (ya existente) suma `description`, `availability` y `tags`: `readonly_role` → `recommended`; `access_keys` → `less_secure`; `identity_federation` → `recommended`; `app_certificate` → `recommended`; `agent` → sin etiquetas.
 - **`connection_option_tag`**: `recommended` · `fastest` · `advanced` · `less_secure`. `cloud_shell` lleva `recommended` y `fastest`; `terraform`, `advanced`.

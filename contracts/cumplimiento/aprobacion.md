@@ -107,6 +107,11 @@ El servidor decide el paso según quién llama:
 Aplica a las pruebas manuales (operativa, de población o técnica manual) del control. Una prueba automática la resuelve
 el motor (`409 TEST_NOT_MANUAL`).
 
+**También aplica a una prueba técnica semiautomática que el motor ya mide con checks** (D160): el resultado cubre la
+parte que los checks no ven. La prueba queda en el peor de los dos: un Directo en FAIL es `exception` aunque el
+resultado sea `correct`, y con los checks en PASS sigue `pending` hasta que se registra. La respuesta de la lista de
+pruebas aún no dice cuáles lo admiten (`DT-136`).
+
 **El resultado es de la prueba en ese control**, no de todos los controles del servicio (D129, D132). Esto reemplaza a
 D85 en lo manual. Cada registro es una fila nueva e inmutable que vale en la ventana vigente.
 

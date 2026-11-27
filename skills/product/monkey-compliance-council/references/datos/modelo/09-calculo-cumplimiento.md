@@ -84,6 +84,8 @@ De la lectura de los motores: `passed` → PASS · `failed` → FAIL (o FAIL con
 | T-06 | Dependencia | El test toma la conclusión del test dueño (el control del «Objetivo común», p. ej. «dueño CIF-3»), con su fecha, sin reejecutarse. Si el dueño está en Excepción, el dependiente también |
 | T-07 | Integración (`PE-INT-01`) | La evidencia de una integración (identidad, RR. HH., ticketing, MDM…) cuenta solo si está completa para el período y vinculada al test. Si la integración falla, el test queda Pendiente, nunca Correcto |
 
+**Cómo se aplican T-04 y T-05 (D160, decisión de desarrollo por ratificar, `P14`).** (a) «Las plataformas del cliente» son sus conexiones: una evaluación de nube decide toda prueba de Nube, Aplicación, BD o Servidores que tenga Directos de **esa** plataforma, sea cual sea su dimensión. (b) Los «activos en alcance» de una prueba son los de su tipo con conexión propia y cualquier otro activo del servicio en el que una evaluación automática midió esa prueba; cada recurso que el servicio eligió (D61) es un activo con su propio resultado. (c) Una prueba **Semiautomática** (columna «Automatización») no es Correcta solo con sus checks: necesita además el resultado que registra el responsable; un Directo en FAIL sigue siendo Excepción. Endpoint y Red no se evalúan con checks todavía (`DT-135`).
+
 ### El control: porcentaje y nivel (§5 del libro)
 
 **C% del control** = requisitos en Cumple ÷ requisitos aplicables × 100. Los requisitos en No aplica, con su justificación aprobada, salen del denominador. Primero se comprueba **No evaluado** (ningún requisito tiene evidencia todavía); si no, se asigna el primer nivel cuya regla se cumpla, en este orden: Sólido, Adecuado, Parcial, Débil, Ineficaz.

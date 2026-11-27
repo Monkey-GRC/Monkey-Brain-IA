@@ -235,3 +235,10 @@ quedan aquí:
 | D151 | Cómo funcionan los avisos: destinatarios, agrupación, campana en vivo (SSE) y resumen diario *(decisión de desarrollo)* | [notificaciones](notificaciones.md) |
 | D152 | Corte mínimo de Documentos para el colaborador: versión importada, asignar, mis documentos y aceptar *(decisión de desarrollo)* | [documentos](documentos.md) |
 | D153 | Cuándo y a quién avisan la falla de un check Directo, el cambio de parámetros y la evidencia desactualizada *(decisión de desarrollo; se aparta de D138 punto 1)* | [notificaciones](notificaciones.md) |
+| D154 | Microsoft 365 se conecta con una aplicación del cliente y un certificado que genera Monkey; desde D156 el motor recibe solo permisos temporales; empieza `coming_soon` *(propuesta, por ratificar)* | [control-tecnico](control-tecnico.md) |
+| D155 | El trabajador corre varias corridas a la vez, la cola reparte entre empresas y la limpieza no toca lo de otro trabajador *(decisión de desarrollo)* | [control-tecnico](control-tecnico.md) |
+| D156 | El motor de Microsoft 365 recibe solo permisos temporales (retira la excepción a SEG-46) y la evaluación informa su avance real *(decisión de desarrollo)* | [control-tecnico](control-tecnico.md) |
+| D157 | «Conectar Microsoft 365» con un botón: aplicación de Monkey que cada cliente autoriza; la organización sale de la identidad firmada *(decisión de desarrollo; pendiente de revisión de seguridad)* | [control-tecnico](control-tecnico.md) |
+| D158 | La nube se evalúa sola con la frecuencia elegida: tarea del Backend, un reintento, cola acotada y lo manual primero | [control-tecnico](control-tecnico.md) |
+| D159 | En Microsoft 365 un check Directo que no vuelve es «Sin datos» (prueba pendiente), no «No aplica»: la regla del libro (`MAP CALOR`, T-04); acota D56 | [control-tecnico](control-tecnico.md) |
+| D160 | Una prueba la decide la plataforma conectada, no su dimensión; cada recurso elegido es un activo con su resultado; una prueba semiautomática no es Correcta sin su parte manual *(decisión de desarrollo, por ratificar: `P14`)* | [control-tecnico](control-tecnico.md) |

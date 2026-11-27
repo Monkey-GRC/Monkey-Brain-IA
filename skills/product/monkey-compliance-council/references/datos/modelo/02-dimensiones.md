@@ -38,13 +38,20 @@ Los valores del enum de las cuatro nuevas son propuesta de desarrollo; se fijan 
 dimensiones corre sobre los activos vigentes del servicio de ese tipo, igual que servidores, BD y nube. Documental,
 proceso y físico y ambiental no tienen activos: se resuelven con documentos, poblaciones, muestras e inspecciones.
 
+**La dimensión dice qué se prueba, no de dónde viene el dato** (D160). Una prueba de BD toma los checks de la nube
+para las bases administradas y los de la sonda para las instaladas en servidores; una de Aplicación, los de la
+organización SaaS conectada. Por eso en una prueba cuentan los activos de su tipo con conexión propia **y** cualquier
+otro activo del servicio en el que una evaluación automática midió esa prueba (la cuenta de nube, la organización
+conectada, el recurso descubierto). Qué checks aplican lo dice `TEST_CHECKS` por plataforma («Aplica cuando»), no la
+dimensión. Endpoint y Red todavía no se evalúan con checks (`DT-135`).
+
 ### Dónde vive la dimensión
 
 | Tabla | Cuántas dimensiones tiene |
 |---|---|
 | `controls` | Las que aplica: una fila de `control_dimensions` por cada una (en el escenario del cliente, `client_control_dimensions`, §7.1) |
 | `tests` | **Una sola**, en su columna `dimension` (ya no se deduce del prefijo del código) |
-| Resultados de checks | La del test que los usa, sobre un activo concreto |
+| Resultados de checks | La del test que los usa, sobre un activo concreto (que puede ser de otro tipo: D160) |
 
 **Qué dimensiones aplica cada control lo dice el comité** en las columnas «TEST …» de `Controles Monkey` («Definido» o
 «N/A»), y ya no se derivan de las pruebas (D129, que reemplaza D39). Por eso `control_dimensions` guarda solo la

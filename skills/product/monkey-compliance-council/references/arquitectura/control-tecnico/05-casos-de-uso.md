@@ -86,7 +86,7 @@ contrato los supone, no como construidos.
 
 ### CU-CT-03 · Evaluar la nube según la programación
 
-> 🟡 **Sin disparador:** la frecuencia se guarda, pero ningún componente crea estas ejecuciones.
+> ✅ *(D158)* La crea la tarea de evaluación programada del Backend.
 
 | | |
 |---|---|
@@ -100,6 +100,8 @@ contrato los supone, no como construidos.
 
 **Flujos alternos**
 - 1a. Ya hay una ejecución abierta → no se crea otra (índice único).
+- 1b. La anterior falló → un solo reintento a la hora; después, la frecuencia completa (D158).
+- 1c. Ya hay 2 programadas esperando → se encola en una revisión posterior.
 
 ### CU-CT-04 · Consultar la preparación de un activo
 

@@ -139,6 +139,62 @@ Parches vigentes de [Control técnico](../arquitectura/control-tecnico/README.md
 - **Qué lo cierra:** Conectar una cuenta de AWS distinta con la plantilla `MonkeyReadOnly` y validar y evaluar de punta a punta
 
 
+### DT-130 · El certificado de una conexión de Microsoft 365 vence a los 2 años y no hay renovación
+
+🟠 Importante
+
+- **Qué está parchado:** Monkey genera un certificado autofirmado de 2 años por conexión (D154). Se muestra su vencimiento, pero no hay aviso previo ni forma de renovarlo: al vencer, la conexión falla con «la aplicación no acepta el certificado».
+- **Por qué:** La primera etapa busca conectar y evaluar; el motor tampoco documenta un procedimiento de renovación.
+- **Qué lo cierra:** Un endpoint para generar un certificado nuevo (con el comando para subirlo a la aplicación sin cortar la conexión), un aviso con antelación (correo y pantalla) y una prueba con un tenant real.
+
+### DT-131 · Microsoft 365 se evalúa solo con Microsoft Graph, y lo construido no se ha probado contra un tenant real
+
+🟠 Importante
+
+- **Qué está parchado:** El script de alta y el adaptador piden solo permisos de Graph (D154): no corren los checks de Exchange y Teams (PowerShell), que además exigen el permiso `Exchange.ManageAsApp` y el rol «Global Reader» en la aplicación. Todo se probó con simulaciones (un `az` falso, tokens falsos) y con la imagen real del motor, pero **no contra un tenant de Microsoft 365**: los nombres de permisos, el consentimiento, el formato real de la salida y la cobertura de checks por prueba quedan por verificar. Además, el trabajador usa la imagen 5.44.0 (144 checks) y el catálogo de la VF18 es de la 5.45.0 (149): falta comprobar cuántos ejecuta la imagen (los 149 ya tienen título en español). Para la prueba real existe `Backend/scripts/dev/entra-smoke.ts`. **Visto el 2026-11-25 en la primera prueba real:** Azure Cloud Shell exige una suscripción de Azure, así que una organización que solo tiene Microsoft 365 no puede dar de alta la conexión como está diseñada; falta una vía sin Cloud Shell antes de pasar a `available`. La misma prueba mostró que el consentimiento podía quedar incompleto (el permiso de Exchange recién pedido) aunque el comando dijera «Listo», y que repetirlo duplicaba los permisos pedidos: corregido (ahora comprueba lo aprobado). Lo que se puede evaluar depende además de las licencias del cliente (sin Entra ID Premium ni Defender, parte de los checks no aplica).
+- **Por qué:** No había un tenant de pruebas al construirlo.
+- **Qué lo cierra:** Una corrida con un tenant de pruebas (alta, validación y evaluación), corregir lo que falle, y decidir si se activan Exchange y Teams (la imagen fijada ya trae PowerShell 7.5 y los módulos). Después, pasar la plataforma a `available`.
+
+### DT-132 · La llave de la aplicación de Monkey para Microsoft 365 es un archivo y sirve para todos los clientes
+
+🔴 Crítico (antes de ofrecer el botón a clientes)
+
+- **Qué está parchado:** la llave privada de la aplicación multi-organización (D157) vive en un archivo montado en el trabajador. Quien la obtenga puede leer todas las organizaciones que la autorizaron. No hay almacén de llaves, rotación ni alertas de uso, y Monkey no está verificado como editor ante Microsoft.
+- **Por qué:** se construye primero el recorrido para probarlo en local.
+- **Qué lo cierra:** firmar con un almacén de llaves que no la exporte, procedimiento de rotación y revocación, vigilancia de los inicios de sesión de la aplicación, verificación de editor y revisión de seguridad.
+
+### DT-136 · La pantalla no deja registrar el resultado manual ni distingue una prueba con parte manual
+
+🟠 Importante
+
+- **Qué está parchado:** el Backend ya admite el resultado del responsable en una prueba semiautomática (D160 punto 4) y en las manuales (MD-504), pero Platform no tiene dónde registrarlo ni un campo que diga qué pruebas lo admiten: esas pruebas no llegan a «Correcto» desde la pantalla. Además, `control-tests.ts` decide qué prueba es «automática» con una lista fija de dimensiones (sin Endpoint ni Red) en vez de un dato del API.
+- **Por qué:** la pantalla de resultado manual es de la interfaz pendiente de MD-504; ante la UI se piden indicaciones a Rod.
+- **Qué lo cierra:** un campo en `…tests[]` que diga si la prueba admite resultado manual, la pantalla para registrarlo y quitar la lista fija.
+
+### DT-135 · Las pruebas de Endpoint y de Red no se evalúan con checks, y un recurso que deja de reportarse conserva su último resultado
+
+🟠 Importante
+
+- **Qué está parchado:** (a) El motor sigue con la regla de 5 dimensiones (D5): un activo `endpoint` o `network_device` no entra a ninguna prueba y ninguna evaluación escribe pruebas de esas dimensiones, aunque D129 ya las definió y `TEST_CHECKS` trae Directos para pruebas de Endpoint (3 del motor de nube, de Microsoft 365, y los de la sonda para Windows, macOS y Linux). (b) Un recurso elegido (D160) solo recibe fila cuando algo se midió en él: si un check deja de devolverlo, su último resultado sigue vigente hasta que venza por frescura o por ventana.
+- **Por qué:** (a) la población de una prueba de Endpoint decidida por una política de la organización no está definida (`P14` B6) y las plataformas de endpoint aún no se pueden conectar. (b) evita escribir una fila por recurso y prueba en cada evaluación.
+- **Qué lo cierra:** (a) la respuesta del comité a `P14` B6 y habilitar las plataformas de endpoint. (b) lo mismo que `DT-134`: que el trabajador informe qué no pudo medir.
+
+### DT-134 · En AWS y GCP un check Directo que no vuelve se toma como «No aplica» aunque haya faltado acceso
+
+🟠 Importante
+
+- **Qué está parchado:** D56 trata como `not_applicable` todo check sin filas. Si faltó por permisos o por un error de recolección, la prueba puede salir cumplida con los demás Directos, contra `MAP CALOR` («Sin datos») y T-04. Microsoft 365 ya no (D159).
+- **Por qué:** en AWS y GCP un check sin filas suele ser un recurso que no existe, y la corrida no dice cuál de los dos casos es.
+- **Qué lo cierra:** que el trabajador informe qué checks no pudo ejecutar (permisos, servicio sin habilitar, error) para guardarlos como `not_run`.
+
+### DT-133 · Monkey no comprueba si el cliente asignó el rol de Lector global para el correo
+
+🟠 Importante
+
+- **Qué está parchado:** el acceso al correo se sabe **después de evaluar**: el historial deriva `mail_reviewed` de lo que de verdad se midió y la conexión deja de pedir «Lector global» cuando fue `true`. Antes de la primera evaluación (el resultado del asistente) la guía se muestra sin saber si ya está puesto, y con `false` no se distingue un rol sin asignar (o aún sin aplicar) de un permiso que no quedó autorizado.
+- **Por qué:** autorizar no concede el rol, y comprobarlo al validar exige que el trabajador consulte el servicio de correo.
+- **Qué lo cierra:** que la validación haga una lectura real del correo y la conexión diga «correo: sin acceso» desde el principio, con el motivo.
+
 ## Transversal
 
 ### DT-126 · La última recolección completada de un activo se busca sin índice por `finished_at`

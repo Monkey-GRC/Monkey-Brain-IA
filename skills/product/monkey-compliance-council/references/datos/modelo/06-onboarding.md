@@ -258,12 +258,17 @@ erDiagram
         enum connection_status
         datetime last_validated_at
         string technical_coverage
-        enum connection_method "readonly_role|access_keys|agent, nulo hasta elegir"
+        enum connection_method "readonly_role|access_keys|agent|identity_federation|app_certificate, nulo hasta elegir"
         string regions "las que el cliente declara; solo esas se evaluan"
         string external_id "lo genera Monkey, no es secreto"
         string role_arn "lo entrega el cliente, no es secreto"
+        string project_number "GCP (D112): lo imprime el script de alta, no es secreto"
+        string app_client_id "Microsoft 365 (D154): el ID de la aplicación del cliente, no es secreto"
+        text certificate_pem "Microsoft 365 (D154): solo la parte PÚBLICA del certificado"
+        string certificate_thumbprint "Microsoft 365: huella SHA-1 del certificado, no es secreto"
+        datetime certificate_expires_at "Microsoft 365: vencimiento del certificado (DT-130)"
         datetime inventory_at "último descubrimiento de activos (D59)"
-        text encrypted_credentials "cifrado AES-256-GCM, nunca se devuelve"
+        text encrypted_credentials "cifrado AES-256-GCM, nunca se devuelve; en Microsoft 365, la clave privada del certificado"
         boolean is_active
         enum schedule_frequency "nullable: continuous|every_6h|every_24h"
     }
@@ -289,7 +294,7 @@ erDiagram
     platform_connection_methods {
         uuid id PK
         uuid platform_id FK
-        enum connection_method "readonly_role|access_keys|agent"
+        enum connection_method "readonly_role|access_keys|agent|identity_federation|app_certificate"
         boolean is_recommended
         int sort_order
     }

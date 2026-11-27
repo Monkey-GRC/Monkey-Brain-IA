@@ -26,7 +26,7 @@ Esto **no** es una feature con endpoints de cara al cliente. La nube vive en tre
 - **Otro proveedor (Azure…):** una carpeta `src/runner/infrastructure/providers/<nube>/` con su broker de credenciales, su perfil del motor
   (argumentos y entorno; lo común está en `engine-common.ts`) y, si aplica, su inventario; se registra en `cloud-adapters.ts`. En el backend: su
   canal en `connection_method`, sus reglas al declarar el activo y su catálogo de checks (`npm run cloud:extract -- <carpeta> <versión> --platform <nube>`).
-  GCP es el ejemplo completo (D112, `cruce-nube-gcp.md`). Azure sigue sin probar (`P14` C5): no se promete su cobertura.
+  GCP es el ejemplo completo (D112, `cruce-nube-gcp.md`). **Microsoft 365** (D154) ya está construido con su propio canal (`app_certificate`): es el ejemplo de un proveedor cuyo motor no acepta tokens de fábrica: el trabajador firma con el certificado, pide permisos temporales y un arranque propio se los entrega al motor sin la llave (D156) (`cruce-nube-m365.md`). Azure sigue sin probar (`P14` C5): no se promete su cobertura.
 - **Otro ejecutor** (una tarea en la nube en lugar de Docker): un `ScanEngine` nuevo. El bucle del trabajador no cambia.
 - **Más checks o pruebas:** el seed (`npm run cloud:extract | cloud:load | cloud:verify`, D56). El mapeo lo pone Monkey y **gana el comité**
   (`mapping_provenance`); el seed nunca pisa una asignación `committee_ratified`.

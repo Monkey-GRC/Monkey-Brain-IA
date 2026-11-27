@@ -347,3 +347,116 @@ exige permiso para crear proyectos y facturación propia para los checks de moni
 **Qué cambia.** §3 y §9, `contracts/catalogo-maestro.md` y el motor v2 (MD-498): los 19 vínculos «N/A» ya cuentan (completa el punto 4 de D139 y D141).
 
 **Fuente:** Héctor Ríos (Rod), 2026-11-23, como decisión de desarrollo, para no bloquear la VF18. **No es una decisión del comité.**
+
+---
+
+## D154 · Microsoft 365 se conecta con una aplicación y un certificado por cliente; el motor recibe esa credencial (2026-11-22)
+
+**Decisión** (Carlos, 2026-11-22; desarrollo; **propuesta de Claude, pendiente de ratificar con el comité**). Reabre D53 punto 1 («M365 fuera hasta nuevo aviso») solo para esta plataforma y concreta D53 y D58 para ella:
+
+1. **Alcance.** `microsoft_365` (`ac_01`) entra a la etapa de conexión de la nube. **Azure es otra plataforma** (otro proveedor del motor, otra credencial y suscripciones en vez de tenant): va aparte, con su propia decisión. Una empresa puede tener las dos y declara el mismo tenant en cada conexión.
+2. **El activo es el tenant.** `external_account_id` = **ID del tenant** (un GUID); sin regiones. El motor usa su proveedor `m365` (Entra ID, Exchange, Teams, SharePoint, Defender, Purview, Intune): en la imagen fijada 5.44.0 son **144 checks en 10 servicios** (verificado el 2026-11-22). El catálogo de la VF18 (motor 5.45.0) trae **149** (`DT-131`).
+3. **Canal `app_certificate`** (`connection_method`), el único de `microsoft_365`. Una **aplicación registrada en el Entra del propio cliente**, una por activo, que se autentica con un **certificado** (la forma que el motor recomienda: evita secretos de larga vida y habilita todo el proveedor). El motor no documenta una aplicación multi-tenant del proveedor: cada cliente crea la suya.
+4. **El certificado lo genera Monkey, por activo.** Al declarar el tenant, el Backend crea un par de claves RSA y un certificado autofirmado (2 años, el mismo plazo del ejemplo del motor). **El cliente solo recibe el certificado público**, dentro del comando; la clave privada se guarda **cifrada** (`SEG-24`) y no se devuelve nunca (desde D156 no existe el PFX). La huella y la fecha de vencimiento no son secretos y se muestran.
+5. **Alta sin que el cliente copie secretos.** Pega en Azure Cloud Shell (con un administrador global) un comando con el script dentro, que crea la aplicación «Monkey (solo lectura)», le sube el certificado público, le concede **solo permisos de aplicación de lectura** de Microsoft Graph (los 13 que el motor lista; los que el tenant no ofrezca se omiten y se avisan), da el consentimiento e imprime el **ID de la aplicación**, que el cliente devuelve (`PATCH /v1/assets/{id}/connection`). **Exchange y Teams (PowerShell) no se piden en esta etapa** (`DT-131`): el script los trae apagados.
+6. **Validar** = pedir un token de aplicación con el certificado (aserción firmada, sin secretos en la red), comprobar que el tenant es el declarado y que el token trae los permisos requeridos. Un fallo es de conexión, no un incumplimiento (D57); lo que corrige el cliente (aplicación, certificado, consentimiento) se señala en el campo `client_id`.
+7. *(Reemplazado por D156: el motor ya no recibe el certificado.)* **Excepción a `SEG-46`.** El motor **no acepta un token ya emitido ni federación** para Microsoft 365 (solo certificado o secreto), así que recibe el PFX del cliente en el entorno de su contenedor efímero. Queda acotado: un cliente, solo lectura, contenedor eliminado al terminar, y el cliente la revoca borrando el certificado de su aplicación. Se reevalúa cuando el motor soporte federación (solicitud abierta en su repositorio).
+8. **Esquema.** Valor `app_certificate` en `connection_method`; en `asset_provisionings`: `app_client_id`, `certificate_pem`, `certificate_thumbprint` y `certificate_expires_at` (ninguno es secreto); lo secreto va en `encrypted_credentials`.
+9. **Disponibilidad.** La plataforma se queda `coming_soon` **hasta probarla con un tenant real**; pasarla a `available` es una migración de datos aparte (como D113 con Linux y Windows). Lo construido no se ve hasta entonces.
+10. **La salida del motor.** El `account_uid` de cada hallazgo es el **dominio** del tenant y el ID del tenant va en `account_organization_uid`; el parser no usa la cuenta (es el adaptador quien garantiza que el token es del tenant declarado).
+
+**Por qué.** El certificado es lo que el motor recomienda y evita un secreto compartido entre clientes: una aplicación única de Monkey con consentimiento en todos los tenants daría, a quien comprometa el motor, acceso de lectura a todos (contra `SEG-26`). Federación sin secretos, como en GCP, no es posible hoy con este motor.
+
+**Qué NO se decide aquí.** Azure; Exchange y Teams (PowerShell); la renovación del certificado antes de que venza (`DT-130`); Qué checks cuentan para cada prueba **no se decide aquí porque ya lo define el comité**: la hoja `TEST_CHECKS` de la VF18 (D128, D129; `committee_ratified`).
+
+**Qué cambia.** `contracts/onboarding/conexion-activos/conectar.md` (sección E) y `contracts/enums/onboarding/conexion-activos.md`, `seguridad/control-tecnico.md` (`SEG-46`), `deuda-tecnica/control-tecnico.md` (`DT-130`, `DT-131`), `P14` C5, el Backend (`src/runner`, conexión, script de alta) y Frontend-Platform (asistente de Microsoft 365).
+
+**Fuente:** Carlos Castaño, 2026-11-22 (pidió conectar Microsoft 365 con el motor y aprobó desarrollarlo). Documentación del motor leída el 2026-11-22 y verificada contra la imagen fijada 5.44.0.
+
+---
+
+## D155 · El trabajador corre varias corridas a la vez, la cola reparte entre empresas y la limpieza no toca lo de otro trabajador (2026-11-25; ajusta los carriles de D58)
+
+**Decisión** (desarrollo, a pedido de Carlos: «que no se caiga al montar varios clientes»):
+
+1. **Concurrencia configurable.** `ENGINE_CONCURRENCY` (evaluaciones, 1 por defecto) y `VALIDATION_CONCURRENCY` (validaciones, 2 por defecto). Cada evaluación es un contenedor con `ENGINE_MEMORY_MB` y `ENGINE_CPUS`: el servidor tiene que aguantar la suma, y la memoria del propio trabajador sube con la concurrencia (el compose pasa de 256 MB a 1 GB).
+2. **Varios trabajadores.** La cola entrega cada corrida a uno solo (`SKIP LOCKED`). Cada contenedor lleva el identificador de su trabajador (`RUNNER_ID`, por defecto el nombre del contenedor): al arrancar, un trabajador solo retira los suyos y los que pasan de 30 min (ninguna corrida viva dura tanto); además revisa los vencidos cada 10 min. Antes, arrancar un segundo trabajador en el mismo servidor borraba las corridas en curso del primero.
+3. **Reparto entre empresas.** Entre lo encolado se atiende primero a la empresa con **menos corridas en curso**; a igualdad, por orden de llegada. Las validaciones y altas siguen delante. Es un reparto aproximado (dos reclamos simultáneos pueden ver el mismo conteo).
+
+**Límite conocido.** Un contenedor abandonado por un trabajador que ya no existe puede vivir hasta 30 min. Para muchos clientes a la vez, la salida sigue siendo ejecutar el motor como tarea en la nube (el puerto `ScanEngine` lo permite sin tocar el resto).
+
+**Qué cambia.** Backend (`src/runner`, migración `20261125200100_claim_fair_by_tenant`, `deploy/`), `contracts/control-tecnico.md` (reclamo).
+
+**Fuente:** Carlos Castaño, 2026-11-25. Decisión de desarrollo. **No es una decisión del comité.**
+
+---
+
+## D156 · El motor de Microsoft 365 recibe solo permisos temporales, y la evaluación informa su avance real (2026-11-25; reemplaza el punto 7 de D154)
+
+**Decisión** (desarrollo, a pedido de Carlos):
+
+1. **La llave no entra al motor.** El trabajador pide con el certificado tres permisos temporales de **esa** organización (directorio, correo y reuniones; ~1 h) y el contenedor recibe solo eso. Se retira la segunda excepción de `SEG-46` y deja de existir el archivo del certificado con su llave (PFX): no se genera, no se guarda y no viaja. Correo y reuniones son opcionales: sin ellos, sus verificaciones no corren.
+2. **Arranque propio dentro del contenedor.** El motor no ofrece esta forma de entrar: el trabajador copia al contenedor un arranque que cambia, solo ahí, los puntos donde usaría el certificado. Si una versión nueva del motor los cambia, **se detiene con error**. Cada actualización de la imagen exige repetir la prueba con un tenant real.
+3. **Avance real.** El mismo arranque informa verificaciones hechas / total; el trabajador lo traduce a 0-99 (10 acceso comprobado, 10-94 verificaciones, 95 guardando) y lo manda a `POST /internal/runner/executions/{id}/progress`; se guarda en `executions.progress_percentage` (solo sube) y el cliente lo recibe como `progress_percent`. El 100 lo pone el backend al guardar. Las demás nubes siguen con la estimación por tiempo, que la pantalla declara.
+
+**Comprobado (tenant real, 2026-11-25):** con la misma aplicación, las 651 filas que daba la corrida con certificado salieron iguales y aparecieron 16 más (reuniones); 144 de 144 avisos de avance.
+
+**Qué NO se decide aquí.** Cómo autoriza el cliente la conexión (D154 puntos 3 a 5 siguen vigentes): la aplicación única de Monkey con un botón está aprobada para construirse y probarse, y tendrá su propia decisión.
+
+**Fuente:** Carlos Castaño, 2026-11-25. Decisión de desarrollo. **No es una decisión del comité.**
+
+---
+
+## D160 · Una prueba la decide la plataforma conectada, no su dimensión; cada recurso elegido es un activo, y la parte manual no se salta (2026-11-26)
+
+**Problema.** El código trataba la dimensión de la prueba como la **fuente** del dato: la evaluación de nube solo decidía pruebas de dimensión Nube, y un activo solo contaba para pruebas de su mismo tipo (regla de desarrollo de MD-117, `DT-50`). El libro usa la dimensión para decir **qué se prueba**: `TEST_CHECKS` vincula checks Directos del motor de nube a 24 pruebas de Aplicación, BD, Servidores y Endpoint, de 18 controles, y el paso 1 de toda prueba técnica y la regla **T-04 (a)** piden tomarlos «solo de las plataformas o políticas que el cliente tiene conectadas». Esos resultados se guardaban y nunca llegaban a Cumplimiento (en Microsoft 365, 6 de sus 7 pruebas; en AWS, 14 de 32; en GCP, 7 de 16). Además, un recurso descubierto que el servicio elegía (D61) quedaba «en alcance» sin que nada lo midiera, y dejaba sus pruebas pendientes para siempre.
+
+**Fuente:** VF18, hojas `TEST` (paso a paso y «Correcto si»), `TEST_CHECKS` («Aplica cuando») y `MAP CALOR` (T-04, T-05, S-02 a S-04). Aprobado por Carlos (2026-11-26) como **decisión de desarrollo, por ratificar con el comité** (`P14` B2, B4 y B5 a B7).
+
+1. **Decide la plataforma conectada.** Una evaluación de nube escribe el resultado de toda prueba de dimensión Nube, Aplicación, BD o Servidores, usando solo los Directos **de la plataforma de esa conexión**. Una conexión que no mide una prueba deja «no aplica» y no entra en ella.
+2. **Cada recurso que el servicio eligió es un activo** (D61) y lleva **su propio resultado**; lo que es de toda la cuenta (usuarios, políticas, lo que no tiene activo propio) se queda en la conexión. La cobertura de T-04 (b) cuenta esos activos.
+3. **Quién está en el alcance de una prueba** (lectura): los activos de su tipo **con conexión propia** (se esperan aunque no tengan resultado: «Sin datos») y **cualquier otro activo del servicio en el que una evaluación automática sí midió esa prueba** (la cuenta o la organización conectada, el servidor con agente en una prueba de BD, el recurso descubierto). Un recurso descubierto sin resultado ya no se espera. Los módulos y puntajes de la sonda siguen siendo solo de los activos de su tipo con conexión propia.
+4. **La parte manual no se salta.** En una prueba que el libro marca **Semiautomática**, los checks pueden dejarla en Excepción o Pendiente; para **Correcto** hace falta además el resultado que registra el responsable (`POST …/tests/{test_id}/result`, D140 punto 2), que cubre lo que los checks no ven (la aplicación propia, lo que está fuera de la nube) o deja constancia de que no existe. La aprobación sigue siendo la del control (D132). Una prueba **Automática** la deciden sus checks; una sin ningún Directo aplicable sigue siendo manual (T-05).
+5. **Lo mismo en todo lo que deriva de ahí:** el aviso de check Directo en FAIL (D153), el de evidencia automática desactualizada, la preparación del activo y las excepciones de un activo (D135) usan la misma regla.
+6. **Endpoint y Red quedan fuera** hasta que el comité defina su población (`DT-135`, `P14` B6). **No reescribe** lo ya guardado: vale desde la siguiente evaluación.
+
+**Qué NO decide.** Si un servidor en la nube con agente es un activo o dos (`P14` B2: hoy cuentan los dos, cada uno con su resultado); si la columna «Automatización» manda sobre el paso a paso cuando se contradicen (`P14` B7).
+
+**Qué cambia.** `modelo/02-dimensiones.md`, `modelo/09-calculo-cumplimiento.md`, `contracts/cumplimiento/controles.md`, `contracts/cumplimiento/aprobacion.md`, `contracts/enums/control-tecnico.md`. Backend: `scan.prisma.repository.ts` (`writeEvaluations`), `control-readout.ts` (`assetsInScope`), los dos avisos y las excepciones. Sin migración.
+
+## D159 · En Microsoft 365, un check Directo que no vuelve es «Sin datos», no «No aplica» (2026-11-26)
+
+**Fuente:** VF18, hoja `MAP CALOR` («Sin datos: debería aplicar, pero no hay resultado (…, error de recolección, **permisos**). No es PASS: el test queda Pendiente») y regla **T-04** (Correcto exige el 100 % de los Directos en PASS); es la regla ya escrita en `modelo-datos.md` §9. Aprobado por Carlos (2026-11-26) con esa condición: que no se salga del cerebro ni del libro. **Acota el punto 2 de D56** (un check que el motor no devuelve es `not_applicable` «porque la cuenta no tiene esos recursos»).
+
+1. Los checks de Microsoft 365 revisan la **organización**, que existe en cuanto se conecta (la columna «Aplica cuando» de sus Directos dice, en su mayoría, «Cliente conecta Microsoft 365»). Si un Directo del catálogo no llega en una corrida, faltó acceso, licencia o dato: es **Sin datos** (`not_run`).
+2. La prueba queda **pendiente**, nunca cumplida ni «no aplica»; si otro Directo falló, sigue en **no cumple**. Vale igual para el estado de preparación del activo. Los Complementarios y de Dependencia siguen sin decidir.
+3. **Solo Microsoft 365.** En AWS y GCP un check sin filas puede ser un recurso que no existe y la corrida no dice cuál es el caso: sigue D56 y queda como `DT-134`.
+4. No reescribe lo ya guardado: se aplica desde la siguiente evaluación.
+
+## D158 · La nube se evalúa sola con la frecuencia elegida (2026-11-26)
+
+**Fuente:** Carlos (2026-11-26): «la idea es que sí haya una evaluación automática cada 24 horas». Construye HU-CT-04 / CU-CT-03 (D57): la frecuencia se guardaba y ningún componente creaba las ejecuciones. Vale para **todas las nubes** (AWS, GCP, Microsoft 365).
+
+1. Una tarea del Backend revisa cada pocos minutos las conexiones de nube **programadas** (`schedule_frequency` `every_6h` o `every_24h`) y deja en cola una evaluación `origin = scheduled` cuando pasó la frecuencia desde el inicio de la anterior (sea manual o programada). Una conexión recién programada y nunca evaluada se evalúa en la siguiente revisión.
+2. Si la anterior **falló**, se reintenta **una vez** a la hora; si vuelve a fallar, espera la frecuencia completa.
+3. Nunca quedan más de **2** evaluaciones programadas esperando por grupo de trabajadores: un atraso se atiende poco a poco, empezando por la más antigua. En el reclamo, lo que **pide una persona** va delante de lo programado.
+4. No se toca una empresa archivada, un activo dado de baja ni uno con una ejecución abierta. Los servidores con agente siguen su propia lectura (D113).
+5. La tarea solo corre con la evaluación real (`PROBE_MODE=runner`). `CLOUD_SCHEDULE_INTERVAL_MINUTES` fija cada cuánto revisa (5) y `0` la apaga. Sin valor, **solo se enciende en el grupo de trabajadores `default`**: un backend local con grupo propio que comparta la base no debe llevarse las evaluaciones de los demás.
+
+## D157 · «Conectar Microsoft 365» con un botón: una aplicación de Monkey que cada cliente autoriza (2026-11-25; reemplaza los puntos 3 a 6 de D154 como vía principal)
+
+**Decisión** (Carlos, 2026-11-25; desarrollo; **pendiente de revisión de seguridad antes de ofrecerla a clientes**):
+
+1. **Una aplicación multi-organización de Monkey** con permisos de aplicación **de lectura**. El cliente solo inicia sesión y autoriza: no copia comandos, certificados ni identificadores. Canal nuevo `admin_consent`, el recomendado de `microsoft_365`; `app_certificate` (D154) queda como opción avanzada.
+2. **La organización nunca sale de un parámetro de la dirección.** (a) Inicio de sesión (`id_token`): el Backend verifica firma, emisor, destinatario, vigencia y `nonce`, y exige Administrador global o Administrador de roles con privilegios (no admite cuentas personales). (b) Autorización de **esa** organización. (c) Solo la **misma sesión de Monkey** (empresa, persona y activo) termina el enlace con un recibo firmado de 5 minutos. Los recibos usan una clave derivada del secreto del servidor, con un paso cada uno. No requieren tabla.
+3. **La llave de la aplicación la tiene solo el trabajador** (archivo montado). El Backend no la conoce y el motor tampoco: recibe permisos temporales de una organización (D156).
+4. **Lo que un botón no resuelve:** el rol **Lector global** (necesario para los checks de correo) no se concede autorizando; el cliente lo asigna a la aplicación en Microsoft Entra, con la guía de la pantalla.
+
+**Por qué.** Pedirle a Monkey permisos para modificar la organización del cliente no sería aceptable para muchas empresas, y Azure Cloud Shell exige una suscripción de Azure que un cliente de solo Microsoft 365 no tiene.
+
+**Riesgo aceptado y lo que falta antes de producción.** La llave de la aplicación da acceso de lectura a **todas** las organizaciones que la autorizaron (`DT-132`): hace falta un almacén de llaves que firme sin entregarla, rotación y vigilancia; la verificación de editor de Microsoft; y la revisión de seguridad.
+
+**Qué cambia.** `contracts/control-tecnico.md`, `contracts/onboarding/conexion-activos/conectar.md` (sección F), `contracts/enums/onboarding/conexion-activos.md`, `seguridad/control-tecnico.md`, Backend (migración `20261125200200_connection_method_admin_consent`, aditiva).
+
+**Fuente:** Carlos Castaño, 2026-11-25 (aprobó el botón con permisos de solo lectura). Decisión de desarrollo. **No es una decisión del comité.**
+

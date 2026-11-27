@@ -14,7 +14,7 @@ Lo que sigue abierto, con lo más urgente arriba. 🚧 bloquea trabajo · ⚠️
 
 | P | Pregunta | ¿Qué espera por ella? | Abierta desde |
 |---|---|---|---|
-| [P14](control-tecnico.md#p14--motores-de-evaluación-rol-de-cada-uno-y-cómo-se-relacionan-con-el-modelo) | Motores de evaluación: unidad de evaluación, conexión y legal (el rol de cada motor se cerró en D100; el SaaS y la carga del catálogo, en D129) | 🚧 El cálculo de cobertura en nube; no Cumplimiento | 2026-10-07 |
+| [P14](control-tecnico.md#p14--motores-de-evaluación-rol-de-cada-uno-y-cómo-se-relacionan-con-el-modelo) | Motores de evaluación: unidad de evaluación, conexión y legal (el rol de cada motor se cerró en D100; el SaaS y la carga del catálogo, en D129) | 🚧 El cálculo de cobertura en nube y, en Cumplimiento, qué activos cuentan en una prueba (provisional: D160) | 2026-10-07 |
 | [P2](empresas.md#p2--el-flujo-de-la-clave-de-acceso--5-detalles-sin-definir) | El flujo de la clave de acceso: 5 detalles sin definir (urgentes: a y c) | ⚠️ Condiciona la pantalla de canje (hoy hecha como código a mano, D51) | — |
 | [P9](catalogo-maestro.md#p9--tipos-de-pérdida-de-un-riesgo-escritos-de-dos-formas-en-el-libro) | Tipos de pérdida de un riesgo escritos de dos formas en el libro | Los valores de `loss_type`; hoy se tratan como uno (decisión de desarrollo) | — |
 | [P21](catalogo-maestro.md#p21--el-uso-de-los-logos-de-marcas-de-terceros) | El uso de los logos de marcas de terceros en el marketplace | ⚠️ Publicar el marketplace con logos a clientes reales; no bloquea construirlo | 2026-10-10 |

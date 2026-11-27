@@ -23,7 +23,7 @@ archivo, **gana el documento**. Y si lo construido o una decisión anterior choc
 | Hoja | Ámbito | Qué define | Transcrita en |
 |---|---|---|---|
 | `00_LEEME` | Guía | Orden de lectura, ámbito de cada hoja y los **principios P1 a P7** del modelo | §9 (los principios) |
-| `01_DESARROLLO` | Guía | La guía de integración (arriba) | D128 a D138 |
+| `01_DESARROLLO` | Guía | La guía de integración (arriba) | D128 a D149 |
 | `Portada` | Catálogo | El marco (SOC 2 TSC) y el logo | — |
 | `Modelo de Gestión usuarios` | Reglas | **6 roles** (se agrega `colaborador`), la matriz de permisos con el módulo Documentos (Tabla 2), los parámetros de contraseña que Monkey recomienda al implementador (Tabla 3) y los de la propia aplicación (Tabla 4) | §5, D136, D137 |
 | `Contexto Empresa` · `Contexto del servicio` · `Activos del Servicio (SCOPE)` | Plantilla por cliente | Los formularios del onboarding y del servicio, con sus opciones literales y **comentarios de celda** con instrucciones (multi-select, el marco contratado en la celda de configuración `L3`, el foco del servicio), y los escenarios `AC-01` a `AC-06`. **Iguales a la VF2** | §6, [`arquitectura/onboarding/`](../../arquitectura/onboarding/README.md) |

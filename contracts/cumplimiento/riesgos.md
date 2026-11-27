@@ -298,7 +298,7 @@ Los endpoints devuelven este objeto:
 
 **Cuándo y dónde se evalúa por primera vez (D89).** Al declarar un servicio, en la misma pantalla de crear el servicio, con un asistente que pregunta por cada riesgo (uno a uno) **qué tan probable es que ocurra en el servicio** y **qué tan grave sería si ocurriera**, ambas de 1 a 5. Hasta que todos los riesgos vigentes del servicio estén evaluados no se declaran sus activos (`DT-77`: hoy lo exige solo la pantalla). La pestaña Riesgos de Cumplimiento sirve para verlos y corregirlos después.
 
-**Las escalas que ve el cliente** son las del comité (Excel `TSC INTEGRAL SOC 2 DETALLADO VF2`, hoja `Riesgos`, bloques «Escala de probabilidad» y «Escala de impacto»). Hoy viven en las traducciones de Platform (`COMPLIANCE.RISK_WIZARD.LIKELIHOOD/IMPACT`), no en una lista que sirva el Backend:
+**Las escalas que ve el cliente** son las del comité (Excel `TSC INTERGRAL SOC 2 DETALLADO VF18_DEV`, hoja `MAP CALOR`, escalas de probabilidad e impacto; mismas etiquetas y mismo sentido, con redacción levemente más corta en el libro). Hoy viven en las traducciones de Platform (`COMPLIANCE.RISK_WIZARD.LIKELIHOOD/IMPACT`), no en una lista que sirva el Backend:
 
 | Nivel | Probabilidad | Impacto |
 |---|---|---|

@@ -131,7 +131,7 @@ qué plataformas trabaja la empresa sin poder cambiar nada.
 **Como** administrador, **quiero** ver en el catálogo las integraciones que todavía no están disponibles **para** saber qué
 podré conectar y planear.
 
-- Las integraciones `coming_soon` (hoy Azure, Microsoft 365, Google Workspace, GitHub y Jira; GCP está disponible desde D112) se muestran y no se
+- Las integraciones `coming_soon` (hoy Azure, Google Workspace, GitHub y Jira; GCP está disponible desde D112 y Microsoft 365 desde D157) se muestran y no se
   pueden conectar (D110 punto 6).
 - Su detalle lleva solo qué hará, qué aportará y dónde se usará, en tiempo futuro; requisitos, permisos, seguridad y
   recursos llegan vacíos y `coverage` es `null`.

@@ -202,7 +202,7 @@ Todos los campos del ítem del catálogo (`code`, `name`, `logo_key`, `purpose`,
 Los textos (`overview`, `features`, `prerequisites`, `permissions[].name/detail`, `security[].text`, `capabilities`,
 `works_with`) llegan traducidos según `Accept-Language` y **ninguno nombra al motor que evalúa** (regla 1).
 
-**`coverage`** (solo integraciones de medición con plataforma de conexión cuyos checks están en el catálogo; hoy, AWS):
+**`coverage`** (solo integraciones de medición con plataforma de conexión cuyos checks están en el catálogo; hoy, AWS y GCP; Microsoft 365 desde que pasó a `available`, D157):
 
 | Campo | Tipo | Qué es |
 |---|---|---|
@@ -226,6 +226,21 @@ todas sus pruebas y evidencias, nunca esta cifra (regla 4).
 | `capabilities` | Evaluación continua de la configuración · Inventario de recursos |
 | `works_with` | Cumplimiento · Conexiones de tus servicios |
 
+**Contenido de Microsoft 365** *(D157)*:
+
+| Campo | es |
+|---|---|
+| `overview` | Monkey evalúa la configuración de seguridad de tu organización de Microsoft 365 con acceso de solo lectura, que autorizas con un botón. Cada resultado es un insumo de las pruebas automáticas de tus controles. |
+| `features` | Evaluar identidades y accesos: segundo factor, acceso condicional y roles con privilegios · Evaluar la configuración del correo y la colaboración · Ver el avance real mientras se evalúa · Repetir la evaluación cada 6 o 24 horas |
+| `prerequisites` | Un Administrador global (o Administrador de roles con privilegios) de tu organización para autorizar el acceso · Para revisar el correo: asignar a la aplicación de Monkey el rol «Lector global» después de autorizar · Los riesgos del servicio ya evaluados · Algunas verificaciones necesitan licencias de Microsoft: si tu organización no las tiene, quedan sin medir |
+| `permissions` | Directorio y roles (`Directory.Read.All`, `RoleManagementPolicy.Read.Directory`, `OnPremDirectorySynchronization.Read.All`, `read`): Leer usuarios, grupos, quién es administrador y la sincronización con tus servidores. Incluye datos de las personas. · Políticas de seguridad (`Policy.Read.All`, `read`): Leer las políticas de acceso y de inicio de sesión. · Actividad y revisiones (`AuditLog.Read.All`, `AccessReview.Read.All`, `read`): Leer los registros de auditoría e inicios de sesión y las revisiones de acceso. · Datos de seguridad (`ThreatHunting.Read.All`, `SecurityIdentitiesHealth.Read.All`, `SecurityIdentitiesSensors.Read.All`, `read`): Leer alertas de identidad y consultar eventos de seguridad. Esos eventos pueden incluir datos de personas, equipos o correos. · SharePoint y equipos administrados (`SharePointTenantSettings.Read.All`, `DeviceManagementConfiguration.Read.All`, `DeviceManagementManagedDevices.Read.All`, `DeviceManagementServiceConfig.Read.All`, `read`): Leer los ajustes de SharePoint y la configuración de los equipos administrados. · Correo (`Exchange.ManageAsApp`, `read`): Permite leer la configuración del correo según el rol que asignes a la aplicación. Asigna «Lector global», que no permite cambiar nada. |
+| `resource_types` | ninguno (no lista recursos) |
+| `security` (fuente: D156, D157 y SEG-01; las referencias no salen al cliente) | `read_only`: Monkey pide permisos de lectura. El de correo actúa según el rol que asignes: «Lector global» no permite cambiar nada. · `temporary_credentials`: Cada evaluación usa accesos temporales de Microsoft. Monkey no guarda contraseñas ni secretos de tu organización. · `isolated_execution`: Cada evaluación corre en un entorno aislado que se elimina al terminar. · `tenant_isolation`: Los resultados de tu organización solo los ve tu empresa. |
+| `capabilities` | Evaluación de la configuración |
+| `works_with` | Cumplimiento · Conexiones de tus servicios |
+
+> La evaluación periódica la lanza la tarea de D158.
+
 ## Claves i18n
 
 `integration.catalog`, `integration.list`, `integration.detail`, `integration.description.<code>` (una por fila del catálogo,
@@ -238,7 +253,7 @@ es y en) y el contenido del detalle por código (`integration.content.<code>.*`)
 | `aws` | `measurement` | `ac_01` / `aws` | de la plataforma (`available`) | Evalúa de forma continua la configuración de tu cuenta: identidades y accesos, cifrado, registros y red. |
 | `azure` | `measurement` | `ac_01` / `azure` | de la plataforma (`coming_soon`) | Evaluará de forma continua la configuración de tu suscripción: identidades y accesos, cifrado, registros y red. |
 | `gcp` | `measurement` | `ac_01` / `gcp` | de la plataforma (`coming_soon`) | Evaluará de forma continua la configuración de tu proyecto: identidades y accesos, cifrado, registros y red. |
-| `microsoft_365` | `measurement` | `ac_01` / `microsoft_365` | de la plataforma (`coming_soon`) | Evaluará la configuración de tu organización: inicio de sesión con segundo factor, acceso condicional, correo y colaboración. |
+| `microsoft_365` | `measurement` | `ac_01` / `microsoft_365` | de la plataforma (`available`, D157) | Evalúa la configuración de tu organización: inicio de sesión con segundo factor, acceso condicional, correo y colaboración. |
 | `google_workspace` | `measurement` | `ac_01` / `google_workspace` | de la plataforma (`coming_soon`) | Evaluará la configuración de tu dominio: inicio de sesión, segundo factor y uso compartido. |
 | `github` | `measurement` | — | `coming_soon` | Mostrará cómo se revisan y aprueban los cambios en tu código, y las vulnerabilidades de sus dependencias. |
 | `jira` | `workflow` | — | `coming_soon` | Convertirá cada hallazgo en un ticket asignado y seguirá su avance hasta cerrarlo. |
