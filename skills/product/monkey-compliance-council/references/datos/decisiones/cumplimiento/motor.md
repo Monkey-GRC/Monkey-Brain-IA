@@ -198,3 +198,19 @@ preparación por severidad se escribe contra esta regla; `DT-65`, el calculador 
 **Qué cambia.** `contracts/catalogo-maestro.md` (sección «Parámetros de evaluación (RC-19)»), `contracts/enums/catalogo-maestro.md` (`evaluation_parameter_unit`, `window_mode`) y §9 «Los parámetros».
 
 **Fuente:** Héctor Ríos (Rod), 2026-11-24, al planificar MD-495, como decisión del equipo de desarrollo. **No es una decisión del comité.**
+
+---
+
+## D163 · En un ciclo de Dependencias las pruebas comparten estado: el peor entre los checks propios de todas (2026-11-27; precisa T-06)
+
+**Decisión** (MD-501, al corregir el CI):
+
+1. Si las pruebas de dos controles dependen una de la otra (T-06 en los dos sentidos), **todas las pruebas del ciclo comparten estado**: el peor entre los estados propios de cada una (sus checks Directos y, si es semiautomática, su parte manual). La vuelta del ciclo no aporta nada: ni «pendiente». Si todos los checks propios pasan, todas quedan en Correcto.
+2. Una dependencia cuyo dueño no está en el alcance sigue contando como pendiente.
+3. **El estado de un control no depende del orden en que el motor evalúa los controles**, ni de si se lee solo o en la lista.
+
+**Por qué.** El motor cortaba el ciclo tratando la vuelta como «pendiente» y guardaba ese resultado recortado: con los mismos datos, VUL-1 salía Vencido o Sin evaluar según qué control se evaluara primero (dejaba eventos y avisos falsos), y ninguna prueba de un ciclo podía llegar a Correcto. Hoy el único ciclo del catálogo es `T-VUL-1-07` ↔ `T-VUL-2-04` y `T-VUL-2-06`.
+
+**Qué cambia.** §9 (T-06) y `domain/controls/control-readout.ts`. Si la dependencia mutua del libro es intencional queda en `P51`.
+
+**Fuente:** Rod (responsable de producto), 2026-11-27, al ver la causa de la falla intermitente de `periodo.e2e-spec.ts` (opción A). **Decisión de desarrollo, por ratificar con el comité (`P51`).**

@@ -65,6 +65,8 @@ flowchart LR
 `readout` y `overview` **no leen la base**: reciben datos ya cargados y devuelven resultados. Eso es lo que permite
 probar el cumplimiento sin levantar Postgres.
 
+**Dependencias en ciclo (D163, `P51`).** Si las pruebas de dos controles se dependen una de la otra (T-06), comparten estado: el peor entre los checks propios de todas, sin que la vuelta del ciclo cuente como «pendiente». El estado no depende del orden de evaluación.
+
 ## Dos cosas que el motor no hace
 
 - **No sabe de roles.** Qué ve cada rol (`responsable` y `delegado` solo lo suyo, vista técnica solo `auditor` y `admin_empresa`)
