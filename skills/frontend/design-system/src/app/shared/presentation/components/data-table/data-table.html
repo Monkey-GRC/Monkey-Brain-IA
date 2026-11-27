@@ -8,6 +8,8 @@
     [attr.aria-label]="isFocusable() ? labelOf(row) || null : null"
     [attr.aria-describedby]="isFocusable() ? openHintId : null"
     [attr.data-selected]="isSelected(row) ? '' : null"
+    [attr.aria-expanded]="detailTpl() ? isExpanded(row) : null"
+    [attr.data-expanded]="isExpanded(row) ? '' : null"
     (click)="activate(row, $event)"
     (keydown.enter)="activateKey(row, $event)"
     (keydown.space)="activateKey(row, $event, true)"
@@ -28,10 +30,32 @@
     }
     @if (hasChevron()) {
       <td class="w-12 py-2 pl-2 pr-4 text-right text-ink-faint" [class]="s().cell + ' ' + s().chevron">
-        <span class="material-symbols-rounded align-middle text-[20px]" data-row-chevron aria-hidden="true">chevron_right</span>
+        @if (detailTpl()) {
+          <!-- The same turn and duration as the unfolding below (menu-chevron-icon: 200 ms ease-out, none with reduced motion). -->
+          <span class="material-symbols-rounded menu-chevron-icon align-middle text-[20px]" [attr.data-open]="isExpanded(row)" data-row-chevron aria-hidden="true">expand_more</span>
+        } @else {
+          <span class="material-symbols-rounded align-middle text-[20px]" data-row-chevron aria-hidden="true">chevron_right</span>
+        }
       </td>
     }
   </tr>
+  @if (detailTpl(); as detail) {
+    <!-- The detail row is always there once it was opened, so it can fold and unfold smoothly (menu-group-panel: height 0fr to 1fr in 200 ms ease-out, a fade with reduced
+         motion). Closed, it has no line of its own: the row above already draws the separator. -->
+    <tr class="bg-canvas" [class]="s().group" [class.border-b-0]="!isExpanded(row)" [attr.data-row-detail]="isExpanded(row) ? '' : null" [attr.aria-hidden]="isExpanded(row) ? null : 'true'">
+      <td [attr.colspan]="columnCount()" class="block p-0 lg:table-cell">
+        <div class="menu-group-panel" [attr.data-open]="isExpanded(row)">
+          <div>
+            @if (wasOpened(row)) {
+              <div class="px-6 py-5">
+                <ng-container *ngTemplateOutlet="detail; context: { $implicit: row, row: row }" />
+              </div>
+            }
+          </div>
+        </div>
+      </td>
+    </tr>
+  }
 </ng-template>
 
 <span class="sr-only" role="status" aria-live="polite" data-table-status>@if (ownBar()) {{{ 'COMMON.LOADING' | translate }}}</span>

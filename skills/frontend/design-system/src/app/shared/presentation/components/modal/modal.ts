@@ -12,6 +12,8 @@ const SIZES = {
   max: 'max-w-6xl',
   // El detalle corto (un activo descubierto, una evidencia requerida del catálogo): centrado, de alto fijo, a pantalla completa por debajo de md (768 px).
   'detail-compact': 'max-w-2xl h-[min(31rem,calc(100dvh-2rem))] max-md:h-dvh max-md:max-h-dvh max-md:max-w-none max-md:rounded-none max-md:border-0',
+  // El modal auxiliar sobre un panel de detalle (patrón 19, Rod 2026-11-27: las brechas de una prueba): centrado, ancho y de alto fijo; a pantalla completa por debajo de md.
+  'detail-wide': 'max-w-6xl h-[min(52rem,calc(100dvh-2rem))] max-md:h-dvh max-md:max-h-dvh max-md:max-w-none max-md:rounded-none max-md:border-0',
   // El panel lateral del detalle (MD-499, decisión de Rod: «la barra lateral de antes, solo que más ancha»): pegado a la derecha, a todo el alto, sin margen ni radio,
   // con borde izquierdo; min(80vw, 80rem) desde lg y la pantalla entera por debajo de lg (1024 px). Entra desde la derecha (`mk-drawer-in`).
   drawer: 'h-dvh max-h-dvh lg:w-[min(80vw,80rem)]',
@@ -73,7 +75,7 @@ export class Modal {
   // Centrado con 16 px de margen; el panel lateral va pegado a la derecha, sin margen; el detalle corto pierde el margen donde pasa a pantalla completa.
   get backdropClass(): string {
     if (this.isDrawer) return 'justify-end';
-    return this.size() === 'detail-compact' ? 'items-center justify-center p-4 max-md:p-0' : 'items-center justify-center p-4';
+    return this.size() === 'detail-compact' || this.size() === 'detail-wide' ? 'items-center justify-center p-4 max-md:p-0' : 'items-center justify-center p-4';
   }
 
   private get isDrawer(): boolean {
@@ -82,7 +84,7 @@ export class Modal {
 
   get panelClass(): string {
     const frame = this.isDrawer ? 'mk-drawer-in border-l' : 'mk-modal-in rounded-panel border';
-    const height = this.isDrawer || this.size() === 'detail-compact' ? '' : 'max-h-[calc(100dvh-2rem)]';
+    const height = this.isDrawer || this.size() === 'detail-compact' || this.size() === 'detail-wide' ? '' : 'max-h-[calc(100dvh-2rem)]';
     return `${frame} ${this.sizeClass} ${height} ${this.padded() ? 'overflow-y-auto p-6' : 'flex flex-col overflow-hidden'}`;
   }
 

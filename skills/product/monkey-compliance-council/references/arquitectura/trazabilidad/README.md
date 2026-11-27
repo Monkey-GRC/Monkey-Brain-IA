@@ -36,7 +36,7 @@ El schema `audit`: `audit_logs` y `compliance_events`. Código: `src/infrastruct
 | Decisiones (`D-n`) | [`datos/decisiones/trazabilidad.md`](../../datos/decisiones/trazabilidad.md): `D27` · `D41` · `D52` · `D91` |
 | Pendientes del comité (`P-n`) | ninguno propio |
 | Convención de nombres de `action` | `contracts/conventions.md` |
-| Deuda vigente (4 `DT-n`: `DT-29`, `DT-47`, `DT-79`, `DT-109`) | [`deuda-tecnica/trazabilidad.md`](../../deuda-tecnica/trazabilidad.md) |
+| Deuda vigente (3 `DT-n`: `DT-29`, `DT-47`, `DT-79`) | [`deuda-tecnica/trazabilidad.md`](../../deuda-tecnica/trazabilidad.md) |
 
 ## Contenido
 

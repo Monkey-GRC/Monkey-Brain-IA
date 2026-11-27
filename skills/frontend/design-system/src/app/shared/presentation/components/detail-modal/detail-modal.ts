@@ -7,13 +7,14 @@ import { TabItem, Tabs } from '@shared/presentation/components/tabs/tabs';
 
 let nextId = 0;
 
-export type DetailVariant = 'drawer' | 'drawer-narrow' | 'compact';
+export type DetailVariant = 'drawer' | 'drawer-narrow' | 'compact' | 'wide';
 
 /**
  * The detail of one item: a control, a risk, a cause, a catalog item (MD-499, Rod's decision: «the side bar we had before, only wider»).
  * `variant="drawer"` (default) is the side panel of before: stuck to the right edge, full height, over the list, sliding in from the right; min(80vw, 80rem) wide
  * from lg and the whole screen below lg (1024 px); `drawer-narrow` is the same panel 56 rem wide (~900 px), for a detail read in one column (the catalog of Admin).
  * `variant="compact"` is a short centred modal (a discovered asset, a required evidence of the catalog).
+ * `variant="wide"` is the auxiliary modal opened over a detail panel (patrón 19: the gaps of a test): centred, max-w-6xl, fixed height, the X at the top and «Cerrar» alone at the RIGHT of the footer (it has no actions).
  * A fixed header (the title first, then what is projected with `meta` —codes, badges— and with `summary` —e.g. the score of a control—, and the tabs below; the drawer
  * keeps its close button at the top right), a body that scrolls on its own and a fixed footer: «Cerrar» (`mk-btn-secondary`) alone at the left and, at the right, what is projected with `footerStart` and then the actions projected with `actions`, the primary one last;
  * `footerStart` (a destructive trigger such as «Dar de baja», `mk-btn-danger-outline`) goes first of the right group, set apart from the actions by a thin line, so it is never next to «Cerrar».
@@ -75,7 +76,7 @@ export type DetailVariant = 'drawer' | 'drawer-narrow' | 'compact';
         <ng-content />
       </div>
       <footer class="flex shrink-0 flex-wrap items-center gap-3 border-t border-line py-4 max-sm:flex-col-reverse max-sm:items-stretch" [class]="pad()">
-        <button #closeButton type="button" class="mk-btn-secondary" [disabled]="!dismissible()" (click)="discardGuard.request()" data-detail-close [attr.data-testid]="testId() + '-close'">
+        <button #closeButton type="button" class="mk-btn-secondary" [class.order-last]="variant() === 'wide'" [class.ml-auto]="variant() === 'wide'" [disabled]="!dismissible()" (click)="discardGuard.request()" data-detail-close [attr.data-testid]="testId() + '-close'">
           {{ 'COMMON.CLOSE' | translate }}
         </button>
         <!-- MD-508 (decisión de Rod): «Cerrar» a la izquierda; a la derecha, en este orden, lo destructivo (footerStart, separado por una línea fina), las acciones y al final la primaria. -->
@@ -101,7 +102,7 @@ export class DetailModal {
   /** The item is loading (D116): the header shows the skeleton of its title and codes, and `loadingTabs` tabs if the detail will have them. */
   readonly loading = input(false);
   readonly loadingTabs = input(0);
-  /** `drawer`: the wide side panel (control, risk, cause). `drawer-narrow`: the same at 56 rem (catalog item). `compact`: a short centred modal. */
+  /** `drawer`: the wide side panel (control, risk, cause). `drawer-narrow`: the same at 56 rem (catalog item). `compact`: a short centred modal. `wide`: the auxiliary modal over a panel (patrón 19). */
   readonly variant = input<DetailVariant>('drawer');
   readonly dismissible = input(true);
   readonly guarded = input(false);
@@ -116,7 +117,7 @@ export class DetailModal {
   protected readonly drawer = computed(() => this.variant() !== 'compact');
   protected readonly modalSize = computed<ModalSize>(() => {
     const variant = this.variant();
-    return variant === 'compact' ? 'detail-compact' : variant;
+    return variant === 'compact' ? 'detail-compact' : variant === 'wide' ? 'detail-wide' : variant;
   });
   // Aire de los lados: generoso en el panel lateral (32 px), el de un modal en el corto (24 px).
   protected readonly pad = computed(() => (this.drawer() ? 'px-8 max-sm:px-5' : 'px-6'));

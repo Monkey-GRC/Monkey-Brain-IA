@@ -21,7 +21,7 @@ Cada **FAIL de un check Directo** de una prueba automática, **en un activo**, s
 | Parte | De dónde sale | Campo |
 |---|---|---|
 | Encabezado: «[control] · [test] – [activo] no cumple: [título del check]» | El control, la prueba, el activo y el título del check | `control`, `test`, `asset`, `title` (la pantalla arma la frase con su clave i18n) |
-| Qué se evaluó | La descripción del check del catálogo, traducida | `evaluated` |
+| Qué se evaluó | La condición del check del catálogo (en inglés hasta MD-534, DT-140) | `evaluated` |
 | Qué debe corregir | La guía de corrección del check, traducida | `remediation` |
 | Prioridad | Severidad del check × criticidad del activo (regla abajo) | `priority`, `priority_basis` |
 | Cómo se cierra | Siempre igual: un nuevo PASS del mismo check en el mismo activo, en una recolección posterior | Texto fijo de la pantalla (i18n); no viaja |
@@ -31,7 +31,7 @@ Cada **FAIL de un check Directo** de una prueba automática, **en un activo**, s
 
 Cada parte se pasa a un nivel: `low` = 1, `medium` = 2, `high` = 3, `critical` = 4; la severidad `informational` cuenta como 1.
 
-- **Con severidad** (motor de nube): `priority` = el promedio de los dos niveles **redondeado hacia arriba**. Un check `critical` en un activo de criticidad `low` → (4 + 1) / 2 = 2,5 → 3 = `high`.
+- **Con severidad** (motor de nube; si un activo falla el mismo check en varios recursos, cuenta la más grave): `priority` = el promedio de los dos niveles **redondeado hacia arriba**. Un check `critical` en un activo de criticidad `low` → (4 + 1) / 2 = 2,5 → 3 = `high`.
 - **Sin severidad** (la sonda no califica sus checks, D141 punto 3): `priority` = la criticidad del activo.
 - `priority_basis` dice de qué salió (`{ severity, asset_criticality }`, con `severity: null` en la sonda), para que la pantalla lo explique.
 
@@ -48,10 +48,10 @@ Cada parte se pasa a un nivel: `low` = 1, `medium` = 2, `high` = 3, `critical` =
 | | |
 |---|---|
 | **Quién** | `admin_empresa` · `auditor` · **el responsable y el delegado de ese control** (D102: son quienes la reparan) |
-| **Éxito** | `200`, paginada (`page`, `page_size`) sobre `items`: primero las brechas abiertas por prioridad (de `critical` a `low`), luego las exceptuadas y al final las observaciones; dentro de cada grupo, por título |
+| **Éxito** | `200`, paginada (`page`, `page_size`) sobre `items`: primero las brechas abiertas por prioridad (de `critical` a `low`), luego las exceptuadas y al final las observaciones; dentro de las brechas abiertas, por título y, a igual título, por nombre de activo; las exceptuadas y las observaciones, por título y nombre de activo |
 | **Errores** | `403` (otro `responsable` o `delegado`, `admin_monkey`) · `404` (el control no lleva la prueba, o la prueba no es automática) |
 
-**Qué lee.** La **última corrida completada** de cada activo del servicio que mide la prueba (una cuenta de nube, un servidor con agente), solo los resultados `failed` de los checks **vinculados a la prueba en el catálogo v2**, con su rol (Directo o Complementario). **Una fila por check y activo.** Un recurso descubierto que no es del servicio no se cuenta. Es la misma regla con la que el motor v2 calcula la prueba: lo que aquí sale como brecha abierta es lo que hace que la prueba esté en Excepción.
+**Qué lee.** La **última corrida completada** de cada activo del servicio que mide la prueba (una cuenta de nube, un servidor con agente), solo los resultados `failed` de los checks **vinculados a la prueba en el catálogo v2 y ratificados**, con su rol (Directo o Complementario). **Una fila por check y activo.** Un recurso descubierto que no es del servicio no se cuenta. Es la misma regla con la que el motor v2 calcula la prueba: lo que aquí sale como brecha abierta es lo que hace que la prueba esté en Excepción.
 
 #### Parámetros (query)
 | Campo | Tipo | Obligatorio | Regla |
@@ -69,7 +69,7 @@ Cada parte se pasa a un nivel: `low` = 1, `medium` = 2, `high` = 3, `critical` =
 | `items[].kind` | `gap` \| `excepted` \| `observation` | `gap`: FAIL de un Directo sin excepción. `excepted`: FAIL de un Directo con excepción vigente. `observation`: FAIL de un Complementario |
 | `items[].asset` | `{ id, name, criticality }` | El activo donde falla, con el nombre que le dio el cliente. `criticality`: enum `asset_criticality` |
 | `items[].title` | string | El check en positivo («lo que debería cumplirse»), traducido |
-| `items[].evaluated` | `{ text, language, is_ai_generated }` \| null | Qué se evaluó. `null` si el catálogo no lo trae o nombra al proveedor |
+| `items[].evaluated` | `{ text, language, is_ai_generated }` \| null | Qué se evaluó: la condición del check del catálogo. **Hoy siempre sale en inglés** (`language: "en"`, `is_ai_generated: false`) hasta MD-534 (DT-140). `null` si el catálogo no la trae o nombra al proveedor |
 | `items[].remediation` | `{ text, language, is_ai_generated }` \| null | Qué debe corregir. Mismo formato que hoy: párrafos, viñetas con `- ` y comandos entre tres comillas invertidas (D113) |
 | `items[].priority` | enum `gap_priority` \| null | Solo en `gap` y `excepted`; `null` en `observation` |
 | `items[].priority_basis` | `{ severity, asset_criticality }` \| null | `severity`: enum `severity` o `null` (sonda). `null` en `observation` |
@@ -78,7 +78,7 @@ Cada parte se pasa a un nivel: `low` = 1, `medium` = 2, `high` = 3, `critical` =
 | `items[].exception` | `{ id, effective_until }` \| null | Solo en `excepted`: la excepción que lo deja pasar |
 | `items[].owner` | `{ id, name, last_name }` \| null | Quién lo corrige: el responsable del plan de remediación vigente de la prueba; si no hay plan, el responsable del control; `null` en `observation` |
 | `items[].due_date` | date \| null | La fecha del plan de remediación vigente; `null` sin plan |
-| `items[].failing_since` | datetime | La primera corrida, de la racha actual, en que ese check falló en ese activo |
+| `items[].failing_since` | datetime | La primera corrida, de la racha actual, en que ese check falló en ese activo. La racha se mira **hasta 90 días atrás**: si empezó antes de esa ventana, `failing_since` es el **inicio de la ventana** (no se recorre todo el historial) |
 
 ```json
 {
@@ -144,6 +144,6 @@ Solo los comunes (`FORBIDDEN`, `NOT_FOUND`), en [`README.md`](README.md#errores-
 
 ## Estado de implementación
 
-**Construido (D90, MD-177, D113):** la ruta con `title`, `severity`, `resources` y `remediation`, una fila por check (no por check y activo), con los checks del catálogo v1.
+**Construido (2026-11-27, MD-502; antes D90, MD-177, D113):** la ruta con el catálogo v2 (solo vínculos ratificados, rol Directo o Complementario), una fila por check y activo, `kind`, `asset`, `evaluated`, `priority` y `priority_basis`, `exception`, `owner`, `due_date`, `failing_since` (ventana de 90 días), `control`, `test` y `summary`; `items[].severity` se retiró (pasa a `priority_basis.severity`). Armador único `technical-control/domain/scan/gap-message.ts` y prioridad en `gap-priority.ts`; la lectura del motor v2 llega por el puerto `common/compliance/compliance-readings.port.ts`. Platform muestra una tarjeta por ítem en el detalle del control.
 
-**En construcción (MD-502):** el catálogo v2 (rol Directo o Complementario), una fila por check y activo, `kind`, `asset`, `evaluated`, `priority` y `priority_basis`, `exception`, `owner`, `due_date`, `failing_since`, `control`, `test` y `summary`. Se retira `items[].severity` (pasa a `priority_basis.severity`). La pantalla del detalle del control en Platform muestra una tarjeta por ítem.
+**Pendiente:** «Qué se evaluó» en español (MD-534, DT-140).
