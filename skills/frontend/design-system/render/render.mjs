@@ -9,6 +9,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright-core';
+import { RULES, auditPage } from './audit.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const MONKEY_ROOT = path.resolve(HERE, '../../../../..'); // …/Monkey (carpeta que contiene los repos hermanos)
@@ -46,6 +47,7 @@ function usage(msg) {
   --themes light,dark      temas (por defecto light,dark)
   --lang es|en             idioma de la interfaz (por defecto es)
   --full-page              captura la página entera además de la ventana visible
+  --audit fail|warn|off    comprobaciones de diseño medidas en cada captura (por defecto fail: con hallazgos sale con código 2)
   --api-base <url>         base de la API que la app llama (por defecto http://localhost:3000/v1)
   --port <n>               puerto para el servidor propio (por defecto, el primero libre ≥ 4300)
   --keep-server            deja el servidor levantado al terminar (imprime la URL y el PID para matarlo)
@@ -54,7 +56,7 @@ function usage(msg) {
 }
 
 function parseArgs(argv) {
-  const o = { fixtures: [], steps: [], slowMatch: [], session: true, viewports: DEFAULT_VIEWPORTS, themes: DEFAULT_THEMES, lang: 'es', route: '/', apiBase: 'http://localhost:3000/v1', timeout: 20000 };
+  const o = { fixtures: [], steps: [], slowMatch: [], session: true, viewports: DEFAULT_VIEWPORTS, themes: DEFAULT_THEMES, lang: 'es', audit: 'fail', route: '/', apiBase: 'http://localhost:3000/v1', timeout: 20000 };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     const val = () => {
@@ -83,6 +85,7 @@ function parseArgs(argv) {
       case '--themes': o.themes = val().split(','); break;
       case '--lang': o.lang = val(); break;
       case '--full-page': o.fullPage = true; break;
+      case '--audit': o.audit = val(); break;
       case '--api-base': o.apiBase = val().replace(/\/$/, ''); break;
       case '--port': o.port = Number(val()); break;
       case '--keep-server': o.keepServer = true; break;
@@ -91,6 +94,7 @@ function parseArgs(argv) {
       default: usage(`opción desconocida: ${a}`);
     }
   }
+  if (!['fail', 'warn', 'off'].includes(o.audit)) usage('--audit fail|warn|off');
   if (!o.url && !APPS[o.app]) usage('--app platform|admin (o --url)');
   if (o.app && !APPS[o.app]) usage(`--app desconocida: ${o.app}`);
   if (o.port && RESERVED_PORTS.has(o.port)) usage(`el puerto ${o.port} es del usuario; usa uno ≥ 4300`);
@@ -334,6 +338,15 @@ async function capture(browser, opts, rules, baseUrl, theme, viewport, report) {
     // Scroll horizontal de la página: casi siempre es un error de layout.
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
     if (overflow > 0) report.errors.add(`scroll horizontal de ${overflow}px en ${viewport}${label ? ` (${label})` : ''}`);
+    // MD-533 · Lo que se puede medir no se deja al ojo: cada hallazgo sale con su regla, el elemento y en qué tamaños aparece.
+    if (opts.audit !== 'off') {
+      for (const f of await page.evaluate(auditPage)) {
+        const key = `${f.rule}|${f.where}|${f.text}`;
+        const entry = report.layout.get(key) ?? { ...f, at: new Set() };
+        entry.at.add(`${viewport}${label ? ` ${label}` : ''}`);
+        report.layout.set(key, entry);
+      }
+    }
   };
 
   await page.goto(baseUrl + opts.route, { waitUntil: 'domcontentloaded', timeout: 120000 });
@@ -388,7 +401,7 @@ async function main() {
     process.exit(143);
   });
 
-  const report = { files: [], missing: new Set(), served: new Set(), errors: new Set(), finalUrls: new Set() };
+  const report = { files: [], missing: new Set(), served: new Set(), errors: new Set(), finalUrls: new Set(), layout: new Map() };
   let browser;
   try {
     if (!baseUrl) {
@@ -428,6 +441,16 @@ async function main() {
     console.log('\nErrores de la página:');
     report.errors.forEach((e) => console.log(`  ${e}`));
   }
+  if (report.layout.size) {
+    console.log(`\nFallos de diseño medidos (${report.layout.size}); corrígelos o márcalos con data-audit-ok="motivo" y decláralo en el reporte:`);
+    for (const rule of Object.keys(RULES)) {
+      const found = [...report.layout.values()].filter((f) => f.rule === rule);
+      if (!found.length) continue;
+      console.log(`\n  ${RULES[rule]} · ${found.length}`);
+      for (const f of found) console.log(`    - ${f.where} · «${f.text}» · ${f.detail} · en ${[...f.at].join(', ')}`);
+    }
+    if (opts.audit === 'fail') process.exitCode = 2;
+  } else if (opts.audit !== 'off') console.log('\nFallos de diseño medidos: ninguno.');
   if (process.env.RENDER_VERBOSE) {
     console.log('\nServidas:');
     [...report.served].sort().forEach((m) => console.log(`  ${m}`));

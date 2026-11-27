@@ -236,3 +236,11 @@ Parches vigentes de [Control técnico](../arquitectura/control-tecnico/README.md
 - **Qué está parchado:** `catalog.checks.remediation_es` y `title_es` los escribió la IA a partir del texto original del motor (D90); nadie los ha revisado. La respuesta los marca `is_ai_generated` y la pantalla los etiqueta como traducción automática. Que ningún texto nombre al proveedor lo garantiza una expresión regular que **omite** el texto si lo encuentra (no lo reescribe) y la revisión al escribir las traducciones; no es una revisión humana. El mensaje por recurso del motor (`status_detail`) no se muestra (crudo, en inglés).
 - **Por qué:** sin esto una prueba que falla no decía cómo arreglarla (B33/B34). Hacerlo bien exige la plantilla de siete campos (`P14` E2) y que el comité redacte cada hallazgo.
 - **Qué lo cierra:** revisión humana de las 662 guías (`translation_origin = reviewed`), la plantilla de siete campos y, si el comité la quiere, la redacción propia de Monkey por hallazgo. Desde MD-211 los 662 checks tienen traducción automática (antes 558; `cloud:load` la carga y `cloud:verify` falla si falta alguna).
+
+### DT-140 · «Qué se evaluó» del mensaje de brecha sale en inglés
+
+🟡 Mejora
+
+- **Qué está parchado:** el mensaje de brecha (MD-502) toma «Qué se evaluó» de `checks.condition`, que el catálogo solo tiene en inglés: sale con `language: "en"` y la pantalla lo marca como texto original.
+- **Por qué:** traducirlo pide una columna nueva y pasar las condiciones por la traducción con IA; Rod lo dejó fuera de MD-502 (2026-11-27).
+- **Qué lo cierra:** MD-534 (condición en español con procedencia, misma tubería y validación que la guía de corrección).

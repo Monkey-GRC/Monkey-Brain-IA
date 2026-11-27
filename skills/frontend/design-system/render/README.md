@@ -34,6 +34,27 @@ sin fixture** y los errores de la página (consola, fuente de iconos sin cargar,
 | `--shot <etiqueta>` | Captura intermedia (p. ej. antes y después de abrir un diálogo) |
 | `--slow-api <ms>` · `--slow-match <texto>` | Retrasa la API (o solo las rutas que contienen el texto) para capturar skeletons y estados de carga |
 | `--viewports` · `--themes` · `--lang` · `--full-page` | Por defecto `1440x900,1920x1080`, `light,dark` y `es` |
+| `--audit fail\|warn\|off` | Las comprobaciones medidas de abajo. Por defecto `fail`: con hallazgos el comando sale con código 2 |
+
+## Comprobaciones medidas (MD-533)
+
+En cada captura, `audit.mjs` mide la página y lista lo que falla, con el elemento, el texto y en qué tamaños aparece. **Con hallazgos
+la pantalla no está lista** (código de salida 2): se corrigen, no se discuten.
+
+| Regla | Qué mide |
+|---|---|
+| `truncado` | Texto con puntos suspensivos o recortado por líneas, sin `title` ni `app-expandable-text` |
+| `scroll-x` | Un contenedor con scroll horizontal (solo se admite dentro de `pre`/`code`) |
+| `padding` | Texto a menos de 16 px del borde de su tarjeta, o a menos de 8 px del borde de su celda |
+| `alturas` | Tarjetas hermanas de una misma fila con alturas distintas |
+| `boton-partido` | Un botón (`mk-btn*`) con el texto en más de una línea |
+| `hueco` | Una tarjeta de 240 px o más con el 30 % final vacío |
+| `desborde` | Texto que se sale de su tarjeta |
+
+- Una excepción real se marca en la plantilla con `data-audit-ok="motivo"` (cubre al elemento y a sus hijos) y **se declara en el reporte**.
+- No mide los esqueletos de carga, los iconos ni lo que solo es para lectores de pantalla (`sr-only`).
+- `node audit.selftest.mjs` prueba las reglas contra una página con cada defecto y otra limpia: córrelo si cambias `audit.mjs`.
+- Lo que no se puede medir (jerarquía, textos repetidos, dos elementos resaltados) sigue en la lista de control del agente.
 
 ## Cómo funciona la sesión
 
