@@ -1,0 +1,44 @@
+{
+  "statusCode": 200,
+  "message": "catalog.list",
+  "data": {
+    "items": [
+      {
+        "value": "policy",
+        "label": "Documental"
+      },
+      {
+        "value": "app",
+        "label": "Aplicación"
+      },
+      {
+        "value": "server",
+        "label": "Servidores"
+      },
+      {
+        "value": "database",
+        "label": "BD"
+      },
+      {
+        "value": "cloud",
+        "label": "Nube"
+      },
+      {
+        "value": "network",
+        "label": "Red"
+      },
+      {
+        "value": "endpoint",
+        "label": "Endpoint"
+      },
+      {
+        "value": "physical",
+        "label": "Físico y ambiental"
+      },
+      {
+        "value": "process",
+        "label": "Proceso"
+      }
+    ]
+  }
+}

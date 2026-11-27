@@ -1,0 +1,32 @@
+{
+  "statusCode": 200,
+  "message": "catalog.list",
+  "data": {
+    "items": [
+      {
+        "value": "non_compliant",
+        "label": "Incumplimiento"
+      },
+      {
+        "value": "in_progress",
+        "label": "En gestión"
+      },
+      {
+        "value": "pending_approval",
+        "label": "Cumple – por aprobar"
+      },
+      {
+        "value": "owner_approved",
+        "label": "Aprobado por el responsable"
+      },
+      {
+        "value": "approved",
+        "label": "Cumplimiento aprobado"
+      },
+      {
+        "value": "returned",
+        "label": "Devuelto"
+      }
+    ]
+  }
+}

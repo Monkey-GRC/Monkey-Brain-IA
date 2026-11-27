@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, InjectionToken, forwardRef, computed, effect, inject, input, signal } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
 
 export type SkeletonShape = 'line' | 'title' | 'block' | 'circle' | 'field' | 'badge' | 'card' | 'metric' | 'row' | 'tabs' | 'section';
@@ -109,22 +109,102 @@ export class Skeleton {
   protected readonly lineItems = computed(() => Array.from({ length: Math.max(1, Math.floor(this.lines())) }, (_, i) => i));
 }
 
+/** After this long a load is «slow»: the region adds «This may take a few seconds». */
+export const SLOW_LOAD_MS = 2000;
+
+/** A `app-skeleton-region` that is loading with its bar on provides this, so a table inside does not draw a second bar. */
+export const LOAD_REGION = new InjectionToken<{ readonly drawsBar: () => boolean }>('LOAD_REGION');
+
 /**
- * The region that is loading: `aria-busy` while `busy` and a text only for screen readers (`COMMON.LOADING`, announced politely). Put the skeletons inside and swap them for the
+ * The indeterminate bar of a load (4 px). Only the bar: the owner places it over its own top edge (absolute), so it appearing or going never moves the content.
+ * The «may take a few seconds» line is `app-slow-load-note`, in a slot of its own below the content, never over it. Both are the common pieces of `app-skeleton-region`
+ * and `app-data-table`; use one of those (or this bar alone for a running process with no total, e.g. a file the server is still processing).
+ */
+@Component({
+  selector: 'app-load-progress',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { class: 'block', 'data-load-progress': '', 'aria-hidden': 'true' },
+  styles: `
+    @keyframes mk-indeterminate { from { transform: translateX(-100%); } to { transform: translateX(250%); } }
+    .mk-indeterminate-fill { animation: mk-indeterminate 1.4s var(--ease-out) infinite; }
+    @media (prefers-reduced-motion: reduce) { .mk-indeterminate-fill { animation: none; width: 100%; opacity: 0.5; } }
+  `,
+  template: `<div class="h-1 w-full overflow-hidden rounded-badge bg-tint-strong"><div class="mk-indeterminate-fill h-full w-2/5 rounded-badge bg-action"></div></div>`,
+})
+export class LoadProgress {}
+
+/**
+ * The line `COMMON.SLOW_LOAD` («This may take a few seconds»), past `SLOW_LOAD_MS` from the moment it is drawn. Its slot (`min-h-5`, the height of the line, and 12 px above)
+ * exists from the first moment of the load, empty, so the text appearing never moves anything and never covers anything: the owner puts it BELOW its content (MD-505).
+ * With `announce` it is its own polite live region; without it, decorative (the owner already announces it).
+ */
+@Component({
+  selector: 'app-slow-load-note',
+  imports: [TranslatePipe],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    class: 'block mt-3 min-h-5',
+    'data-slow-load-slot': '',
+    '[attr.role]': "announce() ? 'status' : null",
+    '[attr.aria-live]': "announce() ? 'polite' : null",
+    '[attr.aria-hidden]': "announce() ? null : 'true'",
+  },
+  template: `
+    @if (slow()) {
+      <p class="text-sm text-ink-muted" data-slow-load>{{ 'COMMON.SLOW_LOAD' | translate }}</p>
+    }
+  `,
+})
+export class SlowLoadNote {
+  readonly announce = input(false);
+  readonly slow = signal(false);
+
+  constructor() {
+    const timer = setTimeout(() => this.slow.set(true), SLOW_LOAD_MS);
+    inject(DestroyRef).onDestroy(() => clearTimeout(timer));
+  }
+}
+
+/**
+ * The region that is loading: `aria-busy` while `busy` and a text only for screen readers (`COMMON.LOADING`, `aria-live="polite"`). Put the skeletons inside and swap them for the
  * content when the data arrives. Without the region, a skeleton says nothing to a screen reader.
+ * By default (`progress` on; `[progress]="false"` to turn it off) it also draws the bar of `app-load-progress`, and the slow-load line past `SLOW_LOAD_MS`, announced politely too.
+ * A table inside a loading region does not draw its own bar (`LOAD_REGION`).
+ * The bar is drawn over the top edge of the region (absolute), so it appearing or going never moves the content. The slow-load line goes in its own slot BELOW the content
+ * (`app-slow-load-note`, reserved from the start of the load): it never covers a header or a row (MD-505).
  */
 @Component({
   selector: 'app-skeleton-region',
-  imports: [TranslatePipe],
+  imports: [TranslatePipe, LoadProgress, SlowLoadNote],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'block', '[attr.aria-busy]': 'busy() ? "true" : null' },
+  providers: [{ provide: LOAD_REGION, useExisting: forwardRef(() => SkeletonRegion) }],
+  host: { class: 'relative block', '[attr.aria-busy]': 'busy() ? "true" : null' },
   template: `
-    <ng-content />
-    @if (busy()) {
-      <span class="sr-only" role="status" data-skeleton-status>{{ 'COMMON.LOADING' | translate }}</span>
+    @if (drawsBar()) {
+      <app-load-progress class="pointer-events-none absolute inset-x-0 top-0 z-10" />
     }
+    <ng-content />
+    @if (drawsBar()) {
+      <app-slow-load-note />
+    }
+    <span class="sr-only" aria-live="polite" role="status" data-skeleton-status>
+      @if (busy()) {{{ 'COMMON.LOADING' | translate }}@if (slow()) { · {{ 'COMMON.SLOW_LOAD' | translate }}}}
+    </span>
   `,
 })
 export class SkeletonRegion {
   readonly busy = input(true);
+  /** The bar and the slow-load text are the default of every load; `[progress]="false"` turns them off. */
+  readonly progress = input(true);
+  protected readonly slow = signal(false);
+  readonly drawsBar = computed(() => this.busy() && this.progress());
+
+  constructor() {
+    effect((onCleanup) => {
+      this.slow.set(false);
+      if (!this.drawsBar()) return;
+      const timer = setTimeout(() => this.slow.set(true), SLOW_LOAD_MS);
+      onCleanup(() => clearTimeout(timer));
+    });
+  }
 }

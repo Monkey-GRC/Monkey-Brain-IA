@@ -315,7 +315,7 @@ Cada ítem es el mismo objeto de requerimiento de `GET /v1/controls/{id}/evidenc
 La persona lee lo que pide la prueba y sube su documento **bajo ella**, en un solo paso (D88). Cuenta si no se devuelve el control por ella (D132).
 
 #### Request
-`multipart/form-data`, campo `file`; mismos tipos y tope que la subida de un requerimiento (PDF, DOCX, XLSX, PNG y JPG, 25 MB, SEG-60).
+`multipart/form-data`, campo `file`; mismos tipos y tope que la subida de un requerimiento (PDF, DOCX, XLSX, PNG y JPG, 25 MB, SEG-60). **MD-529:** campo opcional `occurrence_id` (uuid), obligatorio si la prueba sirve a un requisito «cuando sea requerido» (`422 occurrence_id.required` · `422 occurrence_id.invalid`): vincula la entrega a la ocurrencia que prueba ([`gestion.md`](gestion.md#requisitos-cuando-sea-requerido-ocurrencias-y-declaración-trimestral-d131-punto-3)).
 
 #### Reglas
 - **La primera entrega crea el lugar de esa prueba** en el control (un requerimiento propio, `origin: "own"`, con `test_id` = la prueba, `description` = el nombre neutro de la prueba y código `EV-<control>-NN`); las siguientes son **versiones nuevas** del mismo lugar. Con el control bloqueado, dos primeras entregas a la vez crean un solo lugar.

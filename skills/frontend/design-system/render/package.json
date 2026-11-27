@@ -1,0 +1,13 @@
+{
+  "name": "monkey-render",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Capturas reproducibles de las pantallas de Monkey para agentes: servidor de desarrollo de Angular, Chrome del sistema y API simulada con fixtures.",
+  "type": "module",
+  "scripts": {
+    "render": "node render.mjs"
+  },
+  "dependencies": {
+    "playwright-core": "1.65.1"
+  }
+}

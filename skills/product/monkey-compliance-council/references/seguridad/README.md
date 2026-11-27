@@ -111,7 +111,7 @@ El tablero: todo lo que **no** está ✅, por estado y por módulo. Cada ID se b
 
 **⚪ No verificable desde el repo, o retirado** (8)
 
-- [Roles y permisos](roles-permisos.md): `SEG-55` · `SEG-56` · `SEG-58` · `SEG-61`
+- [Roles y permisos](roles-permisos.md): `SEG-55` · `SEG-56` · `SEG-58` · `SEG-61` · `SEG-89`
 - [Empresas](empresas.md): `SEG-57`
 - [Plataforma](plataforma.md): `SEG-32` · `SEG-44`
 - [Entrega](entrega.md): `SEG-27`

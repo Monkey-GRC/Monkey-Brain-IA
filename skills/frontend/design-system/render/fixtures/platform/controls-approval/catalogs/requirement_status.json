@@ -1,0 +1,28 @@
+{
+  "statusCode": 200,
+  "message": "catalog.list",
+  "data": {
+    "items": [
+      {
+        "value": "compliant",
+        "label": "Cumple"
+      },
+      {
+        "value": "non_compliant",
+        "label": "No cumple"
+      },
+      {
+        "value": "pending",
+        "label": "Pendiente"
+      },
+      {
+        "value": "expired",
+        "label": "Vencido"
+      },
+      {
+        "value": "not_applicable",
+        "label": "No aplica"
+      }
+    ]
+  }
+}

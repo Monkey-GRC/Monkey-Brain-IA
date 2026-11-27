@@ -1,0 +1,28 @@
+{
+  "statusCode": 200,
+  "message": "catalog.list",
+  "data": {
+    "items": [
+      {
+        "value": "security",
+        "label": "Seguridad (Criterios Comunes)"
+      },
+      {
+        "value": "availability",
+        "label": "Disponibilidad"
+      },
+      {
+        "value": "confidentiality",
+        "label": "Confidencialidad"
+      },
+      {
+        "value": "integrity",
+        "label": "Integridad de procesamiento"
+      },
+      {
+        "value": "privacy",
+        "label": "Privacidad"
+      }
+    ]
+  }
+}

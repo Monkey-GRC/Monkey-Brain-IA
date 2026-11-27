@@ -1,0 +1,60 @@
+{
+  "statusCode": 200,
+  "message": "catalog.list",
+  "data": {
+    "items": [
+      {
+        "value": "approval",
+        "label": "Aprobación"
+      },
+      {
+        "value": "return",
+        "label": "Devolución"
+      },
+      {
+        "value": "approval_invalidated",
+        "label": "Aprobación sin efecto"
+      },
+      {
+        "value": "manual_result",
+        "label": "Resultado de una prueba"
+      },
+      {
+        "value": "level_proposed",
+        "label": "Corrección de nivel propuesta"
+      },
+      {
+        "value": "level_decided",
+        "label": "Corrección de nivel decidida"
+      },
+      {
+        "value": "plan_registered",
+        "label": "Plan de remediación registrado"
+      },
+      {
+        "value": "plan_decided",
+        "label": "Plan de remediación decidido"
+      },
+      {
+        "value": "not_applicable_requested",
+        "label": "«No aplica» pedido"
+      },
+      {
+        "value": "not_applicable_decided",
+        "label": "«No aplica» decidido"
+      },
+      {
+        "value": "not_applicable_reverted",
+        "label": "«No aplica» revertido"
+      },
+      {
+        "value": "occurrence_registered",
+        "label": "Caso registrado"
+      },
+      {
+        "value": "no_occurrences_declared",
+        "label": "«Sin casos» declarado"
+      }
+    ]
+  }
+}

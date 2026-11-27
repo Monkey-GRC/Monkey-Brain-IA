@@ -1,0 +1,9 @@
+[
+  { "method": "GET", "path": "/services", "file": "services.json" },
+  { "method": "GET", "path": "/services/:id/controls", "file": "controls-list.json" },
+  { "method": "GET", "path": "/controls/:id/management-history", "file": "management-history.json" },
+  { "method": "GET", "path": "/controls/:id/evidence", "body": { "statusCode": 200, "message": "evidence.list", "data": { "items": [] } } },
+  { "method": "GET", "path": "/controls/:id/tests/:test/evidence", "body": { "statusCode": 200, "message": "evidence.list", "data": { "test_id": null, "shared_with": [], "items": [] } } },
+  { "method": "GET", "path": "/controls/:id", "file": "control-detail.json" },
+  { "method": "GET", "path": "/catalogs/:name", "file": "catalogs/{name}.json" }
+]

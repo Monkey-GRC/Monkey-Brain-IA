@@ -1,9 +1,10 @@
 import { Component, signal } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { provideTranslateService } from '@ngx-translate/core';
 import { PageInfo } from '@shared/domain/models/page-info.model';
 import { StatusIndicator } from '../status-indicator/status-indicator';
 import { pickOption } from '../select/select.testing';
+import { SLOW_LOAD_MS, SkeletonRegion } from '../skeleton/skeleton';
 import { DataTable, TableCell, TableColumn, TableStack } from './data-table';
 
 interface Row { id: number; name: string; status: string }
@@ -19,7 +20,7 @@ interface Row { id: number; name: string; status: string }
       [page]="page()"
       [loading]="loading()"
       [loadingRows]="loadingRows()"
-      [clickable]="true"
+      [clickable]="clickable()"
       [focusable]="focusable()"
       [chevron]="chevron()"
       [selectable]="selectable()"
@@ -29,6 +30,7 @@ interface Row { id: number; name: string; status: string }
       [collapsible]="collapsible()"
       [compact]="compact()"
       [hideHeader]="hideHeader()"
+      [alignTop]="alignTop()"
       [stackBelow]="stackBelow()"
       (selectionChange)="selections.push($event)"
       (pageChange)="pages.push($event)"
@@ -58,6 +60,7 @@ class Host {
   clicked: number[] = [];
   inner: number[] = [];
   chevron = signal(true);
+  clickable = signal(true);
   focusable = signal(true);
   selectable = signal(false);
   chosen = signal<ReadonlySet<string | number>>(new Set());
@@ -66,6 +69,7 @@ class Host {
   collapsible = signal(false);
   compact = signal(false);
   hideHeader = signal(false);
+  alignTop = signal(false);
   stackBelow = signal<TableStack>('lg');
   labelOf = (r: Row) => r.name;
   byId = (r: Row) => r.id;
@@ -275,8 +279,16 @@ describe('DataTable', () => {
     expect(host.clicked).toEqual([]);
   });
 
-  it('highlights the whole row on hover, by token', () => {
-    expect(el().querySelector('tbody tr')!.className).toContain('hover:bg-tint');
+  it('highlights the whole row on hover, by token, only when the row is clickable', () => {
+    const row = el().querySelector('tbody tr')!;
+    expect(row.className).toContain('data-clickable:hover:bg-tint');
+    expect(row.hasAttribute('data-clickable')).toBe(true);
+  });
+
+  it('does not mark the row as hoverable when the table is not clickable', () => {
+    host.clickable.set(false);
+    fixture.detectChanges();
+    expect(el().querySelector('tbody tr')!.hasAttribute('data-clickable')).toBe(false);
   });
 
   it('has no checkboxes unless it is selectable', () => {
@@ -420,6 +432,19 @@ describe('DataTable', () => {
     expect(el().querySelectorAll('thead th').length).toBeGreaterThan(0);
   });
 
+  it('centres the cells by default and, with alignTop, starts them at the top 16 px from the edge', () => {
+    const cell = () => el().querySelector('tbody tr:first-child td')!;
+    expect(cell().className).not.toContain('align-top');
+    host.alignTop.set(true);
+    fixture.detectChanges();
+    expect(cell().className).toContain('lg:align-top');
+    expect(cell().className).toContain('lg:py-4');
+  });
+
+  it('keeps absolutely positioned header texts inside the scroll box, so they never widen the page', () => {
+    expect(el().querySelector('table')!.parentElement!.className).toContain('relative');
+  });
+
   it('aligns every header like its cells and gives both the same horizontal padding', () => {
     const heads = Array.from(el().querySelectorAll('thead th')).filter((th) => th.hasAttribute('scope') && th.getAttribute('scope') === 'col');
     const cells = Array.from(el().querySelectorAll('tbody tr:first-child td'));
@@ -430,5 +455,94 @@ describe('DataTable', () => {
       expect(pad(heads[i])).toBe(pad(cells[i]));
       expect(pad(heads[i])).toContain('px-6');
     });
+  });
+});
+
+describe('DataTable load bar', () => {
+  @Component({
+    imports: [DataTable, SkeletonRegion],
+    template: `
+      @if (inRegion()) {
+        <app-skeleton-region [busy]="regionBusy()"><app-data-table captionKey="T" [columns]="columns" [rows]="rows" [rowKey]="byId" [loading]="loading()" [progress]="progress()" /></app-skeleton-region>
+      } @else {
+        <app-data-table captionKey="T" [columns]="columns" [rows]="rows" [rowKey]="byId" [loading]="loading()" [progress]="progress()" />
+      }
+    `,
+  })
+  class LoadHost {
+    loading = signal(true);
+    progress = signal(true);
+    inRegion = signal(false);
+    regionBusy = signal(true);
+    rows: Row[] = [];
+    columns: TableColumn<Row>[] = [{ key: 'name', headerKey: 'T.NAME' }];
+    byId = (r: Row) => r.id;
+  }
+
+  function setup() {
+    TestBed.configureTestingModule({ imports: [LoadHost], providers: [provideTranslateService()] });
+    const fixture = TestBed.createComponent(LoadHost);
+    fixture.detectChanges();
+    return { fixture, host: fixture.componentInstance, el: fixture.nativeElement as HTMLElement };
+  }
+
+  it('draws its own bar and announces the load while it loads', () => {
+    const { el } = setup();
+    expect(el.querySelectorAll('[data-load-progress]').length).toBe(1);
+    expect(el.querySelector('[data-table-status]')!.textContent).toContain('COMMON.LOADING');
+  });
+
+  it('draws its bar over the top edge of the table (absolute) and the slow-load line below the table, never over the header (MD-505)', fakeAsync(() => {
+    const { fixture, el } = setup();
+    const surface = el.querySelector('app-data-table > .mk-surface')!;
+    const bar = el.querySelector('[data-table-progress]')!;
+    expect(bar.parentElement).toBe(surface as HTMLElement);
+    expect(bar.classList).toContain('absolute');
+    expect(surface.classList).toContain('relative');
+    const slot = el.querySelector('app-data-table > [data-table-slow]')!;
+    expect(slot).not.toBeNull();
+    expect(surface.contains(slot)).toBeFalse();
+    expect(surface.compareDocumentPosition(slot) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(slot.querySelector('[data-slow-load]')).toBeNull();
+    tick(SLOW_LOAD_MS);
+    fixture.detectChanges();
+    expect(slot.querySelector('[data-slow-load]')!.textContent).toContain('COMMON.SLOW_LOAD');
+    expect(slot.getAttribute('aria-live')).toBe('polite');
+    expect(el.querySelector('thead [data-slow-load]')).toBeNull();
+    fixture.componentInstance.loading.set(false);
+    fixture.detectChanges();
+    expect(el.querySelector('[data-table-slow]')).toBeNull();
+  }));
+
+  it('keeps the live status mounted, empty, when it is not loading', () => {
+    const { fixture, host, el } = setup();
+    host.loading.set(false);
+    fixture.detectChanges();
+    const status = el.querySelector('[data-table-status]')!;
+    expect(status.getAttribute('role')).toBe('status');
+    expect(status.textContent!.trim()).toBe('');
+  });
+
+  it('draws no bar when it is not loading, or with progress off', () => {
+    const { fixture, host, el } = setup();
+    host.progress.set(false);
+    fixture.detectChanges();
+    expect(el.querySelector('[data-load-progress]')).toBeNull();
+    host.progress.set(true);
+    host.loading.set(false);
+    fixture.detectChanges();
+    expect(el.querySelector('[data-load-progress]')).toBeNull();
+  });
+
+  it('does not draw a second bar inside a region that is loading, and draws its own if the region is not', () => {
+    const { fixture, host, el } = setup();
+    host.inRegion.set(true);
+    fixture.detectChanges();
+    expect(el.querySelectorAll('[data-load-progress]').length).toBe(1);
+    expect(el.querySelector('[data-table-progress]')).toBeNull();
+    host.regionBusy.set(false);
+    fixture.detectChanges();
+    expect(el.querySelectorAll('[data-load-progress]').length).toBe(1);
+    expect(el.querySelector('[data-table-progress]')).not.toBeNull();
   });
 });

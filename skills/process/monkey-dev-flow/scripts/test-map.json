@@ -28,7 +28,10 @@
       "src/features/compliance/infrastructure/shared/": ["test/control-tecnico/api.e2e-spec.ts", "test/control-tecnico/escaneo.e2e-spec.ts"],
       "src/features/": ["test/aislamiento/rutas-con-permiso.e2e-spec.ts", "test/aislamiento/matriz-permisos.e2e-spec.ts"],
       "src/common/authorization/": ["test/aislamiento/rutas-con-permiso.e2e-spec.ts", "test/aislamiento/matriz-permisos.e2e-spec.ts", "test/documentos/matriz.e2e-spec.ts"],
-      "src/common/notifications/": ["test/notificaciones"],
+      "src/common/text/": [
+    "test/cumplimiento/marca-blanca.e2e-spec.ts"
+  ],
+  "src/common/notifications/": ["test/notificaciones"],
       "src/infrastructure/notifications/": ["test/notificaciones"],
       "src/common/": ["test/aislamiento", "test/auditoria/audit-atomica.e2e-spec.ts"],
       "src/infrastructure/": ["test/aislamiento", "test/auditoria/audit-atomica.e2e-spec.ts"],
