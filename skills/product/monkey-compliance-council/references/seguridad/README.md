@@ -47,11 +47,11 @@ Las de HTTP de aislamiento ya están en `develop` (PR #18 y #19). **Las de `test
 |---|--:|---|
 | [`aislamiento-tenant.md`](aislamiento-tenant.md) | 9 | [Aislamiento multi-tenant](../arquitectura/aislamiento-tenant/README.md) |
 | [`autenticacion.md`](autenticacion.md) | 11 | [Autenticación](../arquitectura/autenticacion/README.md) |
-| [`roles-permisos.md`](roles-permisos.md) | 13 | [Roles y permisos](../arquitectura/roles-permisos/README.md) |
+| [`roles-permisos.md`](roles-permisos.md) | 14 | [Roles y permisos](../arquitectura/roles-permisos/README.md) |
 | [`gestion-usuarios.md`](gestion-usuarios.md) | 7 | [Gestión de usuarios](../arquitectura/gestion-usuarios/README.md) |
 | [`empresas.md`](empresas.md) | 3 | [Empresas](../arquitectura/empresas/README.md) |
 | [`onboarding.md`](onboarding.md) | 2 | [Onboarding](../arquitectura/onboarding/README.md) |
-| [`control-tecnico.md`](control-tecnico.md) | 11 | [Control técnico](../arquitectura/control-tecnico/README.md) |
+| [`control-tecnico.md`](control-tecnico.md) | 12 | [Control técnico](../arquitectura/control-tecnico/README.md) |
 | [`trazabilidad.md`](trazabilidad.md) | 8 | [Trazabilidad](../arquitectura/trazabilidad/README.md) |
 | [`plataforma.md`](plataforma.md) | 9 | [Plataforma](../arquitectura/plataforma/README.md) |
 | [`entrega.md`](entrega.md) | 7 | **ninguno**: CI, despliegue, respaldos y red |
@@ -68,17 +68,17 @@ Las de HTTP de aislamiento ya están en `develop` (PR #18 y #19). **Las de `test
 |---|--:|--:|--:|--:|--:|--:|
 | [Aislamiento multi-tenant](aislamiento-tenant.md) | 6 | 1 | 1 | 1 | 0 | **9** |
 | [Autenticación](autenticacion.md) | 11 | 0 | 0 | 0 | 0 | **11** |
-| [Roles y permisos](roles-permisos.md) | 8 | 0 | 1 | 0 | 4 | **13** |
+| [Roles y permisos](roles-permisos.md) | 9 | 0 | 1 | 0 | 4 | **14** |
 | [Gestión de usuarios](gestion-usuarios.md) | 10 | 0 | 1 | 0 | 0 | **11** |
 | [Empresas](empresas.md) | 2 | 0 | 0 | 0 | 1 | **3** |
 | [Onboarding](onboarding.md) | 2 | 0 | 0 | 0 | 0 | **2** |
-| [Control técnico](control-tecnico.md) | 4 | 2 | 4 | 1 | 0 | **11** |
+| [Control técnico](control-tecnico.md) | 4 | 2 | 4 | 2 | 0 | **12** |
 | [Trazabilidad](trazabilidad.md) | 7 | 0 | 2 | 0 | 0 | **9** |
 | [Plataforma](plataforma.md) | 4 | 1 | 1 | 1 | 2 | **9** |
 | [Entrega](entrega.md) | 1 | 2 | 0 | 3 | 1 | **7** |
 | [Documentos](documentos.md) | 1 | 0 | 0 | 0 | 0 | **1** |
 | [Notificaciones](notificaciones.md) | 1 | 0 | 0 | 0 | 0 | **1** |
-| **Total** | **57** | **6** | **10** | **6** | **8** | **87** |
+| **Total** | **58** | **6** | **10** | **7** | **8** | **89** |
 
 ---
 
@@ -86,10 +86,10 @@ Las de HTTP de aislamiento ya están en `develop` (PR #18 y #19). **Las de `test
 
 El tablero: todo lo que **no** está ✅, por estado y por módulo. Cada ID se busca dentro del archivo de su módulo.
 
-**🔴 No implementado** (6)
+**🔴 No implementado** (7)
 
 - [Aislamiento multi-tenant](aislamiento-tenant.md): `SEG-09`
-- [Control técnico](control-tecnico.md): `SEG-26`
+- [Control técnico](control-tecnico.md): `SEG-26` · `SEG-90`
 - [Plataforma](plataforma.md): `SEG-25`
 - [Entrega](entrega.md): `SEG-28` · `SEG-31` · `SEG-41`
 
@@ -111,7 +111,7 @@ El tablero: todo lo que **no** está ✅, por estado y por módulo. Cada ID se b
 
 **⚪ No verificable desde el repo, o retirado** (8)
 
-- [Roles y permisos](roles-permisos.md): `SEG-55` · `SEG-56` · `SEG-58` · `SEG-61` · `SEG-89`
+- [Roles y permisos](roles-permisos.md): `SEG-55` · `SEG-56` · `SEG-58` · `SEG-61`
 - [Empresas](empresas.md): `SEG-57`
 - [Plataforma](plataforma.md): `SEG-32` · `SEG-44`
 - [Entrega](entrega.md): `SEG-27`

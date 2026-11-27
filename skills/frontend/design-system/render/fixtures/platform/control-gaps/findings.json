@@ -1,0 +1,514 @@
+{
+  "statusCode": 200,
+  "message": "finding.list",
+  "data": {
+    "control": {
+      "id": "3f1c0000-0000-4000-8000-000000000001",
+      "code": "IAC-12",
+      "name": "Doble factor en cuentas privilegiadas"
+    },
+    "test": {
+      "id": "33cd0000-0000-4000-8000-000000000001",
+      "code": "T-IAC-12-01",
+      "display_name": "Cuentas privilegiadas con doble factor"
+    },
+    "measured_at": "2026-11-27T05:40:00Z",
+    "summary": {
+      "open_gaps": 4,
+      "excepted": 1,
+      "observations": 1
+    },
+    "items": [
+      {
+        "id": "8f10:1",
+        "kind": "gap",
+        "asset": {
+          "id": "8f100000-0000-4000-8000-000000000001",
+          "name": "cuenta-produccion-pagos-con-un-nombre-largo",
+          "criticality": "low"
+        },
+        "title": "La cuenta raíz tiene doble factor activado y rota sus claves cada noventa días ",
+        "evaluated": {
+          "text": "Descripción larga para estresar el diseño: la cuenta raíz debe exigir un segundo factor al iniciar sesión, y además cada usuario con privilegios debe usar un dispositivo registrado, con rotación periódica de credenciales y revisión trimestral de accesos por parte del responsable del servicio. Descripción larga para estresar el diseño: la cuenta raíz debe exigir un segundo factor al iniciar sesión, y además cada usuario con privilegios debe usar un dispositivo registrado, con rotación periódica d",
+          "language": "es",
+          "is_ai_generated": true
+        },
+        "remediation": {
+          "text": "Activa el doble factor en la cuenta raíz.\n- Abre la consola y entra en «Credenciales de seguridad».\n- Registra un dispositivo.\n```\naws iam enable-mfa-device --user-name root --serial-number arn:aws:iam::123456789012:mfa/root --authentication-code1 123456 --authentication-code2 654321\n```\nDescripción larga para estresar el diseño: la cuenta raíz debe exigir un segundo factor al iniciar sesión, y además cada usuario con privilegios debe usar un dispositivo registrado, con rotación periódica de credenciales y revisión trimestral de accesos por parte del responsable del servicio. Descripción larga para estresar el diseño: la cuenta raíz debe exigir un segundo factor al iniciar sesión, y además cada usuario con privilegios debe usar un dispositivo registrado, con rotación periódica d",
+          "language": "es",
+          "is_ai_generated": true
+        },
+        "priority": "high",
+        "priority_basis": {
+          "severity": "critical",
+          "asset_criticality": "low"
+        },
+        "resources": [
+          {
+            "name": "recurso-con-nombre-muy-largo-numero-0-para-probar-el-corte",
+            "uid": "arn:aws:iam::123456789012:user/u0",
+            "region": null
+          },
+          {
+            "name": "recurso-con-nombre-muy-largo-numero-1-para-probar-el-corte",
+            "uid": "arn:aws:iam::123456789012:user/u1",
+            "region": "us-east-1"
+          },
+          {
+            "name": "recurso-con-nombre-muy-largo-numero-2-para-probar-el-corte",
+            "uid": "arn:aws:iam::123456789012:user/u2",
+            "region": null
+          },
+          {
+            "name": "recurso-con-nombre-muy-largo-numero-3-para-probar-el-corte",
+            "uid": "arn:aws:iam::123456789012:user/u3",
+            "region": "us-east-1"
+          },
+          {
+            "name": "recurso-con-nombre-muy-largo-numero-4-para-probar-el-corte",
+            "uid": "arn:aws:iam::123456789012:user/u4",
+            "region": null
+          },
+          {
+            "name": "recurso-con-nombre-muy-largo-numero-5-para-probar-el-corte",
+            "uid": "arn:aws:iam::123456789012:user/u5",
+            "region": "us-east-1"
+          },
+          {
+            "name": "recurso-con-nombre-muy-largo-numero-6-para-probar-el-corte",
+            "uid": "arn:aws:iam::123456789012:user/u6",
+            "region": null
+          },
+          {
+            "name": "recurso-con-nombre-muy-largo-numero-7-para-probar-el-corte",
+            "uid": "arn:aws:iam::123456789012:user/u7",
+            "region": "us-east-1"
+          },
+          {
+            "name": "recurso-con-nombre-muy-largo-numero-8-para-probar-el-corte",
+            "uid": "arn:aws:iam::123456789012:user/u8",
+            "region": null
+          },
+          {
+            "name": "recurso-con-nombre-muy-largo-numero-9-para-probar-el-corte",
+            "uid": "arn:aws:iam::123456789012:user/u9",
+            "region": "us-east-1"
+          },
+          {
+            "name": "recurso-con-nombre-muy-largo-numero-10-para-probar-el-corte",
+            "uid": "arn:aws:iam::123456789012:user/u10",
+            "region": null
+          },
+          {
+            "name": "recurso-con-nombre-muy-largo-numero-11-para-probar-el-corte",
+            "uid": "arn:aws:iam::123456789012:user/u11",
+            "region": "us-east-1"
+          },
+          {
+            "name": "recurso-con-nombre-muy-largo-numero-12-para-probar-el-corte",
+            "uid": "arn:aws:iam::123456789012:user/u12",
+            "region": null
+          },
+          {
+            "name": "recurso-con-nombre-muy-largo-numero-13-para-probar-el-corte",
+            "uid": "arn:aws:iam::123456789012:user/u13",
+            "region": "us-east-1"
+          },
+          {
+            "name": "recurso-con-nombre-muy-largo-numero-14-para-probar-el-corte",
+            "uid": "arn:aws:iam::123456789012:user/u14",
+            "region": null
+          },
+          {
+            "name": "recurso-con-nombre-muy-largo-numero-15-para-probar-el-corte",
+            "uid": "arn:aws:iam::123456789012:user/u15",
+            "region": "us-east-1"
+          },
+          {
+            "name": "recurso-con-nombre-muy-largo-numero-16-para-probar-el-corte",
+            "uid": "arn:aws:iam::123456789012:user/u16",
+            "region": null
+          },
+          {
+            "name": "recurso-con-nombre-muy-largo-numero-17-para-probar-el-corte",
+            "uid": "arn:aws:iam::123456789012:user/u17",
+            "region": "us-east-1"
+          },
+          {
+            "name": "recurso-con-nombre-muy-largo-numero-18-para-probar-el-corte",
+            "uid": "arn:aws:iam::123456789012:user/u18",
+            "region": null
+          },
+          {
+            "name": "recurso-con-nombre-muy-largo-numero-19-para-probar-el-corte",
+            "uid": "arn:aws:iam::123456789012:user/u19",
+            "region": "us-east-1"
+          },
+          {
+            "name": "recurso-con-nombre-muy-largo-numero-20-para-probar-el-corte",
+            "uid": "arn:aws:iam::123456789012:user/u20",
+            "region": null
+          },
+          {
+            "name": "recurso-con-nombre-muy-largo-numero-21-para-probar-el-corte",
+            "uid": "arn:aws:iam::123456789012:user/u21",
+            "region": "us-east-1"
+          },
+          {
+            "name": "recurso-con-nombre-muy-largo-numero-22-para-probar-el-corte",
+            "uid": "arn:aws:iam::123456789012:user/u22",
+            "region": null
+          },
+          {
+            "name": "recurso-con-nombre-muy-largo-numero-23-para-probar-el-corte",
+            "uid": "arn:aws:iam::123456789012:user/u23",
+            "region": "us-east-1"
+          },
+          {
+            "name": "recurso-con-nombre-muy-largo-numero-24-para-probar-el-corte",
+            "uid": "arn:aws:iam::123456789012:user/u24",
+            "region": null
+          },
+          {
+            "name": "recurso-con-nombre-muy-largo-numero-25-para-probar-el-corte",
+            "uid": "arn:aws:iam::123456789012:user/u25",
+            "region": "us-east-1"
+          },
+          {
+            "name": "recurso-con-nombre-muy-largo-numero-26-para-probar-el-corte",
+            "uid": "arn:aws:iam::123456789012:user/u26",
+            "region": null
+          },
+          {
+            "name": "recurso-con-nombre-muy-largo-numero-27-para-probar-el-corte",
+            "uid": "arn:aws:iam::123456789012:user/u27",
+            "region": "us-east-1"
+          },
+          {
+            "name": "recurso-con-nombre-muy-largo-numero-28-para-probar-el-corte",
+            "uid": "arn:aws:iam::123456789012:user/u28",
+            "region": null
+          },
+          {
+            "name": "recurso-con-nombre-muy-largo-numero-29-para-probar-el-corte",
+            "uid": "arn:aws:iam::123456789012:user/u29",
+            "region": "us-east-1"
+          },
+          {
+            "name": "recurso-con-nombre-muy-largo-numero-30-para-probar-el-corte",
+            "uid": "arn:aws:iam::123456789012:user/u30",
+            "region": null
+          },
+          {
+            "name": "recurso-con-nombre-muy-largo-numero-31-para-probar-el-corte",
+            "uid": "arn:aws:iam::123456789012:user/u31",
+            "region": "us-east-1"
+          },
+          {
+            "name": "recurso-con-nombre-muy-largo-numero-32-para-probar-el-corte",
+            "uid": "arn:aws:iam::123456789012:user/u32",
+            "region": null
+          },
+          {
+            "name": "recurso-con-nombre-muy-largo-numero-33-para-probar-el-corte",
+            "uid": "arn:aws:iam::123456789012:user/u33",
+            "region": "us-east-1"
+          },
+          {
+            "name": "recurso-con-nombre-muy-largo-numero-34-para-probar-el-corte",
+            "uid": "arn:aws:iam::123456789012:user/u34",
+            "region": null
+          },
+          {
+            "name": "recurso-con-nombre-muy-largo-numero-35-para-probar-el-corte",
+            "uid": "arn:aws:iam::123456789012:user/u35",
+            "region": "us-east-1"
+          },
+          {
+            "name": "recurso-con-nombre-muy-largo-numero-36-para-probar-el-corte",
+            "uid": "arn:aws:iam::123456789012:user/u36",
+            "region": null
+          },
+          {
+            "name": "recurso-con-nombre-muy-largo-numero-37-para-probar-el-corte",
+            "uid": "arn:aws:iam::123456789012:user/u37",
+            "region": "us-east-1"
+          },
+          {
+            "name": "recurso-con-nombre-muy-largo-numero-38-para-probar-el-corte",
+            "uid": "arn:aws:iam::123456789012:user/u38",
+            "region": null
+          },
+          {
+            "name": "recurso-con-nombre-muy-largo-numero-39-para-probar-el-corte",
+            "uid": "arn:aws:iam::123456789012:user/u39",
+            "region": "us-east-1"
+          },
+          {
+            "name": "recurso-con-nombre-muy-largo-numero-40-para-probar-el-corte",
+            "uid": "arn:aws:iam::123456789012:user/u40",
+            "region": null
+          },
+          {
+            "name": "recurso-con-nombre-muy-largo-numero-41-para-probar-el-corte",
+            "uid": "arn:aws:iam::123456789012:user/u41",
+            "region": "us-east-1"
+          },
+          {
+            "name": "recurso-con-nombre-muy-largo-numero-42-para-probar-el-corte",
+            "uid": "arn:aws:iam::123456789012:user/u42",
+            "region": null
+          },
+          {
+            "name": "recurso-con-nombre-muy-largo-numero-43-para-probar-el-corte",
+            "uid": "arn:aws:iam::123456789012:user/u43",
+            "region": "us-east-1"
+          },
+          {
+            "name": "recurso-con-nombre-muy-largo-numero-44-para-probar-el-corte",
+            "uid": "arn:aws:iam::123456789012:user/u44",
+            "region": null
+          },
+          {
+            "name": "recurso-con-nombre-muy-largo-numero-45-para-probar-el-corte",
+            "uid": "arn:aws:iam::123456789012:user/u45",
+            "region": "us-east-1"
+          },
+          {
+            "name": "recurso-con-nombre-muy-largo-numero-46-para-probar-el-corte",
+            "uid": "arn:aws:iam::123456789012:user/u46",
+            "region": null
+          },
+          {
+            "name": "recurso-con-nombre-muy-largo-numero-47-para-probar-el-corte",
+            "uid": "arn:aws:iam::123456789012:user/u47",
+            "region": "us-east-1"
+          },
+          {
+            "name": "recurso-con-nombre-muy-largo-numero-48-para-probar-el-corte",
+            "uid": "arn:aws:iam::123456789012:user/u48",
+            "region": null
+          },
+          {
+            "name": "recurso-con-nombre-muy-largo-numero-49-para-probar-el-corte",
+            "uid": "arn:aws:iam::123456789012:user/u49",
+            "region": "us-east-1"
+          }
+        ],
+        "resources_total": 63,
+        "exception": null,
+        "owner": {
+          "id": "a1",
+          "name": "Laura",
+          "last_name": "Gómez"
+        },
+        "due_date": "2026-12-15",
+        "failing_since": "2026-11-20T05:40:00Z"
+      },
+      {
+        "id": "8f10:2",
+        "kind": "gap",
+        "asset": {
+          "id": "8f100000-0000-4000-8000-000000000001",
+          "name": "cuenta-produccion-pagos-con-un-nombre-largo",
+          "criticality": "low"
+        },
+        "title": "La cuenta raíz tiene doble factor activado ",
+        "evaluated": null,
+        "remediation": {
+          "text": "Activa el doble factor en la cuenta raíz.\n- Abre la consola y entra en «Credenciales de seguridad».\n- Registra un dispositivo.\n```\naws iam enable-mfa-device --user-name root --serial-number arn:aws:iam::123456789012:mfa/root --authentication-code1 123456 --authentication-code2 654321\n```\nDescripción larga para estresar el diseño: la cuenta raíz debe exigir un segundo factor al iniciar sesión, y además cada usuario con privilegios debe usar un dispositivo registrado, con rotación periódica de credenciales y revisión trimestral de accesos por parte del responsable del servicio. Descripción larga para estresar el diseño: la cuenta raíz debe exigir un segundo factor al iniciar sesión, y además cada usuario con privilegios debe usar un dispositivo registrado, con rotación periódica d",
+          "language": "es",
+          "is_ai_generated": true
+        },
+        "priority": "critical",
+        "priority_basis": {
+          "severity": "critical",
+          "asset_criticality": "critical"
+        },
+        "resources": [
+          {
+            "name": "recurso-con-nombre-muy-largo-numero-0-para-probar-el-corte",
+            "uid": "arn:aws:iam::123456789012:user/u0",
+            "region": null
+          }
+        ],
+        "resources_total": 1,
+        "exception": null,
+        "owner": null,
+        "due_date": null,
+        "failing_since": "2026-11-20T05:40:00Z"
+      },
+      {
+        "id": "8f10:3",
+        "kind": "gap",
+        "asset": {
+          "id": "8f100000-0000-4000-8000-000000000001",
+          "name": "cuenta-produccion-pagos-con-un-nombre-largo",
+          "criticality": "low"
+        },
+        "title": "La cuenta raíz tiene doble factor activado y rota sus claves cada noventa días ",
+        "evaluated": {
+          "text": "Descripción larga para estresar el diseño: la cuenta raíz debe exigir un segundo factor al iniciar sesión, y además cada usuario con privilegios debe usar un dispositivo registrado, con rotación periódica de credenciales y revisión trimestral de accesos por parte del responsable del servicio. Descripción larga para estresar el diseño: la cuenta raíz debe exigir un segundo factor al iniciar sesión, y además cada usuario con privilegios debe usar un dispositivo registrado, con rotación periódica d",
+          "language": "es",
+          "is_ai_generated": true
+        },
+        "remediation": {
+          "text": "Block public access.",
+          "language": "en",
+          "is_ai_generated": false
+        },
+        "priority": "low",
+        "priority_basis": {
+          "severity": null,
+          "asset_criticality": "low"
+        },
+        "resources": [
+          {
+            "name": "recurso-con-nombre-muy-largo-numero-0-para-probar-el-corte",
+            "uid": "arn:aws:iam::123456789012:user/u0",
+            "region": null
+          }
+        ],
+        "resources_total": 1,
+        "exception": null,
+        "owner": {
+          "id": "a1",
+          "name": "Laura",
+          "last_name": "Gómez"
+        },
+        "due_date": "2026-12-15",
+        "failing_since": "2026-11-20T05:40:00Z"
+      },
+      {
+        "id": "8f10:4",
+        "kind": "gap",
+        "asset": {
+          "id": "8f100000-0000-4000-8000-000000000001",
+          "name": "cuenta-produccion-pagos-con-un-nombre-largo",
+          "criticality": "low"
+        },
+        "title": "La cuenta raíz tiene doble factor activado ",
+        "evaluated": {
+          "text": "Descripción larga para estresar el diseño: la cuenta raíz debe exigir un segundo factor al iniciar sesión, y además cada usuario con privilegios debe usar un dispositivo registrado, con rotación periódica de credenciales y revisión trimestral de accesos por parte del responsable del servicio. Descripción larga para estresar el diseño: la cuenta raíz debe exigir un segundo factor al iniciar sesión, y además cada usuario con privilegios debe usar un dispositivo registrado, con rotación periódica d",
+          "language": "es",
+          "is_ai_generated": true
+        },
+        "remediation": null,
+        "priority": "high",
+        "priority_basis": {
+          "severity": "critical",
+          "asset_criticality": "low"
+        },
+        "resources": [
+          {
+            "name": "recurso-con-nombre-muy-largo-numero-0-para-probar-el-corte",
+            "uid": "arn:aws:iam::123456789012:user/u0",
+            "region": null
+          },
+          {
+            "name": "recurso-con-nombre-muy-largo-numero-1-para-probar-el-corte",
+            "uid": "arn:aws:iam::123456789012:user/u1",
+            "region": "us-east-1"
+          },
+          {
+            "name": "recurso-con-nombre-muy-largo-numero-2-para-probar-el-corte",
+            "uid": "arn:aws:iam::123456789012:user/u2",
+            "region": null
+          }
+        ],
+        "resources_total": 3,
+        "exception": null,
+        "owner": {
+          "id": "a1",
+          "name": "Laura",
+          "last_name": "Gómez"
+        },
+        "due_date": "2026-12-15",
+        "failing_since": "2026-11-20T05:40:00Z"
+      },
+      {
+        "id": "8f10:5",
+        "kind": "excepted",
+        "asset": {
+          "id": "8f100000-0000-4000-8000-000000000001",
+          "name": "cuenta-produccion-pagos-con-un-nombre-largo",
+          "criticality": "low"
+        },
+        "title": "La cuenta raíz tiene doble factor activado y rota sus claves cada noventa días ",
+        "evaluated": {
+          "text": "Descripción larga para estresar el diseño: la cuenta raíz debe exigir un segundo factor al iniciar sesión, y además cada usuario con privilegios debe usar un dispositivo registrado, con rotación periódica de credenciales y revisión trimestral de accesos por parte del responsable del servicio. Descripción larga para estresar el diseño: la cuenta raíz debe exigir un segundo factor al iniciar sesión, y además cada usuario con privilegios debe usar un dispositivo registrado, con rotación periódica d",
+          "language": "es",
+          "is_ai_generated": true
+        },
+        "remediation": {
+          "text": "Activa el doble factor en la cuenta raíz.\n- Abre la consola y entra en «Credenciales de seguridad».\n- Registra un dispositivo.\n```\naws iam enable-mfa-device --user-name root --serial-number arn:aws:iam::123456789012:mfa/root --authentication-code1 123456 --authentication-code2 654321\n```\nDescripción larga para estresar el diseño: la cuenta raíz debe exigir un segundo factor al iniciar sesión, y además cada usuario con privilegios debe usar un dispositivo registrado, con rotación periódica de credenciales y revisión trimestral de accesos por parte del responsable del servicio. Descripción larga para estresar el diseño: la cuenta raíz debe exigir un segundo factor al iniciar sesión, y además cada usuario con privilegios debe usar un dispositivo registrado, con rotación periódica d",
+          "language": "es",
+          "is_ai_generated": true
+        },
+        "priority": "high",
+        "priority_basis": {
+          "severity": "critical",
+          "asset_criticality": "low"
+        },
+        "resources": [
+          {
+            "name": "recurso-con-nombre-muy-largo-numero-0-para-probar-el-corte",
+            "uid": "arn:aws:iam::123456789012:user/u0",
+            "region": null
+          }
+        ],
+        "resources_total": 1,
+        "exception": {
+          "id": "e1",
+          "effective_until": "2027-01-31"
+        },
+        "owner": {
+          "id": "a1",
+          "name": "Laura",
+          "last_name": "Gómez"
+        },
+        "due_date": "2026-12-15",
+        "failing_since": "2026-11-20T05:40:00Z"
+      },
+      {
+        "id": "8f10:6",
+        "kind": "observation",
+        "asset": {
+          "id": "8f100000-0000-4000-8000-000000000001",
+          "name": "cuenta-produccion-pagos-con-un-nombre-largo",
+          "criticality": "low"
+        },
+        "title": "La cuenta raíz tiene doble factor activado ",
+        "evaluated": null,
+        "remediation": {
+          "text": "Activa el doble factor en la cuenta raíz.\n- Abre la consola y entra en «Credenciales de seguridad».\n- Registra un dispositivo.\n```\naws iam enable-mfa-device --user-name root --serial-number arn:aws:iam::123456789012:mfa/root --authentication-code1 123456 --authentication-code2 654321\n```\nDescripción larga para estresar el diseño: la cuenta raíz debe exigir un segundo factor al iniciar sesión, y además cada usuario con privilegios debe usar un dispositivo registrado, con rotación periódica de credenciales y revisión trimestral de accesos por parte del responsable del servicio. Descripción larga para estresar el diseño: la cuenta raíz debe exigir un segundo factor al iniciar sesión, y además cada usuario con privilegios debe usar un dispositivo registrado, con rotación periódica d",
+          "language": "es",
+          "is_ai_generated": true
+        },
+        "priority": null,
+        "priority_basis": null,
+        "resources": [
+          {
+            "name": "recurso-con-nombre-muy-largo-numero-0-para-probar-el-corte",
+            "uid": "arn:aws:iam::123456789012:user/u0",
+            "region": null
+          },
+          {
+            "name": "recurso-con-nombre-muy-largo-numero-1-para-probar-el-corte",
+            "uid": "arn:aws:iam::123456789012:user/u1",
+            "region": "us-east-1"
+          }
+        ],
+        "resources_total": 2,
+        "exception": null,
+        "owner": null,
+        "due_date": null,
+        "failing_since": "2026-11-20T05:40:00Z"
+      }
+    ],
+    "page": 1,
+    "page_size": 25,
+    "total": 6,
+    "total_pages": 1
+  }
+}

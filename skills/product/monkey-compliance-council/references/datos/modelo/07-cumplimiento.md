@@ -276,11 +276,12 @@ erDiagram
         datetime requested_at "D79"
         datetime decided_at "nullable"
         text decision_note "nullable, obligatoria al rechazar"
-        text technical_justification "nullable, obligatoria si el test es automatico"
+        text technical_justification "obligatoria desde MD-501 (D135); nullable en las anteriores"
         string excluded_check_id "nullable: si excluye un check"
         text justification
         date valid_from
-        date valid_until
+        date valid_until "la fecha de fin que pide el admin; tope PR-04 (D135)"
+        datetime expired_at "nullable: cuándo la tarea diaria registró el vencimiento (MD-501)"
     }
     client_controls ||--o{ evidence_requirements : "exige"
     evidence_requirements ||--o{ evidence_submissions : "se cumple con"
@@ -288,8 +289,7 @@ erDiagram
     tests ||--o{ exclusions : "excluye checks por"
 ```
 
-**Lo que D68 agrega a estas tablas** (la regla está en §9): `client_control_tests` lleva *obligatorio*, *vigente*, fechas y la justificación de una desactivación; `evidence_reviews` (D102) guardaba los seis atributos y la revisión por rol; **MD-504 la borró** (D132): `evidence_state` se **deriva** de si la entrega fue devuelta (`evidence_submissions.returned_approval_id`). `exclusions` puede excluir un **activo** de un test además de un check, siempre con justificación, aprobador y vigencia. Un `evaluations.result` ahora
-distingue `error` y `excluded`.
+**Lo que D68 agrega a estas tablas** (la regla está en §9): `client_control_tests` lleva *obligatorio*, *vigente*, fechas y la justificación de una desactivación; `evidence_reviews` (D102) guardaba los seis atributos y la revisión por rol; **MD-504 la borró** (D132): `evidence_state` se **deriva** de si la entrega fue devuelta (`evidence_submissions.returned_approval_id`). `exclusions` es la **excepción de una prueba en un activo** (D135, MD-501), siempre con justificación, sustento técnico, aprobador y fecha de fin de PR-04 como máximo; `excluded_check_id` queda sin uso (la excepción de un check suelto la reemplazó D135). La excepción **se deriva al leer**: `evaluations.result` no guarda `excluded` (el motor v2 lo resuelve como `fail_with_exception`) y un fallo de la sonda es `no_data`.
 
 **El responsable de la evidencia es cargo *y* persona, en planos distintos** (decisión A1):
 `evidence_requirements.responsible_id` apunta a `organization_responsibles`, es decir, al

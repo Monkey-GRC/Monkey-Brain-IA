@@ -42,7 +42,7 @@ Ante el cliente, los motores son «sonda» o «evaluación automática» (regla 
 | HU-CUM-18 | Aprobar o rechazar un veredicto | `responsable` dueño · `admin_empresa` | 🟡 | D121 (reemplazada por D132), SEG-67 |
 | HU-CUM-19 | Consultar el historial de veredictos de una prueba | Persona de empresa | 🟡 | D121, D119 |
 | HU-CUM-20 | Excluir un activo de una prueba con motivo y vigencia | `admin_empresa` | 🟡 | D96, D87, SEG-67 |
-| HU-CUM-21 | Ver las exclusiones del servicio y cuáles vencieron | `admin_empresa` · `auditor` | ✅ | D96, DT-72 |
+| HU-CUM-21 | Ver las exclusiones del servicio y cuáles vencieron | `admin_empresa` · `auditor` | ✅ | D96, D135 |
 | HU-CUM-22 | Escribir una observación sobre un servicio, un control o una evidencia | `auditor` | 🟡 | D96, SEG-69, SEG-70 |
 | HU-CUM-23 | Responder una observación | `admin_empresa` · `responsable` · `delegado` | 🟡 | SEG-70, `P37`, D143 |
 | HU-CUM-24 | Cerrar o devolver una observación que escribí | `auditor` (su autor) | 🟡 | SEG-69, SEG-70 |
@@ -243,15 +243,16 @@ saber quién decidió qué y cuándo.
 
 ## Exclusiones
 
-### HU-CUM-20 · Excluir un activo de una prueba con motivo y vigencia
+### HU-CUM-20 · Exceptuar el FAIL de una prueba en un activo con motivo y fecha de fin
 
-**Como** `admin_empresa`, **quiero** sacar un activo de una prueba que no le aplica **para** no medir lo que no corresponde.
+**Como** `admin_empresa`, **quiero** aceptar por un tiempo acotado el fallo de una prueba en un activo **para** que cuente marcado como excepción y no como incumplimiento.
 
 - Solo el `admin_empresa` decide, y propone y aprueba en un acto (D96, SEG-67).
-- El motivo es obligatorio, y el técnico también si la prueba es automática.
-- Vale desde hoy hasta el fin del período; sin período → `409 EVALUATION_NOT_DEFINED` (D87).
-- El resultado medido no se toca: el activo sale del universo de la prueba al leer.
-- Repetir una vigente → `409 EXCLUSION_ALREADY_EXISTS`. Excluir un check suelto no existe (DT-74).
+- El motivo y el sustento técnico son obligatorios.
+- La fecha de fin la elige el administrador: posterior a hoy y como mucho PR-04 (90 días por defecto) (D135).
+- Solo si hoy hay un FAIL que exceptuar → si no, `409 CHECK_NOT_FAILING`.
+- El resultado medido no se toca: mientras vige cuenta como PASS marcado, y el activo sigue en el alcance.
+- Repetir una vigente → `409 EXCLUSION_ALREADY_EXISTS`. La excepción es de una prueba en un activo; la de un check suelto no existe (D135).
 - 🟡 La API está construida; la pantalla solo lista.
 
 ### HU-CUM-21 · Ver las exclusiones del servicio y cuáles vencieron
@@ -260,7 +261,7 @@ saber quién decidió qué y cuándo.
 al auditor.
 
 - El `responsable` y el `delegado` reciben `403`.
-- «Vencida» se deriva al leer; al vencer, el activo vuelve a contar sin ningún proceso (DT-72).
+- «Vencida» se deriva al leer, así que el check vuelve a contar el mismo día; la tarea diaria además registra el vencimiento (`expired_at`, evento `exclusion.expire` y, si mueve el estado de un control, su evento de estado) (MD-501).
 
 ## Observaciones del auditor
 

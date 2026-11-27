@@ -242,3 +242,5 @@ quedan aquí:
 | D158 | La nube se evalúa sola con la frecuencia elegida: tarea del Backend, un reintento, cola acotada y lo manual primero | [control-tecnico](control-tecnico.md) |
 | D159 | En Microsoft 365 un check Directo que no vuelve es «Sin datos» (prueba pendiente), no «No aplica»: la regla del libro (`MAP CALOR`, T-04); acota D56 | [control-tecnico](control-tecnico.md) |
 | D160 | Una prueba la decide la plataforma conectada, no su dimensión; cada recurso elegido es un activo con su resultado; una prueba semiautomática no es Correcta sin su parte manual *(decisión de desarrollo, por ratificar: `P14`)* | [control-tecnico](control-tecnico.md) |
+| D161 | La excepción es de una prueba en un activo, solo sobre un FAIL que existe hoy, con fecha de fin del cliente *(precisa D135)* | [cumplimiento/exclusiones](cumplimiento/exclusiones.md) |
+| D162 | La prioridad del mensaje de brecha: el promedio de severidad y criticidad, redondeado hacia arriba *(completa D138 punto 3)* | [notificaciones](notificaciones.md) |

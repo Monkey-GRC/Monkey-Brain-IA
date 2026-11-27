@@ -67,3 +67,15 @@ Por qué Notificaciones es como es. **Se consulta para reabrir, no para construi
 **Qué cambia.** `contracts/notificaciones.md`, `contracts/enums/notificaciones.md` (destinatarios de `check_parameters_changed`), `modelo/12-notificaciones.md` y `arquitectura/notificaciones/README.md`.
 
 **Fuente:** Héctor Ríos (Rod), 2026-11-25, ronda de preguntas de MD-508, como decisión de desarrollo. **No es una decisión del comité.**
+
+---
+
+## D162 · La prioridad del mensaje de brecha: el promedio de severidad y criticidad, redondeado hacia arriba (2026-11-27; completa D138 punto 3)
+
+**Decisión** (MD-502, RC-18): la severidad del check y la criticidad del activo se pasan a un nivel (`low` 1, `medium` 2, `high` 3, `critical` 4; la severidad `informational` cuenta como 1). La prioridad es **el promedio de los dos, redondeado hacia arriba** (`critical` × `low` → 2,5 → `high`). Sin severidad (la sonda, D141 punto 3), la prioridad es la criticidad del activo. Valores: enum `gap_priority`.
+
+**Por qué.** El libro dice «severidad del check × criticidad del activo» sin tabla; el promedio hacia arriba no deja que un activo poco crítico esconda un check grave, y se explica en una línea.
+
+**Qué cambia.** `contracts/cumplimiento/brechas.md`, `contracts/enums/cumplimiento.md` (`gap_priority`) y el aviso `direct_check_failed` (`contracts/notificaciones.md`), que usa la misma prioridad.
+
+**Fuente:** Rod (responsable de producto), 2026-11-27, al planificar MD-502 (respuesta 3A).

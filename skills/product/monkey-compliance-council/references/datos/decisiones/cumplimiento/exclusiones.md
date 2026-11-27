@@ -77,3 +77,19 @@ solo pregunta «quién autoriza» (decisión 3) y no fija quién propone, así q
 **Fuente:** comité funcional, VF18 (`MAP CALOR`, secciones 3.2, 3.3 y 11; RC-20), 2026-11-22.
 
 ---
+
+---
+
+## D161 · La excepción es de una prueba en un activo, solo sobre un FAIL que existe hoy, con fecha de fin del cliente (2026-11-27; precisa D135)
+
+**Decisión** (MD-501, RC-20):
+
+1. La excepción de D135 es de **una prueba en un activo**: cubre los checks Directos de esa prueba en ese activo. **No hay excepción de un check en todos los activos**: lo que pedía MD-170 lo reemplaza D135.
+2. **Solo se acepta si hoy hay un FAIL** de un check Directo de esa prueba en ese activo; si no, `409 CHECK_NOT_FAILING`. No hay excepciones preventivas.
+3. La fecha de fin la pide el `admin_empresa` y no puede pasar de hoy + PR-04; la vigencia ya no es el período del servicio. Al vencer, una tarea diaria deja su evento una sola vez.
+
+**Por qué.** D135 habla de «un check que falla en un activo», y el motor v2 ya decide la prueba por activo. Exceptuar lo que no falla aceptaría un riesgo que nadie ha visto.
+
+**Qué cambia.** `contracts/cumplimiento/exclusiones.md`, §7 (`exclusions.expired_at`). Cierra DT-72, DT-73 y DT-74.
+
+**Fuente:** Rod (responsable de producto), 2026-11-27, al planificar MD-501 (respuestas 1A y 2A).

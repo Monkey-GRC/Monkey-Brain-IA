@@ -21,7 +21,7 @@ type: contract
 | Método | Ruta | Quién | Para qué |
 |---|---|---|---|
 | `GET` | [`/v1/controls/{id}/tests`](#get-v1controlsidtests--los-tests-de-un-control) | `admin_empresa` · `auditor` | Los tests de un control, con su estado |
-| `GET` | [`/v1/controls/{control_id}/tests/{test_id}/findings`](#get-v1controlscontrol_idteststest_idfindings--qué-falló-y-cómo-corregirlo) | `admin_empresa` · `auditor` · dueño y ejecutor | Qué falló y cómo corregirlo (D90) |
+| `GET` | [`/v1/controls/{control_id}/tests/{test_id}/findings`](brechas.md) | `admin_empresa` · `auditor` · dueño y ejecutor | Las brechas de una prueba (D138; contrato en `brechas.md`) |
 
 ---
 
@@ -73,57 +73,9 @@ La vista técnica de un control: los tests que lo verifican, **todos con su esta
 
 > Ver no es hacer: el resultado de una prueba manual se registra con `POST …/result` ([`aprobacion.md`](aprobacion.md#post-v1controlscontrol_idteststest_idresult--registrar-el-resultado-de-una-prueba-manual)).
 
-### GET /v1/controls/{control_id}/tests/{test_id}/findings — Qué falló y cómo corregirlo
+### Las brechas de una prueba se movieron
 
-| | |
-|---|---|
-| **Quién** | `admin_empresa` · `auditor` · **el dueño y el ejecutor del control** (D102: son quienes la reparan; ven qué falló y cómo corregirlo, no la vista técnica completa) |
-| **Éxito** | `200`, paginada (`page`, `page_size`), de la más grave a la menos |
-| **Errores** | `403` (otro `responsable` o `delegado`, `admin_monkey`) · `404` (el control no lleva la prueba, o la prueba no es automática: una documental no tiene nada técnico que explicar) |
-
-De una **prueba automática** de un control (de **nube** o de **servidores**, D113; dimensión `cloud`, `server`, `database` o `app`): las comprobaciones que fallaron, en qué recursos y cómo corregirlas (D90). Lo que lee: la **última corrida completada** de cada conexión del servicio (una cuenta de nube o un servidor con agente), solo los resultados `failed`, de los checks que alimentan esa prueba **con la misma regla que las evaluaciones** (los ratificados por el comité; con `READINESS_INCLUDE_PROPOSED=true`, también los propuestos). Un recurso descubierto que no es del servicio no se cuenta.
-
-**Servidores (D113).** El recurso afectado es **el propio servidor**, con el nombre que el cliente le dio (`resources: [{ name, uid: null, region: null }]`); si varios servidores fallan la misma comprobación, salen todos en ese hallazgo. **La sonda no califica sus checks**, así que `severity` es **`null`**: no se inventa un nivel; el hallazgo se ordena después de los calificados y la pantalla no pinta nivel. El título sale en español del catálogo del comité. La guía sale en español (`language: "es"`, `is_ai_generated: true` hasta que una persona la revise) donde Monkey la tradujo —hoy ≈4.000 guías: Ubuntu 22.04 completo, Windows casi completo y Linux donde el texto es idéntico a uno ya traducido— y, donde no, el original en inglés dicho como inglés (`language: "en"`).
-
-**Formato de `remediation.text`:** párrafos separados por salto de línea, viñetas con `- `, y los **comandos en un bloque entre tres comillas invertidas**, que la pantalla muestra aparte para leerlo y copiarlo; se conserva tal cual, sin interpretarlo (D113). El proceso que la produce valida que todo comando o ruta del bloque aparezca igual en el original.
-
-#### Response `200`
-| Campo | Tipo | Qué es |
-|---|---|---|
-| `test_id` | uuid | |
-| `measured_at` | datetime \| null | Nulo si no hay corrida (y entonces `items: []`) |
-| `items[].id` | uuid | |
-| `items[].title` | string | La comprobación en positivo («lo que debería cumplirse») |
-| `items[].severity` | enum `severity` \| null | Nulo cuando quien midió no califica sus checks (servidores, D113) |
-| `items[].resources[]` | `{ name, uid, region }` | Hasta 50 recursos por comprobación |
-| `items[].resources_total` | integer | Cuántos recursos son en total |
-| `items[].remediation` | `{ text, language, is_ai_generated }` \| null | La guía de corrección de esa comprobación, igual para todos los recursos; `null` si no hay una que se pueda mostrar |
-
-```json
-{
-  "statusCode": 200,
-  "message": "finding.list",
-  "data": {
-    "test_id": "21ab…",
-    "measured_at": "2026-10-22T23:40:00Z",
-    "items": [
-      {
-        "id": "5c1e…",
-        "title": "IAM Access Analyzer está habilitado",
-        "severity": "high",
-        "resources": [ { "name": "analizador-principal", "uid": "arn:aws:accessanalyzer:us-east-1:123456789012:analyzer/…", "region": "us-east-1" } ],
-        "resources_total": 1,
-        "remediation": { "text": "Habilita IAM Access Analyzer en todas las cuentas y regiones activas…", "language": "es", "is_ai_generated": true }
-      }
-    ],
-    "page": 1, "page_size": 25, "total": 1, "total_pages": 1
-  }
-}
-```
-
-#### Reglas
-- **Idioma y procedencia.** Sale en el idioma de la sesión. El catálogo trae el texto original en inglés; Monkey lo **traduce con IA** (`is_ai_generated: true`, la pantalla lo etiqueta como traducción automática hasta que alguien la revise). Si un check aún no tiene traducción, sale el original con `language: "en"`.
-- **Nada nombra al motor (D70).** Ningún identificador del motor sale (ni el código del check ni el tipo de recurso del motor). Un título o una guía que nombre al proveedor se omite (`null`, y el título cae a un texto neutro): es una red de seguridad, no una revisión. El mensaje por recurso que escribe el motor (`status_detail`) **no sale**: es texto crudo y en inglés.
+Desde MD-502 es el **mensaje de brecha** (D138, RC-18): ver [`brechas.md`](brechas.md).
 
 ## Errores del módulo
 

@@ -1,0 +1,24 @@
+{
+  "statusCode": 200,
+  "message": "catalog.list",
+  "data": {
+    "items": [
+      {
+        "value": "critical",
+        "label": "Crítica"
+      },
+      {
+        "value": "high",
+        "label": "Alta"
+      },
+      {
+        "value": "medium",
+        "label": "Media"
+      },
+      {
+        "value": "low",
+        "label": "Baja"
+      }
+    ]
+  }
+}
