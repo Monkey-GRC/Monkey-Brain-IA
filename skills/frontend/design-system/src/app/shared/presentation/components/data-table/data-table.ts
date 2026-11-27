@@ -1,5 +1,5 @@
 import { NgTemplateOutlet } from '@angular/common';
-import { ChangeDetectionStrategy, Component, Directive, TemplateRef, computed, contentChildren, inject, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Directive, TemplateRef, computed, contentChildren, inject, input, linkedSignal, output, signal } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
 import { PageInfo } from '@shared/domain/models/page-info.model';
 import { Pagination } from '@shared/presentation/components/pagination/pagination';
@@ -111,6 +111,13 @@ export class TableCell {
   readonly template = inject(TemplateRef);
 }
 
+// The detail of a row, drawn under it across every column while its key is `expandedKey` (an accordion: one row open at a time, patrón 19):
+// `<ng-template appRowDetail let-row>…</ng-template>`. The row says `aria-expanded` and its chevron turns down.
+@Directive({ selector: 'ng-template[appRowDetail]' })
+export class TableRowDetail {
+  readonly template = inject(TemplateRef);
+}
+
 // Tabla única del producto: cabecera pequeña en gris, filas con hover en toda la fila, bordes y radios por token, paginación al pie. Las columnas y las celdas son de
 // quien la usa; el estilo, no. Celdas y atajos que se reutilizan: `app-person-cell` (avatar con iniciales + nombre y correo), `app-status-indicator` (badge de estado),
 // `app-tag` (badge de código), `app-table-toolbar` + `app-table-filter` (barra con buscador, filtros y acciones). Opciones: `clickable` (fila activable con clic, Enter o Espacio; con `[focusable]="false"` solo con el mouse, para filas que ya traen su propio enlace o botón: una sola parada de Tab; pone un
@@ -167,6 +174,8 @@ export class DataTable<T> {
   // Por debajo de este ancho de pantalla cada fila pasa a ser una tarjeta apilada (cada celda con el rótulo de su columna encima) y no hay desplazamiento horizontal. Por defecto
   // `lg`; `2xl` para tablas de muchas columnas; `never` la deja siempre como tabla (con ancho mínimo). La variante `compact` nunca se apila.
   readonly stackBelow = input<TableStack>('lg');
+  /** The key of the row whose `appRowDetail` is open (one at a time); `null` = none. */
+  readonly expandedKey = input<string | number | null>(null);
   readonly emptyIcon = input('inbox');
   readonly emptyTitleKey = input('COMMON.TABLE.EMPTY_TITLE');
   readonly emptyDescriptionKey = input<string | null>(null);
@@ -220,6 +229,27 @@ export class DataTable<T> {
   private readonly collapsedGroups = signal<ReadonlySet<string>>(new Set());
 
   private readonly cells = contentChildren(TableCell);
+  private readonly detail = contentChildren(TableRowDetail);
+  protected readonly detailTpl = computed(() => this.detail()[0]?.template ?? null);
+
+  // The rows whose detail was opened at least once: their content stays drawn so closing can animate too.
+  private readonly opened = linkedSignal<string | number | null, ReadonlySet<string | number>>({
+    source: this.expandedKey,
+    computation: (key, prev) => {
+      const seen = new Set(prev?.value ?? []);
+      if (key !== null) seen.add(key);
+      return seen;
+    },
+  });
+
+  protected isExpanded(row: T): boolean {
+    const key = this.expandedKey();
+    return key !== null && !!this.detailTpl() && this.rowKey()(row) === key;
+  }
+
+  protected wasOpened(row: T): boolean {
+    return this.opened().has(this.rowKey()(row));
+  }
 
   protected isCollapsed(key: string): boolean {
     return this.collapsible() && this.collapsedGroups().has(key);

@@ -1,7 +1,7 @@
 ---
 id: design-system-patterns
 name: Patrones de composición de pantallas (Admin y Platform)
-description: Catálogo obligatorio de las 18 composiciones de pantalla (encabezado, tabla, panel de detalle, tarjeta, metadatos, historial, indicadores, formulario, avisos…), con anatomía, estados, archivo canónico del que se copia y errores ya marcados. Leer antes de escribir o rediseñar una pantalla.
+description: Catálogo obligatorio de las 19 composiciones de pantalla (encabezado, tabla, panel de detalle, tarjeta, metadatos, historial, indicadores, formulario, avisos…), con anatomía, estados, archivo canónico del que se copia y errores ya marcados. Leer antes de escribir o rediseñar una pantalla.
 type: skill
 status: APROBADO por Rod el 2026-11-27 (MD-533). Obligatorio.
 ---
@@ -85,6 +85,7 @@ Lo construye `frontend-design` con su ticket; hasta entonces nadie lo imita con 
 | 16 | Lista de filas de acción o de ajuste | `team-people.html:212-275` |
 | 17 | Barra de selección en lote | **fuera del catálogo (D6): preguntar** |
 | 18 | Visor de archivo | `document-reader.html:39-76` |
+| 19 | Modal auxiliar sobre un panel de detalle | `test-findings.html` |
 
 ## 1. Encabezado de página
 
@@ -286,5 +287,14 @@ Sin versión aprobada: hoy hay tres recetas distintas (`services-list.html:35-43
 - **Estados:** cargando (`app-skeleton shape="block" height="70vh"`), PDF, imagen, solo descarga, error (`div[role=alert].flex flex-col items-center gap-3 p-6 text-center text-sm text-ink-muted` + `mk-btn-secondary-sm`), enlace vencido.
 - **Referencia:** `P:features/documents/presentation/views/document-reader/document-reader.html:39-76`. Dentro de un modal: `P:features/compliance/presentation/components/control-evidence/control-evidence.html:279-304`.
 - **Errores:** E3, E9.
+
+## 19. Modal auxiliar sobre un panel de detalle
+
+Aprobado por Rod el 2026-11-27 (MD-502).
+
+- **Cuándo:** una fila del panel tiene una lista con detalle propio que, desplegada dentro, anidaría tres cajas (las brechas de una prueba). **No:** un detalle corto (patrón 9) ni un formulario (patrón 8).
+- **Anatomía:** en la fila, enlace `button.mk-link inline-flex items-center gap-1 text-sm underline` con `aria-haspopup="dialog"` y, ya cargados, los contadores (`app-status-indicator`) al lado. El modal es `<app-detail-modal class="text-left" variant="wide" titleKey>`: centrado, `max-w-6xl` y alto fijo, X arriba y «Cerrar» solo a la derecha del pie. `[meta]` lleva el código y el nombre (R8) y, debajo, los contadores. El cuerpo es `<app-data-table [compact] [alignTop] [clickable] [expandedKey] (rowClick)>`, con una fila por ítem y `<ng-template appRowDetail>` como acordeón (una fila abierta a la vez; el detalle va sobre `bg-canvas`, en `grid lg:grid-cols-2` con subtítulos R6c). Al final, «Cargar más» (R5).
+- **Estados:** cargando (`[loading]` de la tabla), vacío (`app-empty-state tableEmpty`), error (patrón 12, panel) y error al cargar más. Al cerrar el modal se cancela lo que esté en curso.
+- **Referencia:** `P:features/compliance/presentation/components/test-findings/test-findings.html` y `P:shared/presentation/components/data-table/data-table.html` (`appRowDetail`).
 
 Las pantallas que hoy no cumplen estas recetas, por receta y con `ruta:línea`, están en [`patterns-pendientes.md`](patterns-pendientes.md).
