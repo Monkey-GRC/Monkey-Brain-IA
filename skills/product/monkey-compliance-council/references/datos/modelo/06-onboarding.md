@@ -266,7 +266,7 @@ erDiagram
         string app_client_id "Microsoft 365 (D154): el ID de la aplicación del cliente, no es secreto"
         text certificate_pem "Microsoft 365 (D154): solo la parte PÚBLICA del certificado"
         string certificate_thumbprint "Microsoft 365: huella SHA-1 del certificado, no es secreto"
-        datetime certificate_expires_at "Microsoft 365: vencimiento del certificado (DT-130)"
+        datetime certificate_expires_at "Microsoft 365: vencimiento del certificado (DT-137)"
         datetime inventory_at "último descubrimiento de activos (D59)"
         text encrypted_credentials "cifrado AES-256-GCM, nunca se devuelve; en Microsoft 365, la clave privada del certificado"
         boolean is_active

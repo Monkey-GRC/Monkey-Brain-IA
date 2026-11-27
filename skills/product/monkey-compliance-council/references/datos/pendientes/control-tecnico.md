@@ -27,7 +27,7 @@ cálculo de cobertura en nube. **B sí afecta a Cumplimiento** (2026-11-26): de 
 2. Permisos mínimos que se piden al cliente y quién los crea.
 3. ¿Dónde corre el motor? Hoy en el mismo servidor que la sonda y con llaves del cliente guardadas allí.
 4. Frecuencia, duración y coste en llamadas a la API (`ac_01` fija 6-24 h).
-5. ¿Azure y GCP producen el mismo formato de salida y alguien los probó? *(Medido para GCP el 2026-11-12: mismo formato, ver `cruce-nube-gcp.md`. Azure sigue sin probar.)* *(Microsoft 365 usa otro proveedor del motor, `m365`: su salida es la misma OCSF y solo se leyó el código del motor el 2026-11-22; falta medirla con un tenant real, `DT-131`.)*
+5. ¿Azure y GCP producen el mismo formato de salida y alguien los probó? *(Medido para GCP el 2026-11-12: mismo formato, ver `cruce-nube-gcp.md`. Azure sigue sin probar.)* *(Microsoft 365 usa otro proveedor del motor, `m365`: su salida es la misma OCSF y solo se leyó el código del motor el 2026-11-22; falta medirla con un tenant real, `DT-138`.)*
 
 **D. Catálogo y mapeo**
 1. ~~¿Se cargan al catálogo los 70 checks, o solo los que el comité elija?~~ **Respondida por la VF18 (D129):** se carga el catálogo completo (1.621 checks) y solo cuentan los vinculados en `TEST_CHECKS`.

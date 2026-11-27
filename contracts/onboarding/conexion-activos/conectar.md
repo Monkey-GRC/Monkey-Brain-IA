@@ -385,9 +385,9 @@ Al declararlo, Monkey **genera el certificado de la conexión** (RSA 2048 autofi
 ```
 
 > - El script lo ejecuta un **administrador global** del tenant. Comprueba que la sesión sea la del tenant declarado y crea la aplicación «Monkey (solo lectura)» en **su** Entra, le sube el certificado público, le concede **solo permisos de aplicación de lectura** de Microsoft Graph, da el consentimiento del administrador e imprime el **ID de la aplicación**. Es idempotente: correrlo dos veces reutiliza la aplicación y no duplica nada.
-> - Un permiso que el tenant no ofrezca se omite y se avisa; no detiene el alta. Exchange y Teams (PowerShell) no se piden en esta etapa (`DT-131`).
+> - Un permiso que el tenant no ofrezca se omite y se avisa; no detiene el alta. Exchange y Teams (PowerShell) no se piden en esta etapa (`DT-138`).
 > - El cliente entrega el ID de la aplicación con `PATCH /v1/assets/{id}/connection` y valida como en cualquier conexión de nube. Al validar, el trabajador obtiene un token de la aplicación con el certificado, comprueba el tenant y los permisos; lo que el cliente corrige se señala en `client_id`.
-> - El certificado vence a los 2 años y no hay renovación todavía (`DT-130`).
+> - El certificado vence a los 2 años y no hay renovación todavía (`DT-137`).
 > - El script y los textos nunca nombran al motor de evaluación (D70).
 
 ### PATCH /v1/assets/{id}/connection — Entregar el rol creado

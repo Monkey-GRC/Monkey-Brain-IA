@@ -2,7 +2,7 @@
 
 **Estado:** 2026-11-22. Interno: nombra al motor y **nada de esto sale al cliente** (D70, P14 D3). Es el par de [`cruce-nube-aws.md`](cruce-nube-aws.md) y
 [`cruce-nube-gcp.md`](cruce-nube-gcp.md) para Microsoft 365: el modelo y las reglas son los mismos (D53, D56); este archivo guarda lo **medido** en
-esta plataforma (D154) y qué checks cuentan según el comité. **No se ha escaneado un tenant real todavía** (`DT-131`): lo de aquí sale de la imagen del motor, no de una corrida.
+esta plataforma (D154) y qué checks cuentan según el comité. **No se ha escaneado un tenant real todavía** (`DT-138`): lo de aquí sale de la imagen del motor, no de una corrida.
 
 ## Qué se midió y cómo
 
@@ -35,7 +35,7 @@ la propuesta por reglas de nombre que este archivo describía se descartó al ca
 Las 14 pruebas: `T-ACT-3-05`, `T-ACT-4-05`, `T-CIF-3-06`, `T-CIF-4-03`, `T-EQU-1-03`, `T-EQU-2-01`, `T-IDA-1-02`, `T-IDA-11-03`, `T-IDA-4-01`,
 `T-IDA-4-04`, `T-IDA-7-03`, `T-MNT-2-06`, `T-MOV-1-01` y `T-TRD-1-04`.
 
-**Versiones distintas.** El trabajador usa la imagen 5.44.0 (144 checks) y el catálogo es el de la 5.45.0 (149). Los 149 tienen título en español; falta comprobar cuántos ejecuta la imagen en uso (`DT-131`).
+**Versiones distintas.** El trabajador usa la imagen 5.44.0 (144 checks) y el catálogo es el de la 5.45.0 (149). Los 149 tienen título en español; falta comprobar cuántos ejecuta la imagen en uso (`DT-138`).
 
 ## Evaluar sin entregar la llave al motor (D156; comprobado con un tenant real el 2026-11-25)
 
@@ -47,7 +47,7 @@ permisos temporales de esa organización** (Graph, Exchange Online y Teams), ped
 **Qué no demuestra:** es un solo tenant; el consentimiento con una aplicación única no se ha probado; el arranque depende de partes internas del motor (falla en voz alta si cambian) y habría que
 mantenerlo en cada actualización; los permisos duran cerca de 1 hora. Ya es parte del trabajador (D156); la forma de autorizar la conexión aún no cambia.
 
-## Lo que no se sabe todavía (`DT-131`)
+## Lo que no se sabe todavía (`DT-138`)
 
 - Qué devuelve el motor en un tenant real: formato exacto de `resources[].uid` en los checks de tenant, cuántos checks quedan `not_applicable` por licencia (los de PIM y revisión de accesos exigen Entra ID P2) y si algún campo difiere del OCSF de AWS y GCP (el parser falla en voz alta, DT-50).
 - Si, con solo los permisos de Microsoft Graph, el motor omite sin ruido los checks de Exchange y Teams (PowerShell) o los reporta con error.
@@ -59,5 +59,5 @@ mantenerlo en cada actualización; los permisos duran cerca de 1 hora. Ya es par
 - **Probar con un tenant de Microsoft 365** y ajustar lo que falle; luego pasar la plataforma a `available` (una migración de datos aparte).
 - **Medir la cobertura real** de las 14 pruebas del comité en ese tenant (con solo Microsoft Graph pueden faltar checks).
 - **Alinear la versión del motor** con la del libro (5.45.0).
-- **Renovación del certificado** antes de que venza (`DT-130`).
+- **Renovación del certificado** antes de que venza (`DT-137`).
 - **Exchange y Teams** (PowerShell): el script de alta ya soporta `MONKEY_POWERSHELL=1`; falta decidir si se activan y medir su cobertura.

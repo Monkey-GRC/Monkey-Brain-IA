@@ -139,7 +139,7 @@ Parches vigentes de [Control técnico](../arquitectura/control-tecnico/README.md
 - **Qué lo cierra:** Conectar una cuenta de AWS distinta con la plantilla `MonkeyReadOnly` y validar y evaluar de punta a punta
 
 
-### DT-130 · El certificado de una conexión de Microsoft 365 vence a los 2 años y no hay renovación
+### DT-137 · El certificado de una conexión de Microsoft 365 vence a los 2 años y no hay renovación
 
 🟠 Importante
 
@@ -147,7 +147,7 @@ Parches vigentes de [Control técnico](../arquitectura/control-tecnico/README.md
 - **Por qué:** La primera etapa busca conectar y evaluar; el motor tampoco documenta un procedimiento de renovación.
 - **Qué lo cierra:** Un endpoint para generar un certificado nuevo (con el comando para subirlo a la aplicación sin cortar la conexión), un aviso con antelación (correo y pantalla) y una prueba con un tenant real.
 
-### DT-131 · Microsoft 365 se evalúa solo con Microsoft Graph, y lo construido no se ha probado contra un tenant real
+### DT-138 · Microsoft 365 se evalúa solo con Microsoft Graph, y lo construido no se ha probado contra un tenant real
 
 🟠 Importante
 
