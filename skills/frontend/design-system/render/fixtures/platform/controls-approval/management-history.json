@@ -1,0 +1,123 @@
+{
+  "statusCode": 200,
+  "message": "control.management_history",
+  "data": {
+    "items": [
+      {
+        "id": "4e4e0000-0000-4000-8000-000000000001",
+        "type": "return",
+        "at": "2026-11-24T16:20:00Z",
+        "actor": {
+          "id": "0b6f6c2e-6a1f-4e57-9a51-6f3f1d2a0001",
+          "name": "Valentina",
+          "last_name": "Ríos"
+        },
+        "test": null,
+        "requirement": null,
+        "detail": {
+          "reason": "La revisión trimestral de accesos privilegiados no se ejecutó en el plazo previsto porque el equipo de infraestructura estuvo dedicado a la migración del centro de datos durante todo el mes de octubre. Se adjuntó el acta del comité de cambios que lo justifica, pero falta la evidencia de la revisión de las cuentas de servicio de producción y la firma del dueño del sistema. Por favor completen la revisión de las 14 cuentas pendientes, adjunten el reporte exportado y vuelvan a enviarlo. La revisión"
+        }
+      },
+      {
+        "id": "4e4e0000-0000-4000-8000-000000000002",
+        "type": "plan_registered",
+        "at": "2026-11-23T11:00:00Z",
+        "actor": {
+          "id": "7d2e0000-0000-4000-8000-000000000001",
+          "name": "María",
+          "last_name": "Gómez"
+        },
+        "test": {
+          "id": "33cd0000-0000-4000-8000-000000000001",
+          "code": "T-IAC-12-01",
+          "display_name": "MFA en cuentas privilegiadas"
+        },
+        "requirement": {
+          "id": "a41e0000-0000-4000-8000-000000000002",
+          "code": "IAC-12-L2"
+        },
+        "detail": {
+          "what": "Configurar la autenticación multifactor obligatoria en las 14 cuentas privilegiadas restantes, documentar las excepciones aprobadas por el comité de seguridad, desactivar las cuentas de servicio sin dueño identificado y programar una revisión mensual automática con el reporte exportado al repositorio de evidencias. El equipo de plataforma lo ejecuta en dos fases: primero producción y luego los ambientes de prueba, con una validación cruzada del área de cumplimiento al final de cada fase. Configu"
+        }
+      },
+      {
+        "id": "4e4e0000-0000-4000-8000-000000000003",
+        "type": "not_applicable_requested",
+        "at": "2026-11-22T15:45:00Z",
+        "actor": {
+          "id": "7d2e0000-0000-4000-8000-000000000001",
+          "name": "María",
+          "last_name": "Gómez"
+        },
+        "test": null,
+        "requirement": {
+          "id": "a41e0000-0000-4000-8000-000000000003",
+          "code": "IAC-12-L3"
+        },
+        "detail": {
+          "reason": "El requisito exige revisar los registros de acceso físico al centro de datos, pero el servicio se opera completamente en la nube pública y no tenemos instalaciones propias: el proveedor de infraestructura cubre ese control con su propio informe de auditoría, que adjuntamos en la sección de Documentos. Solicitamos marcarlo como No aplica para este servicio y revisarlo de nuevo si en el futuro se incorpora un centro de datos propio o un espacio de coubicación con equipos de la empresa. El requisit"
+        }
+      },
+      {
+        "id": "4e4e0000-0000-4000-8000-000000000004",
+        "type": "level_proposed",
+        "at": "2026-11-21T09:30:00Z",
+        "actor": {
+          "id": "7d2e0000-0000-4000-8000-000000000001",
+          "name": "María",
+          "last_name": "Gómez"
+        },
+        "test": null,
+        "requirement": null,
+        "detail": {
+          "justification": "El motor sugiere Parcial porque una de las pruebas técnicas quedó en Excepción por un activo sin resultado al cierre de la ventana, pero ese activo es un servidor de pruebas que se dio de baja el 3 de noviembre y ya no forma parte del alcance real del servicio. Las demás pruebas están en Correcto y la revisión manual de accesos se completó con evidencia firmada. Proponemos Adecuado mientras se actualiza el inventario de activos y la sonda deja de reportar el servidor retirado en la próxima corri"
+        }
+      },
+      {
+        "id": "4e4e0000-0000-4000-8000-000000000005",
+        "type": "manual_result",
+        "at": "2026-11-20T17:05:00Z",
+        "actor": {
+          "id": "7d2e0000-0000-4000-8000-000000000001",
+          "name": "María",
+          "last_name": "Gómez"
+        },
+        "test": {
+          "id": "21ab0000-0000-4000-8000-000000000001",
+          "code": "T-IAC-12-02",
+          "display_name": "Revisión de accesos privilegiados"
+        },
+        "requirement": {
+          "id": "a41e0000-0000-4000-8000-000000000002",
+          "code": "IAC-12-L2"
+        },
+        "detail": {
+          "result": "exception",
+          "note": "La revisión trimestral de accesos privilegiados no se ejecutó en el plazo previsto porque el equipo de infraestructura estuvo dedicado a la migración del centro de datos durante todo el mes de octubre. Se adjuntó el acta del comité de cambios que lo justifica, pero falta la evidencia de la revisión de las cuentas de servicio de producción y la firma del dueño del sistema. Por favor completen la revisión de las 14 cuentas pendientes, adjunten el reporte exportado y vuelvan a enviarlo. La revisión"
+        }
+      },
+      {
+        "id": "4e4e0000-0000-4000-8000-000000000006",
+        "type": "occurrence_registered",
+        "at": "2026-11-14T10:10:00Z",
+        "actor": {
+          "id": "c4a10000-0000-4000-8000-000000000002",
+          "name": "Juan",
+          "last_name": "Pérez"
+        },
+        "test": null,
+        "requirement": {
+          "id": "a41e0000-0000-4000-8000-000000000004",
+          "code": "IAC-12-L4"
+        },
+        "detail": {
+          "description": "Alta urgente de una cuenta de soporte para atender el incidente INC-2291."
+        }
+      }
+    ],
+    "page": 1,
+    "page_size": 10,
+    "total": 6,
+    "total_pages": 1
+  }
+}

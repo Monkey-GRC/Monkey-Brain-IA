@@ -95,7 +95,7 @@ De la lectura de los motores: `passed` → PASS · `failed` → FAIL (o FAIL con
 | No evaluado | 0 | Ningún requisito tiene evidencia todavía (estado inicial) | No |
 | Ineficaz | 1 | C% < 40% (PR-02), o no hay ninguna ejecución válida del control en el período | No |
 | Débil | 2 | 40% ≤ C% < 75% (PR-01), o el documento base del control falta, está vencido o no está aprobado (tope R2) | No |
-| Parcial | 3 | 75% ≤ C% < 100%, el documento base aprobado y vigente, y un plan de remediación registrado por cada excepción | No |
+| Parcial | 3 | 75% ≤ C% < 100%, el documento base aprobado y vigente, y **un plan de remediación aprobado y vigente por cada excepción** (MD-529): una prueba en Excepción de un requisito aplicable sin su plan deja el nivel en Débil | No |
 | Adecuado | 4 | C% = 100%: todos los requisitos cumplen y están vigentes; puede tener observaciones | **Sí** |
 | Sólido | 5 | Adecuado, sin observaciones, con 100% de cobertura de activos y evidencia en todas las ventanas del período (o evidencia automática continua) | **Sí** |
 
@@ -103,8 +103,8 @@ De la lectura de los motores: `passed` → PASS · `failed` → FAIL (o FAIL con
 - **R2.** El test documental no sube el nivel por sí solo, pero si el documento base falta, está vencido o no está aprobado, **el nivel máximo es Débil**.
 - **R3.** La escala es interna de Monkey; no reemplaza la opinión del auditor.
 - **R4.** **Un control cumple solo en Adecuado o Sólido.** Cualquier requisito Pendiente, Vencido o No cumple impide el 100%. El cumplimiento es definitivo solo con la aprobación final (D132).
-- **R5.** El evaluador puede cambiar el nivel sugerido solo con justificación escrita y aprobación del `admin_empresa`; Monkey guarda los dos, el sugerido y el final (el evaluador es el responsable del control, D140).
-- **R6.** Dos vistas del mismo control: **a la fecha** (la última ventana) y **del período** (todas las ventanas del período auditado). El período cumple solo si cada ventana tuvo evidencia válida.
+- **R5.** El evaluador puede cambiar el nivel sugerido solo con justificación escrita y aprobación del `admin_empresa`; Monkey guarda los dos, el sugerido y el final (el evaluador es el responsable del control, D140). **Construido (MD-529):** el nivel final **reemplaza** al sugerido en `complies`, el estado de gestión, el rollup de categoría y marco y la cobertura del riesgo. Se puede bajar libremente y moverse dentro del mismo lado (1–3 «no cumple», 4–5 «cumple»), pero nunca cruzar de no cumple a cumple sin el 100 % del motor (R4); bajar de cumple a no cumple le quita las aprobaciones al control. La corrección deja de valer si cambia el nivel sugerido o empieza una ventana nueva del control. Un plan de remediación es de una excepción (una prueba en Excepción) y lo registra quien lleva el control y aprueba el `admin_empresa`.
+- **R6.** Dos vistas del mismo control: **a la fecha** (la última ventana) y **del período** (todas las ventanas del período auditado). El período cumple solo si cada ventana tuvo evidencia válida. **En la vista del período, la corrección aprobada (R5) solo puede bajar el nivel de su ventana; nunca lo sube** (el nivel del período es el peor entre el calculado y el corregido; MD-529).
 
 **El avance de un control es su C%**, y se muestra junto al nivel y a la lista de requisitos que impiden el 100% (REQ-026 se conserva).
 
@@ -132,7 +132,9 @@ Cada control se evalúa por **ventanas de calendario** según su periodicidad (l
 | Trimestral · Semestral | Trimestre (ene–mar…) · semestre calendario | 15 · 20 días antes | Vencido |
 | Anual | 12 meses desde la última ejecución (D140) | 30 días antes | Vencido |
 | Permanente | Continua: resultados automáticos con frescura ≤ PR-05; lo manual del control, con la periodicidad de su documento | Cuando la última recolección supera PR-05 | Evidencia → Desactualizada; test → Pendiente |
-| Cuando sea requerido | Por evento: evidencia de cada evento del período, o una declaración trimestral de «sin ocurrencias» del responsable | 15 días antes del cierre del trimestre | Evento sin evidencia → Excepción; sin declaración → Vencido |
+| Cuando sea requerido | Por evento: evidencia de cada evento (ocurrencia) del período, o una declaración trimestral de «sin ocurrencias» del responsable. **Se mide por trimestre de calendario** (MD-529; solo las pruebas que no son documentales: la documental se decide con su documento): abierto y sin nada o con una ocurrencia sin evidencia, Pendiente; cerrado con una ocurrencia sin evidencia, Excepción, y sin ocurrencias ni declaración, Vencido; con la declaración y ninguna ocurrencia, Correcto | 15 días antes del cierre del trimestre | Evento sin evidencia → Excepción; sin declaración → Vencido |
+
+**«No aplica»** (D135, MD-529): un requisito que el responsable pide y el `admin_empresa` aprueba sale del denominador del C% y de lo que impide el 100 %; es revertible por quien lleva el control, y no se puede dejar sin ningún requisito aplicable. En la vista del período (R6) cada ventana cerrada lee el historial de resultados manuales (`manual_test_results`) y, en un requisito «cuando sea requerido», sus trimestres con sus ocurrencias y declaraciones.
 
 **El período auditado** (G-11) se configura por servicio y marco y en SOC 2 dura **como mínimo 6 meses** (PR-16): solo cuentan las ventanas que caen dentro, y una evidencia fechada fuera no cuenta. La fecha de corte sigue siendo «hoy» (D105). Cada período es una fila con su histórico; al terminar, una tarea diaria abre el siguiente con la misma duración (D145, D148). La periodicidad la cambia el `admin_empresa` por control, para todos sus requisitos (D147); los avisos previos de PR-06 salen como fecha (`alert_at`) y los envía el sistema de notificaciones (MD-515).
 

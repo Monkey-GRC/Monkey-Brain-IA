@@ -1,7 +1,7 @@
 ---
 id: contracts-compliance-approval
 name: Gestión y aprobación del control
-description: Estado de gestión del control, aprobación del responsable y final del admin_empresa, devolución con motivo y resultado de una prueba manual (D132, D140).
+description: Estado de gestión del control, aprobación del responsable y final del admin_empresa, devolución con motivo, resultado de una prueba manual, corrección del nivel (R5), plan de remediación, «No aplica» de un requisito, requisitos por evento, historial y acciones permitidas (D132, D135, D140).
 type: contract
 ---
 
@@ -9,11 +9,11 @@ type: contract
 
 | | |
 |---|---|
-| **Estado** | **ACORDADO** (MD-504, 2026-11-25). Lo dejado fuera (R5, plan de remediación por excepción, declaración trimestral, «No aplica» aprobado) es de MD-529 |
+| **Estado** | **ACORDADO** (MD-504, 2026-11-25) y **ACORDADO y construido (MD-529, 2026-11-26)**: «Lo nuevo de MD-529» (R5, plan de remediación, «No aplica», requisitos por evento, historial y `allowed_actions`) y los cambios marcados «MD-529» en los endpoints de arriba |
 | **App** | Monkey Platform |
-| **Decisiones** | D132 (estados y doble aprobación), D140 puntos 1 y 2 (resultado manual), D130 puntos 4 y 5 (solo `approved` cuenta como cumplido) |
-| **Entidades** | `control_approvals`, `manual_test_results` (`modelo-datos.md` §7) |
-| **Tickets** | MD-504 · pantallas: MD-505 |
+| **Decisiones** | D132 (estados y doble aprobación), D140 puntos 1 y 2 (resultado manual), D130 puntos 4 y 5 (solo `approved` cuenta como cumplido). MD-529: D140 puntos 3 y 4 (R5 y plan de remediación), D135 y §7 (`No aplica`), D131 punto 3 (por evento) |
+| **Entidades** | `control_approvals`, `manual_test_results` (`modelo-datos.md` §7); MD-529: `control_level_overrides`, `remediation_plans`, `requirement_applicability_requests`, `requirement_occurrences`, `no_occurrence_declarations` (`datos/modelo/07-cumplimiento.md` §7.3c) |
+| **Tickets** | MD-504 · MD-529 · pantallas: MD-505 |
 
 ## El estado de gestión (`management_state`)
 
@@ -70,7 +70,7 @@ El servidor decide el paso según quién llama:
   `409 OWNER_APPROVAL_REQUIRED`.
 
 **Aprobar** exige que el motor dé el 100 % (`409 CONTROL_NOT_COMPLIANT`). Una segunda aprobación del mismo paso responde
-`409 ALREADY_APPROVED`.
+`409 ALREADY_APPROVED`. **MD-529:** «el motor da el 100 %» es el nivel **final** (con la corrección aprobada, si la hay), y con una propuesta de nivel pendiente no se aprueba: `409 LEVEL_OVERRIDE_PENDING` (se decide primero la propuesta).
 
 **Devolver** se puede desde `pending_approval` u `owner_approved`. Siempre lleva un motivo (`422 reason.required`).
 - El control pasa a `returned` y pierde las aprobaciones vigentes.
@@ -144,4 +144,12 @@ Una evidencia manual cuenta si la cargó el delegado o el responsable, está vig
 ## Cómo cuenta en el resumen
 
 La categoría y el marco (`resumen.md`) cuentan como cumplido solo un control `approved`. Ya no basta con Adecuado o
-Sólido (D130 puntos 4 y 5; cierra esa parte de DT-114).
+Sólido (D130 puntos 4 y 5; cierra esa parte de DT-114). **MD-529:** el nivel que cuenta es el **final** (el sugerido
+por el motor o, si hay una corrección aprobada y vigente, el corregido): lo usan `complies`, el rollup de categoría y marco
+(`resumen.md`) y la cobertura verificada del riesgo (`riesgos.md`).
+
+**En la vista del período, la corrección aprobada solo puede bajar el nivel de su ventana; nunca lo sube.** (MD-529, Rod, 2026-11-26.) (Detalle en [`gestion.md`](gestion.md).) En `technical.period.level` y `period.complies`, para la ventana en que la corrección está vigente el nivel del período es el peor entre el calculado y el corregido; si la corrección sube el nivel, el período la ignora. Como la corrección cae sola al empezar una ventana nueva, no afecta a las demás ventanas del período.
+
+---
+
+**Lo nuevo de MD-529** (R5, plan de remediación, «No aplica», ocurrencias y declaración trimestral, historial de gestión, `allowed_actions`, errores, dudas y ajustes) está en [`gestion.md`](gestion.md).

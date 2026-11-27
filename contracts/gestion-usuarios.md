@@ -33,7 +33,8 @@ type: contract
 | `PUT` | [`/v1/assignments/owner`](#put-v1assignmentsowner--asignar-el-dueño) | `admin_empresa` | Asignar o reasignar el dueño (masivo) |
 | `PUT` | [`/v1/assignments/executor`](#put-v1assignmentsexecutor--asignar-el-ejecutor) | `admin_empresa` (MD-503) · `responsable` (sus controles) | Asignar o quitar el ejecutor (masivo) |
 | `GET` | [`/v1/team/workload`](#get-v1teamworkload--carga-de-trabajo-por-persona) | `admin_empresa` | Controles y avance de cada persona |
-| `GET` | [`/v1/me/work`](#get-v1mework--mi-trabajo) | `responsable` · `delegado` | La lista de trabajo de quien entra |
+| `GET` | [`/v1/users/directory`](cumplimiento/gestion.md#get-v1usersdirectory--las-personas-para-elegir-quién-hace-un-plan) | `admin_empresa` · `responsable` (MD-529) | Las personas activas de la empresa, para elegir quién hace un plan de remediación |
+| `GET` | [`/v1/me/work`](#get-v1mework--mi-trabajo) | `responsable` · `delegado` · `admin_empresa` (MD-529: solo `to_review`, su bandeja «Por aprobar») | La lista de trabajo de quien entra |
 
 ## Quién puede qué
 
@@ -439,15 +440,15 @@ Un grupo tiene un nombre y un líder; cada persona (salvo `admin_empresa` y `aud
 
 | | |
 |---|---|
-| **Quién** | `responsable` · `delegado` |
+| **Quién** | `responsable` · `delegado` · **MD-529:** `admin_empresa`, que solo recibe el bucket `to_review` (su bandeja «Por aprobar») |
 | **Éxito** | `200`, paginada |
-| **Errores** | `403` (`admin_empresa`: ve todo en Cumplimiento) |
+| **Errores** | `403` (`auditor`, `colaborador`, `admin_monkey`) · `422 bucket.invalid` (el `admin_empresa` pide otro bucket que no sea `to_review`) |
 
 #### Parámetros (query)
 | Campo | Tipo | Obligatorio | Regla |
 |---|---|---|---|
 | `page`, `page_size` | integer | no | Ver `conventions.md` |
-| `bucket` | enum `work_bucket` | no | Filtro; `to_review` solo lo recibe el `responsable` |
+| `bucket` | enum `work_bucket` | no | Filtro; `to_review` solo lo reciben el `responsable` y (MD-529) el `admin_empresa`, que **solo** ve ese bucket (sin `bucket` se aplica `to_review`) |
 | `service_id` | uuid | no | Filtro |
 | `q` | string | no | Código o título |
 
@@ -456,11 +457,12 @@ Un grupo tiene un nombre y un líder; cada persona (salvo `admin_empresa` y `aud
 |---|---|---|
 | `items[].client_control_id`, `code`, `title` | uuid, string | |
 | `items[].service` | `{ id, name }` | |
-| `items[].role_in_control` | enum `role_in_control` | `owner` o `executor` |
+| `items[].role_in_control` | enum `role_in_control` | `owner` o `executor`; **MD-529:** `approver` para el `admin_empresa` que decide sobre un control de otro responsable |
 | `items[].bucket` | enum `work_bucket` | |
-| `items[].pending_items` | integer | Lo que falta; incluye las observaciones abiertas del auditor |
+| `items[].pending_items` | integer | Lo que falta; incluye las observaciones abiertas del auditor. En `to_review` (MD-529): cuántas decisiones tiene pendientes de su parte |
+| `items[].pending_decisions` (MD-529) | enum `work_decision_kind`[] | Qué decisiones le tocan en este control (`[]` fuera de `to_review`) |
 | `items[].state` | enum `control_state` | |
-| `progress` | `{ readiness, progress: { done, total }, coverage: { measured, applicable } }` | Avance de **sus** controles, como en el resumen (D122). Con `service_id`, solo los de ese servicio |
+| `progress` | `{ readiness, progress: { done, total }, coverage: { measured, applicable } }` \| null | Avance de **sus** controles, como en el resumen (D122). Con `service_id`, solo los de ese servicio. **MD-529:** `null` para el `admin_empresa` (no hay un avance de «toda la empresa») |
 
 ```json
 { "items": [ { "client_control_id": "e1…", "code": "CC6.1", "title": "…", "service": { "id": "…", "name": "Servicio IA" }, "role_in_control": "executor", "bucket": "to_upload", "pending_items": 2, "state": "incomplete" } ],
@@ -472,7 +474,10 @@ Un grupo tiene un nombre y un líder; cada persona (salvo `admin_empresa` y `aud
 Un control cae en **un solo** `bucket`, el primero que le aplique visto desde quien pregunta:
 
 1. **`rejected`**: alguna evidencia del control que subió la persona (o su delegado, si es el dueño) fue devuelta con el control (`returned_approval_id`, D132) o está vencida, y hay que rehacerla.
-2. **`to_review`** (solo el `responsable` dueño): algo que subió otra persona espera **su** revisión. *(Desde MD-504 ninguna entrega queda esperando revisión —la aprobación es del control—, así que hoy ninguna pieza produce este bucket ni `in_review`.)*
+2. **`to_review`**: espera **su** decisión. *(Desde MD-504 ninguna entrega queda esperando revisión —la aprobación es del control—, así que hasta MD-529 ninguna pieza produce este bucket ni `in_review`.)* **MD-529, por rol** (`pending_decisions`):
+   - **`responsable` dueño:** un control suyo en `pending_approval` (`control_approval`: le toca la primera aprobación) o una prueba manual no documental suya con evidencia vigente que subió su delegado y sin resultado en la ventana (`manual_result`).
+   - **`admin_empresa`** (solo ve este bucket): un control `owner_approved` (`control_approval`, la final); un control en `pending_approval` que él lleva (sin responsable o él mismo, aprobación única); y toda propuesta `pending` y vigente de nivel (`level_override`), plan (`remediation_plan`) o «No aplica» (`not_applicable`) de cualquier control de la empresa.
+   - Lo que el `responsable` propuso y espera la decisión del `admin_empresa`, y un control suyo en `owner_approved`, es `in_review` para él (espera a otro), no `to_review`.
 3. **`to_upload`**: a una prueba que acepta subida de evidencia le falta la entrega, o a una prueba manual que no la acepta le falta el resultado que registra el responsable (`aprobacion.md`).
 4. **`in_review`**: todo está entregado y espera la revisión de otra persona.
 5. **`done`**: nada pendiente de su parte.
@@ -480,10 +485,12 @@ Un control cae en **un solo** `bucket`, el primero que le aplique visto desde qu
 `pending_items` suma lo que falta subir, lo rechazado, lo que tiene que revisar y las **observaciones abiertas del auditor** sobre el control. Las fallas de las pruebas automáticas no son un bucket: se ven en `state` (el estado del control).
 
 Precisiones de la construcción (MD-195):
-- **Qué se cuenta:** la bandeja decide **por prueba** si la pieza es evidencia o resultado manual, una sola por prueba (`DT-120`; MD-499, `domain/work/work-piece.ts`): si la prueba acepta subida (la regla única por `primary_source` y dimensión aplicable de `contracts/cumplimiento/evidencia.md`), cuenta cada evidencia requerida suya, también la de una prueba que aún no tiene ninguna entrega; si no la acepta y el control la resuelve a mano (la documental nunca), cuenta el último resultado manual de la prueba **en ese control** (`manual_test_results`, D140; registrado cuenta como entregado); una prueba que mide la evaluación automática o una integración conectada no es pieza. Ya no se decide por `dimension: policy`.
+- **Qué se cuenta:** la bandeja decide **por prueba** si la pieza es evidencia o resultado manual, una pieza de evidencia y, si no es documental, una de resultado (MD-499, MD-529; `domain/work/work-piece.ts`): si la prueba acepta subida (la regla única por `primary_source` y dimensión aplicable de `contracts/cumplimiento/evidencia.md`), cuenta cada evidencia requerida suya, también la de una prueba que aún no tiene ninguna entrega; si no la acepta y el control la resuelve a mano (la documental nunca), cuenta el último resultado manual de la prueba **en ese control** (`manual_test_results`, D140; registrado cuenta como entregado); una prueba que mide la evaluación automática o una integración conectada no es pieza. Ya no se decide por `dimension: policy`.
 - **Evidencia vencida** (`expired`) cuenta como `rejected` para quien la subió: hay que rehacerla.
 - **Lo de su delegado** cuenta como propio solo para el dueño, a efectos de `rejected`.
 - **`bucket=to_review` pedido por un `delegado`** devuelve la lista vacía, no `422`.
+- **MD-529, por qué `/v1/me/work` y no un endpoint aparte:** es la misma bandeja (un control por fila, con su servicio, su estado y a dónde ir), así que el `admin_empresa` reúsa la lista y el componente de MD-505 en vez de un endpoint nuevo con otra forma; `pending_decisions` dice qué le toca en cada control. El `admin_empresa` no recibe `progress` ni los otros buckets (no es un trabajador de evidencia).
+- **MD-529: pieza de resultado.** Para el `responsable`, la prueba manual no documental que acepta subida cuenta **dos** piezas: la evidencia (del delegado o suya) y el resultado (suyo), por separado; con eso `workPieceOf` deja de dar una sola pieza por prueba (cierra la deuda de la pieza de resultado; [`gestion.md`](cumplimiento/gestion.md#dudas-de-md-529-y-cómo-quedaron)).
 - **Orden de la lista:** por bucket (en el orden de arriba), luego servicio y código.
 - **`progress` de una persona** junta controles de varios servicios y marcos, así que no aplica la regla «marco sin período → `not_measured`» del resumen. Usa los mismos cortes de semáforo, hechos y cobertura sobre los estados que ya calculó el motor.
 - **`unassigned_count`** cuenta los controles vigentes sin dueño activo.

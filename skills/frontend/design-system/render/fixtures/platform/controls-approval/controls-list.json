@@ -1,0 +1,542 @@
+{
+  "statusCode": 200,
+  "message": "control.list",
+  "data": {
+    "items": [
+      {
+        "id": "3f1c0000-0000-4000-8000-000000000001",
+        "code": "IAC-12",
+        "requirement_codes": [
+          "CC6.1",
+          "CC6.2",
+          "CC6.3"
+        ],
+        "own_code": null,
+        "name": "Gestión de accesos de usuarios",
+        "origin": "catalog",
+        "type": "hybrid",
+        "trust_criteria": [
+          "security",
+          "confidentiality"
+        ],
+        "approval": "approved",
+        "readiness": "needs_work",
+        "progress": {
+          "done": 1,
+          "total": 4
+        },
+        "coverage": {
+          "measured": 2,
+          "applicable": 4
+        },
+        "owner": {
+          "id": "7d2e0000-0000-4000-8000-000000000001",
+          "name": "María",
+          "last_name": "Gómez",
+          "role": "responsable"
+        },
+        "executor": {
+          "id": "c4a10000-0000-4000-8000-000000000002",
+          "name": "Juan",
+          "last_name": "Pérez",
+          "role": "delegado"
+        },
+        "management_state": "returned",
+        "management": {
+          "owner_approved_by": null,
+          "owner_approved_at": null,
+          "approved_by": null,
+          "approved_at": null,
+          "returned_reason": "La revisión trimestral de accesos privilegiados no se ejecutó en el plazo previsto porque el equipo de infraestructura estuvo dedicado a la migración del centro de datos durante todo el mes de octubre. Se adjuntó el acta del comité de cambios que lo justifica, pero falta la evidencia de la revisión de las cuentas de servicio de producción y la firma del dueño del sistema. Por favor completen la revisión de las 14 cuentas pendientes, adjunten el reporte exportado y vuelvan a enviarlo. La revisión",
+          "returned_by": {
+            "id": "0b6f6c2e-6a1f-4e57-9a51-6f3f1d2a0001",
+            "name": "Valentina",
+            "last_name": "Ríos"
+          },
+          "returned_at": "2026-11-24T16:20:00Z"
+        },
+        "technical": {
+          "points_of_focus": [
+            "CC6.1-POF1"
+          ],
+          "level": "partial",
+          "level_value": 3,
+          "complies": false
+        }
+      },
+      {
+        "id": "3f1c0000-0000-4000-8000-000000000002",
+        "code": "IAC-15",
+        "requirement_codes": [
+          "CC6.1"
+        ],
+        "own_code": null,
+        "name": "Bloqueo de cuentas tras intentos fallidos",
+        "origin": "catalog",
+        "type": "automated",
+        "trust_criteria": [
+          "security"
+        ],
+        "approval": "approved",
+        "readiness": "ready",
+        "progress": {
+          "done": 2,
+          "total": 2
+        },
+        "coverage": {
+          "measured": 2,
+          "applicable": 2
+        },
+        "owner": {
+          "id": "7d2e0000-0000-4000-8000-000000000001",
+          "name": "María",
+          "last_name": "Gómez",
+          "role": "responsable"
+        },
+        "executor": null,
+        "management_state": "approved",
+        "management": {
+          "owner_approved_by": {
+            "id": "7d2e0000-0000-4000-8000-000000000001",
+            "name": "María",
+            "last_name": "Gómez"
+          },
+          "owner_approved_at": "2026-11-18T10:00:00Z",
+          "approved_by": {
+            "id": "0b6f6c2e-6a1f-4e57-9a51-6f3f1d2a0001",
+            "name": "Valentina",
+            "last_name": "Ríos"
+          },
+          "approved_at": "2026-11-19T09:12:00Z",
+          "returned_reason": null,
+          "returned_by": null,
+          "returned_at": null
+        },
+        "technical": {
+          "points_of_focus": [
+            "CC6.1-POF1"
+          ],
+          "level": "solid",
+          "level_value": 5,
+          "complies": true
+        }
+      },
+      {
+        "id": "3f1c0000-0000-4000-8000-000000000003",
+        "code": "OPS-03",
+        "requirement_codes": [
+          "CC7.1",
+          "CC7.2"
+        ],
+        "own_code": null,
+        "name": "Monitoreo de eventos de seguridad y respuesta a alertas en producción",
+        "origin": "catalog",
+        "type": "hybrid",
+        "trust_criteria": [
+          "security",
+          "availability"
+        ],
+        "approval": "approved",
+        "readiness": "almost_ready",
+        "progress": {
+          "done": 4,
+          "total": 5
+        },
+        "coverage": {
+          "measured": 5,
+          "applicable": 5
+        },
+        "owner": {
+          "id": "c4a10000-0000-4000-8000-000000000003",
+          "name": "Maximiliano Alejandro",
+          "last_name": "Fernández de la Cruz",
+          "role": "responsable"
+        },
+        "executor": {
+          "id": "c4a10000-0000-4000-8000-000000000002",
+          "name": "Juan",
+          "last_name": "Pérez",
+          "role": "delegado"
+        },
+        "management_state": "pending_approval",
+        "management": {
+          "owner_approved_by": null,
+          "owner_approved_at": null,
+          "approved_by": null,
+          "approved_at": null,
+          "returned_reason": null,
+          "returned_by": null,
+          "returned_at": null
+        },
+        "technical": {
+          "points_of_focus": [
+            "CC7.1-POF1"
+          ],
+          "level": "partial",
+          "level_value": 3,
+          "complies": false
+        }
+      },
+      {
+        "id": "3f1c0000-0000-4000-8000-000000000004",
+        "code": "OPS-07",
+        "requirement_codes": [
+          "CC7.3"
+        ],
+        "own_code": null,
+        "name": "Gestión de incidentes",
+        "origin": "catalog",
+        "type": "manual",
+        "trust_criteria": [
+          "security"
+        ],
+        "approval": "approved",
+        "readiness": "needs_work",
+        "progress": {
+          "done": 1,
+          "total": 4
+        },
+        "coverage": {
+          "measured": 2,
+          "applicable": 4
+        },
+        "owner": {
+          "id": "7d2e0000-0000-4000-8000-000000000001",
+          "name": "María",
+          "last_name": "Gómez",
+          "role": "responsable"
+        },
+        "executor": {
+          "id": "c4a10000-0000-4000-8000-000000000002",
+          "name": "Juan",
+          "last_name": "Pérez",
+          "role": "delegado"
+        },
+        "management_state": "in_progress",
+        "management": {
+          "owner_approved_by": null,
+          "owner_approved_at": null,
+          "approved_by": null,
+          "approved_at": null,
+          "returned_reason": null,
+          "returned_by": null,
+          "returned_at": null
+        },
+        "technical": {
+          "points_of_focus": [
+            "CC7.3-POF1"
+          ],
+          "level": "weak",
+          "level_value": 2,
+          "complies": false
+        }
+      },
+      {
+        "id": "3f1c0000-0000-4000-8000-000000000005",
+        "code": "CHG-02",
+        "requirement_codes": [
+          "CC8.1"
+        ],
+        "own_code": null,
+        "name": "Control de cambios en sistemas productivos",
+        "origin": "catalog",
+        "type": "hybrid",
+        "trust_criteria": [
+          "security",
+          "integrity"
+        ],
+        "approval": "approved",
+        "readiness": "almost_ready",
+        "progress": {
+          "done": 3,
+          "total": 4
+        },
+        "coverage": {
+          "measured": 4,
+          "applicable": 4
+        },
+        "owner": {
+          "id": "c4a10000-0000-4000-8000-000000000003",
+          "name": "Maximiliano Alejandro",
+          "last_name": "Fernández de la Cruz",
+          "role": "responsable"
+        },
+        "executor": null,
+        "management_state": "owner_approved",
+        "management": {
+          "owner_approved_by": {
+            "id": "c4a10000-0000-4000-8000-000000000003",
+            "name": "Maximiliano Alejandro",
+            "last_name": "Fernández de la Cruz"
+          },
+          "owner_approved_at": "2026-11-25T08:30:00Z",
+          "approved_by": null,
+          "approved_at": null,
+          "returned_reason": null,
+          "returned_by": null,
+          "returned_at": null
+        },
+        "technical": {
+          "points_of_focus": [
+            "CC8.1-POF1"
+          ],
+          "level": "adequate",
+          "level_value": 4,
+          "complies": true
+        }
+      },
+      {
+        "id": "3f1c0000-0000-4000-8000-000000000006",
+        "code": "RSK-01",
+        "requirement_codes": [
+          "CC3.1",
+          "CC3.2"
+        ],
+        "own_code": null,
+        "name": "Evaluación anual de riesgos",
+        "origin": "catalog",
+        "type": "manual",
+        "trust_criteria": [
+          "security"
+        ],
+        "approval": "approved",
+        "readiness": "not_measured",
+        "progress": {
+          "done": 0,
+          "total": 2
+        },
+        "coverage": {
+          "measured": 0,
+          "applicable": 2
+        },
+        "owner": null,
+        "executor": null,
+        "management_state": "non_compliant",
+        "management": {
+          "owner_approved_by": null,
+          "owner_approved_at": null,
+          "approved_by": null,
+          "approved_at": null,
+          "returned_reason": null,
+          "returned_by": null,
+          "returned_at": null
+        },
+        "technical": {
+          "points_of_focus": [
+            "CC3.1-POF1"
+          ],
+          "level": "not_evaluated",
+          "level_value": 0,
+          "complies": false
+        }
+      },
+      {
+        "id": "3f1c0000-0000-4000-8000-000000000007",
+        "code": "BCK-04",
+        "requirement_codes": [
+          "A1.2",
+          "A1.3"
+        ],
+        "own_code": null,
+        "name": "Copias de seguridad y restauración probada",
+        "origin": "catalog",
+        "type": "automated",
+        "trust_criteria": [
+          "availability"
+        ],
+        "approval": "approved",
+        "readiness": "ready",
+        "progress": {
+          "done": 3,
+          "total": 3
+        },
+        "coverage": {
+          "measured": 3,
+          "applicable": 3
+        },
+        "owner": {
+          "id": "7d2e0000-0000-4000-8000-000000000001",
+          "name": "María",
+          "last_name": "Gómez",
+          "role": "responsable"
+        },
+        "executor": {
+          "id": "c4a10000-0000-4000-8000-000000000002",
+          "name": "Juan",
+          "last_name": "Pérez",
+          "role": "delegado"
+        },
+        "management_state": "approved",
+        "management": {
+          "owner_approved_by": {
+            "id": "7d2e0000-0000-4000-8000-000000000001",
+            "name": "María",
+            "last_name": "Gómez"
+          },
+          "owner_approved_at": "2026-11-10T10:00:00Z",
+          "approved_by": {
+            "id": "0b6f6c2e-6a1f-4e57-9a51-6f3f1d2a0001",
+            "name": "Valentina",
+            "last_name": "Ríos"
+          },
+          "approved_at": "2026-11-11T09:12:00Z",
+          "returned_reason": null,
+          "returned_by": null,
+          "returned_at": null
+        },
+        "technical": {
+          "points_of_focus": [
+            "A1.2-POF1"
+          ],
+          "level": "adequate",
+          "level_value": 4,
+          "complies": true
+        }
+      },
+      {
+        "id": "3f1c0000-0000-4000-8000-000000000008",
+        "code": "ENC-02",
+        "requirement_codes": [
+          "CC6.7",
+          "C1.1"
+        ],
+        "own_code": null,
+        "name": "Cifrado de datos en tránsito y en reposo",
+        "origin": "catalog",
+        "type": "automated",
+        "trust_criteria": [
+          "confidentiality",
+          "security"
+        ],
+        "approval": "approved",
+        "readiness": "needs_work",
+        "progress": {
+          "done": 1,
+          "total": 3
+        },
+        "coverage": {
+          "measured": 3,
+          "applicable": 3
+        },
+        "owner": {
+          "id": "7d2e0000-0000-4000-8000-000000000001",
+          "name": "María",
+          "last_name": "Gómez",
+          "role": "responsable"
+        },
+        "executor": null,
+        "management_state": "non_compliant",
+        "management": {
+          "owner_approved_by": null,
+          "owner_approved_at": null,
+          "approved_by": null,
+          "approved_at": null,
+          "returned_reason": null,
+          "returned_by": null,
+          "returned_at": null
+        },
+        "technical": {
+          "points_of_focus": [
+            "CC6.7-POF1"
+          ],
+          "level": "ineffective",
+          "level_value": 1,
+          "complies": false
+        }
+      },
+      {
+        "id": "3f1c0000-0000-4000-8000-000000000009",
+        "code": "VEN-05",
+        "requirement_codes": [
+          "CC9.2"
+        ],
+        "own_code": null,
+        "name": "Evaluación de proveedores críticos",
+        "origin": "catalog",
+        "type": "manual",
+        "trust_criteria": [
+          "security"
+        ],
+        "approval": "approved",
+        "readiness": "needs_work",
+        "progress": {
+          "done": 0,
+          "total": 2
+        },
+        "coverage": {
+          "measured": 1,
+          "applicable": 2
+        },
+        "owner": null,
+        "executor": null,
+        "management_state": "in_progress",
+        "management": {
+          "owner_approved_by": null,
+          "owner_approved_at": null,
+          "approved_by": null,
+          "approved_at": null,
+          "returned_reason": null,
+          "returned_by": null,
+          "returned_at": null
+        },
+        "technical": {
+          "points_of_focus": [
+            "CC9.2-POF1"
+          ],
+          "level": "weak",
+          "level_value": 2,
+          "complies": false
+        }
+      },
+      {
+        "id": "3f1c0000-0000-4000-8000-000000000010",
+        "code": "C01",
+        "requirement_codes": [],
+        "own_code": "C01",
+        "name": "Revisión trimestral de proveedores de pago con acceso a datos de tarjetahabientes",
+        "origin": "own",
+        "type": "manual",
+        "trust_criteria": [
+          "security"
+        ],
+        "approval": "approved",
+        "readiness": "not_measured",
+        "progress": {
+          "done": 0,
+          "total": 1
+        },
+        "coverage": {
+          "measured": 0,
+          "applicable": 1
+        },
+        "owner": {
+          "id": "c4a10000-0000-4000-8000-000000000002",
+          "name": "Juan",
+          "last_name": "Pérez",
+          "role": "delegado"
+        },
+        "executor": null,
+        "management_state": "non_compliant",
+        "management": {
+          "owner_approved_by": null,
+          "owner_approved_at": null,
+          "approved_by": null,
+          "approved_at": null,
+          "returned_reason": null,
+          "returned_by": null,
+          "returned_at": null
+        },
+        "technical": {
+          "points_of_focus": [],
+          "level": "not_evaluated",
+          "level_value": 0,
+          "complies": false
+        }
+      }
+    ],
+    "page": 1,
+    "page_size": 25,
+    "total": 10,
+    "total_pages": 1
+  }
+}

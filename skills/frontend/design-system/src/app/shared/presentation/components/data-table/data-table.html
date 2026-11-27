@@ -1,8 +1,9 @@
 <ng-template #rowTpl let-row>
   <tr
-    class="transition hover:bg-tint focus-visible:bg-tint focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-action"
+    class="transition data-clickable:hover:bg-tint focus-visible:bg-tint focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-action"
     [class]="s().row"
     [class.cursor-pointer]="clickable()"
+    [attr.data-clickable]="clickable() ? '' : null"
     [attr.tabindex]="isFocusable() ? 0 : null"
     [attr.aria-label]="isFocusable() ? labelOf(row) || null : null"
     [attr.aria-describedby]="isFocusable() ? openHintId : null"
@@ -33,11 +34,17 @@
   </tr>
 </ng-template>
 
-<div class="overflow-hidden mk-surface">
+<span class="sr-only" role="status" aria-live="polite" data-table-status>@if (ownBar()) {{{ 'COMMON.LOADING' | translate }}}</span>
+<!-- `relative`: the load bar is drawn over the top edge of the table (absolute), so it appearing or going never moves the table. -->
+<div class="relative overflow-hidden mk-surface">
+  @if (ownBar()) {
+    <app-load-progress class="pointer-events-none absolute inset-x-0 top-0 z-10" data-table-progress />
+  }
   @if (isFocusable()) {
     <span [id]="openHintId" class="sr-only">{{ 'COMMON.TABLE.OPEN_DETAIL' | translate }}</span>
   }
-  <div class="overflow-x-auto">
+  <!-- `relative`: an absolutely positioned child (the `sr-only` header texts) scrolls and clips with the table; without it, it escapes and widens the page. -->
+  <div class="relative overflow-x-auto">
     <table class="w-full text-left text-sm" [class]="s().table" [attr.aria-busy]="loading()">
       <caption class="sr-only">{{ captionKey() | translate }}</caption>
       <thead [class]="hideHeader() ? 'sr-only' : s().head">
@@ -154,3 +161,7 @@
     <app-pagination class="block border-t border-line" [page]="p" [pageSizes]="pageSizes()" (pageChange)="pageChange.emit($event)" (pageSizeChange)="pageSizeChange.emit($event)" />
   }
 </div>
+<!-- «This may take a few seconds»: below the table, in a slot reserved while it loads; it never covers the header or a row (MD-505). -->
+@if (ownBar()) {
+  <app-slow-load-note [announce]="true" data-table-slow />
+}

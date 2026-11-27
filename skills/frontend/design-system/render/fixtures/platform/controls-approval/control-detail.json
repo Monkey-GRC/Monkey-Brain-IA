@@ -1,0 +1,649 @@
+{
+  "statusCode": 200,
+  "message": "control.read",
+  "data": {
+    "id": "3f1c0000-0000-4000-8000-000000000001",
+    "code": "IAC-12",
+    "requirement_codes": [
+      "CC6.1",
+      "CC6.2",
+      "CC6.3"
+    ],
+    "own_code": null,
+    "name": "Gestión de accesos de usuarios",
+    "origin": "catalog",
+    "type": "hybrid",
+    "trust_criteria": [
+      "security",
+      "confidentiality"
+    ],
+    "approval": "approved",
+    "readiness": "needs_work",
+    "progress": {
+      "done": 1,
+      "total": 4
+    },
+    "coverage": {
+      "measured": 2,
+      "applicable": 4
+    },
+    "owner": {
+      "id": "7d2e0000-0000-4000-8000-000000000001",
+      "name": "María",
+      "last_name": "Gómez",
+      "role": "responsable"
+    },
+    "executor": {
+      "id": "c4a10000-0000-4000-8000-000000000002",
+      "name": "Juan",
+      "last_name": "Pérez",
+      "role": "delegado"
+    },
+    "management_state": "returned",
+    "service_id": "55aa0000-0000-4000-8000-000000000001",
+    "interpretation": {
+      "text": "Los accesos se otorgan y retiran con el formulario de TI; las cuentas privilegiadas exigen MFA y se revisan cada trimestre con el dueño de cada sistema.",
+      "is_customized": true
+    },
+    "dimensions": [
+      {
+        "dimension": "policy",
+        "applies": true,
+        "type": "manual",
+        "reason_not_applicable": null
+      },
+      {
+        "dimension": "cloud",
+        "applies": true,
+        "type": "automated",
+        "reason_not_applicable": null
+      },
+      {
+        "dimension": "process",
+        "applies": true,
+        "type": "manual",
+        "reason_not_applicable": null
+      },
+      {
+        "dimension": "database",
+        "applies": false,
+        "type": null,
+        "reason_not_applicable": "No operamos bases de datos propias: la base es un servicio administrado."
+      }
+    ],
+    "evidence": [
+      {
+        "requirement_id": "e07a0000-0000-4000-8000-000000000001",
+        "description": "Política de control de accesos aprobada",
+        "responsible": {
+          "id": "c9d00000-0000-4000-8000-000000000001",
+          "type": "compliance",
+          "person_name": "Marta Ruiz"
+        },
+        "latest_submission": {
+          "id": "b3100000-0000-4000-8000-000000000001",
+          "version": 2,
+          "evidence_state": "pending"
+        }
+      }
+    ],
+    "causes": [
+      {
+        "id": "7c2e0000-0000-4000-8000-000000000001",
+        "code": "F012",
+        "name": "Cuentas sin dueño tras una salida de personal"
+      }
+    ],
+    "failing": [
+      {
+        "dimension": "cloud",
+        "affected": [
+          {
+            "kind": "asset",
+            "id": "8f100000-0000-4000-8000-000000000001",
+            "name": "cuenta-produccion-pagos"
+          }
+        ]
+      },
+      {
+        "dimension": "process",
+        "affected": [
+          {
+            "kind": "test",
+            "id": "21ab0000-0000-4000-8000-000000000001",
+            "display_name": "Revisión de accesos privilegiados"
+          }
+        ]
+      }
+    ],
+    "evidence_tests": [
+      {
+        "test_id": "21ab0000-0000-4000-8000-000000000001",
+        "test_code": "T-IAC-12-02",
+        "display_name": "Revisión de accesos privilegiados",
+        "dimension": "process",
+        "status": "exception",
+        "evidence_fallback": false,
+        "requirement_id": null,
+        "control_requirement_id": "a41e0000-0000-4000-8000-000000000002"
+      },
+      {
+        "test_id": "21ab0000-0000-4000-8000-000000000002",
+        "test_code": "T-IAC-12-03",
+        "display_name": "Solicitudes de acceso aprobadas",
+        "dimension": "process",
+        "status": "correct",
+        "evidence_fallback": false,
+        "requirement_id": null,
+        "control_requirement_id": "a41e0000-0000-4000-8000-000000000001"
+      },
+      {
+        "test_id": "21ab0000-0000-4000-8000-000000000003",
+        "test_code": "T-IAC-12-04",
+        "display_name": "Revisión de registros de acceso físico",
+        "dimension": "process",
+        "status": "pending",
+        "evidence_fallback": false,
+        "requirement_id": null,
+        "control_requirement_id": "a41e0000-0000-4000-8000-000000000003"
+      },
+      {
+        "test_id": "21ab0000-0000-4000-8000-000000000004",
+        "test_code": "T-IAC-12-05",
+        "display_name": "Altas y bajas urgentes justificadas",
+        "dimension": "process",
+        "status": "pending",
+        "evidence_fallback": false,
+        "requirement_id": null,
+        "control_requirement_id": "a41e0000-0000-4000-8000-000000000004"
+      }
+    ],
+    "management": {
+      "owner_approved_by": null,
+      "owner_approved_at": null,
+      "approved_by": null,
+      "approved_at": null,
+      "returned_reason": "La revisión trimestral de accesos privilegiados no se ejecutó en el plazo previsto porque el equipo de infraestructura estuvo dedicado a la migración del centro de datos durante todo el mes de octubre. Se adjuntó el acta del comité de cambios que lo justifica, pero falta la evidencia de la revisión de las cuentas de servicio de producción y la firma del dueño del sistema. Por favor completen la revisión de las 14 cuentas pendientes, adjunten el reporte exportado y vuelvan a enviarlo. La revisión",
+      "returned_by": {
+        "id": "0b6f6c2e-6a1f-4e57-9a51-6f3f1d2a0001",
+        "name": "Valentina",
+        "last_name": "Ríos"
+      },
+      "returned_at": "2026-11-24T16:20:00Z",
+      "allowed_actions": [
+        "return",
+        "decide_level",
+        "decide_plan",
+        "decide_not_applicable"
+      ],
+      "level": {
+        "suggested": "partial",
+        "final": "partial",
+        "is_corrected": false,
+        "allowed_levels": [
+          "not_evaluated",
+          "ineffective",
+          "weak",
+          "partial",
+          "adequate"
+        ]
+      },
+      "level_override": {
+        "id": "7a7a0000-0000-4000-8000-000000000001",
+        "control_id": "3f1c0000-0000-4000-8000-000000000001",
+        "suggested_level": "partial",
+        "proposed_level": "adequate",
+        "justification": "El motor sugiere Parcial porque una de las pruebas técnicas quedó en Excepción por un activo sin resultado al cierre de la ventana, pero ese activo es un servidor de pruebas que se dio de baja el 3 de noviembre y ya no forma parte del alcance real del servicio. Las demás pruebas están en Correcto y la revisión manual de accesos se completó con evidencia firmada. Proponemos Adecuado mientras se actualiza el inventario de activos y la sonda deja de reportar el servidor retirado en la próxima corri",
+        "status": "pending",
+        "is_valid": true,
+        "proposed_by": {
+          "id": "7d2e0000-0000-4000-8000-000000000001",
+          "name": "María",
+          "last_name": "Gómez"
+        },
+        "decided_by": null,
+        "proposed_at": "2026-11-21T09:30:00Z",
+        "decided_at": null,
+        "decision_reason": null
+      },
+      "exceptions": [
+        {
+          "test": {
+            "id": "33cd0000-0000-4000-8000-000000000001",
+            "code": "T-IAC-12-01",
+            "display_name": "MFA en cuentas privilegiadas"
+          },
+          "requirement": {
+            "id": "a41e0000-0000-4000-8000-000000000002",
+            "code": "IAC-12-L2"
+          },
+          "plan": {
+            "id": "9b9b0000-0000-4000-8000-000000000001",
+            "control_id": "3f1c0000-0000-4000-8000-000000000001",
+            "test": {
+              "id": "33cd0000-0000-4000-8000-000000000001",
+              "code": "T-IAC-12-01",
+              "display_name": "MFA en cuentas privilegiadas"
+            },
+            "requirement": {
+              "id": "a41e0000-0000-4000-8000-000000000002",
+              "code": "IAC-12-L2"
+            },
+            "what": "Configurar la autenticación multifactor obligatoria en las 14 cuentas privilegiadas restantes, documentar las excepciones aprobadas por el comité de seguridad, desactivar las cuentas de servicio sin dueño identificado y programar una revisión mensual automática con el reporte exportado al repositorio de evidencias. El equipo de plataforma lo ejecuta en dos fases: primero producción y luego los ambientes de prueba, con una validación cruzada del área de cumplimiento al final de cada fase. Configu",
+            "owner": {
+              "id": "c4a10000-0000-4000-8000-000000000003",
+              "name": "Maximiliano Alejandro",
+              "last_name": "Fernández de la Cruz"
+            },
+            "due_date": "2027-01-15",
+            "is_overdue": false,
+            "status": "pending",
+            "is_valid": true,
+            "proposed_by": {
+              "id": "7d2e0000-0000-4000-8000-000000000001",
+              "name": "María",
+              "last_name": "Gómez"
+            },
+            "proposed_at": "2026-11-23T11:00:00Z",
+            "decided_by": null,
+            "decided_at": null,
+            "decision_reason": null
+          },
+          "allowed_actions": [
+            "decide_plan"
+          ]
+        },
+        {
+          "test": {
+            "id": "21ab0000-0000-4000-8000-000000000001",
+            "code": "T-IAC-12-02",
+            "display_name": "Revisión de accesos privilegiados"
+          },
+          "requirement": {
+            "id": "a41e0000-0000-4000-8000-000000000002",
+            "code": "IAC-12-L2"
+          },
+          "plan": null,
+          "allowed_actions": [
+            "register_plan"
+          ]
+        }
+      ],
+      "requirements": [
+        {
+          "id": "a41e0000-0000-4000-8000-000000000001",
+          "code": "IAC-12-L1",
+          "text": "Los accesos de usuarios se otorgan con una solicitud aprobada por el dueño del sistema y se registran en la herramienta de tickets.",
+          "periodicity": "permanent",
+          "applicability": "applicable",
+          "not_applicable": null,
+          "on_demand": null,
+          "allowed_actions": [
+            "request_not_applicable"
+          ]
+        },
+        {
+          "id": "a41e0000-0000-4000-8000-000000000002",
+          "code": "IAC-12-L2",
+          "text": "Los accesos privilegiados se revisan cada trimestre y las cuentas sin dueño se desactivan.",
+          "periodicity": "quarterly",
+          "applicability": "applicable",
+          "not_applicable": null,
+          "on_demand": null,
+          "allowed_actions": [
+            "request_not_applicable"
+          ]
+        },
+        {
+          "id": "a41e0000-0000-4000-8000-000000000003",
+          "code": "IAC-12-L3",
+          "text": "Los registros de acceso físico al centro de datos se revisan mensualmente.",
+          "periodicity": "monthly",
+          "applicability": "not_applicable_pending",
+          "not_applicable": {
+            "id": "8a8a0000-0000-4000-8000-000000000001",
+            "control_id": "3f1c0000-0000-4000-8000-000000000001",
+            "requirement": {
+              "id": "a41e0000-0000-4000-8000-000000000003",
+              "code": "IAC-12-L3",
+              "text": "Los registros de acceso físico al centro de datos se revisan mensualmente."
+            },
+            "reason": "El requisito exige revisar los registros de acceso físico al centro de datos, pero el servicio se opera completamente en la nube pública y no tenemos instalaciones propias: el proveedor de infraestructura cubre ese control con su propio informe de auditoría, que adjuntamos en la sección de Documentos. Solicitamos marcarlo como No aplica para este servicio y revisarlo de nuevo si en el futuro se incorpora un centro de datos propio o un espacio de coubicación con equipos de la empresa. El requisit",
+            "status": "pending",
+            "requested_by": {
+              "id": "7d2e0000-0000-4000-8000-000000000001",
+              "name": "María",
+              "last_name": "Gómez"
+            },
+            "requested_at": "2026-11-22T15:45:00Z",
+            "decided_by": null,
+            "decided_at": null,
+            "decision_reason": null,
+            "reverted_by": null,
+            "reverted_at": null
+          },
+          "on_demand": null,
+          "allowed_actions": [
+            "decide_not_applicable"
+          ]
+        },
+        {
+          "id": "a41e0000-0000-4000-8000-000000000004",
+          "code": "IAC-12-L4",
+          "text": "Cada alta o baja urgente fuera del proceso se registra como ocurrencia con su justificación.",
+          "periodicity": "on_demand",
+          "applicability": "applicable",
+          "not_applicable": null,
+          "on_demand": {
+            "window_start": "2026-10-01",
+            "window_end": "2026-12-31",
+            "occurrences_count": 3,
+            "occurrences_without_evidence": 1,
+            "has_declaration": false
+          },
+          "allowed_actions": [
+            "register_occurrence",
+            "request_not_applicable"
+          ]
+        }
+      ],
+      "manual_tests": [
+        {
+          "test": {
+            "id": "21ab0000-0000-4000-8000-000000000001",
+            "code": "T-IAC-12-02",
+            "display_name": "Revisión de accesos privilegiados"
+          },
+          "requirement_id": "a41e0000-0000-4000-8000-000000000002",
+          "status": "exception",
+          "accepts_evidence": true,
+          "latest_result": {
+            "result": "exception",
+            "note": "La revisión trimestral de accesos privilegiados no se ejecutó en el plazo previsto porque el equipo de infraestructura estuvo dedicado a la migración del centro de datos durante todo el mes de octubre. Se adjuntó el acta del comité de cambios que lo justifica, pero falta la evidencia de la revisión de las cuentas de servicio de producción y la firma del dueño del sistema. Por favor completen la revisión de las 14 cuentas pendientes, adjunten el reporte exportado y vuelvan a enviarlo. La revisión",
+            "registered_by": {
+              "id": "7d2e0000-0000-4000-8000-000000000001",
+              "name": "María",
+              "last_name": "Gómez"
+            },
+            "registered_at": "2026-11-20T17:05:00Z"
+          },
+          "allowed_actions": [
+            "register_result"
+          ]
+        },
+        {
+          "test": {
+            "id": "21ab0000-0000-4000-8000-000000000002",
+            "code": "T-IAC-12-03",
+            "display_name": "Solicitudes de acceso aprobadas"
+          },
+          "requirement_id": "a41e0000-0000-4000-8000-000000000001",
+          "status": "correct",
+          "accepts_evidence": true,
+          "latest_result": {
+            "result": "correct",
+            "note": null,
+            "registered_by": {
+              "id": "c4a10000-0000-4000-8000-000000000002",
+              "name": "Juan",
+              "last_name": "Pérez"
+            },
+            "registered_at": "2026-11-12T12:00:00Z"
+          },
+          "allowed_actions": [
+            "register_result"
+          ]
+        },
+        {
+          "test": {
+            "id": "21ab0000-0000-4000-8000-000000000003",
+            "code": "T-IAC-12-04",
+            "display_name": "Revisión de registros de acceso físico"
+          },
+          "requirement_id": "a41e0000-0000-4000-8000-000000000003",
+          "status": "pending",
+          "accepts_evidence": true,
+          "latest_result": null,
+          "allowed_actions": [
+            "register_result"
+          ]
+        }
+      ]
+    },
+    "technical": {
+      "points_of_focus": [
+        "CC6.1-POF1",
+        "CC6.2-POF3"
+      ],
+      "level": "partial",
+      "suggested_level": "partial",
+      "level_value": 3,
+      "complies": false,
+      "c_percent": 25.0,
+      "requirements": [
+        {
+          "id": "a41e0000-0000-4000-8000-000000000001",
+          "code": "IAC-12-L1",
+          "text": "Los accesos de usuarios se otorgan con una solicitud aprobada por el dueño del sistema y se registran en la herramienta de tickets.",
+          "type": "operational",
+          "periodicity": "permanent",
+          "suggested_periodicity": "permanent",
+          "periodicity_source": "catalog",
+          "status": "compliant",
+          "tests": [
+            {
+              "test_id": "21ab0000-0000-4000-8000-000000000002",
+              "test_code": "T-IAC-12-03",
+              "display_name": "Solicitudes de acceso aprobadas",
+              "status": "correct",
+              "accepts_evidence": true,
+              "evidence_fallback": false,
+              "window_end": null,
+              "alert_at": null,
+              "checks": null,
+              "asset_coverage": null,
+              "check_links": []
+            }
+          ]
+        },
+        {
+          "id": "a41e0000-0000-4000-8000-000000000002",
+          "code": "IAC-12-L2",
+          "text": "Los accesos privilegiados se revisan cada trimestre y las cuentas sin dueño se desactivan.",
+          "type": "operational",
+          "periodicity": "quarterly",
+          "suggested_periodicity": "quarterly",
+          "periodicity_source": "catalog",
+          "status": "non_compliant",
+          "tests": [
+            {
+              "test_id": "33cd0000-0000-4000-8000-000000000001",
+              "test_code": "T-IAC-12-01",
+              "display_name": "MFA en cuentas privilegiadas",
+              "status": "exception",
+              "accepts_evidence": false,
+              "evidence_fallback": false,
+              "window_end": "2026-12-31",
+              "alert_at": "2026-12-17",
+              "checks": {
+                "direct_pass": 3,
+                "direct_fail": 1,
+                "direct_exception": 0,
+                "no_data": 0,
+                "complementary_fail": 0
+              },
+              "asset_coverage": {
+                "with_result": 4,
+                "in_scope": 4
+              },
+              "check_links": [
+                {
+                  "role": "direct",
+                  "kind": "check",
+                  "check": {
+                    "id": "9f100000-0000-4000-8000-000000000001",
+                    "title": "Asegurar que la MFA esté habilitada para usuarios privilegiados"
+                  },
+                  "module": null,
+                  "failing_assets": null,
+                  "owner": null
+                },
+                {
+                  "role": "dependency",
+                  "kind": "check",
+                  "check": {
+                    "id": "a2b30000-0000-4000-8000-000000000001",
+                    "title": "Bloqueo de cuenta tras intentos fallidos"
+                  },
+                  "module": null,
+                  "failing_assets": null,
+                  "owner": {
+                    "control_id": "3f1c0000-0000-4000-8000-000000000002",
+                    "control_code": "IAC-15",
+                    "test_status": "correct"
+                  }
+                }
+              ]
+            },
+            {
+              "test_id": "21ab0000-0000-4000-8000-000000000001",
+              "test_code": "T-IAC-12-02",
+              "display_name": "Revisión de accesos privilegiados",
+              "status": "exception",
+              "accepts_evidence": true,
+              "evidence_fallback": false,
+              "window_end": "2026-12-31",
+              "alert_at": "2026-12-17",
+              "checks": null,
+              "asset_coverage": null,
+              "check_links": []
+            }
+          ]
+        },
+        {
+          "id": "a41e0000-0000-4000-8000-000000000003",
+          "code": "IAC-12-L3",
+          "text": "Los registros de acceso físico al centro de datos se revisan mensualmente.",
+          "type": "operational",
+          "periodicity": "monthly",
+          "suggested_periodicity": "monthly",
+          "periodicity_source": "catalog",
+          "status": "pending",
+          "tests": [
+            {
+              "test_id": "21ab0000-0000-4000-8000-000000000003",
+              "test_code": "T-IAC-12-04",
+              "display_name": "Revisión de registros de acceso físico",
+              "status": "pending",
+              "accepts_evidence": true,
+              "evidence_fallback": false,
+              "window_end": "2026-11-30",
+              "alert_at": "2026-11-16",
+              "checks": null,
+              "asset_coverage": null,
+              "check_links": []
+            }
+          ]
+        },
+        {
+          "id": "a41e0000-0000-4000-8000-000000000004",
+          "code": "IAC-12-L4",
+          "text": "Cada alta o baja urgente fuera del proceso se registra como ocurrencia con su justificación.",
+          "type": "operational",
+          "periodicity": "on_demand",
+          "suggested_periodicity": "on_demand",
+          "periodicity_source": "catalog",
+          "status": "pending",
+          "tests": [
+            {
+              "test_id": "21ab0000-0000-4000-8000-000000000004",
+              "test_code": "T-IAC-12-05",
+              "display_name": "Altas y bajas urgentes justificadas",
+              "status": "pending",
+              "accepts_evidence": true,
+              "evidence_fallback": false,
+              "window_end": "2026-12-31",
+              "alert_at": null,
+              "checks": null,
+              "asset_coverage": null,
+              "check_links": []
+            }
+          ]
+        }
+      ],
+      "periodicity_change": null,
+      "period": {
+        "level": "partial",
+        "complies": false,
+        "windows": {
+          "total": 6,
+          "with_evidence": 4
+        },
+        "missing": [
+          {
+            "requirement_code": "IAC-12-L2",
+            "window_start": "2026-07-01",
+            "window_end": "2026-09-30"
+          },
+          {
+            "requirement_code": "IAC-12-L3",
+            "window_start": "2026-10-01",
+            "window_end": "2026-10-31"
+          }
+        ]
+      },
+      "tests": [
+        {
+          "test_id": "33cd0000-0000-4000-8000-000000000001",
+          "test_code": "T-IAC-12-01",
+          "display_name": "MFA en cuentas privilegiadas",
+          "display_description": null,
+          "dimension": "cloud",
+          "status": "exception",
+          "accepts_evidence": false,
+          "evidence_fallback": false
+        },
+        {
+          "test_id": "21ab0000-0000-4000-8000-000000000001",
+          "test_code": "T-IAC-12-02",
+          "display_name": "Revisión de accesos privilegiados",
+          "display_description": null,
+          "dimension": "process",
+          "status": "exception",
+          "accepts_evidence": true,
+          "evidence_fallback": false
+        },
+        {
+          "test_id": "21ab0000-0000-4000-8000-000000000002",
+          "test_code": "T-IAC-12-03",
+          "display_name": "Solicitudes de acceso aprobadas",
+          "display_description": null,
+          "dimension": "process",
+          "status": "correct",
+          "accepts_evidence": true,
+          "evidence_fallback": false
+        },
+        {
+          "test_id": "21ab0000-0000-4000-8000-000000000003",
+          "test_code": "T-IAC-12-04",
+          "display_name": "Revisión de registros de acceso físico",
+          "display_description": null,
+          "dimension": "process",
+          "status": "pending",
+          "accepts_evidence": true,
+          "evidence_fallback": false
+        },
+        {
+          "test_id": "21ab0000-0000-4000-8000-000000000004",
+          "test_code": "T-IAC-12-05",
+          "display_name": "Altas y bajas urgentes justificadas",
+          "display_description": null,
+          "dimension": "process",
+          "status": "pending",
+          "accepts_evidence": true,
+          "evidence_fallback": false
+        }
+      ]
+    }
+  }
+}

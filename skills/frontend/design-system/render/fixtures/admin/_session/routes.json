@@ -1,0 +1,5 @@
+[
+  { "method": "GET", "path": "/auth/me", "file": "auth-me.json" },
+  { "method": "POST", "path": "/auth/refresh", "body": { "statusCode": 200, "message": "auth.refreshed", "data": null } },
+  { "method": "PATCH", "path": "/auth/me/language", "status": 204 }
+]

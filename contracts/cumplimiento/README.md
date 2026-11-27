@@ -14,7 +14,8 @@ type: contract
 | Contrato | Qué cubre |
 |---|---|
 | [`controles.md`](controles.md) | Controles: listar, ver, crear uno propio, editar y dar de baja |
-| [`aprobacion.md`](aprobacion.md) | Estado de gestión del control, aprobación del responsable y final, devolución y resultado de una prueba manual (MD-504) |
+| [`aprobacion.md`](aprobacion.md) | Estado de gestión del control, aprobación del responsable y final, devolución y resultado de una prueba manual (MD-504); **MD-529:** corrección del nivel (R5), plan de remediación, «No aplica», ocurrencias y declaración trimestral, historial de gestión y `allowed_actions` |
+| [`gestion.md`](gestion.md) | **MD-529:** corrección del nivel (R5), plan de remediación, «No aplica», ocurrencias y declaración trimestral, historial de gestión y `allowed_actions` (continuación de `aprobacion.md`) |
 | [`riesgos.md`](riesgos.md) | Riesgos y causas, vínculos, evaluación 5×5 y tratamiento |
 | [`resumen.md`](resumen.md) | El resumen del servicio por marco y categoría |
 | [`evidencia.md`](evidencia.md) | Evidencias: subir con huella y versión, descargar con enlace firmado, subir, listar y descargar (la aprobación es del control, `aprobacion.md`) |
@@ -42,6 +43,10 @@ Los cambios de controles, riesgos y causas están en `contracts/cumplimiento/con
 | Ver qué falló y cómo corregirlo en una prueba de nube (hallazgos) | ✓ | ✓ solo la suya | ✓ |
 | Registrar el resultado de una prueba manual (`aprobacion.md`) | ✓ si el control no tiene responsable o es el responsable | ✓ solo el `responsable` dueño (`delegado`: `403`) | `403` |
 | Aprobar o devolver el control (`aprobacion.md`) | ✓ la aprobación final | ✓ solo el `responsable` dueño, la primera (`delegado`: `403`) | `403` |
+| Proponer una corrección de nivel, un plan de remediación o un «No aplica»; declarar «sin ocurrencias» (MD-529) | ✓ solo si lleva el control (directo) | ✓ solo el `responsable` dueño (`delegado`: `403`) | `403` |
+| Decidir esas propuestas (MD-529) | ✓ | `403` | `403` |
+| Registrar una ocurrencia «cuando sea requerido» y subir su evidencia (MD-529) | ✓ | ✓ dueño y ejecutor | `403` |
+| Ver el historial de gestión de un control (MD-529) | ✓ todos | ✓ solo sus controles | ✓ todos |
 | Escribir, editar y cerrar una observación | `403` | `403` | ✓ las suyas |
 | Ver las observaciones | todas | **las de sus controles** (dueño o ejecutor) | todas |
 | Responder una observación | ✓ | ✓ solo de un control suyo | `403` |
