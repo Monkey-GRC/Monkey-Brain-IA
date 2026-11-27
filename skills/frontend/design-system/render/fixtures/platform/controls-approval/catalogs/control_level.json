@@ -1,0 +1,32 @@
+{
+  "statusCode": 200,
+  "message": "catalog.list",
+  "data": {
+    "items": [
+      {
+        "value": "not_evaluated",
+        "label": "No evaluado"
+      },
+      {
+        "value": "ineffective",
+        "label": "Ineficaz"
+      },
+      {
+        "value": "weak",
+        "label": "Débil"
+      },
+      {
+        "value": "partial",
+        "label": "Parcial"
+      },
+      {
+        "value": "adequate",
+        "label": "Adecuado"
+      },
+      {
+        "value": "solid",
+        "label": "Sólido"
+      }
+    ]
+  }
+}

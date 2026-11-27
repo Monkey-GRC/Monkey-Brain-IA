@@ -1,0 +1,20 @@
+{
+  "statusCode": 200,
+  "message": "catalog.list",
+  "data": {
+    "items": [
+      {
+        "value": "correct",
+        "label": "Correcto"
+      },
+      {
+        "value": "observation",
+        "label": "Observación"
+      },
+      {
+        "value": "exception",
+        "label": "Excepción"
+      }
+    ]
+  }
+}

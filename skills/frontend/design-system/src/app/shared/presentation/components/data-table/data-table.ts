@@ -4,7 +4,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { PageInfo } from '@shared/domain/models/page-info.model';
 import { Pagination } from '@shared/presentation/components/pagination/pagination';
 import { EmptyState } from '@shared/presentation/components/empty-state/empty-state';
-import { Skeleton } from '@shared/presentation/components/skeleton/skeleton';
+import { LOAD_REGION, LoadProgress, Skeleton, SlowLoadNote } from '@shared/presentation/components/skeleton/skeleton';
 
 let nextId = 0;
 
@@ -19,6 +19,8 @@ interface StackClasses {
   row: string;
   cell: string;
   pad: string;
+  // The vertical padding of a cell whose content sits at the top (`alignTop`): 16 px from the row's top edge, never glued to the line.
+  padTop: string;
   // Horizontal padding, the SAME for a column's header and its cells (so both start and end at the same x, whatever the alignment).
   padX: string;
   select: string;
@@ -36,6 +38,7 @@ const STACK: Record<TableStack, StackClasses> = {
     row: 'block space-y-3 p-4 lg:table-row lg:space-y-0 lg:p-0',
     cell: 'block lg:table-cell',
     pad: 'lg:h-14 lg:py-2',
+    padTop: 'lg:h-14 lg:py-4 lg:align-top',
     padX: 'lg:px-6',
     select: 'lg:w-12 lg:h-14 lg:px-4 lg:py-2',
     chevron: 'lg:h-14',
@@ -50,6 +53,7 @@ const STACK: Record<TableStack, StackClasses> = {
     row: 'block space-y-3 p-4 2xl:table-row 2xl:space-y-0 2xl:p-0',
     cell: 'block 2xl:table-cell',
     pad: '2xl:h-14 2xl:py-2',
+    padTop: '2xl:h-14 2xl:py-4 2xl:align-top',
     padX: '2xl:px-6',
     select: '2xl:w-12 2xl:h-14 2xl:px-4 2xl:py-2',
     chevron: '2xl:h-14',
@@ -64,6 +68,7 @@ const STACK: Record<TableStack, StackClasses> = {
     row: '',
     cell: '',
     pad: 'h-14 py-2',
+    padTop: 'h-14 py-4 align-top',
     padX: 'px-6',
     select: 'w-12 h-14 px-4 py-2',
     chevron: 'h-14',
@@ -74,7 +79,7 @@ const STACK: Record<TableStack, StackClasses> = {
 };
 
 // La compacta (panel lateral) es una lista corta: nunca se apila, solo quita el ancho mínimo.
-const COMPACT: StackClasses = { ...STACK.never, table: 'min-w-0', pad: 'py-2.5', padX: 'px-3', select: 'w-12 px-4 py-2', chevron: '' };
+const COMPACT: StackClasses = { ...STACK.never, table: 'min-w-0', pad: 'py-2.5', padTop: 'py-2.5 align-top', padX: 'px-3', select: 'w-12 px-4 py-2', chevron: '' };
 
 export interface TableGroup<T> {
   key: string;
@@ -120,7 +125,7 @@ export class TableCell {
 //   </app-data-table>
 @Component({
   selector: 'app-data-table',
-  imports: [NgTemplateOutlet, TranslatePipe, EmptyState, Pagination, Skeleton],
+  imports: [NgTemplateOutlet, TranslatePipe, EmptyState, Pagination, Skeleton, LoadProgress, SlowLoadNote],
   templateUrl: './data-table.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -157,6 +162,8 @@ export class DataTable<T> {
   // misma tabla (mismo borde, hover, fila activable, vacío y carga). Con `hideHeader` el encabezado queda solo para lectores de pantalla (una lista sin títulos de columna).
   readonly compact = input(false);
   readonly hideHeader = input(false);
+  // Rows of several lines (a history, a list with notes): every cell starts at the top of the row, 16 px from its edge, instead of being centred. Without it, centred.
+  readonly alignTop = input(false);
   // Por debajo de este ancho de pantalla cada fila pasa a ser una tarjeta apilada (cada celda con el rótulo de su columna encima) y no hay desplazamiento horizontal. Por defecto
   // `lg`; `2xl` para tablas de muchas columnas; `never` la deja siempre como tabla (con ancho mínimo). La variante `compact` nunca se apila.
   readonly stackBelow = input<TableStack>('lg');
@@ -181,7 +188,11 @@ export class DataTable<T> {
     return p.total > smallest ? p : null;
   });
   protected readonly stacked = computed(() => !this.compact() && this.stackBelow() !== 'never');
-  protected readonly cellPad = computed(() => this.s().pad + ' ' + this.s().padX);
+  protected readonly cellPad = computed(() => (this.alignTop() ? this.s().padTop : this.s().pad) + ' ' + this.s().padX);
+  // Its own load bar, unless it sits inside a `app-skeleton-region` that is already drawing one. `[progress]="false"` turns it off.
+  readonly progress = input(true);
+  private readonly region = inject(LOAD_REGION, { optional: true });
+  protected readonly ownBar = computed(() => this.loading() && this.progress() && !this.region?.drawsBar());
   protected readonly isFocusable = computed(() => this.clickable() && this.focusable());
   protected readonly hasChevron = computed(() => this.clickable() && this.chevron());
   protected readonly columnCount = computed(() => this.columns().length + (this.selectable() ? 1 : 0) + (this.hasChevron() ? 1 : 0));

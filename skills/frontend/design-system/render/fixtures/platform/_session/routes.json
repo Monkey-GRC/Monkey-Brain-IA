@@ -1,0 +1,38 @@
+[
+  {
+    "method": "GET",
+    "path": "/auth/me",
+    "file": "auth-me.json"
+  },
+  {
+    "method": "POST",
+    "path": "/auth/refresh",
+    "body": {
+      "statusCode": 200,
+      "message": "auth.refreshed",
+      "data": null
+    }
+  },
+  {
+    "method": "PATCH",
+    "path": "/auth/me/language",
+    "status": 204
+  },
+  {
+    "method": "GET",
+    "path": "/me/notifications/unread-count",
+    "body": {
+      "statusCode": 200,
+      "message": "notification.unread_count",
+      "data": {
+        "unread_count": 3
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/me/notifications/stream",
+    "contentType": "text/event-stream",
+    "text": "retry: 3600000\nevent: ready\ndata: {\"unread_count\": 3}\n\n"
+  }
+]

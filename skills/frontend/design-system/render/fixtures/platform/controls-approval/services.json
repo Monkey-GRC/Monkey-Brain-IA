@@ -1,0 +1,32 @@
+{
+  "statusCode": 200,
+  "message": "service.list",
+  "data": {
+    "items": [
+      {
+        "id": "55aa0000-0000-4000-8000-000000000001",
+        "name": "Plataforma de pagos",
+        "frameworks": [
+          {
+            "code": "soc2",
+            "status": "active"
+          }
+        ]
+      },
+      {
+        "id": "55aa0000-0000-4000-8000-000000000002",
+        "name": "App móvil de clientes",
+        "frameworks": [
+          {
+            "code": "soc2",
+            "status": "active"
+          }
+        ]
+      }
+    ],
+    "page": 1,
+    "page_size": 100,
+    "total": 2,
+    "total_pages": 1
+  }
+}

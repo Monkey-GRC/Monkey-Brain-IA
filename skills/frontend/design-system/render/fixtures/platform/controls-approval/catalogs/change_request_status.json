@@ -1,0 +1,20 @@
+{
+  "statusCode": 200,
+  "message": "catalog.list",
+  "data": {
+    "items": [
+      {
+        "value": "pending",
+        "label": "Por aprobar"
+      },
+      {
+        "value": "approved",
+        "label": "Aprobada"
+      },
+      {
+        "value": "rejected",
+        "label": "Rechazada"
+      }
+    ]
+  }
+}

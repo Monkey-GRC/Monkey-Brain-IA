@@ -70,7 +70,6 @@ Limitan el producto o al equipo.
 | ID | Qué | Módulo |
 |---|---|---|
 | [DT-124](roles-permisos.md#dt-124--admin_monkey-no-ve-ni-gestiona-los-datos-de-una-empresa) | admin_monkey no ve ni gestiona los datos de una empresa | [Roles y permisos](roles-permisos.md) |
-| [DT-120](cumplimiento.md#dt-120--mi-trabajo-cuenta-una-sola-pieza-por-prueba-manual) | «Mi trabajo» cuenta una sola pieza por prueba manual | [Cumplimiento](cumplimiento.md) |
 | [DT-2](control-tecnico.md#dt-2--n18-y-checks_available-son-constantes) | «n/18» y `checks_available` son constantes | [Control técnico](control-tecnico.md) |
 | [DT-3](onboarding.md#dt-3--ac_04-a-ac_06-se-completaron-por-analogía) | `ac_04` a `ac_06` se completaron por analogía | [Onboarding](onboarding.md) |
 | [DT-4](onboarding.md#dt-4--credenciales-por-conexión-definidas-por-desarrollo) | Credenciales por conexión definidas por desarrollo | [Onboarding](onboarding.md) |
@@ -101,8 +100,7 @@ Limitan el producto o al equipo.
 | [DT-100](catalogo-maestro.md#dt-100--el-catálogo-del-comité-solo-está-en-español) | El catálogo del comité solo está en español | [Catálogo maestro](catalogo-maestro.md) |
 | [DT-71](cumplimiento.md#dt-71--la-lectura-de-controles-fija-valores-que-el-modelo-ya-prevé) | La lectura de controles fija valores que el modelo ya prevé | [Cumplimiento](cumplimiento.md) |
 | [DT-114](cumplimiento.md#dt-114--la-prueba-documental-y-el-documento-base-usan-la-evidencia-subida-mientras-no-exista-documentos) | La prueba documental y el documento base usan la evidencia subida mientras no exista Documentos | [Cumplimiento](cumplimiento.md) |
-| [DT-115](cumplimiento.md#dt-115--los-requisitos-cuando-sea-requerido-no-se-miden-por-trimestre) | Los requisitos «cuando sea requerido» no se miden por trimestre | [Cumplimiento](cumplimiento.md) |
-| [DT-116](cumplimiento.md#dt-116--la-vista-del-período-aproxima-las-ventanas-pasadas-que-no-tienen-historial) | La vista del período aproxima las ventanas pasadas que no tienen historial | [Cumplimiento](cumplimiento.md) |
+| [DT-116](cumplimiento.md#dt-116--la-vista-del-período-da-por-cubiertos-los-vínculos-de-módulo-las-dependencias-y-la-anual) | La vista del período da por cubiertos los vínculos de módulo, las dependencias y la anual | [Cumplimiento](cumplimiento.md) |
 | [DT-76](cumplimiento.md#dt-76--las-plantillas-de-evidencia-del-catálogo-no-dicen-a-qué-prueba-sirve-cada-documento-y-el-estado-documental-por-control-se-apartó-de-rn-13) | Las plantillas de evidencia del catálogo no dicen a qué prueba sirve cada documento, y el estado documental por control se apartó de RN-13 | [Cumplimiento](cumplimiento.md) |
 | [DT-77](onboarding.md#dt-77--evaluar-los-riesgos-antes-de-declarar-activos-se-exige-solo-en-la-pantalla) | Evaluar los riesgos antes de declarar activos se exige solo en la pantalla | [Onboarding](onboarding.md) |
 | [DT-78](control-tecnico.md#dt-78--la-guía-de-corrección-de-una-prueba-técnica-es-una-traducción-automática-sin-revisar-y-el-filtro-del-proveedor-es-una-red-de-seguridad) | La guía de corrección de una prueba técnica es una traducción automática sin revisar, y el filtro del proveedor es una red de seguridad | [Control técnico](control-tecnico.md) |
@@ -119,6 +117,8 @@ Pendientes sin urgencia.
 | ID | Qué | Módulo |
 |---|---|---|
 | [DT-129](cumplimiento.md#dt-129--aprobar-o-registrar-un-resultado-lee-el-servicio-completo-dos-veces) | Aprobar o registrar un resultado lee el servicio completo dos veces | [Cumplimiento](cumplimiento.md) |
+| [DT-130](cumplimiento.md#dt-130--la-bandeja-por-aprobar-del-admin_empresa-carga-todos-los-servicios-y-pagina-en-memoria) | La bandeja «Por aprobar» del admin_empresa carga todos los servicios y pagina en memoria | [Cumplimiento](cumplimiento.md) |
+| [DT-131](cumplimiento.md#dt-131--registrar-una-ocurrencia-no-es-idempotente) | Registrar una ocurrencia no es idempotente | [Cumplimiento](cumplimiento.md) |
 | [DT-128](notificaciones.md#dt-128--los-avisos-evidence_approved-y-evidence_rejected-quedan-sin-emisor) | Los avisos `evidence_approved` y `evidence_rejected` quedan sin emisor | [Notificaciones](notificaciones.md) |
 | [DT-127](cumplimiento.md#dt-127--commoncatalogs-importa-del-dominio-de-la-feature-de-cumplimiento) | `common/catalogs` importa del dominio de la feature de cumplimiento | [Cumplimiento](cumplimiento.md) |
 | [DT-126](control-tecnico.md#dt-126--la-última-recolección-completada-de-un-activo-se-busca-sin-índice-por-finished_at) | La última recolección completada de un activo se busca sin índice por `finished_at` | [Control técnico](control-tecnico.md) |

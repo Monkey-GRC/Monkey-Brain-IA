@@ -6,8 +6,8 @@ description: >-
   el chequeo de sincronía. No decide producto ni toca lógica de negocio, servicios, rutas ni contratos. Úsalo para
   cualquier cambio visual de las dos apps.
 tools: Read, Grep, Glob, Edit, Write, Bash
-model: sonnet
-effort: medium
+model: opus
+effort: high
 skills:
   - senior-frontend-engineer
   - monkey-ui-copy
@@ -48,8 +48,8 @@ Un build en verde no dice si la pantalla se ve bien. Rod no revisa por ti: cada 
 perdida (MD-483: dona en la esquina, divisor asimétrico, correo partido, rol truncado, minitarjetas sin centrar, hueco
 enorme en una card). Antes de reportar:
 
-1. **Renderiza** la pantalla en Chrome headless (Playwright o `chromium --headless --screenshot`), con la fuente de
-   iconos cargada, a **1440×900 y 1920×1080**, en **claro y oscuro**. Abre las capturas con `Read` y míralas: son para
+1. **Renderiza** la pantalla con la herramienta de captura `skills/frontend/design-system/render/` (fixtures de API, sin
+   backend ni credenciales; ver su README), con la fuente de iconos cargada, a **1440×900 y 1920×1080**, en **claro y oscuro**. Abre las capturas con `Read` y míralas: son para
    ti, no para Rod.
 2. **Con datos reales en todos los estados** que la vista distingue:
    - con muchos y con pocos datos;
@@ -66,11 +66,26 @@ enorme en una card). Antes de reportar:
      «En tu propia cuenta solo puedes editar tu nombre»).
    - [ ] Sin scroll que se pueda evitar en 1440×900.
    - [ ] Contraste y jerarquía legibles en claro **y** oscuro.
+   - [ ] **Errores que Rod ya marcó (MD-505) y no pueden volver:**
+     - Texto pegado a los bordes: padding mínimo de 16–20 px en tarjetas, celdas y filas de lista.
+     - Texto que ocupa media anchura sin motivo, o dos textos de ayuda que dicen lo mismo (uno y ya).
+     - Tarjetas de una misma fila con alturas distintas; un panel de detalle más alto o más bajo que su lista.
+     - Dos elementos resaltados a la vez; hover en filas o tarjetas que no se pueden pulsar.
+     - Botones partidos en dos líneas; fecha y persona partidas en varias líneas.
+     - Texto largo (motivos, nombres de prueba) que rompe el layout: siempre `line-clamp` más una forma de ver el texto
+       completo. Pruébalo con 500 caracteres.
+     - Registros o historiales como líneas sueltas: si tienen fecha, persona, acción y detalle, son una tabla.
+     - Un bloque suelto fuera de la rejilla (p. ej. «Puntos de enfoque» solo debajo de otra tarjeta).
+     - Cargas sin barra de progreso, y actos sin respuesta inmediata: el botón pulsado muestra spinner y la zona que
+       recarga, la barra. Nunca botones grises estáticos sin explicación.
+     - Un bloque sin acciones que no explica por qué («Las acciones las hace el responsable del control»).
 4. **No perder funcionalidad.** Compara con `git diff` las acciones, `data-test-*`, condiciones `@if` y datos de la
    versión anterior: lista lo que había y lo que hay. Si algo deja de verse **por una condición** (p. ej. la propia
    cuenta), dilo en el reporte para que no parezca que se perdió.
 
 ## Reporte
+
+- Sin capturas revisadas no hay reporte de «listo»: si no pudiste renderizar, dilo en la primera línea.
 
 - Archivos cambiados en cada repo, resultado del build y del chequeo.
 - Los estados y resoluciones que renderizaste, y lo que corregiste al mirarlos.

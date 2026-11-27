@@ -1,0 +1,19 @@
+{
+  "statusCode": 200,
+  "message": "auth.me",
+  "data": {
+    "user": {
+      "id": "0b6f6c2e-6a1f-4e57-9a51-6f3f1d2a0101",
+      "email": "operaciones@monkey.example",
+      "name": "Equipo",
+      "last_name": "Monkey",
+      "role": "admin_monkey",
+      "status": "active",
+      "is_mfa_enabled": true,
+      "preferred_language": "es",
+      "last_login_at": "2026-11-25T14:03:11Z",
+      "created_at": "2026-01-10T10:00:00Z"
+    },
+    "company": { "id": "5c1d8a8e-2b4c-4f7a-8e2d-1a9b3c4d0100", "name": "Monkey" }
+  }
+}

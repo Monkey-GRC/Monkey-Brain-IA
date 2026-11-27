@@ -1,7 +1,7 @@
 import { Component, signal } from '@angular/core';
-import { TestBed } from '@angular/core/testing';
+import { TestBed, fakeAsync, flush, tick } from '@angular/core/testing';
 import { provideTranslateService } from '@ngx-translate/core';
-import { Skeleton, SkeletonRegion, SkeletonShape } from './skeleton';
+import { SLOW_LOAD_MS, Skeleton, SkeletonRegion, SkeletonShape } from './skeleton';
 
 @Component({
   imports: [Skeleton, SkeletonRegion],
@@ -109,13 +109,101 @@ describe('Skeleton', () => {
     expect(blocks()[0].classList).toContain('rounded-full');
   });
 
-  it('marks the region busy and gives screen readers a text, and removes both when it is not busy', () => {
+  it('marks the region busy and gives screen readers a polite text, and removes the busy mark when it is not busy', () => {
     const { el, set } = setup();
     const region = el.querySelector('app-skeleton-region')!;
     expect(region.getAttribute('aria-busy')).toBe('true');
-    expect(region.querySelector('[role="status"]')!.textContent).toContain('COMMON.LOADING');
+    expect(region.querySelector('[aria-live="polite"]')!.textContent).toContain('COMMON.LOADING');
     set((h) => h.busy.set(false));
     expect(region.hasAttribute('aria-busy')).toBeFalse();
-    expect(region.querySelector('[role="status"]')).toBeNull();
+    expect(region.querySelector('[aria-live="polite"]')!.textContent).not.toContain('COMMON.LOADING');
+  });
+
+  it('draws the progress bar by default, with aria-busy and the live status', () => {
+    const { el } = setup();
+    expect(el.querySelector('[data-load-progress]')).not.toBeNull();
+    expect(el.querySelector('app-skeleton-region')!.getAttribute('aria-busy')).toBe('true');
+    expect(el.querySelector('[aria-live="polite"]')).not.toBeNull();
+  });
+
+  it('draws the bar over the top edge of the region (absolute), so it does not push the content', () => {
+    const { el } = setup();
+    const bar = el.querySelector('app-skeleton-region > [data-load-progress]')!;
+    expect(bar.classList).toContain('absolute');
+    expect(bar.classList).not.toContain('mb-3');
+    expect(el.querySelector('app-skeleton-region')!.classList).toContain('relative');
+  });
+
+  it('puts the slow-load line in its own slot below the content, reserved from the start, never inside the bar that is drawn over the content (MD-505)', () => {
+    const { el } = setup();
+    const region = el.querySelector('app-skeleton-region')!;
+    const bar = region.querySelector(':scope > [data-load-progress]')!;
+    const slot = region.querySelector(':scope > [data-slow-load-slot]')!;
+    expect(slot).not.toBeNull();
+    expect(bar.querySelector('[data-slow-load]')).toBeNull();
+    expect(slot.classList).toContain('min-h-5');
+    expect(slot.classList).not.toContain('absolute');
+    // After the projected content: the line pushes nothing that is already drawn.
+    const children = Array.from(region.children);
+    expect(children.indexOf(slot)).toBeGreaterThan(children.findIndex((c) => !c.matches('[data-load-progress]')));
+    expect(children.indexOf(slot)).toBeGreaterThan(children.indexOf(bar));
+  });
+
+  it('draws no bar when progress is turned off', () => {
+    TestBed.configureTestingModule({ imports: [NoProgressHost], providers: [provideTranslateService()] });
+    const fixture = TestBed.createComponent(NoProgressHost);
+    fixture.detectChanges();
+    expect((fixture.nativeElement as HTMLElement).querySelector('[data-load-progress]')).toBeNull();
+    expect((fixture.nativeElement as HTMLElement).querySelector('[data-slow-load-slot]')).toBeNull();
+  });
+
+  @Component({ imports: [SkeletonRegion], template: `<app-skeleton-region [progress]="false"><p>x</p></app-skeleton-region>` })
+  class NoProgressHost {}
+
+  describe('with progress', () => {
+    @Component({ imports: [SkeletonRegion], template: `<app-skeleton-region [busy]="busy()"><p>x</p></app-skeleton-region>` })
+    class ProgressHost {
+      busy = signal(true);
+    }
+
+    function setupProgress() {
+      TestBed.configureTestingModule({ imports: [ProgressHost], providers: [provideTranslateService()] });
+      const fixture = TestBed.createComponent(ProgressHost);
+      fixture.detectChanges();
+      return { fixture, el: fixture.nativeElement as HTMLElement };
+    }
+
+    it('shows the bar at once and the slow-load text only after 2 s', fakeAsync(() => {
+      const { fixture, el } = setupProgress();
+      expect(el.querySelector('[data-load-progress]')).not.toBeNull();
+      expect(el.querySelector('[data-slow-load]')).toBeNull();
+      tick(SLOW_LOAD_MS - 1);
+      fixture.detectChanges();
+      expect(el.querySelector('[data-slow-load]')).toBeNull();
+      tick(1);
+      fixture.detectChanges();
+      expect(el.querySelector('[data-slow-load]')!.textContent).toContain('COMMON.SLOW_LOAD');
+      expect(el.querySelector('[aria-live="polite"]')!.textContent).toContain('COMMON.SLOW_LOAD');
+    }));
+
+    it('removes aria-busy, the bar and the text when the load ends, and does not announce a late timer', fakeAsync(() => {
+      const { fixture, el } = setupProgress();
+      tick(SLOW_LOAD_MS);
+      fixture.detectChanges();
+      fixture.componentInstance.busy.set(false);
+      fixture.detectChanges();
+      expect(el.querySelector('app-skeleton-region')!.hasAttribute('aria-busy')).toBeFalse();
+      expect(el.querySelector('[data-load-progress]')).toBeNull();
+      expect(el.querySelector('[data-slow-load]')).toBeNull();
+      expect(el.querySelector('[data-slow-load-slot]')).toBeNull();
+      fixture.componentInstance.busy.set(true);
+      fixture.detectChanges();
+      expect(el.querySelector('[data-slow-load]')).toBeNull();
+      tick(SLOW_LOAD_MS);
+      fixture.detectChanges();
+      fixture.componentInstance.busy.set(false);
+      fixture.detectChanges();
+      flush();
+    }));
   });
 });

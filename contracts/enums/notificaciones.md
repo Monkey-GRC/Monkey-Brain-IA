@@ -21,6 +21,12 @@
 | `control_pending_approval` | Control por aprobar | Control awaiting approval | `owner` | El control cumple y espera la aprobación del responsable (cae en `company_admin` si no tiene responsable). Emitido desde MD-504 |
 | `control_owner_approved` | Control aprobado por el responsable | Control approved by owner | `company_admin` | El responsable dio la primera aprobación y falta la final. Emitido desde MD-504 |
 | `control_returned` | Control devuelto | Control returned | `executor` · `owner` | El control se devolvió con un motivo. Emitido desde MD-504 |
+| `level_override_proposed` | Corrección de nivel por decidir | Level correction awaiting decision | `company_admin` | **Emitido desde MD-529.** El responsable propuso un nivel final distinto del sugerido |
+| `level_override_decided` | Corrección de nivel decidida | Level correction decided | `owner` | **Emitido desde MD-529.** El administrador la aprobó o la rechazó |
+| `remediation_plan_proposed` | Plan de remediación por decidir | Remediation plan awaiting decision | `company_admin` | Emitido desde MD-529 |
+| `remediation_plan_decided` | Plan de remediación decidido | Remediation plan decided | `owner` · `assignee` | **Emitido desde MD-529.** El `assignee` solo si se aprobó |
+| `not_applicable_requested` | «No aplica» por decidir | Not-applicable request awaiting decision | `company_admin` | Emitido desde MD-529 |
+| `not_applicable_decided` | «No aplica» decidido | Not-applicable request decided | `owner` | Emitido desde MD-529 |
 
 ### Documentos (reservados, MD-506)
 

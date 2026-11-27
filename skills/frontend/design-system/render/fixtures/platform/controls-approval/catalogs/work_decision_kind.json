@@ -1,0 +1,28 @@
+{
+  "statusCode": 200,
+  "message": "catalog.list",
+  "data": {
+    "items": [
+      {
+        "value": "control_approval",
+        "label": "Aprobar el control"
+      },
+      {
+        "value": "manual_result",
+        "label": "Registrar el resultado de una prueba"
+      },
+      {
+        "value": "level_override",
+        "label": "Decidir una corrección de nivel"
+      },
+      {
+        "value": "remediation_plan",
+        "label": "Decidir un plan de remediación"
+      },
+      {
+        "value": "not_applicable",
+        "label": "Decidir un «No aplica»"
+      }
+    ]
+  }
+}

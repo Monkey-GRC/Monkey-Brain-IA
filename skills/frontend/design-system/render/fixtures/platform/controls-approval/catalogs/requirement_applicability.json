@@ -1,0 +1,20 @@
+{
+  "statusCode": 200,
+  "message": "catalog.list",
+  "data": {
+    "items": [
+      {
+        "value": "applicable",
+        "label": "Aplica"
+      },
+      {
+        "value": "not_applicable_pending",
+        "label": "No aplica, por aprobar"
+      },
+      {
+        "value": "not_applicable",
+        "label": "No aplica"
+      }
+    ]
+  }
+}

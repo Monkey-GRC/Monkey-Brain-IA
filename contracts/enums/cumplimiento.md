@@ -101,6 +101,75 @@ de la VF2 marcadas abajo como reemplazadas.
 | `manual_test_result_value` | `observation` | Observación |
 | `manual_test_result_value` | `exception` | Excepción |
 
+### Gestión del control, MD-529
+**Dónde se usa:** los enums de la corrección del nivel, el plan de remediación, «No aplica», las acciones permitidas y el historial (`cumplimiento/aprobacion.md`, «Lo nuevo de MD-529»). **Construidos con MD-529 (2026-11-26).**
+
+#### `change_request_status`
+**Columnas:** `control_level_overrides.status`, `remediation_plans.status` y `requirement_applicability_requests.status`.
+
+| Valor | Etiqueta (es) |
+|---|---|
+| `pending` | Por aprobar |
+| `approved` | Aprobada |
+| `rejected` | Rechazada |
+
+#### `requirement_applicability`
+**Dónde se usa:** `management.requirements[].applicability` (no es columna: se deriva de `is_applicable` y la solicitud pendiente).
+
+| Valor | Etiqueta (es) |
+|---|---|
+| `applicable` | Aplica |
+| `not_applicable_pending` | No aplica, por aprobar |
+| `not_applicable` | No aplica |
+
+#### `management_action`
+**Dónde se usa:** `management.allowed_actions[]` y la `allowed_actions[]` de cada ítem del detalle del control. Las acciones que el que llama puede hacer ahora.
+
+| Valor | Etiqueta (es) |
+|---|---|
+| `approve` | Aprobar el cumplimiento |
+| `return` | Devolver el control |
+| `register_result` | Registrar el resultado |
+| `propose_level` | Corregir el nivel |
+| `decide_level` | Decidir la corrección del nivel |
+| `register_plan` | Registrar el plan de remediación |
+| `decide_plan` | Decidir el plan de remediación |
+| `request_not_applicable` | Pedir «No aplica» |
+| `decide_not_applicable` | Decidir «No aplica» |
+| `revert_not_applicable` | Volver a aplicar el requisito |
+| `declare_no_occurrences` | Declarar «sin casos» |
+| `register_occurrence` | Registrar un caso |
+
+#### `management_history_type`
+**Dónde se usa:** `type` de cada ítem de `GET /v1/controls/{id}/management-history` y su filtro.
+
+| Valor | Etiqueta (es) |
+|---|---|
+| `approval` | Aprobación |
+| `return` | Devolución |
+| `approval_invalidated` | Aprobación sin efecto |
+| `manual_result` | Resultado de una prueba |
+| `level_proposed` | Corrección de nivel propuesta |
+| `level_decided` | Corrección de nivel decidida |
+| `plan_registered` | Plan de remediación registrado |
+| `plan_decided` | Plan de remediación decidido |
+| `not_applicable_requested` | «No aplica» pedido |
+| `not_applicable_decided` | «No aplica» decidido |
+| `not_applicable_reverted` | «No aplica» revertido |
+| `occurrence_registered` | Caso registrado |
+| `no_occurrences_declared` | «Sin casos» declarado |
+
+#### `work_decision_kind`
+**Dónde se usa:** `pending_decisions[]` de cada ítem de `GET /v1/me/work` (bucket `to_review`).
+
+| Valor | Etiqueta (es) | Para quién |
+|---|---|---|
+| `control_approval` | Aprobar el control | `responsable` (primera) y `admin_empresa` (final) |
+| `manual_result` | Registrar el resultado de una prueba | `responsable` |
+| `level_override` | Decidir una corrección de nivel | `admin_empresa` |
+| `remediation_plan` | Decidir un plan de remediación | `admin_empresa` |
+| `not_applicable` | Decidir un «No aplica» | `admin_empresa` |
+
 ### `document_version_status`
 **Dónde se usa:** el estado de una versión de un documento de la empresa (§11, D133).
 

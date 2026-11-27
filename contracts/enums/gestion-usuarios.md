@@ -35,6 +35,7 @@
 |---|---|---|
 | `owner` | Dueño | Es el `responsable` (o el `admin_empresa`) del control |
 | `executor` | Ejecutor | Es el `delegado` que lo ejecuta |
+| `approver` | Aprobador | **MD-529.** El `admin_empresa` que decide sobre un control de otro responsable |
 
 ## `work_bucket`
 **Dónde se usa:** filtro `bucket` y campo de cada ítem de `GET /v1/me/work`. Un control cae en el primero que le aplique, en este orden (D122): `rejected`, `to_review`, `to_upload`, `in_review`, `done`.
@@ -43,6 +44,6 @@
 |---|---|---|
 | `to_upload` | Por subir | Falta subir evidencia |
 | `rejected` | Rechazado, por rehacer | Una revisión lo rechazó |
-| `to_review` | Por revisar | **Solo `responsable`**: evidencia de su equipo por revisar |
+| `to_review` | Por revisar | `responsable` y, desde MD-529, `admin_empresa`: lo que espera su decisión (aprobar un control, registrar un resultado, decidir un nivel, un plan o un «No aplica»; `work_decision_kind`, `enums/cumplimiento.md`). El `admin_empresa` solo ve este |
 | `in_review` | En revisión | Subida, sin revisión completa |
 | `done` | Listo | |

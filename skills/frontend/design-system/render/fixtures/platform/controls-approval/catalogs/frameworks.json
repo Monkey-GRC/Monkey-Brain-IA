@@ -1,0 +1,4 @@
+{ "statusCode": 200, "message": "catalog.list", "data": { "items": [
+  { "code": "soc2", "name": "SOC 2", "description": "Trust Services Criteria", "label": "SOC 2", "availability": "available" },
+  { "code": "iso27001", "name": "ISO 27001", "description": "Sistema de gestión de seguridad de la información", "label": "ISO 27001", "availability": "coming_soon" }
+] } }

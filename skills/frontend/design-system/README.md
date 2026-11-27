@@ -182,5 +182,6 @@ Reglas: los tintes de marca siguen siendo el fondo de las cards de apoyo (el col
 |---|---|
 | `components.md` | Contrato de cada componente base y del menú lateral con grupos |
 | `sync.md` | Cómo se mantienen iguales las dos apps y qué comprueba el chequeo |
+| [`render/README.md`](render/README.md) | Capturas de una pantalla sin backend (sesión y API simuladas con fixtures), a 1440×900 y 1920×1080 en claro y oscuro: lo que se mira antes de reportar un cambio visual |
 
 Agente responsable: `frontend-design` (`agents/frontend-design.md`).
