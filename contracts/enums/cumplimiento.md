@@ -257,8 +257,18 @@ de la VF2 marcadas abajo como reemplazadas.
 | `approved` | Aprobado |
 | `rejected` | Rechazado |
 
+### `gap_priority`
+**No es columna:** se deriva al leer (severidad del check × criticidad del activo, `cumplimiento/brechas.md`; MD-502) · Catálogo: `/catalogs/gap_priority`.
+
+| Valor | Etiqueta (es) |
+|---|---|
+| `critical` | Crítica |
+| `high` | Alta |
+| `medium` | Media |
+| `low` | Baja |
+
 ### `exclusion_status`
-**Columna:** `exclusions.status` · «Vencida» no es un estado: se deriva de `valid_until` (`is_expired`).
+**Columna:** `exclusions.status` · «Vencida» no es un estado: se deriva de `effective_until` (`is_expired`).
 
 | Valor | Etiqueta (es) |
 |---|---|

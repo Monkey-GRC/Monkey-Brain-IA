@@ -19,9 +19,10 @@ type: contract
 | [`riesgos.md`](riesgos.md) | Riesgos y causas, vínculos, evaluación 5×5 y tratamiento |
 | [`resumen.md`](resumen.md) | El resumen del servicio por marco y categoría |
 | [`evidencia.md`](evidencia.md) | Evidencias: subir con huella y versión, descargar con enlace firmado, subir, listar y descargar (la aprobación es del control, `aprobacion.md`) |
-| [`veredictos.md`](veredictos.md) | Los tests de un control y qué falló y cómo corregirlo (el veredicto se retiró en MD-504) |
+| [`veredictos.md`](veredictos.md) | Los tests de un control (el veredicto se retiró en MD-504) |
+| [`brechas.md`](brechas.md) | El mensaje de brecha de cada FAIL de un check Directo, con su prioridad (D138, RC-18) |
 | [`observaciones.md`](observaciones.md) | Lo que escribe el auditor y cómo lo responde la empresa |
-| [`exclusiones.md`](exclusiones.md) | Sacar un activo de un test, con vigencia |
+| [`exclusiones.md`](exclusiones.md) | Excepción: aceptar el FAIL de una prueba en un activo hasta una fecha de fin (PR-04) |
 
 | | |
 |---|---|

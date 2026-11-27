@@ -1,0 +1,5 @@
+[
+  { "method": "GET", "path": "/controls/:id/tests/:test/findings", "file": "findings.json" },
+  { "method": "GET", "path": "/catalogs/gap_priority", "file": "catalogs/gap_priority.json" },
+  { "method": "GET", "path": "/catalogs/asset_criticality", "file": "catalogs/asset_criticality.json" }
+]

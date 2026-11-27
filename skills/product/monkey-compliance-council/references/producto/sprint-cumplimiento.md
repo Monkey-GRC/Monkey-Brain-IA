@@ -27,7 +27,7 @@ cambios con aprobación), §7.5 (el veredicto) y §7.6 (las observaciones).
 | Evidencias (MD-104) | MD-126 subir · MD-127 validación de la evidencia (D96, D88; en dos niveles desde MD-194) · MD-128 Descripción del Sistema como archivo: **construidos** |
 | Responsables de la organización (MD-105) | MD-133 cargos en la API · MD-135 cargos en pantalla (`/responsables` en Platform): **construidos** |
 | Medición y resumen (MD-106) | MD-137 resumen del servicio · MD-138 motor de cálculo (`domain/engine/`) · MD-139 estado del activo: **construidos** |
-| Exclusiones y cierre (MD-107) | MD-144 exclusiones · MD-168 período y fecha de corte (API y pantalla) · MD-171 vencimiento derivado al leer · MD-145 evaluaciones inmutables: **construidos**. **Falta:** MD-170 exclusión de un check (`DT-74`). MD-147 verificación del backend y MD-149 revisión de pantallas y demo: sin comprobar |
+| Exclusiones y cierre (MD-107) | MD-144 exclusiones · MD-168 período y fecha de corte (API y pantalla) · MD-171 vencimiento derivado al leer · MD-145 evaluaciones inmutables: **construidos**. MD-501 excepción de una prueba en un activo con tope de PR-04 y vencimiento diario (D135; reemplazó a MD-170, exclusión de un check): **construido** (2026-11-27). MD-147 verificación del backend y MD-149 revisión de pantallas y demo: sin comprobar |
 | Auditoría (MD-152) | MD-155 veredicto manual (en dos niveles desde MD-194) y MD-157 rol auditor: **construidos**. MD-154 observaciones del auditor: **API construida; faltan las pantallas** (y el aviso a la empresa, D143) |
 
 ## Lo que sigue pendiente del motor del comité (D68)

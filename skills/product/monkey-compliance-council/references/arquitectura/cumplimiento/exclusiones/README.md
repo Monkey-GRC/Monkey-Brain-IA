@@ -1,6 +1,6 @@
 # Cumplimiento · Exclusiones
 
-> **VF18 (D128): esto describe el código construido con el catálogo v1.** Con la VF18 la exclusión de un activo pasa a ser la excepción de un check en un activo: cuenta como PASS marcado y dura 90 días como máximo (D135).
+> **Estado (2026-11-27, MD-501): construido con la VF18.** La exclusión de un activo es ahora la excepción de una prueba en un activo: cuenta como PASS marcado (`fail_with_exception`), solo se acepta si hoy hay un FAIL, dura PR-04 (90 días por defecto) como máximo y su vencimiento lo registra una tarea diaria (`expired_at`, evento `exclusion.expire`, causa `exclusion_expired`). El texto de abajo conserva el lenguaje de la exclusión v1 donde no se ha reescrito; manda `contracts/cumplimiento/exclusiones.md`.
 
 Responde: **¿cómo se saca un activo de una prueba sin mentir sobre el cumplimiento?** Una exclusión dice «esta
 prueba no aplica a este activo, por esta razón, hasta esta fecha». No borra nada: **se superpone al leer**.
@@ -38,7 +38,7 @@ Rutas: `GET` y `POST /v1/services/:serviceId/exclusions`.
 | Rutas y errores | `contracts/cumplimiento/exclusiones.md` |
 | La tabla y sus columnas | `datos/modelo/07-cumplimiento.md` §7.3 |
 | Cómo afecta al cálculo | `datos/modelo/09-calculo-cumplimiento.md` · [`../motor/reglas.md`](../motor/reglas.md) |
-| Decisiones | D78, D79, D83, D96 · MD-144 |
+| Decisiones | D78, D79, D83, D96, D135 · MD-144, MD-501 |
 | Requisitos | [`seguridad/roles-permisos.md`](../../../seguridad/roles-permisos.md): `SEG-67` |
 
 ## Contenido
